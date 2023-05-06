@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 # flutter_dentistry_desktop
+<<<<<<< HEAD
 This is a desktop-first application developed with flutter to help dentists digitalize track their patients, staff, expenses and etc.
 =======
 # flutter_dentistry
@@ -19,3 +20,6 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 >>>>>>> main
+=======
+This is a desktop-first application developed with flutter to help dentists track their patients, staff, expenses and etc.
+>>>>>>> b4c1807038d8cb27c4097e492bbafd6de8c7968d
