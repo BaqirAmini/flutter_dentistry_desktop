@@ -47,6 +47,7 @@ class _LoginState extends State<Login> {
                             child: TextField(
                               decoration: InputDecoration(
                                   border: OutlineInputBorder(),
+                                  suffixIcon: Icon(Icons.person),
                                   labelText: 'یوزر نیم'),
                             ),
                           ),
@@ -56,7 +57,9 @@ class _LoginState extends State<Login> {
                           const SizedBox(
                             width: 300.0,
                             child: TextField(
+                              obscureText: true,
                               decoration: InputDecoration(
+                                suffixIcon: Icon(Icons.visibility_off),
                                   border: OutlineInputBorder(),
                                   labelText: 'رمز عبور'),
                             ),
