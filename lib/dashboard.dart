@@ -171,8 +171,8 @@ class _DashboardState extends State<Dashboard> {
                              mainAxisAlignment: MainAxisAlignment.center,
                              children: [
                                CircleAvatar(
-                                 backgroundColor: Colors.grey[10],
-                                 child: const Icon(Icons.people_alt_outlined,
+                                 backgroundColor: Colors.blue[400],
+                                 child: const Icon(Icons.supervised_user_circle,
                                      color: Colors.white),
                                ),
                                Container(
@@ -184,7 +184,7 @@ class _DashboardState extends State<Dashboard> {
                                  child: Column(
                                    mainAxisAlignment: MainAxisAlignment.center,
                                    children: const [
-                                     Text('مراجعین',
+                                     Text('بیماران امروز',
                                          style: TextStyle(
                                              fontSize: 16.0,
                                              color: Colors.white)),
@@ -210,8 +210,8 @@ class _DashboardState extends State<Dashboard> {
                              mainAxisAlignment: MainAxisAlignment.center,
                              children: [
                                CircleAvatar(
-                                 backgroundColor: Colors.orange[10],
-                                 child: const Icon(Icons.people_alt_outlined,
+                                 backgroundColor: Colors.orange[400],
+                                 child: const Icon(Icons.attach_money_rounded,
                                      color: Colors.white),
                                ),
                                Container(
@@ -223,7 +223,7 @@ class _DashboardState extends State<Dashboard> {
                                  child: Column(
                                    mainAxisAlignment: MainAxisAlignment.center,
                                    children: const [
-                                     Text('مراجعین',
+                                     Text('مجموع مصارف ماه کنونی',
                                          style: TextStyle(
                                              fontSize: 16.0,
                                              color: Colors.white)),
@@ -246,9 +246,9 @@ class _DashboardState extends State<Dashboard> {
                            child: Row(
                              mainAxisAlignment: MainAxisAlignment.center,
                              children: [
-                               const CircleAvatar(
-                                 backgroundColor: Colors.lightGreenAccent,
-                                 child: Icon(Icons.people_alt_outlined,
+                                CircleAvatar(
+                                 backgroundColor: Colors.green[400],
+                                 child: const Icon(Icons.money_off_csred_outlined,
                                      color: Colors.white),
                                ),
                                Container(
@@ -260,7 +260,7 @@ class _DashboardState extends State<Dashboard> {
                                  child: Column(
                                    mainAxisAlignment: MainAxisAlignment.center,
                                    children: const [
-                                     Text('مراجعین',
+                                     Text('مالیات امسال',
                                          style: TextStyle(
                                              fontSize: 16.0,
                                              color: Colors.white)),
