@@ -29,10 +29,6 @@ class _DashboardState extends State<Dashboard> {
     _PieData('Jan', 9000, 'خوراک'),
     _PieData('Feb', 15000, 'آب'),
     _PieData('Mar', 100000, 'مالیات'),
-    _PieData('Apr', 1200, 'و سایر')
-
-
-
   ];
 
   SideMenuController sideMenu = SideMenuController();
@@ -240,7 +236,7 @@ class _DashboardState extends State<Dashboard> {
                                  child: Column(
                                    mainAxisAlignment: MainAxisAlignment.center,
                                    children: const [
-                                     Text('مجموع مصارف ماه کنونی',
+                                     Text('مصارف ماه جاری',
                                          style: TextStyle(
                                              fontSize: 16.0,
                                              color: Colors.white)),
@@ -354,8 +350,11 @@ class _DashboardState extends State<Dashboard> {
                            child: Column(
                              children: [
                               SfCircularChart(
-                                   title: ChartTitle(text: 'مصارف داخلی کلینیک طی سه ماه'),
-                                   legend: Legend(isVisible: true),
+                                   title: ChartTitle(text: 'مصارف سه ماه اخیر'),
+                                  // Enable legend
+                                  legend: Legend(isVisible: true),
+                                  // Enable tooltip
+                                  tooltipBehavior: TooltipBehavior(enable: true),
                                    series: <PieSeries<_PieData, String>>[
                                      PieSeries<_PieData, String>(
                                          explode: true,
