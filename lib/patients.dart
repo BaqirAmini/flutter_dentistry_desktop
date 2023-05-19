@@ -33,24 +33,27 @@ class _PatientState extends State<Patient> {
                 source: tableRow,
                 header: Row(
                   children: [
-                    const Text('لست بیماران |'),
+                    const Flexible(
+                      child: Text('لست بیماران |'),
+                      flex: 1,
+                    ),
                     Container(
-                      margin: EdgeInsets.only(right: 50.0),
+                      margin: const EdgeInsets.only(right: 50.0),
                       // height: 100,
-                      width:300,
+                      width: 300,
                       child: TextField(
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'جستجو...',
                           suffixIcon: Icon(Icons.search),
                           enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)
-                          ),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
                           focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)
-                          ),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
                         ),
                         onChanged: (value) {
                           setState(() {});
@@ -58,22 +61,27 @@ class _PatientState extends State<Patient> {
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.only(right: 600.0),
-                      child: ElevatedButton(
+                      margin: const EdgeInsets.only(right: 50.0),
+                      child: IconButton(
                         onPressed: () {},
-                        child: SizedBox(
-                          height: 35.0,
-                          width: 135.0,
-                          child: Row(
-                            children: const [
-                              Icon(Icons.person_add_alt),
-                              Text('  '),
-                              Text('افزودن بیمار جدید')
-                            ],
-                          ),
-                        )
-                      )
-                    )
+                        icon: const Icon(Icons.print),
+                      ),
+                    ),
+                    Container(
+                        margin: const EdgeInsets.only(right: 300.0),
+                        child: ElevatedButton(
+                            onPressed: () {},
+                            child: SizedBox(
+                              height: 35.0,
+                              width: 135.0,
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.person_add_alt),
+                                  Text('  '),
+                                  Text('افزودن بیمار جدید')
+                                ],
+                              ),
+                            ))),
                   ],
                 ),
                 onRowsPerPageChanged: (perPage) {},
@@ -114,14 +122,16 @@ class TableRow extends DataTableSource {
             print('Detail...');
           },
           icon: const Icon(Icons.list))),
-      DataCell(IconButton(
-          onPressed: () {
-            print('Deleted...');
-          },
-          icon: const Icon(
-            Icons.delete,
-            color: Colors.red,
-          ))),
+      DataCell(
+        Builder(builder: (context) => IconButton(
+              onPressed: () {
+                onDeletePatient(context);
+              },
+              icon: const Icon(
+                Icons.delete,
+                color: Colors.red,
+              )),)
+      ),
     ]);
   }
 
@@ -136,4 +146,17 @@ class TableRow extends DataTableSource {
   @override
   // TODO: implement selectedRowCount
   int get selectedRowCount => 0;
+}
+
+
+onDeletePatient(BuildContext context)
+{
+  return showDialog(context: context, builder: (ctx) => AlertDialog(
+    title: const Text('حذف بیمار'),
+    content: const Text('آیا میخواهید این بیمار را حذف کنید؟'),
+    actions: [
+      TextButton(onPressed: () => Navigator.pop(context), child: const Text('لفو')),
+      TextButton(onPressed: () {}, child: const Text('حذف')),
+    ],
+  ));
 }
