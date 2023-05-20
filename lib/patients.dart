@@ -14,6 +14,8 @@ class Patient extends StatefulWidget {
 
 class _PatientState extends State<Patient> {
   var tableRow = TableRow();
+  int _sortColumnIndex = 0;
+  bool _sortAscending = true;
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +31,14 @@ class _PatientState extends State<Patient> {
             width: double.infinity,
             child: SingleChildScrollView(
               child: PaginatedDataTable(
-                actions: const [],
+                sortAscending: _sortAscending,
+                sortColumnIndex: _sortColumnIndex,
                 source: tableRow,
                 header: Row(
                   children: [
                     const Flexible(
-                      child: Text('لست بیماران |'),
                       flex: 1,
+                      child: Text('لست بیماران |'),
                     ),
                     Container(
                       margin: const EdgeInsets.only(right: 50.0),
@@ -90,14 +93,33 @@ class _PatientState extends State<Patient> {
                   DataColumn(
                       label: const Text('اسم'),
                       onSort: (columnIndex, ascending) {
-                        print('$columnIndex $ascending');
+                        setState(() {
+                          _sortColumnIndex = columnIndex;
+                          _sortAscending = ascending;
+                        });
                       }),
-                  const DataColumn(label: Text('تخلص')),
-                  const DataColumn(label: Text('سن')),
-                  const DataColumn(label: Text('وظیفه')),
-                  const DataColumn(label: Text('خدمات')),
-                  const DataColumn(label: Text('شرح')),
-                  const DataColumn(label: Text('حذف')),
+                   DataColumn(label: const Text('تخلص'),
+                       onSort: (columnIndex, ascending) {
+                         setState(() {
+                           _sortColumnIndex = columnIndex;
+                           _sortAscending = ascending;
+                         });
+                       }),
+                   DataColumn(label: const Text('سن'), onSort: (columnIndex, ascending) {
+                     setState(() {
+                       _sortColumnIndex = columnIndex;
+                       _sortAscending = ascending;
+                     });
+                   }),
+                   const DataColumn(label: Text('وظیفه')),
+                   DataColumn(label: const Text('خدمات'), onSort: (columnIndex, ascending) {
+                     setState(() {
+                       _sortColumnIndex = columnIndex;
+                       _sortAscending = ascending;
+                     });
+                   }),
+                   const DataColumn(label: Text('شرح')),
+                   const DataColumn(label: Text('حذف')),
                 ],
               ),
             ),
@@ -122,16 +144,16 @@ class TableRow extends DataTableSource {
             print('Detail...');
           },
           icon: const Icon(Icons.list))),
-      DataCell(
-        Builder(builder: (context) => IconButton(
-              onPressed: () {
-                onDeletePatient(context);
-              },
-              icon: const Icon(
-                Icons.delete,
-                color: Colors.red,
-              )),)
-      ),
+      DataCell(Builder(
+        builder: (context) => IconButton(
+            onPressed: () {
+              onDeletePatient(context);
+            },
+            icon: const Icon(
+              Icons.delete,
+              color: Colors.red,
+            )),
+      )),
     ]);
   }
 
@@ -148,15 +170,18 @@ class TableRow extends DataTableSource {
   int get selectedRowCount => 0;
 }
 
-
-onDeletePatient(BuildContext context)
-{
-  return showDialog(context: context, builder: (ctx) => AlertDialog(
-    title: const Text('حذف بیمار'),
-    content: const Text('آیا میخواهید این بیمار را حذف کنید؟'),
-    actions: [
-      TextButton(onPressed: () => Navigator.pop(context), child: const Text('لفو')),
-      TextButton(onPressed: () {}, child: const Text('حذف')),
-    ],
-  ));
+// This is to display an alert dialog to delete a patient
+onDeletePatient(BuildContext context) {
+  return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+            title: const Text('حذف بیمار'),
+            content: const Text('آیا میخواهید این بیمار را حذف کنید؟'),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('لغو')),
+              TextButton(onPressed: () {}, child: const Text('حذف')),
+            ],
+          ));
 }
