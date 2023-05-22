@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
+import 'package:flutter_dentistry/sidebar.dart';
 
 void main() {
   return runApp(const Dashboard());
@@ -45,8 +46,9 @@ class _DashboardState extends State<Dashboard> {
               'کلینیک دندان درمان',
               style: TextStyle(color: Colors.black),
             ),
-            backgroundColor: Colors.white,
+            // backgroundColor: Colors.white,
           ),
+          drawer: const Sidebar(),
           body: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             // mainAxisAlignment: MainAxisAlignment.start,
@@ -54,11 +56,10 @@ class _DashboardState extends State<Dashboard> {
               ConstrainedBox(
                 constraints: const BoxConstraints(maxHeight: 150),
               ),
-              const Divider(
+             /* const Divider(
                 indent: 8.0,
                 endIndent: 8.0,
               ),
-
               // Any menu items listed from here...
               SideMenu(
                   title: Image.asset(
@@ -79,10 +80,10 @@ class _DashboardState extends State<Dashboard> {
                         sideMenu.changePage(page);
                       },
                       icon: const Icon(Icons.dashboard),
-                      /* badgeContent: const Text(
+                      *//* badgeContent: const Text(
                     '3',
                     style: TextStyle(color: Colors.white),
-                  ),*/
+                  ),*//*
                       tooltipContent: 'رفتن به داشبورد',
                     ),
                     SideMenuItem(
@@ -166,7 +167,7 @@ class _DashboardState extends State<Dashboard> {
                       icon: const Icon(Icons.exit_to_app),
                     ),
                   ],
-                  controller: sideMenu),
+                  controller: sideMenu),*/
               Column(
                 children: [
                  Container(
