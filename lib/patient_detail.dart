@@ -166,209 +166,471 @@ class PatientDetail extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Column(
-                        children: [
-                          SizedBox(
-                            height: 50.0,
-                            width: 600.0,
-                            child: Expanded(
-                                flex: 1,
-                                child: Card(
-                                  margin: const EdgeInsets.only(top: 5.0),
-                                  child: Center(
-                                    child: Column(
-                                      children: [
-                                        Text('هزینه ها'),
-                                        Table(
-                                          border: const TableBorder(
-                                              horizontalInside: BorderSide(
-                                                  color: Colors.grey,
-                                                  style: BorderStyle.solid,
-                                                  width: 0.5)),
-                                          columnWidths: const {
-                                            0: FixedColumnWidth(120),
-                                            1: FixedColumnWidth(80),
-                                            2: FixedColumnWidth(100),
-                                            3: FixedColumnWidth(100),
-                                            4: FixedColumnWidth(100),
-                                          },
-                                          children: const [
-                                            // add your table rows here
-                                            TableRow(
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.all(5.0),
-                                                  child: Text(
-                                                    'سرویس',
-                                                    style: TextStyle(
-                                                        fontSize: 12.0,
-                                                        color: Colors.grey),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.all(5.0),
-                                                  child: Text(
-                                                    'جلسه',
-                                                    style: TextStyle(
-                                                        fontSize: 12.0,
-                                                        color: Colors.grey),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.all(5.0),
-                                                  child: Text(
-                                                    'مبلغ کل',
-                                                    style: TextStyle(
-                                                        fontSize: 12.0,
-                                                        color: Colors.grey),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.all(5.0),
-                                                  child: Text(
-                                                    'دریافت شده',
-                                                    style: TextStyle(
-                                                        fontSize: 12.0,
-                                                        color: Colors.grey),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.all(5.0),
-                                                  child: Text(
-                                                    'باقی',
-                                                    style: TextStyle(
-                                                        fontSize: 12.0,
-                                                        color: Colors.grey),
-                                                  ),
-                                                ),
-                                              ],
+                      Expanded(
+                        child: SizedBox(
+                          child: Card(
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: const Text('هزینه ها', style: TextStyle(color: Colors.blue, fontSize: 14.0, fontWeight: FontWeight.bold),),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: Table(
+                                    border: const TableBorder(
+                                        horizontalInside: BorderSide(
+                                            color: Colors.grey,
+                                            style: BorderStyle.solid,
+                                            width: 0.5)),
+                                    columnWidths: const {
+                                      0: FixedColumnWidth(120),
+                                      1: FixedColumnWidth(80),
+                                      2: FixedColumnWidth(100),
+                                      3: FixedColumnWidth(100),
+                                      4: FixedColumnWidth(100),
+                                    },
+                                    children: const [
+                                      // add your table rows here
+                                      TableRow(
+                                        children: [
+                                          Padding(
+                                          padding: EdgeInsets.all(5.0),
+                                          child: Text(
+                                            'سرویس',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(5.0),
+                                            child: Text(
+                                              'جلسه',
+                                              style: TextStyle(
+                                                  fontSize: 12.0,
+                                                  color: Colors.grey),
                                             ),
-                                            // more rows ...
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(5.0),
+                                            child: Text(
+                                              'مبلغ کل',
+                                              style: TextStyle(
+                                                  fontSize: 12.0,
+                                                  color: Colors.grey),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(5.0),
+                                            child: Text(
+                                              'دریافت شده',
+                                              style: TextStyle(
+                                                  fontSize: 12.0,
+                                                  color: Colors.grey),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(5.0),
+                                            child: Text(
+                                              'باقی',
+                                              style: TextStyle(
+                                                  fontSize: 12.0,
+                                                  color: Colors.grey),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      // more rows ...
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: SingleChildScrollView(
+                                    child: Table(
+                                      border: const TableBorder(
+                                          horizontalInside: BorderSide(
+                                              color: Colors.grey,
+                                              style: BorderStyle.solid,
+                                              width: 0.5)),
+                                      columnWidths: const {
+                                        0: FixedColumnWidth(120),
+                                        1: FixedColumnWidth(80),
+                                        2: FixedColumnWidth(100),
+                                        3: FixedColumnWidth(100),
+                                        4: FixedColumnWidth(100),
+                                      },
+                                      children: const [
+                                        // add your table rows here
+                                        TableRow(
+                                          children: [
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('پرکاری دندان'),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('1'),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('3000 افغانی'),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('2000'),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('1000'),
+                                            ),
                                           ],
-                                        )
+                                        ),
+                                        TableRow(
+                                          children: [
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('پرکاری دندان'),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('2'),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('3000 افغانی'),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('2000'),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('1000'),
+                                            ),
+                                          ],
+                                        ),
+                                        TableRow(
+                                          children: [
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('پرکاری دندان'),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('2'),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('3000 افغانی'),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('2000'),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Text('1000'),
+                                            ),
+                                          ],
+                                        ),
+                                        // more rows ...
                                       ],
                                     ),
                                   ),
-                                )),
-                          ),
-                          SizedBox(
-                            width: 600.0,
-                            height: 150.0,
-                            child: Expanded(
-                              flex: 1,
-                              child: Card(
-                                margin: EdgeInsets.zero,
-                                child: Center(
-                                  child: Expanded(
-                                    flex: 1,
-                                    child: SingleChildScrollView(
-                                      child: Table(
-                                        border: const TableBorder(
-                                            horizontalInside: BorderSide(
-                                                color: Colors.grey,
-                                                style: BorderStyle.solid,
-                                                width: 0.5)),
-                                        columnWidths: const {
-                                          0: FixedColumnWidth(120),
-                                          1: FixedColumnWidth(80),
-                                          2: FixedColumnWidth(100),
-                                          3: FixedColumnWidth(100),
-                                          4: FixedColumnWidth(100),
-                                        },
-                                        children: const [
-                                          // add your table rows here
-                                          TableRow(
-                                            children: [
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('پرکاری دندان'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('1'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('3000 افغانی'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('2000'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('1000'),
-                                              ),
-                                            ],
-                                          ),
-                                          TableRow(
-                                            children: [
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('پرکاری دندان'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('2'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('3000 افغانی'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('2000'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('1000'),
-                                              ),
-                                            ],
-                                          ),
-                                          TableRow(
-                                            children: [
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('پرکاری دندان'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('2'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('3000 افغانی'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('2000'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('1000'),
-                                              ),
-                                            ],
-                                          ),
-                                          // more rows ...
-                                        ],
-                                      ),
-                                    ),
-                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   )),
-              Container(
-                height: 200.0,
-                  child: Card(
-                child: SizedBox(
-                  child: Text('Appointment'),
+              Expanded(
+                  child: SizedBox(
+                width: 1250.0,
+                height: 380.0,
+                child: Card(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8.0),
+                        child: const Text('دفعات مراجعه بیمار', style: TextStyle(color: Colors.blue, fontSize: 14.0, fontWeight: FontWeight.bold),),
+                      ),
+                      Container(
+                        width: 1000.0,
+                        padding: const EdgeInsets.all(8.0),
+                        child: Table(
+                          border: const TableBorder(
+                              horizontalInside: BorderSide(
+                                  color: Colors.grey,
+                                  style: BorderStyle.solid,
+                                  width: 0.5)),
+                          columnWidths: const {
+                            0: FixedColumnWidth(120),
+                            1: FixedColumnWidth(100),
+                            2: FixedColumnWidth(100),
+                            3: FixedColumnWidth(100),
+                            4: FixedColumnWidth(200),
+                            5: FixedColumnWidth(100),
+                            7: FixedColumnWidth(50),
+                            8: FixedColumnWidth(50),
+                            9: FixedColumnWidth(50),
+                          },
+                          children: const [
+                            // add your table rows here
+                            TableRow(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Text(
+                                    'سرویس',
+                                    style: TextStyle(
+                                        fontSize: 12.0, color: Colors.grey),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Text(
+                                    'تاریخ مراجعه',
+                                    style: TextStyle(
+                                        fontSize: 12.0, color: Colors.grey),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Text(
+                                    'فک / بیره',
+                                    style: TextStyle(
+                                        fontSize: 12.0, color: Colors.grey),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Text(
+                                    'نوعیت دندان',
+                                    style: TextStyle(
+                                        fontSize: 12.0, color: Colors.grey),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Text(
+                                    'توضیحات',
+                                    style: TextStyle(
+                                        fontSize: 12.0, color: Colors.grey),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Text(
+                                    'جلسه / نوبت',
+                                    style: TextStyle(
+                                        fontSize: 12.0, color: Colors.grey),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Text(
+                                    'داکتر',
+                                    style: TextStyle(
+                                        fontSize: 12.0, color: Colors.grey),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Text(
+                                    'ویرایش',
+                                    style: TextStyle(
+                                        fontSize: 12.0, color: Colors.grey),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Text(
+                                    'حذف',
+                                    style: TextStyle(
+                                        fontSize: 12.0, color: Colors.grey),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Text(
+                                    'عکس',
+                                    style: TextStyle(
+                                        fontSize: 12.0, color: Colors.grey),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // more rows ...
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 1000.0,
+                        padding: const EdgeInsets.all(8.0),
+                        child: SingleChildScrollView(
+                          child: Table(
+                            border: const TableBorder(
+                                horizontalInside: BorderSide(
+                                    color: Colors.grey,
+                                    style: BorderStyle.solid,
+                                    width: 0.5)),
+                            columnWidths: const {
+                              0: FixedColumnWidth(120),
+                              1: FixedColumnWidth(100),
+                              2: FixedColumnWidth(100),
+                              3: FixedColumnWidth(100),
+                              4: FixedColumnWidth(200),
+                              5: FixedColumnWidth(100),
+                              7: FixedColumnWidth(50),
+                              8: FixedColumnWidth(50),
+                              9: FixedColumnWidth(50),
+                            },
+                            children:  [
+                              // add your table rows here
+                              TableRow(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('پرکاری دندان'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('2023-03-03'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('بالا'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('سوم'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('در اثر سوراخی دندان از مواد زرگونیم...'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('1'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('حامد کریمی'),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.edit, color: Colors.blue, size: 20.0),),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.delete, color: Colors.blue, size: 20.0),),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.image, color: Colors.blue, size: 20.0),),
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('پرکاری دندان'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('2023-03-03'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('بالا'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('سوم'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('در اثر سوراخی دندان از مواد زرگونیم...'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('1'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('حامد کریمی'),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.edit, color: Colors.blue, size: 20.0),),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.delete, color: Colors.blue, size: 20.0),),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.image, color: Colors.blue, size: 20.0),),
+                                  ),
+                                ],
+                              ),
+                              TableRow(
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('پرکاری دندان'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('2023-03-03'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('بالا'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('سوم'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('در اثر سوراخی دندان از مواد زرگونیم...'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('1'),
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Text('حامد کریمی'),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.edit, color: Colors.blue, size: 20.0),),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.delete, color: Colors.blue, size: 20.0),),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.image, color: Colors.blue, size: 20.0),),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ))
+              ),),
             ],
           ),
         ),
