@@ -17,7 +17,14 @@ class PatientDetail extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('جزییات مریض'),
+            leading: Tooltip(
+              message: 'رفتن به صفحه قبلی',
+              child: IconButton(
+                icon: const BackButtonIcon(),
+                onPressed: () {},
+              ),
+            ),
+            title: const Text('جزییات بیمار'),
             actions: [
               Tooltip(
                 message: 'رفتن به داشبورد',

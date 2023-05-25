@@ -25,6 +25,13 @@ class _PatientState extends State<Patient> {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
+            leading: Tooltip(
+              message: 'رفتن به صفحه قبلی',
+              child: IconButton(
+                icon: const BackButtonIcon(),
+                onPressed: () {},
+              ),
+            ),
             title: const Text('افزودن بیمار'),
           ),
           body: SizedBox(
