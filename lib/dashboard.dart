@@ -46,7 +46,11 @@ class _DashboardState extends State<Dashboard> {
               'کلینیک دندان درمان',
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
-            // backgroundColor: Colors.white,
+            leading: Builder(
+              builder: (BuildContext context) {
+                return IconButton(onPressed: () { Scaffold.of(context).openDrawer(); },  tooltip: "باز کردن مینوی راست", icon: Icon(Icons.menu),);
+              },
+            ),
           ),
           drawer: const Sidebar(),
           body: Row(
