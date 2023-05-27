@@ -341,7 +341,7 @@ class _NewPatientState extends State<NewPatient> {
         Step(
             state: _currentStep <= 1 ? StepState.editing : StepState.complete,
             isActive: _currentStep >= 1,
-            title: const Text('نوعیت بیماری'),
+            title: const Text('خدمات مورد نیاز مریض'),
             content: SizedBox(
                 child: Center(
               child: SizedBox(
