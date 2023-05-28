@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   return runApp(const PatientDetail());
@@ -6,9 +7,14 @@ void main() {
 
 final items = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
 
-class PatientDetail extends StatelessWidget {
+class PatientDetail extends StatefulWidget {
   const PatientDetail({super.key});
 
+  @override
+  State<PatientDetail> createState() => _PatientDetailState();
+}
+
+class _PatientDetailState extends State<PatientDetail> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,8 +30,19 @@ class PatientDetail extends StatelessWidget {
                 onPressed: () {},
               ),
             ),
-            title: const Text('جزییات بیمار'),
+            title: const Text('جزییات مریض'),
             actions: [
+              Builder(
+                builder: (context) => Tooltip(
+                  message: 'تغییر دادن مریض',
+                  child: IconButton(
+                    onPressed: () {
+                      onEditPatient(context);
+                    },
+                    icon: const Icon(Icons.edit_outlined),
+                  ),
+                ),
+              ),
               Tooltip(
                 message: 'رفتن به داشبورد',
                 child: IconButton(
@@ -40,13 +57,11 @@ class PatientDetail extends StatelessWidget {
               Container(
                   height: 200.0,
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Card(
                         child: SizedBox(
                           width: 200.0,
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: const [
                               CircleAvatar(
                                 radius: 40.0,
@@ -180,7 +195,13 @@ class PatientDetail extends StatelessWidget {
                               children: [
                                 Container(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: const Text('هزینه ها', style: TextStyle(color: Colors.blue, fontSize: 14.0, fontWeight: FontWeight.bold),),
+                                  child: const Text(
+                                    'هزینه ها',
+                                    style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                                 Container(
                                   padding: const EdgeInsets.only(bottom: 8.0),
@@ -202,13 +223,13 @@ class PatientDetail extends StatelessWidget {
                                       TableRow(
                                         children: [
                                           Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Text(
-                                            'سرویس',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                            padding: EdgeInsets.all(5.0),
+                                            child: Text(
+                                              'سرویس',
+                                              style: TextStyle(
+                                                  fontSize: 12.0,
+                                                  color: Colors.grey),
+                                            ),
                                           ),
                                           Padding(
                                             padding: EdgeInsets.all(5.0),
@@ -355,130 +376,25 @@ class PatientDetail extends StatelessWidget {
                     ],
                   )),
               Expanded(
-                  child: SizedBox(
-                width: 1250.0,
-                height: 380.0,
-                child: Card(
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8.0),
-                        child: const Text('دفعات مراجعه بیمار', style: TextStyle(color: Colors.blue, fontSize: 14.0, fontWeight: FontWeight.bold),),
-                      ),
-                      Container(
-                        width: 1000.0,
-                        padding: const EdgeInsets.all(8.0),
-                        child: Table(
-                          border: const TableBorder(
-                              horizontalInside: BorderSide(
-                                  color: Colors.grey,
-                                  style: BorderStyle.solid,
-                                  width: 0.5)),
-                          columnWidths: const {
-                            0: FixedColumnWidth(120),
-                            1: FixedColumnWidth(100),
-                            2: FixedColumnWidth(100),
-                            3: FixedColumnWidth(100),
-                            4: FixedColumnWidth(200),
-                            5: FixedColumnWidth(100),
-                            7: FixedColumnWidth(50),
-                            8: FixedColumnWidth(50),
-                            9: FixedColumnWidth(50),
-                          },
-                          children: const [
-                            // add your table rows here
-                            TableRow(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(5.0),
-                                  child: Text(
-                                    'سرویس',
-                                    style: TextStyle(
-                                        fontSize: 12.0, color: Colors.grey),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(5.0),
-                                  child: Text(
-                                    'تاریخ مراجعه',
-                                    style: TextStyle(
-                                        fontSize: 12.0, color: Colors.grey),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(5.0),
-                                  child: Text(
-                                    'فک / بیره',
-                                    style: TextStyle(
-                                        fontSize: 12.0, color: Colors.grey),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(5.0),
-                                  child: Text(
-                                    'نوعیت دندان',
-                                    style: TextStyle(
-                                        fontSize: 12.0, color: Colors.grey),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(5.0),
-                                  child: Text(
-                                    'توضیحات',
-                                    style: TextStyle(
-                                        fontSize: 12.0, color: Colors.grey),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(5.0),
-                                  child: Text(
-                                    'جلسه / نوبت',
-                                    style: TextStyle(
-                                        fontSize: 12.0, color: Colors.grey),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(5.0),
-                                  child: Text(
-                                    'داکتر',
-                                    style: TextStyle(
-                                        fontSize: 12.0, color: Colors.grey),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(5.0),
-                                  child: Text(
-                                    'ویرایش',
-                                    style: TextStyle(
-                                        fontSize: 12.0, color: Colors.grey),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(5.0),
-                                  child: Text(
-                                    'حذف',
-                                    style: TextStyle(
-                                        fontSize: 12.0, color: Colors.grey),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(5.0),
-                                  child: Text(
-                                    'عکس',
-                                    style: TextStyle(
-                                        fontSize: 12.0, color: Colors.grey),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            // more rows ...
-                          ],
+                child: SizedBox(
+                  width: 1250.0,
+                  height: 380.0,
+                  child: Card(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8.0),
+                          child: const Text(
+                            'دفعات مراجعه مریض',
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
-                      ),
-                      Container(
-                        width: 1000.0,
-                        padding: const EdgeInsets.all(8.0),
-                        child: SingleChildScrollView(
+                        Container(
+                          width: 1000.0,
+                          padding: const EdgeInsets.all(8.0),
                           child: Table(
                             border: const TableBorder(
                                 horizontalInside: BorderSide(
@@ -496,152 +412,613 @@ class PatientDetail extends StatelessWidget {
                               8: FixedColumnWidth(50),
                               9: FixedColumnWidth(50),
                             },
-                            children:  [
+                            children: const [
                               // add your table rows here
                               TableRow(
                                 children: [
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('پرکاری دندان'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('2023-03-03'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('بالا'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('سوم'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('در اثر سوراخی دندان از مواد زرگونیم...'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('1'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('حامد کریمی'),
+                                  Padding(
+                                    padding: EdgeInsets.all(5.0),
+                                    child: Text(
+                                      'سرویس',
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.grey),
+                                    ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.edit, color: Colors.blue, size: 20.0),),
+                                    padding: EdgeInsets.all(5.0),
+                                    child: Text(
+                                      'تاریخ مراجعه',
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.grey),
+                                    ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.delete, color: Colors.blue, size: 20.0),),
+                                    padding: EdgeInsets.all(5.0),
+                                    child: Text(
+                                      'فک / بیره',
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.grey),
+                                    ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.image, color: Colors.blue, size: 20.0),),
+                                    padding: EdgeInsets.all(5.0),
+                                    child: Text(
+                                      'نوعیت دندان',
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.grey),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(5.0),
+                                    child: Text(
+                                      'توضیحات',
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.grey),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(5.0),
+                                    child: Text(
+                                      'جلسه / نوبت',
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.grey),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(5.0),
+                                    child: Text(
+                                      'داکتر',
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.grey),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(5.0),
+                                    child: Text(
+                                      'ویرایش',
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.grey),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(5.0),
+                                    child: Text(
+                                      'حذف',
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.grey),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(5.0),
+                                    child: Text(
+                                      'عکس',
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.grey),
+                                    ),
                                   ),
                                 ],
                               ),
-                              TableRow(
-                                children: [
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('پرکاری دندان'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('2023-03-03'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('بالا'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('سوم'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('در اثر سوراخی دندان از مواد زرگونیم...'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('1'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('حامد کریمی'),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.edit, color: Colors.blue, size: 20.0),),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.delete, color: Colors.blue, size: 20.0),),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.image, color: Colors.blue, size: 20.0),),
-                                  ),
-                                ],
-                              ),
-                              TableRow(
-                                children: [
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('پرکاری دندان'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('2023-03-03'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('بالا'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('سوم'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('در اثر سوراخی دندان از مواد زرگونیم...'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('1'),
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text('حامد کریمی'),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.edit, color: Colors.blue, size: 20.0),),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.delete, color: Colors.blue, size: 20.0),),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: IconButton(onPressed: () {}, icon: const Icon(Icons.image, color: Colors.blue, size: 20.0),),
-                                  ),
-                                ],
-                              ),
+                              // more rows ...
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                        Container(
+                          width: 1000.0,
+                          padding: const EdgeInsets.all(8.0),
+                          child: SingleChildScrollView(
+                            child: Table(
+                              border: const TableBorder(
+                                  horizontalInside: BorderSide(
+                                      color: Colors.grey,
+                                      style: BorderStyle.solid,
+                                      width: 0.5)),
+                              columnWidths: const {
+                                0: FixedColumnWidth(120),
+                                1: FixedColumnWidth(100),
+                                2: FixedColumnWidth(100),
+                                3: FixedColumnWidth(100),
+                                4: FixedColumnWidth(200),
+                                5: FixedColumnWidth(100),
+                                7: FixedColumnWidth(50),
+                                8: FixedColumnWidth(50),
+                                9: FixedColumnWidth(50),
+                              },
+                              children: [
+                                // add your table rows here
+                                TableRow(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('پرکاری دندان'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('2023-03-03'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('بالا'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('سوم'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                          'در اثر سوراخی دندان از مواد زرگونیم...'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('1'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('حامد کریمی'),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.edit,
+                                            color: Colors.blue, size: 20.0),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.delete,
+                                            color: Colors.blue, size: 20.0),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.image,
+                                            color: Colors.blue, size: 20.0),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('پرکاری دندان'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('2023-03-03'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('بالا'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('سوم'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                          'در اثر سوراخی دندان از مواد زرگونیم...'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('1'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('حامد کریمی'),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.edit,
+                                            color: Colors.blue, size: 20.0),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.delete,
+                                            color: Colors.blue, size: 20.0),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.image,
+                                            color: Colors.blue, size: 20.0),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('پرکاری دندان'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('2023-03-03'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('بالا'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('سوم'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                          'در اثر سوراخی دندان از مواد زرگونیم...'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('1'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('حامد کریمی'),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.edit,
+                                            color: Colors.blue, size: 20.0),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.delete,
+                                            color: Colors.blue, size: 20.0),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.image,
+                                            color: Colors.blue, size: 20.0),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),),
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  // Displays an alert dialog to edit patient's details
+  onEditPatient(BuildContext context) {
+    String dropdownValue = 'مجرد';
+    var items = ['مجرد', 'متاهل'];
+
+    // ِDeclare variables for gender dropdown
+    String genderDropDown = 'مرد';
+    var genderItems = ['مرد', 'زن'];
+
+    // Blood group types
+    String bloodDropDown = 'نامشخص';
+    var bloodGroupItems = [
+      'نامشخص',
+      'A+',
+      'B+',
+      'AB+',
+      'O+',
+      'A-',
+      'B-',
+      'AB-',
+      'O-'
+    ];
+
+    // Declare a dropdown for ages
+    int ageDropDown = 1;
+
+    return showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: const Directionality(
+                textDirection: TextDirection.rtl,
+                child: Text('تغییر مشخصات مریض'),
+              ),
+              content: Directionality(
+                textDirection: TextDirection.rtl,
+                child: SizedBox(
+                  width: 500.0,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: const TextField(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نام',
+                              suffixIcon: Icon(Icons.person),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: const TextField(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'تخلص',
+                              suffixIcon: Icon(Icons.person),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'سن',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: ageDropDown,
+                                  items: getAges().map((int ageItems) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: ageItems,
+                                      child: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Text('$ageItems سال '),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (int? newValue) {
+                                    setState(() {
+                                      ageDropDown = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'جنیست',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: genderDropDown,
+                                  items: genderItems.map((String genderItems) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: genderItems,
+                                      child: Text(genderItems),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      genderDropDown = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'حالت مدنی',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: dropdownValue,
+                                  items: items.map((String items) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: items,
+                                      child: Text(items),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      dropdownValue = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'گروپ خون',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: bloodDropDown,
+                                  items: bloodGroupItems
+                                      .map((String bloodGroupItems) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: bloodGroupItems,
+                                      child: Text(bloodGroupItems),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      bloodDropDown = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextField(
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نمبر تماس',
+                              suffixIcon: Icon(Icons.phone),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextField(
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'آدرس',
+                              suffixIcon: Icon(Icons.location_on_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              actions: [
+                Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('لغو')),
+                        TextButton(
+                            onPressed: () {}, child: const Text('انجام')),
+                      ],
+                    ))
+              ],
+            ));
+  }
+
+  // Declare a method to add ages 1 - 100
+  List<int> getAges() {
+    // Declare variables to contain from 1 - 100 for ages
+    List<int> ages = [];
+    for (int a = 1; a <= 100; a++) {
+      ages.add(a);
+    }
+    return ages;
   }
 }
