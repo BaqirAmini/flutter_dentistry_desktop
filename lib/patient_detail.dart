@@ -571,10 +571,14 @@ class _PatientDetailState extends State<PatientDetail> {
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.delete,
-                                            color: Colors.blue, size: 20.0),
+                                      child: Builder(
+                                        builder: (context) => IconButton(
+                                          onPressed: () {
+                                            onDeleteAppointment(context);
+                                          },
+                                          icon: const Icon(Icons.delete,
+                                              color: Colors.blue, size: 20.0),
+                                        ),
                                       ),
                                     ),
                                     Padding(
@@ -1044,8 +1048,8 @@ class _PatientDetailState extends State<PatientDetail> {
       'پوش کردن دندان'
     ];
 
-  // Declare a variable for payment installment
-  String installments = 'تکمیل';
+    // Declare a variable for payment installment
+    String installments = 'تکمیل';
 
     int currentStep = 0;
     List<Step> stepList() => [
@@ -1137,95 +1141,95 @@ class _PatientDetailState extends State<PatientDetail> {
               child: Center(
                 child: SizedBox(
                     child: Center(
-                      child: SizedBox(
-                        width: 500.0,
-                        child: Column(
-                          children: [
-                            const Text(
-                                'لطفاً هزینه و اقساط را در خانه های ذیل انتخاب نمایید.'),
-                            Container(
-                              margin: const EdgeInsets.all(20.0),
-                              child: const TextField(
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'کل مصارف',
-                                  suffixIcon: Icon(Icons.money_rounded),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius:
+                  child: SizedBox(
+                    width: 500.0,
+                    child: Column(
+                      children: [
+                        const Text(
+                            'لطفاً هزینه و اقساط را در خانه های ذیل انتخاب نمایید.'),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: const TextField(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'کل مصارف',
+                              suffixIcon: Icon(Icons.money_rounded),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
-                                      borderSide: BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius:
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
-                                      borderSide: BorderSide(color: Colors.blue)),
-                                ),
-                              ),
+                                  borderSide: BorderSide(color: Colors.blue)),
                             ),
-                            Container(
-                              margin: const EdgeInsets.all(20.0),
-                              child: InputDecorator(
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'نوعیت پرداخت',
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                      borderSide: BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                      borderSide: BorderSide(color: Colors.blue)),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: Container(
-                                    height: 26.0,
-                                    child: DropdownButton(
-                                      isExpanded: true,
-                                      icon: const Icon(Icons.arrow_drop_down),
-                                      value: installments,
-                                      items:
-                                      onPayInstallment().map((String installmentItems) {
-                                        return DropdownMenuItem(
-                                          alignment: Alignment.centerRight,
-                                          value: installmentItems,
-                                          child: Directionality(
-                                            textDirection: TextDirection.rtl,
-                                            child: Text(installmentItems),
-                                          ),
-                                        );
-                                      }).toList(),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          installments = newValue!;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.all(20.0),
-                              child: const TextField(
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'مبلغ رسید',
-                                  suffixIcon: Icon(Icons.money_rounded),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                      borderSide: BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                      borderSide: BorderSide(color: Colors.blue)),
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    )),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نوعیت پرداخت',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: installments,
+                                  items: onPayInstallment()
+                                      .map((String installmentItems) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: installmentItems,
+                                      child: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Text(installmentItems),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      installments = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: const TextField(
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'مبلغ رسید',
+                              suffixIcon: Icon(Icons.money_rounded),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )),
               ),
             ),
           ),
@@ -1319,5 +1323,34 @@ class _PatientDetailState extends State<PatientDetail> {
   List<String> onPayInstallment() {
     List<String> installmentItems = ['تکمیل', 'دو قسط', 'سه قسط'];
     return installmentItems;
+  }
+
+// This method displays a dialog box while deleting an appointment record
+  onDeleteAppointment(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: const Directionality(
+                textDirection: TextDirection.rtl,
+                child: Text('حذف مراجعه مریض'),
+              ),
+              content: const Directionality(
+                textDirection: TextDirection.rtl,
+                child: Text('آیا میخواهید این ریکارد را حذف کنید؟'),
+              ),
+              actions: [
+                Row(
+                  children: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('لغو')),
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text('حذف'),
+                    ),
+                  ],
+                )
+              ],
+            ));
   }
 }
