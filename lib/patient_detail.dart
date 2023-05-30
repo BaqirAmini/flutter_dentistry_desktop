@@ -558,8 +558,75 @@ class _PatientDetailState extends State<PatientDetail> {
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
+                                      child: Builder(
+                                          builder: (BuildContext context) {
+                                        return IconButton(
+                                          onPressed: () {
+                                            onEditAppointment(context);
+                                          },
+                                          icon: const Icon(Icons.edit,
+                                              color: Colors.blue, size: 20.0),
+                                        );
+                                      }),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
                                       child: IconButton(
                                         onPressed: () {},
+                                        icon: const Icon(Icons.delete,
+                                            color: Colors.blue, size: 20.0),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: IconButton(
+                                        onPressed: () {},
+                                        icon: const Icon(Icons.image,
+                                            color: Colors.blue, size: 20.0),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('پرکاری دندان'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('2023-03-03'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('بالا'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('سوم'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text(
+                                          'در اثر سوراخی دندان از مواد زرگونیم...'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('1'),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Text('حامد کریمی'),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: IconButton(
+                                        onPressed: () {
+                                          Builder(
+                                            builder: (context) =>
+                                                onEditAppointment(context),
+                                          );
+                                        },
                                         icon: const Icon(Icons.edit,
                                             color: Colors.blue, size: 20.0),
                                       ),
@@ -616,64 +683,12 @@ class _PatientDetailState extends State<PatientDetail> {
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.edit,
-                                            color: Colors.blue, size: 20.0),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.delete,
-                                            color: Colors.blue, size: 20.0),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.image,
-                                            color: Colors.blue, size: 20.0),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                TableRow(
-                                  children: [
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text('پرکاری دندان'),
-                                    ),
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text('2023-03-03'),
-                                    ),
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text('بالا'),
-                                    ),
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text('سوم'),
-                                    ),
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                          'در اثر سوراخی دندان از مواد زرگونیم...'),
-                                    ),
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text('1'),
-                                    ),
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text('حامد کریمی'),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: IconButton(
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          Builder(
+                                            builder: (context) =>
+                                                onEditAppointment(context),
+                                          );
+                                        },
                                         icon: const Icon(Icons.edit,
                                             color: Colors.blue, size: 20.0),
                                       ),
@@ -1012,6 +1027,284 @@ class _PatientDetailState extends State<PatientDetail> {
             ));
   }
 
+  // Displays an alert dialog to edit appointments
+  onEditAppointment(BuildContext context) {
+    // Services types dropdown variables
+    String serviceDropDown = 'پرکاری دندان';
+    var serviceItems = [
+      'پرکاری دندان',
+      'سفید کردن دندان',
+      'جرم گیری دندان',
+      'ارتودانسی',
+      'جراحی ریشه دندان',
+      'جراحی لثه دندان',
+      'معاینه دهن',
+      'پروتیز دندان',
+      'کشیدن دندان',
+      'پوش کردن دندان'
+    ];
+
+  // Declare a variable for payment installment
+  String installments = 'تکمیل';
+
+    int currentStep = 0;
+    List<Step> stepList() => [
+          Step(
+            state: currentStep <= 0 ? StepState.editing : StepState.complete,
+            isActive: currentStep >= 0,
+            title: const Text('تغییر خدمات مورد نیاز مریض'),
+            content: SizedBox(
+              width: 100.0,
+              child: Center(
+                child: SizedBox(
+                  width: 500.0,
+                  child: Column(
+                    children: [
+                      const Text(
+                          'لطفا معلومات شخصی مریض را با دقت در خانه های ذیل وارد کنید.'),
+                      Container(
+                        margin: const EdgeInsets.all(20.0),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'نوعیت خدمات',
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.blue)),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: Container(
+                              height: 26.0,
+                              child: DropdownButton(
+                                isExpanded: true,
+                                icon: const Icon(Icons.arrow_drop_down),
+                                value: serviceDropDown,
+                                items: serviceItems.map((String serviceItems) {
+                                  return DropdownMenuItem(
+                                    value: serviceItems,
+                                    alignment: Alignment.centerRight,
+                                    child: Text(serviceItems),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    serviceDropDown = newValue!;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.all(20.0),
+                        child: TextField(
+                          maxLines: 5,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'توضیحات',
+                            suffixIcon: Icon(Icons.description_outlined),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.blue)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Step(
+            state: currentStep <= 1 ? StepState.editing : StepState.complete,
+            isActive: currentStep >= 1,
+            title: const Text('تغییر هزینه ها'),
+            content: SizedBox(
+              child: Center(
+                child: SizedBox(
+                    child: Center(
+                      child: SizedBox(
+                        width: 500.0,
+                        child: Column(
+                          children: [
+                            const Text(
+                                'لطفاً هزینه و اقساط را در خانه های ذیل انتخاب نمایید.'),
+                            Container(
+                              margin: const EdgeInsets.all(20.0),
+                              child: const TextField(
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'کل مصارف',
+                                  suffixIcon: Icon(Icons.money_rounded),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                      borderSide: BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                      borderSide: BorderSide(color: Colors.blue)),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.all(20.0),
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'نوعیت پرداخت',
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                      borderSide: BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                      borderSide: BorderSide(color: Colors.blue)),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: Container(
+                                    height: 26.0,
+                                    child: DropdownButton(
+                                      isExpanded: true,
+                                      icon: const Icon(Icons.arrow_drop_down),
+                                      value: installments,
+                                      items:
+                                      onPayInstallment().map((String installmentItems) {
+                                        return DropdownMenuItem(
+                                          alignment: Alignment.centerRight,
+                                          value: installmentItems,
+                                          child: Directionality(
+                                            textDirection: TextDirection.rtl,
+                                            child: Text(installmentItems),
+                                          ),
+                                        );
+                                      }).toList(),
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          installments = newValue!;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.all(20.0),
+                              child: const TextField(
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'مبلغ رسید',
+                                  suffixIcon: Icon(Icons.money_rounded),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                      borderSide: BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                      borderSide: BorderSide(color: Colors.blue)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )),
+              ),
+            ),
+          ),
+        ];
+
+    bool lastField = false;
+
+    return showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: const Directionality(
+                textDirection: TextDirection.rtl,
+                child: Text('تغییر مراجعات مریض'),
+              ),
+              content: SizedBox(
+                width: 600.0,
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Stepper(
+                    controlsBuilder:
+                        (BuildContext context, ControlsDetails controls) {
+                      return Row(
+                        children: <Widget>[
+                          ElevatedButton(
+                            onPressed: controls.onStepContinue,
+                            child: Text(lastField ? 'ثبت کردن' : 'ادامه'),
+                          ),
+                          TextButton(
+                            onPressed: controls.onStepCancel,
+                            child: const Text('بازگشت'),
+                          ),
+                        ],
+                      );
+                    },
+                    steps: stepList(),
+                    currentStep: currentStep,
+                    type: StepperType.horizontal,
+                    onStepCancel: () {
+                      setState(() {
+                        if (currentStep > 0) {
+                          currentStep--;
+                          lastField = false;
+                        }
+                      });
+                    },
+                    // currentStep: currentStep,
+                    onStepContinue: () {
+                      setState(() {
+                        if (currentStep < stepList().length - 1) {
+                          currentStep++;
+                          // This condition is to make label of last step differ from others.
+                          if (currentStep == 1) {
+                            lastField = true;
+                          } else {
+                            lastField = false;
+                          }
+                        }
+                      });
+                    },
+                  ),
+                ),
+              ),
+              actions: [
+                Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('بستن')),
+                        TextButton(
+                            onPressed: () {}, child: const Text('انجام')),
+                      ],
+                    ))
+              ],
+            ));
+  }
+
   // Declare a method to add ages 1 - 100
   List<int> getAges() {
     // Declare variables to contain from 1 - 100 for ages
@@ -1020,5 +1313,11 @@ class _PatientDetailState extends State<PatientDetail> {
       ages.add(a);
     }
     return ages;
+  }
+
+  //  اقساط پرداخت
+  List<String> onPayInstallment() {
+    List<String> installmentItems = ['تکمیل', 'دو قسط', 'سه قسط'];
+    return installmentItems;
   }
 }
