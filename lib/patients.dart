@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/new_patient.dart';
 import 'models/patient_data_model.dart';
+import 'dashboard.dart';
 
 void main() {
   return runApp(const Patient());
@@ -29,10 +31,15 @@ class _PatientState extends State<Patient> {
               message: 'رفتن به صفحه قبلی',
               child: IconButton(
                 icon: const BackButtonIcon(),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Dashboard()));
+                },
               ),
             ),
-            title: const Text('افزودن بیمار'),
+            title: const Text('افزودن مریض'),
           ),
           body: SizedBox(
             width: double.infinity,
@@ -80,7 +87,9 @@ class _PatientState extends State<Patient> {
                     Container(
                         margin: const EdgeInsets.only(right: 300.0),
                         child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => const NewPatient()));
+                            },
                             child: SizedBox(
                               height: 35.0,
                               width: 135.0,
@@ -88,7 +97,7 @@ class _PatientState extends State<Patient> {
                                 children: const [
                                   Icon(Icons.person_add_alt),
                                   Text('  '),
-                                  Text('افزودن بیمار جدید')
+                                  Text('افزودن مریض جدید')
                                 ],
                               ),
                             ))),
@@ -105,28 +114,33 @@ class _PatientState extends State<Patient> {
                           _sortAscending = ascending;
                         });
                       }),
-                   DataColumn(label: const Text('تخلص'),
-                       onSort: (columnIndex, ascending) {
-                         setState(() {
-                           _sortColumnIndex = columnIndex;
-                           _sortAscending = ascending;
-                         });
-                       }),
-                   DataColumn(label: const Text('سن'), onSort: (columnIndex, ascending) {
-                     setState(() {
-                       _sortColumnIndex = columnIndex;
-                       _sortAscending = ascending;
-                     });
-                   }),
-                   const DataColumn(label: Text('وظیفه')),
-                   DataColumn(label: const Text('خدمات'), onSort: (columnIndex, ascending) {
-                     setState(() {
-                       _sortColumnIndex = columnIndex;
-                       _sortAscending = ascending;
-                     });
-                   }),
-                   const DataColumn(label: Text('شرح')),
-                   const DataColumn(label: Text('حذف')),
+                  DataColumn(
+                      label: const Text('تخلص'),
+                      onSort: (columnIndex, ascending) {
+                        setState(() {
+                          _sortColumnIndex = columnIndex;
+                          _sortAscending = ascending;
+                        });
+                      }),
+                  DataColumn(
+                      label: const Text('سن'),
+                      onSort: (columnIndex, ascending) {
+                        setState(() {
+                          _sortColumnIndex = columnIndex;
+                          _sortAscending = ascending;
+                        });
+                      }),
+                  const DataColumn(label: Text('وظیفه')),
+                  DataColumn(
+                      label: const Text('خدمات'),
+                      onSort: (columnIndex, ascending) {
+                        setState(() {
+                          _sortColumnIndex = columnIndex;
+                          _sortAscending = ascending;
+                        });
+                      }),
+                  const DataColumn(label: Text('شرح')),
+                  const DataColumn(label: Text('حذف')),
                 ],
               ),
             ),

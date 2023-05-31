@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/dashboard.dart';
 
 void main() {
   runApp(const Login());
@@ -70,7 +71,9 @@ class _LoginState extends State<Login> {
                           SizedBox(
                             width: 300.0,
                             child:  ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const Dashboard()));
+                                },
                               style:  ElevatedButton.styleFrom(
                                 backgroundColor: Colors.lightBlue,
                               ),

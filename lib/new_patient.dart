@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/patients.dart';
 
 void main() {
   return runApp(const NewPatient());
@@ -861,7 +862,9 @@ class _NewPatientState extends State<NewPatient> {
               message: 'رفتن به صفحه قبلی',
               child: IconButton(
                 icon: const BackButtonIcon(),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const Patient()));
+                },
               ),
             ),
             title: const Text('افزودن مریض'),
