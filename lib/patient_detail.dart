@@ -583,10 +583,17 @@ class _PatientDetailState extends State<PatientDetail> {
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.all(8.0),
-                                      child: IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(Icons.image,
-                                            color: Colors.blue, size: 20.0),
+                                      child: Builder(
+                                        builder: (context) => IconButton(
+                                          onPressed: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => onShowImage(),
+                                            );
+                                          },
+                                          icon: const Icon(Icons.image,
+                                              color: Colors.blue, size: 20.0),
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -1352,5 +1359,21 @@ class _PatientDetailState extends State<PatientDetail> {
                 )
               ],
             ));
+  }
+
+//  This method displays an image
+  onShowImage() {
+    return Dialog(
+      child: Container(
+        width: 300.0,
+        height: 300.0,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/graphics/login_img2.png'),
+            fit: BoxFit.cover
+          ),
+        ),
+      ),
+    );
   }
 }
