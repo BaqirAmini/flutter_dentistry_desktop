@@ -48,60 +48,64 @@ class _PatientState extends State<Patient> {
                 sortAscending: _sortAscending,
                 sortColumnIndex: _sortColumnIndex,
                 source: tableRow,
-                header: Row(
-                  children: [
-                    const Flexible(
-                      flex: 1,
-                      child: Text('لست بیماران |'),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(right: 50.0),
-                      // height: 100,
-                      width: 300,
-                      child: TextField(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'جستجو...',
-                          suffixIcon: Icon(Icons.search),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
+                header: Expanded(
+                  child: Row(
+                    children: [
+                      const Flexible(
+                        child: Text('لست مریض ها |'),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(right: 50.0),
+                        // height: 100,
+                        width: 300,
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'جستجو...',
+                            suffixIcon: Icon(Icons.search),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.blue)),
+                          ),
+                          onChanged: (value) {
+                            setState(() {});
+                          },
                         ),
-                        onChanged: (value) {
-                          setState(() {});
-                        },
                       ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(right: 50.0),
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.print),
+                      Container(
+                        margin: const EdgeInsets.only(right: 50.0),
+                        child: IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.print),
+                        ),
                       ),
-                    ),
-                    Container(
-                        margin: const EdgeInsets.only(right: 300.0),
-                        child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => const NewPatient()));
-                            },
-                            child: SizedBox(
-                              height: 35.0,
-                              width: 135.0,
-                              child: Row(
-                                children: const [
-                                  Icon(Icons.person_add_alt),
-                                  Text('  '),
-                                  Text('افزودن مریض جدید')
-                                ],
-                              ),
-                            ))),
-                  ],
+                      Container(
+                          margin: const EdgeInsets.only(right: 350.0),
+                          child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const NewPatient()));
+                              },
+                              child: SizedBox(
+                                height: 35.0,
+                                child: Row(
+                                  children: const [
+                                    Icon(Icons.person_add_alt),
+                                    Text('  '),
+                                    Text('افزودن مریض جدید')
+                                  ],
+                                ),
+                              ))),
+                    ],
+                  ),
                 ),
                 onRowsPerPageChanged: (perPage) {},
                 rowsPerPage: 10,
