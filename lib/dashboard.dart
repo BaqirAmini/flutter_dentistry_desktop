@@ -44,11 +44,18 @@ class _DashboardState extends State<Dashboard> {
           appBar: AppBar(
             title: const Text(
               'کلینیک دندان درمان',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             leading: Builder(
               builder: (BuildContext context) {
-                return IconButton(onPressed: () { Scaffold.of(context).openDrawer(); },  tooltip: "باز کردن مینوی راست", icon: Icon(Icons.menu),);
+                return IconButton(
+                  onPressed: () {
+                    Scaffold.of(context).openDrawer();
+                  },
+                  tooltip: "باز کردن مینوی راست",
+                  icon: const Icon(Icons.menu),
+                );
               },
             ),
           ),
@@ -199,8 +206,7 @@ class _DashboardState extends State<Dashboard> {
                                 children: [
                                   CircleAvatar(
                                     backgroundColor: Colors.brown[400],
-                                    child: const Icon(
-                                        Icons.people_outline,
+                                    child: const Icon(Icons.people_outline,
                                         color: Colors.white),
                                   ),
                                   Container(
@@ -282,47 +288,28 @@ class _DashboardState extends State<Dashboard> {
                               child: Column(
                                 children: [
                                   SfCircularChart(
-                                      title:
-                                          ChartTitle(text: 'مصارف سه ماه اخیر'),
-                                      // Enable legend
-                                      legend: Legend(isVisible: true),
-                                      // Enable tooltip
-                                      tooltipBehavior:
-                                          TooltipBehavior(enable: true),
-                                      series: <PieSeries<_PieData, String>>[
-                                        PieSeries<_PieData, String>(
-                                            explode: true,
-                                            explodeIndex: 0,
-                                            dataSource: pieData,
-                                            xValueMapper: (_PieData data, _) =>
-                                                data.xData,
-                                            yValueMapper: (_PieData data, _) =>
-                                                data.yData,
-                                            dataLabelMapper:
-                                                (_PieData data, _) => data.text,
-                                            dataLabelSettings:
-                                                DataLabelSettings(
-                                                    isVisible: true)),
-                                      ])
-                                  /*Expanded(
-                                 child: Padding(
-                                   padding: const EdgeInsets.all(8.0),
-                                   //Initialize the spark charts widget
-                                   child: SfSparkLineChart.custom(
-                                     //Enable the trackball
-                                     trackball: SparkChartTrackball(
-                                         activationMode: SparkChartActivationMode.tap),
-                                     //Enable marker
-                                     marker: SparkChartMarker(
-                                         displayMode: SparkChartMarkerDisplayMode.all),
-                                     //Enable data label
-                                     labelDisplayMode: SparkChartLabelDisplayMode.all,
-                                     xValueMapper: (int index) => data[index].year,
-                                     yValueMapper: (int index) => data[index].sales,
-                                     dataCount: 5,
-                                   ),
-                                 ),
-                               )*/
+                                    title:
+                                        ChartTitle(text: 'مصارف سه ماه اخیر'),
+                                    // Enable legend
+                                    legend: Legend(isVisible: true),
+                                    // Enable tooltip
+                                    tooltipBehavior:
+                                        TooltipBehavior(enable: true),
+                                    series: <PieSeries<_PieData, String>>[
+                                      PieSeries<_PieData, String>(
+                                          explode: true,
+                                          explodeIndex: 0,
+                                          dataSource: pieData,
+                                          xValueMapper: (_PieData data, _) =>
+                                              data.xData,
+                                          yValueMapper: (_PieData data, _) =>
+                                              data.yData,
+                                          dataLabelMapper: (_PieData data, _) =>
+                                              data.text,
+                                          dataLabelSettings: const DataLabelSettings(
+                                              isVisible: true)),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),

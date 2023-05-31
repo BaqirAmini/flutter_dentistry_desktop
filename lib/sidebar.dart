@@ -22,7 +22,7 @@ class Sidebar extends StatelessWidget {
           ),
            ListTile(
             leading: const Icon(Icons.people_outline),
-            title: const Text('بیماران'),
+            title: const Text('مریض ها'),
             onTap: () { print('This menu clicked.'); },
           ),
            ListTile(
