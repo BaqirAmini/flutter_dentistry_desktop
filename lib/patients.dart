@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/new_patient.dart';
+import 'package:flutter_dentistry/patient_detail.dart';
 import 'models/patient_data_model.dart';
 import 'dashboard.dart';
 
@@ -48,64 +49,60 @@ class _PatientState extends State<Patient> {
                 sortAscending: _sortAscending,
                 sortColumnIndex: _sortColumnIndex,
                 source: tableRow,
-                header: Expanded(
-                  child: Row(
-                    children: [
-                      const Flexible(
-                        child: Text('لست مریض ها |'),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(right: 50.0),
-                        // height: 100,
-                        width: 300,
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'جستجو...',
-                            suffixIcon: Icon(Icons.search),
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                          ),
-                          onChanged: (value) {
-                            setState(() {});
-                          },
+                header: Row(
+                  children: [
+                    const Text('لست مریض ها |'),
+                    Container(
+                      margin: const EdgeInsets.only(right: 50.0),
+                      // height: 100,
+                      width: 300,
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'جستجو...',
+                          suffixIcon: Icon(Icons.search),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
                         ),
+                        onChanged: (value) {
+                          setState(() {});
+                        },
                       ),
-                      Container(
-                        margin: const EdgeInsets.only(right: 50.0),
-                        child: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.print),
-                        ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(right: 50.0),
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.print),
                       ),
-                      Container(
-                          margin: const EdgeInsets.only(right: 350.0),
-                          child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const NewPatient()));
-                              },
-                              child: SizedBox(
-                                height: 35.0,
-                                child: Row(
-                                  children: const [
-                                    Icon(Icons.person_add_alt),
-                                    Text('  '),
-                                    Text('افزودن مریض جدید')
-                                  ],
-                                ),
-                              ))),
-                    ],
-                  ),
+                    ),
+                    Container(
+                        margin: const EdgeInsets.only(right: 300.0),
+                        child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const NewPatient()));
+                            },
+                            child: SizedBox(
+                              height: 35.0,
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.person_add_alt),
+                                  Text('  '),
+                                  Text('افزودن مریض جدید')
+                                ],
+                              ),
+                            ))),
+                  ],
                 ),
                 onRowsPerPageChanged: (perPage) {},
                 rowsPerPage: 10,
@@ -164,11 +161,19 @@ class TableRow extends DataTableSource {
       const DataCell(Text("25")),
       const DataCell(Text("دکاندار")),
       const DataCell(Text("پرکاری دندان")),
-      DataCell(IconButton(
-          onPressed: () {
-            print('Detail...');
-          },
-          icon: const Icon(Icons.list))),
+      DataCell(
+        Builder(builder: (BuildContext context) {
+          return IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const PatientDetail()));
+            },
+            icon: const Icon(Icons.list),
+          );
+        }),
+      ),
       DataCell(Builder(
         builder: (context) => IconButton(
             onPressed: () {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'patients.dart' as patient_ist;
 
 void main() {
   return runApp(const PatientDetail());
@@ -27,7 +28,9 @@ class _PatientDetailState extends State<PatientDetail> {
               message: 'رفتن به صفحه قبلی',
               child: IconButton(
                 icon: const BackButtonIcon(),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const patient_ist.Patient()));
+                },
               ),
             ),
             title: const Text('جزییات مریض'),
@@ -412,11 +415,11 @@ class _PatientDetailState extends State<PatientDetail> {
                               8: FixedColumnWidth(50),
                               9: FixedColumnWidth(50),
                             },
-                            children: const [
+                            children:  [
                               // add your table rows here
                               TableRow(
                                 children: [
-                                  Padding(
+                                  const Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'سرویس',
@@ -424,7 +427,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  Padding(
+                                  const Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'تاریخ مراجعه',
@@ -432,7 +435,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  Padding(
+                                  const Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'فک / بیره',
@@ -440,7 +443,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  Padding(
+                                  const Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'نوعیت دندان',
@@ -448,7 +451,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  Padding(
+                                  const Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'توضیحات',
@@ -456,7 +459,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  Padding(
+                                  const Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'جلسه / نوبت',
@@ -464,7 +467,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  Padding(
+                                  const Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'داکتر',
@@ -472,7 +475,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  Padding(
+                                  const Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'ویرایش',
@@ -480,7 +483,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  Padding(
+                                  const Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'حذف',
@@ -488,7 +491,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  Padding(
+                                  const Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'عکس',
@@ -588,7 +591,8 @@ class _PatientDetailState extends State<PatientDetail> {
                                           onPressed: () {
                                             showDialog(
                                               context: context,
-                                              builder: (context) => onShowImage(),
+                                              builder: (context) =>
+                                                  onShowImage(),
                                             );
                                           },
                                           icon: const Icon(Icons.image,
@@ -1369,9 +1373,8 @@ class _PatientDetailState extends State<PatientDetail> {
         height: 300.0,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/graphics/login_img2.png'),
-            fit: BoxFit.cover
-          ),
+              image: AssetImage('assets/graphics/login_img2.png'),
+              fit: BoxFit.cover),
         ),
       ),
     );
