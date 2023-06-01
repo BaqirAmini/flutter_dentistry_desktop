@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/dashboard.dart';
 import 'patients.dart' as patient_ist;
 
 void main() {
@@ -50,7 +51,9 @@ class _PatientDetailState extends State<PatientDetail> {
                 message: 'رفتن به داشبورد',
                 child: IconButton(
                   icon: const Icon(Icons.home),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const Dashboard()));
+                  },
                 ),
               ),
             ],
