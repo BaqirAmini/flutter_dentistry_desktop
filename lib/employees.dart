@@ -34,20 +34,35 @@ class MyDataTable extends StatefulWidget {
 }
 
 class _MyDataTableState extends State<MyDataTable> {
+  int _sortColumnIndex = 0;
+  bool _sortAscending = true;
+
   // The original data source
   final List<MyData> _data = [
-    MyData('احمد', 'کریمی', 'داکتر', const Icon(Icons.list), const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('سحر', 'قریشی', 'نرس', const Icon(Icons.list), const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('میرویس', 'فاتح', 'کارمند مالی', const Icon(Icons.list), const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('فیض', 'فهیمی', 'کمپوتر کار', const Icon(Icons.list), const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('بهمن', 'فهیمی', 'کمپوتر کار', const Icon(Icons.list), const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('حامد', 'حکیمی', 'نرس', const Icon(Icons.list), const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('مریم', 'رضایی', 'نرس', const Icon(Icons.list), const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('بصیر', 'عسکری', 'داکتر', const Icon(Icons.list), const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('حسین', 'احسانی', 'کارمند لابراتوار', const Icon(Icons.list), const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('مراد', 'بیگ', 'کارمند لابراتوار', const Icon(Icons.list), const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('Ali', 'Bieg', 'Financial', const Icon(Icons.list), const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('Reza', 'Rezaie', 'Services Provider', const Icon(Icons.list), const Icon(Icons.edit), const Icon(Icons.delete)),
+    MyData('احمد', 'کریمی', 'داکتر', const Icon(Icons.list),
+        const Icon(Icons.edit), const Icon(Icons.delete)),
+    MyData('سحر', 'قریشی', 'نرس', const Icon(Icons.list),
+        const Icon(Icons.edit), const Icon(Icons.delete)),
+    MyData('میرویس', 'فاتح', 'کارمند مالی', const Icon(Icons.list),
+        const Icon(Icons.edit), const Icon(Icons.delete)),
+    MyData('فیض', 'فهیمی', 'کمپوتر کار', const Icon(Icons.list),
+        const Icon(Icons.edit), const Icon(Icons.delete)),
+    MyData('بهمن', 'فهیمی', 'کمپوتر کار', const Icon(Icons.list),
+        const Icon(Icons.edit), const Icon(Icons.delete)),
+    MyData('حامد', 'حکیمی', 'نرس', const Icon(Icons.list),
+        const Icon(Icons.edit), const Icon(Icons.delete)),
+    MyData('مریم', 'رضایی', 'نرس', const Icon(Icons.list),
+        const Icon(Icons.edit), const Icon(Icons.delete)),
+    MyData('بصیر', 'عسکری', 'داکتر', const Icon(Icons.list),
+        const Icon(Icons.edit), const Icon(Icons.delete)),
+    MyData('حسین', 'احسانی', 'کارمند لابراتوار', const Icon(Icons.list),
+        const Icon(Icons.edit), const Icon(Icons.delete)),
+    MyData('مراد', 'بیگ', 'کارمند لابراتوار', const Icon(Icons.list),
+        const Icon(Icons.edit), const Icon(Icons.delete)),
+    MyData('Ali', 'Bieg', 'Financial', const Icon(Icons.list),
+        const Icon(Icons.edit), const Icon(Icons.delete)),
+    MyData('Reza', 'Rezaie', 'Services Provider', const Icon(Icons.list),
+        const Icon(Icons.edit), const Icon(Icons.delete)),
   ];
 
 // The filtered data source
@@ -119,14 +134,64 @@ class _MyDataTableState extends State<MyDataTable> {
           ),
         ),
         PaginatedDataTable(
-          header: const Text("همه کارمندان"),
-          columns: const [
-            DataColumn(label: Text("اسم")),
-            DataColumn(label: Text("تخلص")),
-            DataColumn(label: Text("مقام")),
-            DataColumn(label: Text("شرح")),
-            DataColumn(label: Text("تغییر")),
-            DataColumn(label: Text("حذف")),
+          sortAscending: _sortAscending,
+          sortColumnIndex: _sortColumnIndex,
+          header: const Text("همه کارمندان |"),
+          columns: [
+            DataColumn(
+              label: const Text(
+                "اسم",
+                style:
+                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              ),
+              onSort: (columnIndex, ascending) {
+                setState(() {
+                  _sortColumnIndex = columnIndex;
+                  _sortAscending = ascending;
+                  _data.sort((a, b) => a.firstName.compareTo(b.firstName));
+                });
+              },
+            ),
+            DataColumn(
+              label: const Text(
+                "تخلص",
+                style:
+                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              ),
+              onSort: (columnIndex, ascending) {
+                setState(() {
+                  _sortColumnIndex = columnIndex;
+                  _sortAscending = ascending;
+                  _data.sort(((a, b) => a.lastName.compareTo(b.lastName)));
+                });
+              },
+            ),
+            DataColumn(
+              label: const Text(
+                "مقام",
+                style:
+                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              ),
+              onSort: (columnIndex, ascending) {
+                setState(() {
+                  _sortColumnIndex = columnIndex;
+                  _sortAscending = ascending;
+                  _data.sort(((a, b) => a.position.compareTo(b.position)));
+                });
+              },
+            ),
+            const DataColumn(
+                label: Text("شرح",
+                    style: TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.bold))),
+            const DataColumn(
+                label: Text("تغییر",
+                    style: TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.bold))),
+            const DataColumn(
+                label: Text("حذف",
+                    style: TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.bold))),
           ],
           source: MyDataSource(_filteredData),
           rowsPerPage: _filteredData.length < 5 ? _filteredData.length : 5,
@@ -137,9 +202,19 @@ class _MyDataTableState extends State<MyDataTable> {
 }
 
 class MyDataSource extends DataTableSource {
-  final List<MyData> data;
+   List<MyData> data;
 
   MyDataSource(this.data);
+
+  void sort(Comparator<MyData> compare, bool ascending)
+  {
+    data.sort(compare);
+    if (!ascending)
+    {
+      data = data.reversed.toList();
+    }
+    notifyListeners();
+  }
 
   @override
   DataRow getRow(int index) {
@@ -147,9 +222,28 @@ class MyDataSource extends DataTableSource {
       DataCell(Text(data[index].firstName)),
       DataCell(Text(data[index].lastName)),
       DataCell(Text(data[index].position)),
-      DataCell(IconButton(icon: data[index].employeeDetail, onPressed: (() { print('Details clicked.'); }),)),
-      DataCell(IconButton(icon: data[index].editEmployee, onPressed: (() { print('Edit clicked.'); }),)),
-      DataCell(IconButton(icon: data[index].deleteEmployee, onPressed: (() {}),)),
+      DataCell(IconButton(
+        icon: data[index].employeeDetail,
+        onPressed: (() {
+          print('Details clicked.');
+        }),
+        color: Colors.blue,
+        iconSize: 20.0,
+      )),
+      DataCell(IconButton(
+        icon: data[index].editEmployee,
+        onPressed: (() {
+          print('Edit clicked.');
+        }),
+        color: Colors.blue,
+        iconSize: 20.0,
+      )),
+      DataCell(IconButton(
+        icon: data[index].deleteEmployee,
+        onPressed: (() {}),
+        color: Colors.blue,
+        iconSize: 20.0,
+      )),
     ]);
   }
 
@@ -171,5 +265,6 @@ class MyData {
   final Icon editEmployee;
   final Icon deleteEmployee;
 
-  MyData(this.firstName, this.lastName, this.position, this.employeeDetail, this.editEmployee, this.deleteEmployee);
+  MyData(this.firstName, this.lastName, this.position, this.employeeDetail,
+      this.editEmployee, this.deleteEmployee);
 }
