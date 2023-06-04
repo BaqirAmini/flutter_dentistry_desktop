@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  return runApp(const Employee());
+  return runApp(const Staff());
 }
 
-class Employee extends StatelessWidget {
-  const Employee({super.key});
+class Staff extends StatelessWidget {
+  const Staff({super.key});
 
   @override
   Widget build(BuildContext context) {
