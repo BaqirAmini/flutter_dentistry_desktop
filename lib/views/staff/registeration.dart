@@ -31,6 +31,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
     return SingleChildScrollView(
       child: Center(
         child: Form(
+          key: _formKey,
           child: SizedBox(
             width: 500.0,
             child: Column(
@@ -206,3 +207,6 @@ class _NewStaffFormState extends State<NewStaffForm> {
     );
   }
 }
+
+
+

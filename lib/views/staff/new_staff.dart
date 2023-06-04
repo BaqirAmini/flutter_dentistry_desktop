@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/views/staff/staff.dart';
-import 'views/staff/registeration.dart';
+import 'registeration.dart';
 
 void main() {
   runApp(const NewStaff());
@@ -35,4 +35,3 @@ class NewStaff extends StatelessWidget {
     );
   }
 }
-

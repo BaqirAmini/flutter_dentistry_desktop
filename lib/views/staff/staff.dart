@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/views/staff/new_staff.dart';
 
 void main() {
   return runApp(const Staff());
@@ -127,7 +128,9 @@ class _MyDataTableState extends State<MyDataTable> {
                 icon: const Icon(Icons.print),
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const NewStaff()));
+                },
                 child: const Text('افزودن کارمند جدید'),
               ),
             ],
