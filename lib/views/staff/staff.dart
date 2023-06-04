@@ -129,7 +129,10 @@ class _MyDataTableState extends State<MyDataTable> {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const NewStaff()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const NewStaff()));
                 },
                 child: const Text('افزودن کارمند جدید'),
               ),
@@ -151,7 +154,11 @@ class _MyDataTableState extends State<MyDataTable> {
                 setState(() {
                   _sortColumnIndex = columnIndex;
                   _sortAscending = ascending;
-                  _data.sort((a, b) => a.firstName.compareTo(b.firstName));
+                  _filteredData
+                      .sort((a, b) => a.firstName.compareTo(b.firstName));
+                  if (!ascending) {
+                    _filteredData = _filteredData.reversed.toList();
+                  }
                 });
               },
             ),
@@ -165,7 +172,10 @@ class _MyDataTableState extends State<MyDataTable> {
                 setState(() {
                   _sortColumnIndex = columnIndex;
                   _sortAscending = ascending;
-                  _data.sort(((a, b) => a.lastName.compareTo(b.lastName)));
+                  _filteredData.sort(((a, b) => a.lastName.compareTo(b.lastName)));
+                  if (!ascending) {
+                    _filteredData = _filteredData.reversed.toList();
+                  }
                 });
               },
             ),
@@ -179,7 +189,10 @@ class _MyDataTableState extends State<MyDataTable> {
                 setState(() {
                   _sortColumnIndex = columnIndex;
                   _sortAscending = ascending;
-                  _data.sort(((a, b) => a.position.compareTo(b.position)));
+                  _filteredData.sort(((a, b) => a.position.compareTo(b.position)));
+                  if (!ascending) {
+                    _filteredData = _filteredData.reversed.toList();
+                  }
                 });
               },
             ),
@@ -205,15 +218,13 @@ class _MyDataTableState extends State<MyDataTable> {
 }
 
 class MyDataSource extends DataTableSource {
-   List<MyData> data;
+  List<MyData> data;
 
   MyDataSource(this.data);
 
-  void sort(Comparator<MyData> compare, bool ascending)
-  {
+  void sort(Comparator<MyData> compare, bool ascending) {
     data.sort(compare);
-    if (!ascending)
-    {
+    if (!ascending) {
       data = data.reversed.toList();
     }
     notifyListeners();
