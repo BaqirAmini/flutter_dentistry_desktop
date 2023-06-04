@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dentistry/staff.dart';
+import 'package:flutter_dentistry/views/staff/staff.dart';
 import 'views/staff/registeration.dart';
 
 void main() {
