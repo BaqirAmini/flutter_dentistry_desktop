@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/views/staff/new_staff.dart';
 
 void main() {
@@ -172,7 +173,8 @@ class _MyDataTableState extends State<MyDataTable> {
                 setState(() {
                   _sortColumnIndex = columnIndex;
                   _sortAscending = ascending;
-                  _filteredData.sort(((a, b) => a.lastName.compareTo(b.lastName)));
+                  _filteredData
+                      .sort(((a, b) => a.lastName.compareTo(b.lastName)));
                   if (!ascending) {
                     _filteredData = _filteredData.reversed.toList();
                   }
@@ -189,7 +191,8 @@ class _MyDataTableState extends State<MyDataTable> {
                 setState(() {
                   _sortColumnIndex = columnIndex;
                   _sortAscending = ascending;
-                  _filteredData.sort(((a, b) => a.position.compareTo(b.position)));
+                  _filteredData
+                      .sort(((a, b) => a.position.compareTo(b.position)));
                   if (!ascending) {
                     _filteredData = _filteredData.reversed.toList();
                   }
@@ -244,20 +247,32 @@ class MyDataSource extends DataTableSource {
         color: Colors.blue,
         iconSize: 20.0,
       )),
-      DataCell(IconButton(
-        icon: data[index].editEmployee,
-        onPressed: (() {
-          print('Edit clicked.');
+      DataCell(
+        Builder(builder: (BuildContext context) {
+          return IconButton(
+            icon: data[index].editEmployee,
+            onPressed: (() {
+              onEditStaff(context);
+            }),
+            color: Colors.blue,
+            iconSize: 20.0,
+          );
         }),
-        color: Colors.blue,
-        iconSize: 20.0,
-      )),
-      DataCell(IconButton(
-        icon: data[index].deleteEmployee,
-        onPressed: (() {}),
-        color: Colors.blue,
-        iconSize: 20.0,
-      )),
+      ),
+      DataCell(
+        Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: data[index].deleteEmployee,
+              onPressed: (() {
+                onDeleteStaff(context);
+              }),
+              color: Colors.blue,
+              iconSize: 20.0,
+            );
+          },
+        ),
+      ),
     ]);
   }
 
@@ -269,6 +284,266 @@ class MyDataSource extends DataTableSource {
 
   @override
   int get selectedRowCount => 0;
+}
+
+// This is to display an alert dialog to delete a patient
+onDeleteStaff(BuildContext context) {
+  return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+            title: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text('حذف کارمند'),
+            ),
+            content: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text('آیا میخواهید این کارمند را حذف کنید؟'),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('لغو')),
+              TextButton(onPressed: () {}, child: const Text('حذف')),
+            ],
+          ));
+}
+
+// This dialog edits a staff
+onEditStaff(BuildContext context) {
+  // position types dropdown variables
+  String positionDropDown = 'داکتر دندان';
+  var positionItems = [
+    'داکتر دندان',
+    'نرس',
+    'مدیر سیستم',
+  ];
+// The global for the form
+  final formKey = GlobalKey<FormState>();
+// The text editing controllers for the TextFormFields
+  final nameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final salaryController = TextEditingController();
+  final tazkiraController = TextEditingController();
+  final addressController = TextEditingController();
+
+  return showDialog(
+    context: context,
+    builder: ((context) {
+      return StatefulBuilder(
+        builder: ((context, setState) {
+          return AlertDialog(
+            title: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text('تغییر مشخصات کارمند  ', style: TextStyle(color: Colors.blue),),
+            ),
+            content: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Form(
+                key: formKey,
+                child: SizedBox(
+                  width: 500.0,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 20.0),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: nameController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نام',
+                              suffixIcon: Icon(Icons.person),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: lastNameController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'تخلص',
+                              suffixIcon: Icon(Icons.person),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'عنوان وظیفه',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: positionDropDown,
+                                  items:
+                                      positionItems.map((String positionItems) {
+                                    return DropdownMenuItem(
+                                      value: positionItems,
+                                      alignment: Alignment.centerRight,
+                                      child: Text(positionItems),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      positionDropDown = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: phoneController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نمبر تماس',
+                              suffixIcon: Icon(Icons.phone),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: salaryController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9.]'))
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'مقدار معاش',
+                              suffixIcon: Icon(Icons.money),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: tazkiraController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9.]'))
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نمبر تذکره',
+                              suffixIcon: Icon(Icons.perm_identity),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: addressController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'آدرس',
+                              suffixIcon: Icon(Icons.location_on_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('لغو')),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: const Text('تغییر'),
+                      ),
+                    ],
+                  ))
+            ],
+          );
+        }),
+      );
+    }),
+  );
 }
 
 class MyData {
