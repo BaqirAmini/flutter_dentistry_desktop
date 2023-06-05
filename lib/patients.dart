@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/new_patient.dart';
 import 'package:flutter_dentistry/patient_detail.dart';
-import 'package:flutter_dentistry/views/staff/new_staff.dart';
 import 'dashboard.dart';
 
 void main() {
@@ -165,7 +165,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const NewStaff()));
+                          builder: (context) => const NewPatient()));
                 },
                 child: const Text('افزودن مریض جدید'),
               ),
