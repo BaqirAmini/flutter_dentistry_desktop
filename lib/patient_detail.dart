@@ -1035,7 +1035,7 @@ class _PatientDetailState extends State<PatientDetail> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                            onPressed: () => Navigator.pop(context),
+                            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                             child: const Text('لغو')),
                         TextButton(
                             onPressed: () {}, child: const Text('انجام')),
@@ -1313,7 +1313,7 @@ class _PatientDetailState extends State<PatientDetail> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                            onPressed: () => Navigator.pop(context),
+                            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                             child: const Text('بستن')),
                         TextButton(
                             onPressed: () {}, child: const Text('انجام')),
@@ -1356,7 +1356,7 @@ class _PatientDetailState extends State<PatientDetail> {
                 Row(
                   children: [
                     TextButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                         child: const Text('لغو')),
                     TextButton(
                       onPressed: () {},
