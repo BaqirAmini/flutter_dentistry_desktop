@@ -8,7 +8,8 @@
             "name": "flutter_dentistry",
             "request": "launch",
             "type": "dart",
-            "program": "${workspaceFolder}/lib/views/staff/staff.dart"
+            // "program": "${workspaceFolder}/lib/views/staff/staff.dart",
+            "program": "${workspaceFolder}/lib/services.dart",
         },
         {
             "name": "flutter_dentistry (profile mode)",
