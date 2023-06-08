@@ -41,30 +41,102 @@ class _MyDataTableState extends State<MyDataTable> {
 
   // The original data source
   final List<MyData> _data = [
-    MyData('احمد', 'کریمی', 'داکتر', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('سحر', 'قریشی', 'نرس', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('میرویس', 'فاتح', 'کارمند مالی', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('فیض', 'فهیمی', 'کمپوتر کار', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('بهمن', 'فهیمی', 'کمپوتر کار', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('حامد', 'حکیمی', 'نرس', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('مریم', 'رضایی', 'نرس', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('بصیر', 'عسکری', 'داکتر', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('حسین', 'احسانی', 'کارمند لابراتوار', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('مراد', 'بیگ', 'کارمند لابراتوار', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('Ali', 'Bieg', 'Financial', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('Reza', 'Rezaie', 'Services Provider', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
+    MyData(
+        const AssetImage('assets/graphics/patient.png'),
+        'احمد',
+        'کریمی',
+        'داکتر',
+        const Icon(Icons.list),
+        const Icon(Icons.edit),
+        const Icon(Icons.delete)),
+    MyData(
+        const AssetImage('assets/graphics/patient.png'),
+        'سحر',
+        'قریشی',
+        'نرس',
+        const Icon(Icons.list),
+        const Icon(Icons.edit),
+        const Icon(Icons.delete)),
+    MyData(
+        const AssetImage('assets/graphics/patient.png'),
+        'میرویس',
+        'فاتح',
+        'کارمند مالی',
+        const Icon(Icons.list),
+        const Icon(Icons.edit),
+        const Icon(Icons.delete)),
+    MyData(
+        const AssetImage('assets/graphics/patient.png'),
+        'فیض',
+        'فهیمی',
+        'کمپوتر کار',
+        const Icon(Icons.list),
+        const Icon(Icons.edit),
+        const Icon(Icons.delete)),
+    MyData(
+        const AssetImage('assets/graphics/patient.png'),
+        'بهمن',
+        'فهیمی',
+        'کمپوتر کار',
+        const Icon(Icons.list),
+        const Icon(Icons.edit),
+        const Icon(Icons.delete)),
+    MyData(
+        const AssetImage('assets/graphics/patient.png'),
+        'حامد',
+        'حکیمی',
+        'نرس',
+        const Icon(Icons.list),
+        const Icon(Icons.edit),
+        const Icon(Icons.delete)),
+    MyData(
+        const AssetImage('assets/graphics/patient.png'),
+        'مریم',
+        'رضایی',
+        'نرس',
+        const Icon(Icons.list),
+        const Icon(Icons.edit),
+        const Icon(Icons.delete)),
+    MyData(
+        const AssetImage('assets/graphics/patient.png'),
+        'بصیر',
+        'عسکری',
+        'داکتر',
+        const Icon(Icons.list),
+        const Icon(Icons.edit),
+        const Icon(Icons.delete)),
+    MyData(
+        const AssetImage('assets/graphics/patient.png'),
+        'حسین',
+        'احسانی',
+        'کارمند لابراتوار',
+        const Icon(Icons.list),
+        const Icon(Icons.edit),
+        const Icon(Icons.delete)),
+    MyData(
+        const AssetImage('assets/graphics/patient.png'),
+        'مراد',
+        'بیگ',
+        'کارمند لابراتوار',
+        const Icon(Icons.list),
+        const Icon(Icons.edit),
+        const Icon(Icons.delete)),
+    MyData(
+        const AssetImage('assets/graphics/patient.png'),
+        'Ali',
+        'Bieg',
+        'Financial',
+        const Icon(Icons.list),
+        const Icon(Icons.edit),
+        const Icon(Icons.delete)),
+    MyData(
+        const AssetImage('assets/graphics/patient.png'),
+        'Reza',
+        'Rezaie',
+        'Services Provider',
+        const Icon(Icons.list),
+        const Icon(Icons.edit),
+        const Icon(Icons.delete)),
   ];
 
 // The filtered data source
@@ -145,6 +217,13 @@ class _MyDataTableState extends State<MyDataTable> {
           sortColumnIndex: _sortColumnIndex,
           header: const Text("همه کارمندان |"),
           columns: [
+            const DataColumn(
+              label: Text(
+                "عکس",
+                style:
+                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              ),
+            ),
             DataColumn(
               label: const Text(
                 "اسم",
@@ -200,9 +279,12 @@ class _MyDataTableState extends State<MyDataTable> {
               },
             ),
             const DataColumn(
-                label: Text("شرح",
-                    style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold))),
+              label: Text(
+                "شرح",
+                style:
+                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              ),
+            ),
             const DataColumn(
                 label: Text("تغییر",
                     style: TextStyle(
@@ -236,6 +318,9 @@ class MyDataSource extends DataTableSource {
   @override
   DataRow getRow(int index) {
     return DataRow(cells: [
+      const DataCell(
+        CircleAvatar(backgroundImage: AssetImage('assets/graphics/patient.png'),),
+      ),
       DataCell(Text(data[index].firstName)),
       DataCell(Text(data[index].lastName)),
       DataCell(Text(data[index].position)),
@@ -335,7 +420,10 @@ onEditStaff(BuildContext context) {
           return AlertDialog(
             title: const Directionality(
               textDirection: TextDirection.rtl,
-              child: Text('تغییر مشخصات کارمند  ', style: TextStyle(color: Colors.blue),),
+              child: Text(
+                'تغییر مشخصات کارمند  ',
+                style: TextStyle(color: Colors.blue),
+              ),
             ),
             content: Directionality(
               textDirection: TextDirection.rtl,
@@ -547,6 +635,7 @@ onEditStaff(BuildContext context) {
 }
 
 class MyData {
+  final AssetImage photo;
   final String firstName;
   final String lastName;
   final String position;
@@ -554,6 +643,6 @@ class MyData {
   final Icon editEmployee;
   final Icon deleteEmployee;
 
-  MyData(this.firstName, this.lastName, this.position, this.employeeDetail,
-      this.editEmployee, this.deleteEmployee);
+  MyData(this.photo, this.firstName, this.lastName, this.position,
+      this.employeeDetail, this.editEmployee, this.deleteEmployee);
 }
