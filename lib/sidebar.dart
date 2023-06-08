@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'views/staff/staff.dart';
 import 'login.dart';
-import 'package:flutter_dentistry/patients.dart';
+import 'patients.dart';
 
 class Sidebar extends StatelessWidget {
   const Sidebar({super.key});
@@ -34,9 +35,10 @@ class Sidebar extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.people),
-            title: const Text('داکتران'),
+            title: const Text('کارمندان'),
             onTap: () {
-              print('This menu clicked.');
+               Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const Staff()));
             },
           ),
           ListTile(
@@ -49,13 +51,6 @@ class Sidebar extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.more_time),
             title: const Text('مراجعه و ملاقات'),
-            onTap: () {
-              print('This menu clicked.');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.currency_exchange),
-            title: const Text('پرداخت فیس'),
             onTap: () {
               print('This menu clicked.');
             },
