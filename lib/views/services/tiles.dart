@@ -15,164 +15,364 @@ class ServicesTile extends StatelessWidget {
             mainAxisSpacing: 10,
             crossAxisCount: 5,
             children: <Widget>[
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    print('First tile clicked.');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    color: Colors.grey[200],
-                    child: onSetTileContent(
-                      Icons.light_mode,
-                      'معاینه دهن',
+              Card(
+                child: Stack(
+                  children: [
+                    Center(
+                      child:
+                          onSetTileContent(Icons.light_mode, 'معاینه دهن', 1000),
                     ),
-                  ),
+                    Positioned(
+                      top: 8.0,
+                      left: 8.0,
+                      child: PopupMenuButton(
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry>[
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.list),
+                                    title: Text('جزییات'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.edit),
+                                    title: Text('تغییر دادن'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.delete),
+                                    title: Text('حذف کردن'),
+                                  ),
+                                ),
+                              ]),
+                    )
+                  ],
                 ),
               ),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    print('Second tile clicked.');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    color: Colors.grey[200],
-                    child: onSetTileContent(
-                      Icons.light_mode,
-                      'پر کاری دندان',
+              Card(
+                child: Stack(
+                  children: [
+                    Center(
+                      child:
+                          onSetTileContent(Icons.light_mode, 'معاینه دهن', 1000),
                     ),
-                  ),
+                    Positioned(
+                      top: 8.0,
+                      left: 8.0,
+                      child: PopupMenuButton(
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry>[
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.list),
+                                    title: Text('جزییات'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.edit),
+                                    title: Text('تغییر دادن'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.delete),
+                                    title: Text('حذف کردن'),
+                                  ),
+                                ),
+                              ]),
+                    )
+                  ],
                 ),
               ),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    print('Third tile clicked.');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    color: Colors.grey[200],
-                    child: onSetTileContent(
-                      Icons.light_mode,
-                      'جرم گیری دندان',
+              Card(
+                child: Stack(
+                  children: [
+                    Center(
+                      child:
+                          onSetTileContent(Icons.light_mode, 'معاینه دهن', 1000),
                     ),
-                  ),
+                    Positioned(
+                      top: 8.0,
+                      left: 8.0,
+                      child: PopupMenuButton(
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry>[
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.list),
+                                    title: Text('جزییات'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.edit),
+                                    title: Text('تغییر دادن'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.delete),
+                                    title: Text('حذف کردن'),
+                                  ),
+                                ),
+                              ]),
+                    )
+                  ],
                 ),
               ),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    print('Fourth tile clicked.');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    color: Colors.grey[200],
-                    child: onSetTileContent(
-                      Icons.light_mode,
-                      'جراحی لثه دندان',
+              Card(
+                child: Stack(
+                  children: [
+                    Center(
+                      child:
+                          onSetTileContent(Icons.light_mode, 'معاینه دهن', 1000),
                     ),
-                  ),
+                    Positioned(
+                      top: 8.0,
+                      left: 8.0,
+                      child: PopupMenuButton(
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry>[
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.list),
+                                    title: Text('جزییات'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.edit),
+                                    title: Text('تغییر دادن'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.delete),
+                                    title: Text('حذف کردن'),
+                                  ),
+                                ),
+                              ]),
+                    )
+                  ],
                 ),
               ),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    print('Fifth tile clicked.');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    color: Colors.grey[200],
-                    child: onSetTileContent(
-                      Icons.light_mode,
-                      'جراحی ریشه دندان',
+              Card(
+                child: Stack(
+                  children: [
+                    Center(
+                      child:
+                          onSetTileContent(Icons.light_mode, 'معاینه دهن', 1000),
                     ),
-                  ),
+                    Positioned(
+                      top: 8.0,
+                      left: 8.0,
+                      child: PopupMenuButton(
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry>[
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.list),
+                                    title: Text('جزییات'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.edit),
+                                    title: Text('تغییر دادن'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.delete),
+                                    title: Text('حذف کردن'),
+                                  ),
+                                ),
+                              ]),
+                    )
+                  ],
                 ),
               ),
-             MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    print('Sixth tile clicked.');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    color: Colors.grey[200],
-                    child: onSetTileContent(
-                      Icons.light_mode,
-                      'سفید کردن دندان',
+              Card(
+                child: Stack(
+                  children: [
+                    Center(
+                      child:
+                          onSetTileContent(Icons.light_mode, 'معاینه دهن', 1000),
                     ),
-                  ),
+                    Positioned(
+                      top: 8.0,
+                      left: 8.0,
+                      child: PopupMenuButton(
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry>[
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.list),
+                                    title: Text('جزییات'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.edit),
+                                    title: Text('تغییر دادن'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.delete),
+                                    title: Text('حذف کردن'),
+                                  ),
+                                ),
+                              ]),
+                    )
+                  ],
                 ),
               ),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    print('Seventh tile clicked.');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    color: Colors.grey[200],
-                    child: onSetTileContent(
-                      Icons.light_mode,
-                      'ارتودانسی',
+              Card(
+                child: Stack(
+                  children: [
+                    Center(
+                      child:
+                          onSetTileContent(Icons.light_mode, 'معاینه دهن', 1000),
                     ),
-                  ),
+                    Positioned(
+                      top: 8.0,
+                      left: 8.0,
+                      child: PopupMenuButton(
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry>[
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.list),
+                                    title: Text('جزییات'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.edit),
+                                    title: Text('تغییر دادن'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.delete),
+                                    title: Text('حذف کردن'),
+                                  ),
+                                ),
+                              ]),
+                    )
+                  ],
                 ),
               ),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    print('Eighth tile clicked.');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    color: Colors.grey[200],
-                    child: onSetTileContent(
-                      Icons.light_mode,
-                      'پروتز دندان',
+              Card(
+                child: Stack(
+                  children: [
+                    Center(
+                      child:
+                          onSetTileContent(Icons.light_mode, 'معاینه دهن', 1000),
                     ),
-                  ),
+                    Positioned(
+                      top: 8.0,
+                      left: 8.0,
+                      child: PopupMenuButton(
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry>[
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.list),
+                                    title: Text('جزییات'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.edit),
+                                    title: Text('تغییر دادن'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.delete),
+                                    title: Text('حذف کردن'),
+                                  ),
+                                ),
+                              ]),
+                    )
+                  ],
                 ),
               ),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    print('Ninth tile clicked.');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    color: Colors.grey[200],
-                    child: onSetTileContent(
-                      Icons.light_mode,
-                      'کشیدن دندان',
+              Card(
+                child: Stack(
+                  children: [
+                    Center(
+                      child:
+                          onSetTileContent(Icons.light_mode, 'معاینه دهن', 1000),
                     ),
-                  ),
+                    Positioned(
+                      top: 8.0,
+                      left: 8.0,
+                      child: PopupMenuButton(
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry>[
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.list),
+                                    title: Text('جزییات'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.edit),
+                                    title: Text('تغییر دادن'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.delete),
+                                    title: Text('حذف کردن'),
+                                  ),
+                                ),
+                              ]),
+                    )
+                  ],
                 ),
               ),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    print('Tenth tile clicked.');
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    color: Colors.grey[200],
-                    child: onSetTileContent(
-                      Icons.light_mode,
-                      'پوش کردن دندان',
+              Card(
+                child: Stack(
+                  children: [
+                    Center(
+                      child:
+                          onSetTileContent(Icons.light_mode, 'معاینه دهن', 1000),
                     ),
-                  ),
+                    Positioned(
+                      top: 8.0,
+                      left: 8.0,
+                      child: PopupMenuButton(
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry>[
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.list),
+                                    title: Text('جزییات'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.edit),
+                                    title: Text('تغییر دادن'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  child: ListTile(
+                                    leading: Icon(Icons.delete),
+                                    title: Text('حذف کردن'),
+                                  ),
+                                ),
+                              ]),
+                    )
+                  ],
                 ),
               ),
             ],
@@ -183,15 +383,27 @@ class ServicesTile extends StatelessWidget {
   }
 
 // Set icon and text as contents of any tile.
-  onSetTileContent(IconData myIcon, String myText) {
+  onSetTileContent(IconData myIcon, String myText, int price) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
+      
       children: [
-        Icon(myIcon, size: 40.0, color: Colors.blue,),
-        Text(myText, style: const TextStyle(color: Colors.blue, fontSize: 25.0),),
+        const CircleAvatar(
+          radius: 25.0,
+          backgroundColor: Colors.blue,
+          child: Icon(Icons.light_mode, color: Colors.white),
+        ),
+        SizedBox(height: 10.0,),
+        Text(
+          myText,
+          style: const TextStyle(fontSize: 22.0),
+        ),
+        SizedBox(height: 10.0,),
+       Text(
+          '$price افغانی',
+          style: const TextStyle(fontSize: 14.0, color: Color.fromARGB(255, 105, 101, 101)),
+        ),
       ],
     );
   }
-
-  
 }
