@@ -119,13 +119,7 @@ class _ServiceState extends State<Service> {
 
   // This dialog creates a new Service
   onCreateDentalService(BuildContext context) {
-    // position types dropdown variables
-    String positionDropDown = 'داکتر دندان';
-    var positionItems = [
-      'داکتر دندان',
-      'نرس',
-      'مدیر سیستم',
-    ];
+  
 // The global for the form
     final formKey = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields

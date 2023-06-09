@@ -32,25 +32,34 @@ class ServicesTile extends StatelessWidget {
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry>[
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.list),
-                                      title: Text('جزییات'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.list),
+                                        title: Text('جزییات'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.edit),
-                                      title: Text('تغییر دادن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.edit),
+                                        title: Text('تغییر دادن'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.delete),
-                                      title: Text('حذف کردن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.delete),
+                                        title: Text('حذف کردن'),
+                                      ),
                                     ),
                                   ),
                                 ]),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -72,25 +81,34 @@ class ServicesTile extends StatelessWidget {
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry>[
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.list),
-                                      title: Text('جزییات'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.list),
+                                        title: Text('جزییات'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.edit),
-                                      title: Text('تغییر دادن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.edit),
+                                        title: Text('تغییر دادن'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.delete),
-                                      title: Text('حذف کردن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.delete),
+                                        title: Text('حذف کردن'),
+                                      ),
                                     ),
                                   ),
                                 ]),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -112,25 +130,34 @@ class ServicesTile extends StatelessWidget {
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry>[
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.list),
-                                      title: Text('جزییات'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.list),
+                                        title: Text('جزییات'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.edit),
-                                      title: Text('تغییر دادن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.edit),
+                                        title: Text('تغییر دادن'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.delete),
-                                      title: Text('حذف کردن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.delete),
+                                        title: Text('حذف کردن'),
+                                      ),
                                     ),
                                   ),
                                 ]),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -152,25 +179,34 @@ class ServicesTile extends StatelessWidget {
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry>[
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.list),
-                                      title: Text('جزییات'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.list),
+                                        title: Text('جزییات'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.edit),
-                                      title: Text('تغییر دادن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.edit),
+                                        title: Text('تغییر دادن'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.delete),
-                                      title: Text('حذف کردن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.delete),
+                                        title: Text('حذف کردن'),
+                                      ),
                                     ),
                                   ),
                                 ]),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -192,25 +228,34 @@ class ServicesTile extends StatelessWidget {
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry>[
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.list),
-                                      title: Text('جزییات'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.list),
+                                        title: Text('جزییات'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.edit),
-                                      title: Text('تغییر دادن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.edit),
+                                        title: Text('تغییر دادن'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.delete),
-                                      title: Text('حذف کردن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.delete),
+                                        title: Text('حذف کردن'),
+                                      ),
                                     ),
                                   ),
                                 ]),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -232,25 +277,34 @@ class ServicesTile extends StatelessWidget {
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry>[
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.list),
-                                      title: Text('جزییات'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.list),
+                                        title: Text('جزییات'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.edit),
-                                      title: Text('تغییر دادن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.edit),
+                                        title: Text('تغییر دادن'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.delete),
-                                      title: Text('حذف کردن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.delete),
+                                        title: Text('حذف کردن'),
+                                      ),
                                     ),
                                   ),
                                 ]),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -272,25 +326,34 @@ class ServicesTile extends StatelessWidget {
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry>[
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.list),
-                                      title: Text('جزییات'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.list),
+                                        title: Text('جزییات'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.edit),
-                                      title: Text('تغییر دادن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.edit),
+                                        title: Text('تغییر دادن'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.delete),
-                                      title: Text('حذف کردن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.delete),
+                                        title: Text('حذف کردن'),
+                                      ),
                                     ),
                                   ),
                                 ]),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -312,25 +375,34 @@ class ServicesTile extends StatelessWidget {
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry>[
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.list),
-                                      title: Text('جزییات'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.list),
+                                        title: Text('جزییات'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.edit),
-                                      title: Text('تغییر دادن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.edit),
+                                        title: Text('تغییر دادن'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.delete),
-                                      title: Text('حذف کردن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.delete),
+                                        title: Text('حذف کردن'),
+                                      ),
                                     ),
                                   ),
                                 ]),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -352,25 +424,34 @@ class ServicesTile extends StatelessWidget {
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry>[
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.list),
-                                      title: Text('جزییات'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.list),
+                                        title: Text('جزییات'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.edit),
-                                      title: Text('تغییر دادن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.edit),
+                                        title: Text('تغییر دادن'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.delete),
-                                      title: Text('حذف کردن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.delete),
+                                        title: Text('حذف کردن'),
+                                      ),
                                     ),
                                   ),
                                 ]),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -392,25 +473,34 @@ class ServicesTile extends StatelessWidget {
                             itemBuilder: (BuildContext context) =>
                                 <PopupMenuEntry>[
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.list),
-                                      title: Text('جزییات'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.list),
+                                        title: Text('جزییات'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.edit),
-                                      title: Text('تغییر دادن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.edit),
+                                        title: Text('تغییر دادن'),
+                                      ),
                                     ),
                                   ),
                                   const PopupMenuItem(
-                                    child: ListTile(
-                                      leading: Icon(Icons.delete),
-                                      title: Text('حذف کردن'),
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        leading: Icon(Icons.delete),
+                                        title: Text('حذف کردن'),
+                                      ),
                                     ),
                                   ),
                                 ]),
-                      )
+                      ),
                     ],
                   ),
                 ),
