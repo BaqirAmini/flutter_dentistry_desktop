@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'tiles.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
+import 'package:flutter_dentistry/views/services/tiles.dart';
 
 void main() => runApp(const Service());
 
@@ -89,18 +90,18 @@ class _ServiceState extends State<Service> {
               Tooltip(
                 message: 'رفتن به داشبورد',
                 child: IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Dashboard(),
+                      ),
+                    );
+                  },
                   icon: const Icon(Icons.home_outlined),
                 ),
               ),
             ],
-            leading: Tooltip(
-              message: 'رفتن به صفحه قبلی',
-              child: IconButton(
-                onPressed: () {},
-                icon: const BackButtonIcon(),
-              ),
-            ),
             title: _isSearching
                 ? TextField(
                     controller: _searchQuery,
@@ -119,13 +120,11 @@ class _ServiceState extends State<Service> {
 
   // This dialog creates a new Service
   onCreateDentalService(BuildContext context) {
-  
 // The global for the form
     final formKey = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
     final nameController = TextEditingController();
     final feeController = TextEditingController();
-    
 
     return showDialog(
       context: context,
