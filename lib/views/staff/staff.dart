@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/staff/new_staff.dart';
 
 void main() {
@@ -18,6 +19,20 @@ class Staff extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
+            actions: [
+              Tooltip(
+                message: 'رفتن به داشبورد',
+                child: IconButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Dashboard(),
+                    ),
+                  ),
+                  icon: const Icon(Icons.home_outlined),
+                ),
+              )
+            ],
             title: const Text('کارمندان'),
           ),
           body: const MyDataTable(),
@@ -319,7 +334,9 @@ class MyDataSource extends DataTableSource {
   DataRow getRow(int index) {
     return DataRow(cells: [
       const DataCell(
-        CircleAvatar(backgroundImage: AssetImage('assets/graphics/patient.png'),),
+        CircleAvatar(
+          backgroundImage: AssetImage('assets/graphics/patient.png'),
+        ),
       ),
       DataCell(Text(data[index].firstName)),
       DataCell(Text(data[index].lastName)),
