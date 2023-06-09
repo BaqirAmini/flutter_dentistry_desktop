@@ -56,12 +56,13 @@ class ServicesTile extends StatelessWidget {
                                       }),
                                     ),
                                   ),
-                                  const PopupMenuItem(
+                                   PopupMenuItem(
                                     child: Directionality(
                                       textDirection: TextDirection.rtl,
                                       child: ListTile(
                                         leading: Icon(Icons.delete),
                                         title: Text('حذف کردن'),
+                                        onTap: () => onDeleteDentalService(context),
                                       ),
                                     ),
                                   ),
@@ -641,5 +642,28 @@ class ServicesTile extends StatelessWidget {
       }),
     );
   }
+
+// This dialog is to delete a dental service
+onDeleteDentalService(BuildContext context) {
+  return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+            title: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text('حذف سرویس'),
+            ),
+            content: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text('آیا میخواهید این سرویس را حذف کنید؟'),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('لغو')),
+              TextButton(onPressed: () {}, child: const Text('حذف')),
+            ],
+          ));
+}
+
 
   }
