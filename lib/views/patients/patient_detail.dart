@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dentistry/dashboard.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'patients.dart' as patient_ist;
 
 void main() {

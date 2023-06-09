@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dentistry/new_patient.dart';
-import 'package:flutter_dentistry/patient_detail.dart';
-import 'dashboard.dart';
+import 'package:flutter_dentistry/views/patients/new_patient.dart';
+import 'package:flutter_dentistry/views/patients/patient_detail.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 
 void main() {
   return runApp(const Patient());

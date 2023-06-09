@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_charts/sparkcharts.dart';
-import 'package:flutter_dentistry/sidebar.dart';
+import 'package:flutter_dentistry/views/main/sidebar.dart';
 
 void main() {
   return runApp(const Dashboard());
@@ -74,7 +74,7 @@ class _DashboardState extends State<Dashboard> {
                       children: [
                         Card(
                           color: Colors.blue,
-                          child: Expanded(
+                          
                             child: SizedBox(
                               height: 120,
                               width: 270.0,
@@ -111,11 +111,11 @@ class _DashboardState extends State<Dashboard> {
                                 ],
                               ),
                             ),
-                          ),
+                          
                         ),
                         Card(
                           color: Colors.orange,
-                          child: Expanded(
+                          
                             child: SizedBox(
                               height: 120,
                               width: 270.0,
@@ -152,11 +152,11 @@ class _DashboardState extends State<Dashboard> {
                                 ],
                               ),
                             ),
-                          ),
+                          
                         ),
                         Card(
                           color: Colors.green,
-                          child: Expanded(
+                          
                             child: SizedBox(
                               height: 120,
                               width: 270.0,
@@ -193,11 +193,11 @@ class _DashboardState extends State<Dashboard> {
                                 ],
                               ),
                             ),
-                          ),
+                          
                         ),
                         Card(
                           color: Colors.brown,
-                          child: Expanded(
+                          
                             child: SizedBox(
                               height: 120,
                               width: 270.0,
@@ -233,7 +233,7 @@ class _DashboardState extends State<Dashboard> {
                                 ],
                               ),
                             ),
-                          ),
+                          
                         ),
                       ],
                     ),
@@ -243,7 +243,7 @@ class _DashboardState extends State<Dashboard> {
                     child: Row(
                       children: [
                         Card(
-                          child: Expanded(
+                          
                             child: SizedBox(
                               height: 350,
                               width: 800.0,
@@ -278,10 +278,10 @@ class _DashboardState extends State<Dashboard> {
                                 ],
                               ),
                             ),
-                          ),
+                          
                         ),
                         Card(
-                          child: Expanded(
+                          
                             child: SizedBox(
                               height: 350.0,
                               width: 300.0,
@@ -313,7 +313,7 @@ class _DashboardState extends State<Dashboard> {
                                 ],
                               ),
                             ),
-                          ),
+                          
                         ),
                       ],
                     ),

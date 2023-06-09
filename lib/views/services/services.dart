@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'views/services/tiles.dart';
+import 'tiles.dart';
 
 void main() => runApp(const Service());
 

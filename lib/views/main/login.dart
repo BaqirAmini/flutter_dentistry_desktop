@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dentistry/dashboard.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 
 void main() {
   runApp(const Login());

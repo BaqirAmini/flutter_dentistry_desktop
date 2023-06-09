@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'views/staff/staff.dart';
+import 'package:flutter_dentistry/views/staff/staff.dart';
 import 'login.dart';
-import 'patients.dart';
+import 'package:flutter_dentistry/views/patients/patients.dart';
 
 class Sidebar extends StatelessWidget {
   const Sidebar({super.key});
