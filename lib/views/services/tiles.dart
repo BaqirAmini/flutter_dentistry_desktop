@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ServicesTile extends StatelessWidget {
   const ServicesTile({super.key});
@@ -40,13 +41,19 @@ class ServicesTile extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  const PopupMenuItem(
+                                  PopupMenuItem(
                                     child: Directionality(
                                       textDirection: TextDirection.rtl,
-                                      child: ListTile(
-                                        leading: Icon(Icons.edit),
-                                        title: Text('تغییر دادن'),
-                                      ),
+                                      child: Builder(
+                                          builder: (BuildContext context) {
+                                        return ListTile(
+                                          leading: const Icon(Icons.edit),
+                                          title: const Text('تغییر دادن'),
+                                          onTap: () {
+                                            onEditDentalService(context);
+                                          },
+                                        );
+                                      }),
                                     ),
                                   ),
                                   const PopupMenuItem(
@@ -538,4 +545,101 @@ class ServicesTile extends StatelessWidget {
       ],
     );
   }
-}
+
+  // This dialog edits a Service
+  onEditDentalService(BuildContext context) {
+// The global for the form
+    final formKey = GlobalKey<FormState>();
+// The text editing controllers for the TextFormFields
+    final nameController = TextEditingController();
+    final feeController = TextEditingController();
+
+    return showDialog(
+      context: context,
+      builder: ((context) {
+        return AlertDialog(
+          title: const Directionality(
+            textDirection: TextDirection.rtl,
+            child: Text(
+              'تغییر سرویس',
+              style: TextStyle(color: Colors.blue),
+            ),
+          ),
+          content: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Form(
+              key: formKey,
+              child: SizedBox(
+                width: 500.0,
+                height: 190.0,
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'نام سرویس (خدمات)',
+                          suffixIcon: Icon(Icons.medical_services_sharp),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        controller: feeController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+                        ],
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'فیس تعیین شده',
+                          suffixIcon: Icon(Icons.money),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('لغو')),
+                  ElevatedButton(
+                    onPressed: () {},
+                    child: const Text(' تغییر دادن'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      }),
+    );
+  }
+
+  }
