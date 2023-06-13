@@ -35,7 +35,7 @@ class _NewUserState extends State<NewUser> {
                 Container(
                   margin: const EdgeInsets.only(top: 20.0),
                   child: const Text(
-                    'لطفا یوزنیم، رمز و وظیفه را با دقت در خانه های مربوط شان درج نمایید.',
+                    'لطفا یوزرنیم، رمز و وظیفه را با دقت در خانه های مربوط شان درج نمایید.',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -45,7 +45,7 @@ class _NewUserState extends State<NewUser> {
                     controller: _userNameController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'یوزنیم (نام کاربری)',
+                      labelText: 'یوزرنیم (نام کاربری)',
                       suffixIcon: Icon(Icons.person_outline_sharp),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
