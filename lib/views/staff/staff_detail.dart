@@ -20,6 +20,12 @@ class _StaffDetailState extends State<StaffDetail> {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
+            actions: [
+              Tooltip(
+                message: 'تغییر دادن یوزر',
+                child: IconButton(onPressed: () {}, icon: Icon(Icons.person_pin_outlined)),
+              ),
+            ],
             leading: Tooltip(
               message: 'رفتن به صفحه قبلی',
               child: IconButton(
