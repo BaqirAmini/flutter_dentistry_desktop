@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/models/expense_data_model.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart' as intl;
 
@@ -24,12 +25,26 @@ class _ExpenseListState extends State<ExpenseList> {
             actions: [
               Builder(builder: (context) {
                 return Tooltip(
-                  message: 'افزودن مصارف',
+                  message: 'افزودن اقلام مصارف',
                   child: IconButton(
                     onPressed: () {
-                      onCreateExpense(context);
+                      onCreateExpenseItem(context);
                     },
                     icon: const Icon(Icons.monetization_on_outlined),
+                  ),
+                );
+              }),
+              const SizedBox(
+                width: 10.0,
+              ),
+              Builder(builder: (context) {
+                return Tooltip(
+                  message: 'افزودن نوعیت مصارف',
+                  child: IconButton(
+                    onPressed: () {
+                      onCreateExpenseType(context);
+                    },
+                    icon: const Icon(Icons.category_outlined),
                   ),
                 );
               }),
@@ -43,6 +58,7 @@ class _ExpenseListState extends State<ExpenseList> {
             ),
             title: const Text('مصارف داخلی کلینک'),
           ),
+          body: const ExpenseData(),
         ),
       ),
     );
@@ -50,7 +66,7 @@ class _ExpenseListState extends State<ExpenseList> {
 }
 
 // This dialog creates a new Expense
-onCreateExpense(BuildContext context) {
+onCreateExpenseItem(BuildContext context) {
   // Expense types dropdown variables
   String expenseDropDown = 'مواد غذایی';
   var expensItems = [
@@ -220,20 +236,18 @@ onCreateExpense(BuildContext context) {
                           margin: const EdgeInsets.all(20.0),
                           child: TextFormField(
                             controller: descriptionController,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
+                            maxLines: 3,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'توضیحات',
                               suffixIcon: Icon(Icons.description_outlined),
                               enabledBorder: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
+                                      BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
                               focusedBorder: OutlineInputBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
+                                      BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                           ),
@@ -251,11 +265,11 @@ onCreateExpense(BuildContext context) {
                                   firstDate: DateTime(1900),
                                   lastDate: DateTime(2100));
                               if (dateTime != null) {
-                                final intl.DateFormat formatter = intl.DateFormat('yyyy-MM-dd');
+                                final intl.DateFormat formatter =
+                                    intl.DateFormat('yyyy-MM-dd');
                                 final String formattedDate =
                                     formatter.format(dateTime);
-                                purchaseDateController.text =
-                                    formattedDate;
+                                purchaseDateController.text = formattedDate;
                               }
                             },
                             inputFormatters: [
@@ -266,6 +280,95 @@ onCreateExpense(BuildContext context) {
                               border: OutlineInputBorder(),
                               labelText: 'تاریخ خرید جنس',
                               suffixIcon: Icon(Icons.calendar_month_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('لغو')),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: const Text('افزودن'),
+                      ),
+                    ],
+                  ))
+            ],
+          );
+        }),
+      );
+    }),
+  );
+}
+
+// This dialog creates a new expense type
+onCreateExpenseType(BuildContext context) {
+  // Expense types dropdown variables
+  String expenseDropDown = 'مواد غذایی';
+  var expensItems = [
+    'مواد غذایی',
+    'تجهیزات برای کلینیک',
+    'مواد مورد نیاز دندان',
+  ];
+// The global for the form
+  final formKey = GlobalKey<FormState>();
+// The text editing controllers for the TextFormFields
+  final itemNameController = TextEditingController();
+  final quantityController = TextEditingController();
+  final unitPriceController = TextEditingController();
+  final purchaseDateController = TextEditingController();
+  final totalPriceController = TextEditingController();
+  final descriptionController = TextEditingController();
+
+  return showDialog(
+    context: context,
+    builder: ((context) {
+      return StatefulBuilder(
+        builder: ((context, setState) {
+          return AlertDialog(
+            title: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text(
+                'افزودن نوعیت (کتگوری) مصارف',
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
+            content: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Form(
+                key: formKey,
+                child: SizedBox(
+                  width: 500.0,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: itemNameController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نام نوعیت (کتگوری)',
+                              suffixIcon: Icon(Icons.category),
                               enabledBorder: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
