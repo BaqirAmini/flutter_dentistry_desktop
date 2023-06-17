@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '/views/finance/expenses/expense_details.dart';
 import 'package:intl/intl.dart' as intl2;
 
 class ExpenseData extends StatelessWidget {
@@ -272,14 +273,16 @@ class MyDataSource extends DataTableSource {
       DataCell(Text(data[index].expenseType)),
       DataCell(Text(data[index].expenseItem)),
       DataCell(Text(data[index].quantity)),
-      DataCell(IconButton(
-        icon: data[index].expenseDetail,
-        onPressed: (() {
-          print('Details clicked.');
+      DataCell(
+        Builder(builder: (BuildContext context) {
+          return IconButton(
+            icon: data[index].expenseDetail,
+            onPressed: (() => onShowExpenseDetails(context)),
+            color: Colors.blue,
+            iconSize: 20.0,
+          );
         }),
-        color: Colors.blue,
-        iconSize: 20.0,
-      )),
+      ),
       DataCell(
         Builder(builder: (BuildContext context) {
           return IconButton(
@@ -400,7 +403,8 @@ onEditExpense(BuildContext context) {
                                             decoration: const InputDecoration(
                                               border: OutlineInputBorder(),
                                               labelText: 'نوعیت مصارف',
-                                              suffixIcon: Icon(Icons.category_outlined),
+                                              suffixIcon:
+                                                  Icon(Icons.category_outlined),
                                               enabledBorder: OutlineInputBorder(
                                                   borderRadius:
                                                       BorderRadius.all(
@@ -440,7 +444,8 @@ onEditExpense(BuildContext context) {
                                               decoration: const InputDecoration(
                                                 border: OutlineInputBorder(),
                                                 labelText: 'نام جنس',
-                                                suffixIcon: Icon(Icons.bakery_dining_outlined),
+                                                suffixIcon: Icon(Icons
+                                                    .bakery_dining_outlined),
                                                 enabledBorder:
                                                     OutlineInputBorder(
                                                         borderRadius:
@@ -469,7 +474,8 @@ onEditExpense(BuildContext context) {
                                               decoration: const InputDecoration(
                                                 border: OutlineInputBorder(),
                                                 labelText: 'تعداد / مقدار',
-                                                suffixIcon: Icon(Icons.production_quantity_limits_outlined),
+                                                suffixIcon: Icon(Icons
+                                                    .production_quantity_limits_outlined),
                                                 enabledBorder:
                                                     OutlineInputBorder(
                                                         borderRadius:
@@ -502,7 +508,8 @@ onEditExpense(BuildContext context) {
                                               decoration: const InputDecoration(
                                                 border: OutlineInputBorder(),
                                                 labelText: 'قیمت فی واحد',
-                                                suffixIcon: Icon(Icons.price_change_outlined),
+                                                suffixIcon: Icon(Icons
+                                                    .price_change_outlined),
                                                 enabledBorder:
                                                     OutlineInputBorder(
                                                         borderRadius:
@@ -639,7 +646,7 @@ onEditExpense(BuildContext context) {
                       padding: EdgeInsets.all(16.0),
                       alignment: Alignment.centerLeft,
                       child: ElevatedButton(
-                        onPressed: ()=> Navigator.pop(context),
+                        onPressed: () => Navigator.pop(context),
                         child: Text('لغو'),
                       ),
                     )
@@ -650,6 +657,31 @@ onEditExpense(BuildContext context) {
           ),
         );
       });
+}
+
+// This is to display an alert dialog to expenses details
+onShowExpenseDetails(BuildContext context) {
+  return showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Directionality(
+        textDirection: TextDirection.rtl,
+        child: Text('جزییات مصارف', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),),
+      ),
+      content: const Directionality(
+        textDirection: TextDirection.rtl,
+        child: Directionality(
+            textDirection: TextDirection.rtl, child: ExpenseDetails()),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('تایید'),
+        ),
+      ],
+      actionsAlignment: MainAxisAlignment.start,
+    ),
+  );
 }
 
 class MyData {
