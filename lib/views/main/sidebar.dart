@@ -55,13 +55,6 @@ class Sidebar extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.more_time),
-            title: const Text('مراجعه و ملاقات'),
-            onTap: () {
-              print('This menu clicked.');
-            },
-          ),
-          ListTile(
             leading: const Icon(Icons.payments_outlined),
             title: const Text('مصارف'),
             onTap: () {
