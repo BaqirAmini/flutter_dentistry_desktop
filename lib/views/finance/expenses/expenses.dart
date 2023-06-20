@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/models/expense_data_model.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart' as intl;
+import '../../main/dashboard.dart';
 
 void main() => runApp(const ExpenseList());
 
@@ -52,7 +53,12 @@ class _ExpenseListState extends State<ExpenseList> {
             leading: Tooltip(
               message: 'رفتن به داشبورد',
               child: IconButton(
-                onPressed: () {},
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Dashboard(),
+                  ),
+                ),
                 icon: const Icon(Icons.home_outlined),
               ),
             ),
