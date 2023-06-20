@@ -24,9 +24,9 @@ class _PatientState extends State<Patient> {
         child: Scaffold(
             appBar: AppBar(
               leading: Tooltip(
-                message: 'رفتن به صفحه قبلی',
+                message: 'رفتن به داشبورد',
                 child: IconButton(
-                  icon: const BackButtonIcon(),
+                  icon: const Icon(Icons.home_outlined),
                   onPressed: () {
                     Navigator.push(
                         context,
