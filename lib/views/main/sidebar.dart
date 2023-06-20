@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/views/finance/expenses/expenses.dart';
 import 'package:flutter_dentistry/views/services/services.dart';
 import 'package:flutter_dentistry/views/staff/staff.dart';
+import 'package:flutter_dentistry/views/taxes/taxes.dart';  
 import 'login.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 
@@ -58,14 +60,24 @@ class Sidebar extends StatelessWidget {
             leading: const Icon(Icons.payments_outlined),
             title: const Text('مصارف'),
             onTap: () {
-              print('This menu clicked.');
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ExpenseList(),
+                ),
+              );
             },
           ),
           ListTile(
             leading: const Icon(Icons.money_off_csred_outlined),
             title: const Text('مالیات'),
             onTap: () {
-              print('This menu clicked.');
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const TaxList(),
+                ),
+              );
             },
           ),
           ListTile(
@@ -75,6 +87,7 @@ class Sidebar extends StatelessWidget {
               print('This menu clicked.');
             },
           ),
+          Divider(),
           ListTile(
             leading: const Icon(Icons.exit_to_app),
             title: const Text('خروج'),
