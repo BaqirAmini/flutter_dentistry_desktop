@@ -19,20 +19,18 @@ class Staff extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
-            actions: [
-              Tooltip(
-                message: 'رفتن به داشبورد',
-                child: IconButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Dashboard(),
-                    ),
+            leading: Tooltip(
+              message: 'رفتن به داشبورد',
+              child: IconButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Dashboard(),
                   ),
-                  icon: const Icon(Icons.home_outlined),
                 ),
-              )
-            ],
+                icon: const Icon(Icons.home_outlined),
+              ),
+            ),
             title: const Text('کارمندان'),
           ),
           body: const MyDataTable(),
