@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SettingsMenu extends StatefulWidget {
   const SettingsMenu({super.key});
@@ -383,6 +384,26 @@ onShowProfile() {
                       const SizedBox(
                         height: 15.0,
                       ),
+                      Container(
+                        padding: const EdgeInsets.all(10.0),
+                        color: const Color.fromARGB(255, 240, 239, 239),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text(
+                              'نمبر تذکره',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                color: Color.fromARGB(255, 118, 116, 116),
+                              ),
+                            ),
+                            Text('1399-2813-23823'),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15.0,
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -424,28 +445,23 @@ onShowProfile() {
                           ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 15.0,
-                      ),
+                      const SizedBox(height: 15.0),
                       Container(
                         padding: const EdgeInsets.all(10.0),
-                        color: const Color.fromARGB(255, 240, 239, 239),
+                        color: Color.fromARGB(255, 240, 239, 239),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: const [
                             Text(
-                              'نمبر تذکره',
+                              'آدرس',
                               style: TextStyle(
                                 fontSize: 14.0,
                                 color: Color.fromARGB(255, 118, 116, 116),
                               ),
                             ),
-                            Text('1399-2813-23823'),
+                            Text('کابل، چهارراهی دهبوری'),
                           ],
                         ),
-                      ),
-                      const SizedBox(
-                        height: 15.0,
                       ),
                     ],
                   ),
@@ -458,11 +474,15 @@ onShowProfile() {
                       child: Card(
                         shape: const CircleBorder(),
                         child: Tooltip(
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.edit, size: 16.0),
-                          ),
                           message: 'تغییر معلومات شخصی',
+                          child: Builder(builder: (BuildContext context) {
+                            return IconButton(
+                              onPressed: () {
+                                onEditProfileInfo(context);
+                              },
+                              icon: const Icon(Icons.edit, size: 16.0),
+                            );
+                          }),
                         ),
                       ),
                     ),
@@ -567,5 +587,246 @@ onRestoreData() {
         ],
       ),
     ),
+  );
+}
+
+// This dialog edits a staff
+onEditProfileInfo(BuildContext context) {
+  // position types dropdown variables
+  String positionDropDown = 'داکتر دندان';
+  var positionItems = [
+    'داکتر دندان',
+    'نرس',
+    'مدیر سیستم',
+  ];
+// The global for the form
+  final formKey = GlobalKey<FormState>();
+// The text editing controllers for the TextFormFields
+  final nameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final salaryController = TextEditingController();
+  final tazkiraController = TextEditingController();
+  final addressController = TextEditingController();
+
+  return showDialog(
+    context: context,
+    builder: ((context) {
+      return StatefulBuilder(
+        builder: ((context, setState) {
+          return AlertDialog(
+            title: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text(
+                'تغییر معلومات شخصی من',
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
+            content: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Form(
+                key: formKey,
+                child: SizedBox(
+                  width: 500.0,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 20.0),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: nameController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نام',
+                              suffixIcon: Icon(Icons.person),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: lastNameController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'تخلص',
+                              suffixIcon: Icon(Icons.person),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'عنوان وظیفه',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: positionDropDown,
+                                  items:
+                                      positionItems.map((String positionItems) {
+                                    return DropdownMenuItem(
+                                      value: positionItems,
+                                      alignment: Alignment.centerRight,
+                                      child: Text(positionItems),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      positionDropDown = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: phoneController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نمبر تماس',
+                              suffixIcon: Icon(Icons.phone),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: salaryController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9.]'))
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'مقدار معاش',
+                              suffixIcon: Icon(Icons.money),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: tazkiraController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9.]'))
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نمبر تذکره',
+                              suffixIcon: Icon(Icons.perm_identity),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: addressController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'آدرس',
+                              suffixIcon: Icon(Icons.location_on_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('لغو')),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: const Text('تغییر'),
+                      ),
+                    ],
+                  ))
+            ],
+          );
+        }),
+      );
+    }),
   );
 }
