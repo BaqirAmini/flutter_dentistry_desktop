@@ -1,5 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
+
+FilePickerResult? filePickerResult;
+File? pickedFile;
 
 class SettingsMenu extends StatefulWidget {
   const SettingsMenu({super.key});
@@ -121,6 +128,9 @@ class _SettingsMenuState extends State<SettingsMenu> {
       ],
     );
   }
+
+//  This method picks an image when called
+
 }
 
 // Switch between settings menu items
@@ -255,9 +265,10 @@ onShowProfile() {
               height: 100,
               child: Stack(
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 50.0,
-                    backgroundImage: AssetImage('assets/graphics/patient.png'),
+                    backgroundImage:
+                        pickedFile != null ? FileImage(pickedFile!) : null,
                   ),
                   Positioned(
                     top: 0,
@@ -269,11 +280,17 @@ onShowProfile() {
                         shape: const CircleBorder(),
                         child: Center(
                           child: Tooltip(
-                            child: IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.edit, size: 14.0),
-                            ),
                             message: 'تغییر عکس پروفایل',
+                            child:
+                                StatefulBuilder(builder: (context, setState) {
+                              return IconButton(
+                                onPressed: () {
+                                  // print('Image clicked.');
+                                  onUpdatePhoto(context, setState);
+                                },
+                                icon: const Icon(Icons.edit, size: 14.0),
+                              );
+                            }),
                           ),
                         ),
                       ),
@@ -448,7 +465,7 @@ onShowProfile() {
                       const SizedBox(height: 15.0),
                       Container(
                         padding: const EdgeInsets.all(10.0),
-                        color: Color.fromARGB(255, 240, 239, 239),
+                        color: const Color.fromARGB(255, 240, 239, 239),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: const [
@@ -829,4 +846,22 @@ onEditProfileInfo(BuildContext context) {
       );
     }),
   );
+}
+
+onUpdatePhoto(BuildContext context, StateSetter setState) async {
+  final result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png']);
+  if (result != null) {
+    setState(() {
+      pickedFile = File(filePickerResult!.files.single.path.toString());
+    });
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('هیچ عکسی را انتخاب نکردید.'),
+      ),
+    );
+  }
 }
