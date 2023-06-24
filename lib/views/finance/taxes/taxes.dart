@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../main/dashboard.dart';
+import '../../main/dashboard.dart';
 import '/models/tax_data_model.dart';
 
 void main() => runApp(const TaxList());

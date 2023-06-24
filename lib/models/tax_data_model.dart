@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '/views/taxes/tax_details.dart';
+import '../views/finance/taxes/tax_details.dart';
 import 'package:intl/intl.dart' as intl;
 
 class TaxData extends StatelessWidget {
@@ -783,7 +783,7 @@ onShowTaxDetails(BuildContext context) {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context).pop(),
           child: const Text('تایید'),
         ),
       ],

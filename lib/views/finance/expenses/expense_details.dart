@@ -6,7 +6,7 @@ class ExpenseDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 500.0,
+      width: 600.0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

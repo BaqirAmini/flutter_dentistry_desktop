@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/views/staff/new_user.dart';
+import 'package:flutter_dentistry/views/staff/staff_more_detail.dart';
 
 void main() => runApp(
       const StaffDetailTabs(),
@@ -31,7 +32,7 @@ class StaffDetailTabs extends StatelessWidget {
               children: [
                Directionality(textDirection: TextDirection.rtl, child:  NewUser()),
                 Icon(Icons.directions_transit),
-                Text('معلومات شخصی')
+                StaffMoreDetail()
               ],
             ),
           ),

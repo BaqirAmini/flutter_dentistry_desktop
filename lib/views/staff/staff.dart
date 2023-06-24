@@ -401,7 +401,7 @@ onDeleteStaff(BuildContext context) {
             ),
             actions: [
               TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                   child: const Text('لغو')),
               TextButton(onPressed: () {}, child: const Text('حذف')),
             ],

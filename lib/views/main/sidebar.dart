@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/views/finance/expenses/expenses.dart';
 import 'package:flutter_dentistry/views/services/services.dart';
 import 'package:flutter_dentistry/views/staff/staff.dart';
-import 'package:flutter_dentistry/views/taxes/taxes.dart';  
+import 'package:flutter_dentistry/views/finance/taxes/taxes.dart';  
 import 'login.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 
