@@ -105,7 +105,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                   title: const Text('زبان'),
                   onTap: () {
                     setState(() {
-                      _selectedIndex = 4;
+                      _selectedIndex = 6;
                     });
                   },
                 ),
