@@ -123,20 +123,36 @@ class _SettingsMenuState extends State<SettingsMenu> {
         ),
         Flexible(
           flex: 3,
-          child: onShowSettingsItem(_selectedIndex),
+          child: onShowSettingsItem(_selectedIndex, onUpdatePhoto),
         ),
       ],
     );
   }
 
 //  This method picks an image when called
-
+  void onUpdatePhoto() async {
+    final result = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'jpeg', 'png']);
+    if (result != null) {
+      setState(() {
+        pickedFile = File(result.files.single.path.toString());
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('هیچ عکسی را انتخاب نکردید.'),
+        ),
+      );
+    }
+  }
 }
 
 // Switch between settings menu items
-Widget onShowSettingsItem(int index) {
+Widget onShowSettingsItem(int index, void Function() onUpdatePhoto) {
   if (index == 1) {
-    return onShowProfile();
+    return onShowProfile(onUpdatePhoto);
   } else if (index == 2) {
     return onChangePwd();
   } else if (index == 3) {
@@ -251,7 +267,7 @@ onChangePwd() {
   );
 }
 
-onShowProfile() {
+onShowProfile(void Function() onUpdatePhoto) {
   return Card(
     child: Center(
       child: Column(
@@ -281,16 +297,24 @@ onShowProfile() {
                         child: Center(
                           child: Tooltip(
                             message: 'تغییر عکس پروفایل',
-                            child:
-                                StatefulBuilder(builder: (context, setState) {
+                            child: IconButton(
+                              onPressed: onUpdatePhoto,
+                              icon: Icon(
+                                Icons.edit,
+                                size: 14.0,
+                              ),
+                            ),
+                            /*   StatefulBuilder(builder: (context, setState) {
                               return IconButton(
                                 onPressed: () {
                                   // print('Image clicked.');
-                                  onUpdatePhoto(context, setState);
+                                  _SettingsMenuState stateObj =
+                                      _SettingsMenuState();
+                                  stateObj.onUpdatePhoto();
                                 },
                                 icon: const Icon(Icons.edit, size: 14.0),
                               );
-                            }),
+                            }), */
                           ),
                         ),
                       ),
@@ -846,22 +870,4 @@ onEditProfileInfo(BuildContext context) {
       );
     }),
   );
-}
-
-onUpdatePhoto(BuildContext context, StateSetter setState) async {
-  final result = await FilePicker.platform.pickFiles(
-      allowMultiple: true,
-      type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png']);
-  if (result != null) {
-    setState(() {
-      pickedFile = File(filePickerResult!.files.single.path.toString());
-    });
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('هیچ عکسی را انتخاب نکردید.'),
-      ),
-    );
-  }
 }
