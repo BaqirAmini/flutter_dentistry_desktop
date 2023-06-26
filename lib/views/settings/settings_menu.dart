@@ -304,17 +304,6 @@ onShowProfile(void Function() onUpdatePhoto) {
                                 size: 14.0,
                               ),
                             ),
-                            /*   StatefulBuilder(builder: (context, setState) {
-                              return IconButton(
-                                onPressed: () {
-                                  // print('Image clicked.');
-                                  _SettingsMenuState stateObj =
-                                      _SettingsMenuState();
-                                  stateObj.onUpdatePhoto();
-                                },
-                                icon: const Icon(Icons.edit, size: 14.0),
-                              );
-                            }), */
                           ),
                         ),
                       ),
