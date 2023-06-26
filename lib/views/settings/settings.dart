@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 import '/views/settings/settings_menu.dart';
 
 void main() => runApp(const Settings());
@@ -17,7 +18,12 @@ class Settings extends StatelessWidget {
             leading: Tooltip(
               message: 'رفتن به داشبورد',
               child: IconButton(
-                onPressed: () {},
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Dashboard(),
+                  ),
+                ),
                 icon: const Icon(Icons.home_outlined),
               ),
             ),

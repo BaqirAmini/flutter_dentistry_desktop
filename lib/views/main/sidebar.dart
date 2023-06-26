@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/views/finance/expenses/expenses.dart';
 import 'package:flutter_dentistry/views/services/services.dart';
+import 'package:flutter_dentistry/views/settings/settings.dart';
 import 'package:flutter_dentistry/views/staff/staff.dart';
-import 'package:flutter_dentistry/views/finance/taxes/taxes.dart';  
+import 'package:flutter_dentistry/views/finance/taxes/taxes.dart';
 import 'login.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 
@@ -60,7 +61,7 @@ class Sidebar extends StatelessWidget {
             leading: const Icon(Icons.payments_outlined),
             title: const Text('مصارف'),
             onTap: () {
-                Navigator.push(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const ExpenseList(),
@@ -72,7 +73,7 @@ class Sidebar extends StatelessWidget {
             leading: const Icon(Icons.money_off_csred_outlined),
             title: const Text('مالیات'),
             onTap: () {
-                Navigator.push(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const TaxList(),
@@ -84,7 +85,12 @@ class Sidebar extends StatelessWidget {
             leading: const Icon(Icons.settings),
             title: const Text('تنظیمات'),
             onTap: () {
-              print('This menu clicked.');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Settings(),
+                ),
+              );
             },
           ),
           Divider(),
