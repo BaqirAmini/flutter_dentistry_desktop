@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 
-
 class NewStaffForm extends StatefulWidget {
   const NewStaffForm({super.key});
 
@@ -260,7 +259,15 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   width: 400.0,
                   height: 35.0,
                   margin: const EdgeInsets.only(bottom: 20.0),
-                  child: ElevatedButton(
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      side: const BorderSide(
+                        color: Colors.blue,
+                      ),
+                    ),
                     onPressed: () async {
                       String fname = _nameController.text;
                       String lname = _lastNameController.text;
