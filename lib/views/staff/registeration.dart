@@ -1,5 +1,10 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/models/db_conn.dart';
+
 
 class NewStaffForm extends StatefulWidget {
   const NewStaffForm({super.key});
@@ -26,6 +31,22 @@ class _NewStaffFormState extends State<NewStaffForm> {
   final _tazkiraController = TextEditingController();
   final _addressController = TextEditingController();
 
+  final _regExOnlyAbc = "[a-zA-Z\u0600-\u06FFF]";
+  final _regExOnlydigits = "[0-9+]";
+
+  void onShowSnackBar(String content) {
+    final snackbar = SnackBar(
+      content: Center(
+        child: Text(
+          content,
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+      backgroundColor: Colors.blue,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackbar);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -47,6 +68,18 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   margin: const EdgeInsets.all(20.0),
                   child: TextFormField(
                     controller: _nameController,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(_regExOnlyAbc),
+                      ),
+                    ],
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'نام الزامی است.';
+                      } else if (value.length < 3) {
+                        return 'نام باید حداقل 3 حرف باشد.';
+                      }
+                    },
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'نام',
@@ -64,6 +97,23 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   margin: const EdgeInsets.all(20.0),
                   child: TextFormField(
                     controller: _lastNameController,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(_regExOnlyAbc),
+                      ),
+                    ],
+                    validator: (value) {
+                      if (value!.isNotEmpty) {
+                        if (value.length < 3 || value.length > 10) {
+                          return 'تخلص باید از سه الی ده حرف باشد.';
+                        } else {
+                          return null;
+                        }
+                      } else {
+                        return null;
+                      }
+                    },
+                    keyboardType: TextInputType.text,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'تخلص',
@@ -118,7 +168,19 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   margin: const EdgeInsets.all(20.0),
                   child: TextFormField(
                     controller: _phoneController,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(_regExOnlydigits),
+                      ),
+                    ],
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'نمبر تماس الزامی است.';
+                      } else if (value.length < 10) {
+                        return 'نمبر تماس حداقل باید 10 عدد باشد.';
+                      }
+                    },
+                    // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'نمبر تماس',
@@ -157,7 +219,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   child: TextFormField(
                     controller: _tazkiraController,
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9-]'))
                     ],
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -176,7 +238,11 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   margin: const EdgeInsets.all(20.0),
                   child: TextFormField(
                     controller: _addressController,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(_regExOnlyAbc),
+                      ),
+                    ],
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'آدرس',
@@ -195,7 +261,51 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   height: 35.0,
                   margin: const EdgeInsets.only(bottom: 20.0),
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      String fname = _nameController.text;
+                      String lname = _lastNameController.text;
+                      String pos = positionDropDown;
+                      double salary = 0;
+                      String phone = _phoneController.text;
+                      String tazkira = _tazkiraController.text;
+                      String addr = _addressController.text;
+                      if (_salaryController.text.isEmpty) {
+                        salary = 0;
+                      } else {
+                        salary = double.parse(_salaryController.text);
+                      }
+
+                      if (_formKey.currentState!.validate()) {
+                        try {
+                          final conn = await onConnToDb();
+                          var query = await conn.query(
+                              'INSERT INTO staff (firstname, lastname, position, salary, phone, tazkira_ID, address) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                              [
+                                fname,
+                                lname,
+                                pos,
+                                salary,
+                                phone,
+                                tazkira,
+                                addr
+                              ]);
+                          if (query.affectedRows! > 0) {
+                            onShowSnackBar('کارمند موفقانه اضافه شد.');
+                            _nameController.clear();
+                            _lastNameController.clear();
+                            _salaryController.clear();
+                            _phoneController.clear();
+                            _tazkiraController.clear();
+                            _addressController.clear();
+                          } else {
+                            print('Inserting staff failed!');
+                          }
+                          await conn.close();
+                        } on SocketException catch (e) {
+                          onShowSnackBar('Database not found.');
+                        }
+                      }
+                    },
                     child: const Text('ثبت کردن'),
                   ),
                 )
@@ -207,6 +317,3 @@ class _NewStaffFormState extends State<NewStaffForm> {
     );
   }
 }
-
-
-
