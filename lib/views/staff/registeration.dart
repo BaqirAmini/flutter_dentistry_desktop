@@ -30,7 +30,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
   final _tazkiraController = TextEditingController();
   final _addressController = TextEditingController();
 
-  final _regExOnlyAbc = "[a-zA-Z\u0600-\u06FFF]";
+  final _regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
   final _regExOnlydigits = "[0-9+]";
 
   void onShowSnackBar(String content) {
@@ -166,6 +166,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                 Container(
                   margin: const EdgeInsets.all(20.0),
                   child: TextFormField(
+                    textDirection: TextDirection.ltr,
                     controller: _phoneController,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(
@@ -175,8 +176,16 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'نمبر تماس الزامی است.';
-                      } else if (value.length < 10) {
-                        return 'نمبر تماس حداقل باید 10 عدد باشد.';
+                      } else if (value.startsWith('07')) {
+                        if (value.length < 10 || value.length > 10) {
+                          return 'نمبر تماس باید 10 عدد باشد.';
+                        }
+                      } else if (value.startsWith('+93')) {
+                        if (value.length < 12 || value.length > 12) {
+                          return 'نمبر تماس  همراه با کود کشور باید 12 عدد باشد.';
+                        }
+                      } else {
+                        return 'نمبر تماس نا معتبر است.';
                       }
                     },
                     // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -197,6 +206,15 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   margin: const EdgeInsets.all(20.0),
                   child: TextFormField(
                     controller: _salaryController,
+                    validator: (value) {
+                      
+                      if (value!.isNotEmpty) {
+                        final salary = double.tryParse(value!);
+                        if (salary! < 1000 || salary > 100000) {
+                          return 'مقدار معاش باید بین 1000 افغانی و 100,000 افغانی باشد.';
+                        }
+                      }
+                    },
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
                     ],
