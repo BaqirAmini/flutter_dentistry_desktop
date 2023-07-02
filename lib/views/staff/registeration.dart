@@ -32,6 +32,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
 
   final _regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
   final _regExOnlydigits = "[0-9+]";
+  final _tazkiraPattern = RegExp(r'^\d{4}-\d{4}-\d{5}$');
 
   void onShowSnackBar(String content) {
     final snackbar = SnackBar(
@@ -60,11 +61,11 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   margin: const EdgeInsets.only(top: 20.0),
                   child: const Text(
                     'لطفا معلومات مرتبط به کارمند را در فورمهای ذیل با دقت درج نمایید.',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Color.fromARGB(255, 133, 133, 133)),
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.all(20.0),
+                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: TextFormField(
                     controller: _nameController,
                     inputFormatters: [
@@ -89,11 +90,18 @@ class _NewStaffFormState extends State<NewStaffForm> {
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.blue)),
+                      errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide: BorderSide(color: Colors.red)),
+                      focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 1.5)),
                     ),
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.all(20.0),
+                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: TextFormField(
                     controller: _lastNameController,
                     inputFormatters: [
@@ -123,11 +131,18 @@ class _NewStaffFormState extends State<NewStaffForm> {
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.blue)),
+                      errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide: BorderSide(color: Colors.red)),
+                      focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 1.5)),
                     ),
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.all(20.0),
+                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: InputDecorator(
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -138,6 +153,13 @@ class _NewStaffFormState extends State<NewStaffForm> {
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.blue)),
+                      errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide: BorderSide(color: Colors.red)),
+                      focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 1.5)),
                     ),
                     child: DropdownButtonHideUnderline(
                       child: Container(
@@ -164,7 +186,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.all(20.0),
+                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: TextFormField(
                     textDirection: TextDirection.ltr,
                     controller: _phoneController,
@@ -199,15 +221,21 @@ class _NewStaffFormState extends State<NewStaffForm> {
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.blue)),
+                      errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide: BorderSide(color: Colors.red)),
+                      focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 1.5)),
                     ),
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.all(20.0),
+                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: TextFormField(
                     controller: _salaryController,
                     validator: (value) {
-                      
                       if (value!.isNotEmpty) {
                         final salary = double.tryParse(value!);
                         if (salary! < 1000 || salary > 100000) {
@@ -228,15 +256,33 @@ class _NewStaffFormState extends State<NewStaffForm> {
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.blue)),
+                      errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide: BorderSide(color: Colors.red)),
+                      focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 1.5)),
                     ),
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.all(20.0),
+                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: TextFormField(
                     controller: _tazkiraController,
+                    validator: (value) {
+                      if (value!.isNotEmpty) {
+                        if (!_tazkiraPattern.hasMatch(value)) {
+                          return 'فورمت نمبر تذکره باید xxxx-xxxx-xxxxx باشد.';
+                        }
+                      }
+                      return null;
+                    },
+                    // keyboardType: TextInputType.number,
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9-]'))
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'[0-9-]'),
+                      ),
                     ],
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -248,11 +294,18 @@ class _NewStaffFormState extends State<NewStaffForm> {
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.blue)),
+                      errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide: BorderSide(color: Colors.red)),
+                      focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 1.5)),
                     ),
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.all(20.0),
+                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: TextFormField(
                     controller: _addressController,
                     inputFormatters: [
@@ -270,13 +323,20 @@ class _NewStaffFormState extends State<NewStaffForm> {
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.blue)),
+                      errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide: BorderSide(color: Colors.red)),
+                      focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 1.5)),
                     ),
                   ),
                 ),
                 Container(
                   width: 400.0,
                   height: 35.0,
-                  margin: const EdgeInsets.only(bottom: 20.0),
+                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
