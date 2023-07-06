@@ -118,7 +118,7 @@ class _MyDataTableState extends State<MyDataTable> {
                       onPressed: () {
                         setState(() {
                           _searchController.clear();
-                          // _filteredData = List.from(_data);
+                          _filteredData = List.from(_data);
                         });
                       },
                     ),
