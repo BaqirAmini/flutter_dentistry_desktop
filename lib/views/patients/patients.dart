@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_detail.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
@@ -76,32 +77,34 @@ class PatientDataTable extends StatefulWidget {
 class _PatientDataTableState extends State<PatientDataTable> {
   int _sortColumnIndex = 0;
   bool _sortAscending = true;
-
-  // The original data source
-  final List<PatientData> _data = [
-    PatientData('احمد', 'کریمی', '25', 'متعلم', 'پرکاری دندان',
-        const Icon(Icons.list), const Icon(Icons.delete)),
-    PatientData('مریم', 'رحیمی', '25', 'محصل', 'کشیدن دندان',
-        const Icon(Icons.list), const Icon(Icons.delete)),
-    PatientData('فواد', '', '40', 'دکاندار', 'سفید کاری دندان',
-        const Icon(Icons.list), const Icon(Icons.delete)),
-    PatientData('Rahmat', '', '20', 'خیاط', 'جرم گیری دندان',
-        const Icon(Icons.list), const Icon(Icons.delete)),
-    PatientData('Zabi', '', '18', 'متعلم', 'جرم گیری دندان',
-        const Icon(Icons.list), const Icon(Icons.delete)),
-    PatientData('Ali', 'Ahmadi', '50', 'شغل آزاد', 'کاشت  دندان',
-        const Icon(Icons.list), const Icon(Icons.delete)),
-    PatientData('Bahram', 'Hussaini', '60', 'شغل آزاد', 'کاشت  دندان',
-        const Icon(Icons.list), const Icon(Icons.delete)),
-    PatientData('میرزا', 'معصومی', '22', 'انجنیر ساختمانی', 'سفید کردن  دندان',
-        const Icon(Icons.list), const Icon(Icons.delete)),
-    PatientData('شگوفه', 'رضایی', '25', 'معلم', 'پوش  دندان',
-        const Icon(Icons.list), const Icon(Icons.delete)),
-  ];
-
 // The filtered data source
-  late List<PatientData> _filteredData;
+  List<PatientData> _filteredData = [];
 
+  List<PatientData> _data = [];
+
+  Future<void> _fetchData() async {
+    final conn = await onConnToDb();
+    final queryResult =
+        await conn.query('SELECT firstname, lastname, age, sex FROM patients');
+    conn.close();
+
+    _data = queryResult.map((row) {
+      return PatientData(
+        firstName: row[0],
+        lastName: row[1],
+        age: row[2].toString(),
+        sex: row[3],
+        patientDetail: const Icon(Icons.list),
+        deletePatient: const Icon(Icons.delete),
+      );
+    }).toList();
+    _filteredData = List.from(_data);
+
+    // Notify the framework that the state of the widget has changed
+    setState(() {});
+    // Print the data that was fetched from the database
+    print('Data from database: $_data');
+  }
 // The text editing controller for the search TextField
   final TextEditingController _searchController = TextEditingController();
 
@@ -109,11 +112,14 @@ class _PatientDataTableState extends State<PatientDataTable> {
   void initState() {
     super.initState();
 // Set the filtered data to the original data at first
-    _filteredData = _data;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchData());
   }
 
   @override
   Widget build(BuildContext context) {
+    // Create a new instance of the PatientDataSource class and pass it the _filteredData list
+    final dataSource = PatientDataSource(_filteredData);
+
     return Scaffold(
         body: ListView(
       children: [
@@ -172,82 +178,89 @@ class _PatientDataTableState extends State<PatientDataTable> {
             ],
           ),
         ),
-        PaginatedDataTable(
-          sortAscending: _sortAscending,
-          sortColumnIndex: _sortColumnIndex,
-          header: const Text("همه مریض ها |"),
-          columns: [
-            DataColumn(
-              label: const Text(
-                "اسم",
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+        if (_filteredData.isEmpty)
+           Container(
+            width: 200,
+            height: 200,
+            child: const Center(child: Text('هیچ مریضی یافت نشد.')),
+          )
+        else
+          PaginatedDataTable(
+            sortAscending: _sortAscending,
+            sortColumnIndex: _sortColumnIndex,
+            header: const Text("همه مریض ها |"),
+            columns: [
+              DataColumn(
+                label: const Text(
+                  "اسم",
+                  style: TextStyle(
+                      color: Colors.blue, fontWeight: FontWeight.bold),
+                ),
+                onSort: (columnIndex, ascending) {
+                  setState(() {
+                    _sortColumnIndex = columnIndex;
+                    _sortAscending = ascending;
+                    _filteredData
+                        .sort((a, b) => a.firstName.compareTo(b.firstName));
+                    if (!ascending) {
+                      _filteredData = _filteredData.reversed.toList();
+                    }
+                  });
+                },
               ),
-              onSort: (columnIndex, ascending) {
-                setState(() {
-                  _sortColumnIndex = columnIndex;
-                  _sortAscending = ascending;
-                  _filteredData
-                      .sort((a, b) => a.firstName.compareTo(b.firstName));
-                  if (!ascending) {
-                    _filteredData = _filteredData.reversed.toList();
-                  }
-                });
-              },
-            ),
-            DataColumn(
-              label: const Text(
-                "تخلص",
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              DataColumn(
+                label: const Text(
+                  "تخلص",
+                  style: TextStyle(
+                      color: Colors.blue, fontWeight: FontWeight.bold),
+                ),
+                onSort: (columnIndex, ascending) {
+                  setState(() {
+                    _sortColumnIndex = columnIndex;
+                    _sortAscending = ascending;
+                    _filteredData
+                        .sort(((a, b) => a.lastName.compareTo(b.lastName)));
+                    if (!ascending) {
+                      _filteredData = _filteredData.reversed.toList();
+                    }
+                  });
+                },
               ),
-              onSort: (columnIndex, ascending) {
-                setState(() {
-                  _sortColumnIndex = columnIndex;
-                  _sortAscending = ascending;
-                  _filteredData
-                      .sort(((a, b) => a.lastName.compareTo(b.lastName)));
-                  if (!ascending) {
-                    _filteredData = _filteredData.reversed.toList();
-                  }
-                });
-              },
-            ),
-            DataColumn(
-              label: const Text(
-                "سن",
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              DataColumn(
+                label: const Text(
+                  "سن",
+                  style: TextStyle(
+                      color: Colors.blue, fontWeight: FontWeight.bold),
+                ),
+                onSort: (columnIndex, ascending) {
+                  setState(() {
+                    _sortColumnIndex = columnIndex;
+                    _sortAscending = ascending;
+                    _filteredData.sort(((a, b) => a.age.compareTo(b.age)));
+                    if (!ascending) {
+                      _filteredData = _filteredData.reversed.toList();
+                    }
+                  });
+                },
               ),
-              onSort: (columnIndex, ascending) {
-                setState(() {
-                  _sortColumnIndex = columnIndex;
-                  _sortAscending = ascending;
-                  _filteredData.sort(((a, b) => a.age.compareTo(b.age)));
-                  if (!ascending) {
-                    _filteredData = _filteredData.reversed.toList();
-                  }
-                });
-              },
-            ),
-            DataColumn(
-              label: const Text(
-                "وظیفه",
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              DataColumn(
+                label: const Text(
+                  "وظیفه",
+                  style: TextStyle(
+                      color: Colors.blue, fontWeight: FontWeight.bold),
+                ),
+                onSort: (columnIndex, ascending) {
+                  setState(() {
+                    _sortColumnIndex = columnIndex;
+                    _sortAscending = ascending;
+                    _filteredData.sort(((a, b) => a.sex.compareTo(b.sex)));
+                    if (!ascending) {
+                      _filteredData = _filteredData.reversed.toList();
+                    }
+                  });
+                },
               ),
-              onSort: (columnIndex, ascending) {
-                setState(() {
-                  _sortColumnIndex = columnIndex;
-                  _sortAscending = ascending;
-                  _filteredData.sort(((a, b) => a.job.compareTo(b.job)));
-                  if (!ascending) {
-                    _filteredData = _filteredData.reversed.toList();
-                  }
-                });
-              },
-            ),
-            DataColumn(
+              /* DataColumn(
               label: const Text(
                 "خدمات مورد نیاز",
                 style:
@@ -265,18 +278,19 @@ class _PatientDataTableState extends State<PatientDataTable> {
                 });
               },
             ),
-            const DataColumn(
-                label: Text("شرح",
-                    style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold))),
-            const DataColumn(
-                label: Text("حذف",
-                    style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold))),
-          ],
-          source: PatientDataSource(_filteredData),
-          rowsPerPage: _filteredData.length < 5 ? _filteredData.length : 5,
-        )
+ */
+              const DataColumn(
+                  label: Text("شرح",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold))),
+              const DataColumn(
+                  label: Text("حذف",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold))),
+            ],
+            source: dataSource,
+            rowsPerPage: _filteredData.length < 8 ? _filteredData.length : 8,
+          )
       ],
     ));
   }
@@ -284,7 +298,6 @@ class _PatientDataTableState extends State<PatientDataTable> {
 
 class PatientDataSource extends DataTableSource {
   List<PatientData> data;
-
   PatientDataSource(this.data);
 
   void sort(Comparator<PatientData> compare, bool ascending) {
@@ -301,8 +314,8 @@ class PatientDataSource extends DataTableSource {
       DataCell(Text(data[index].firstName)),
       DataCell(Text(data[index].lastName)),
       DataCell(Text(data[index].age)),
-      DataCell(Text(data[index].job)),
-      DataCell(Text(data[index].service)),
+      DataCell(Text(data[index].sex)),
+      // DataCell(Text(data[index].service)),
       DataCell(
         Builder(builder: (BuildContext context) {
           return IconButton(
@@ -349,11 +362,17 @@ class PatientData {
   final String firstName;
   final String lastName;
   final String age;
-  final String job;
-  final String service;
+  final String sex;
+  // final String service;
   final Icon patientDetail;
   final Icon deletePatient;
 
-  PatientData(this.firstName, this.lastName, this.age, this.job, this.service,
-      this.patientDetail, this.deletePatient);
+  PatientData(
+      {required this.firstName,
+      required this.lastName,
+      required this.age,
+      required this.sex,
+      /* this.service, */
+      required this.patientDetail,
+      required this.deletePatient});
 }
