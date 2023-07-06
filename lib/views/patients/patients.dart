@@ -105,6 +105,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
     // Print the data that was fetched from the database
     print('Data from database: $_data');
   }
+
 // The text editing controller for the search TextField
   final TextEditingController _searchController = TextEditingController();
 
@@ -121,7 +122,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
     final dataSource = PatientDataSource(_filteredData);
 
     return Scaffold(
-        body: ListView(
+        body: Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -178,119 +179,130 @@ class _PatientDataTableState extends State<PatientDataTable> {
             ],
           ),
         ),
-        if (_filteredData.isEmpty)
-           Container(
-            width: 200,
-            height: 200,
-            child: const Center(child: Text('هیچ مریضی یافت نشد.')),
-          )
-        else
-          PaginatedDataTable(
-            sortAscending: _sortAscending,
-            sortColumnIndex: _sortColumnIndex,
-            header: const Text("همه مریض ها |"),
-            columns: [
-              DataColumn(
-                label: const Text(
-                  "اسم",
-                  style: TextStyle(
-                      color: Colors.blue, fontWeight: FontWeight.bold),
+        Expanded(
+          child: ListView(
+            children: [
+              if (_filteredData.isEmpty)
+                Container(
+                  width: 200,
+                  height: 200,
+                  child: const Center(child: Text('هیچ مریضی یافت نشد.')),
+                )
+              else
+                PaginatedDataTable(
+                  sortAscending: _sortAscending,
+                  sortColumnIndex: _sortColumnIndex,
+                  header: const Text("همه مریض ها |"),
+                  columns: [
+                    DataColumn(
+                      label: const Text(
+                        "اسم",
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                      onSort: (columnIndex, ascending) {
+                        setState(() {
+                          _sortColumnIndex = columnIndex;
+                          _sortAscending = ascending;
+                          _filteredData.sort(
+                              (a, b) => a.firstName.compareTo(b.firstName));
+                          if (!ascending) {
+                            _filteredData = _filteredData.reversed.toList();
+                          }
+                        });
+                      },
+                    ),
+                    DataColumn(
+                      label: const Text(
+                        "تخلص",
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                      onSort: (columnIndex, ascending) {
+                        setState(() {
+                          _sortColumnIndex = columnIndex;
+                          _sortAscending = ascending;
+                          _filteredData.sort(
+                              ((a, b) => a.lastName.compareTo(b.lastName)));
+                          if (!ascending) {
+                            _filteredData = _filteredData.reversed.toList();
+                          }
+                        });
+                      },
+                    ),
+                    DataColumn(
+                      label: const Text(
+                        "سن",
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                      onSort: (columnIndex, ascending) {
+                        setState(() {
+                          _sortColumnIndex = columnIndex;
+                          _sortAscending = ascending;
+                          _filteredData
+                              .sort(((a, b) => a.age.compareTo(b.age)));
+                          if (!ascending) {
+                            _filteredData = _filteredData.reversed.toList();
+                          }
+                        });
+                      },
+                    ),
+                    DataColumn(
+                      label: const Text(
+                        "وظیفه",
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                      onSort: (columnIndex, ascending) {
+                        setState(() {
+                          _sortColumnIndex = columnIndex;
+                          _sortAscending = ascending;
+                          _filteredData
+                              .sort(((a, b) => a.sex.compareTo(b.sex)));
+                          if (!ascending) {
+                            _filteredData = _filteredData.reversed.toList();
+                          }
+                        });
+                      },
+                    ),
+                    /* DataColumn(
+                  label: const Text(
+                    "خدمات مورد نیاز",
+                    style:
+                        TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (columnIndex, ascending) {
+                    setState(() {
+                      _sortColumnIndex = columnIndex;
+                      _sortAscending = ascending;
+                      _filteredData
+                          .sort(((a, b) => a.service.compareTo(b.service)));
+                      if (!ascending) {
+                        _filteredData = _filteredData.reversed.toList();
+                      }
+                    });
+                  },
                 ),
-                onSort: (columnIndex, ascending) {
-                  setState(() {
-                    _sortColumnIndex = columnIndex;
-                    _sortAscending = ascending;
-                    _filteredData
-                        .sort((a, b) => a.firstName.compareTo(b.firstName));
-                    if (!ascending) {
-                      _filteredData = _filteredData.reversed.toList();
-                    }
-                  });
-                },
-              ),
-              DataColumn(
-                label: const Text(
-                  "تخلص",
-                  style: TextStyle(
-                      color: Colors.blue, fontWeight: FontWeight.bold),
-                ),
-                onSort: (columnIndex, ascending) {
-                  setState(() {
-                    _sortColumnIndex = columnIndex;
-                    _sortAscending = ascending;
-                    _filteredData
-                        .sort(((a, b) => a.lastName.compareTo(b.lastName)));
-                    if (!ascending) {
-                      _filteredData = _filteredData.reversed.toList();
-                    }
-                  });
-                },
-              ),
-              DataColumn(
-                label: const Text(
-                  "سن",
-                  style: TextStyle(
-                      color: Colors.blue, fontWeight: FontWeight.bold),
-                ),
-                onSort: (columnIndex, ascending) {
-                  setState(() {
-                    _sortColumnIndex = columnIndex;
-                    _sortAscending = ascending;
-                    _filteredData.sort(((a, b) => a.age.compareTo(b.age)));
-                    if (!ascending) {
-                      _filteredData = _filteredData.reversed.toList();
-                    }
-                  });
-                },
-              ),
-              DataColumn(
-                label: const Text(
-                  "وظیفه",
-                  style: TextStyle(
-                      color: Colors.blue, fontWeight: FontWeight.bold),
-                ),
-                onSort: (columnIndex, ascending) {
-                  setState(() {
-                    _sortColumnIndex = columnIndex;
-                    _sortAscending = ascending;
-                    _filteredData.sort(((a, b) => a.sex.compareTo(b.sex)));
-                    if (!ascending) {
-                      _filteredData = _filteredData.reversed.toList();
-                    }
-                  });
-                },
-              ),
-              /* DataColumn(
-              label: const Text(
-                "خدمات مورد نیاز",
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-              ),
-              onSort: (columnIndex, ascending) {
-                setState(() {
-                  _sortColumnIndex = columnIndex;
-                  _sortAscending = ascending;
-                  _filteredData
-                      .sort(((a, b) => a.service.compareTo(b.service)));
-                  if (!ascending) {
-                    _filteredData = _filteredData.reversed.toList();
-                  }
-                });
-              },
-            ),
  */
-              const DataColumn(
-                  label: Text("شرح",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold))),
-              const DataColumn(
-                  label: Text("حذف",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold))),
+                    const DataColumn(
+                        label: Text("شرح",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold))),
+                    const DataColumn(
+                        label: Text("حذف",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold))),
+                  ],
+                  source: dataSource,
+                  rowsPerPage:
+                      _filteredData.length < 8 ? _filteredData.length : 8,
+                )
             ],
-            source: dataSource,
-            rowsPerPage: _filteredData.length < 8 ? _filteredData.length : 8,
-          )
+          ),
+        ),
       ],
     ));
   }
