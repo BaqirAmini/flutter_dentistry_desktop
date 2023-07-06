@@ -72,17 +72,15 @@ class _MyDataTableState extends State<MyDataTable> {
         phone: row[5],
         tazkira: row[6],
         address: row[7],
-        employeeDetail: const Icon(Icons.list),
-        editEmployee: const Icon(Icons.edit),
-        deleteEmployee: const Icon(Icons.delete),
       );
     }).toList();
     _filteredData = List.from(_data);
 
     // Notify the framework that the state of the widget has changed
-    setState(() {});
-    // Print the data that was fetched from the database
-    print('Data from database: $_data');
+    setState(() {
+      // Print the data that was fetched from the database
+      print('Data from database: $_data');
+    });
   }
 
 // The text editing controller for the search TextField
@@ -311,21 +309,11 @@ class _MyDataTableState extends State<MyDataTable> {
                     ),
                     const DataColumn(
                       label: Text(
-                        "شرح",
+                        "اقدامات",
                         style: TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    const DataColumn(
-                        label: Text("تغییر",
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold))),
-                    const DataColumn(
-                        label: Text("حذف",
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold))),
                   ],
                   rowsPerPage:
                       _filteredData.length < 8 ? _filteredData.length : 8,
@@ -367,38 +355,74 @@ class MyData extends DataTableSource {
       DataCell(Text(data[index].phone)),
       DataCell(Text(data[index].tazkira)),
       DataCell(Text(data[index].address)),
-      DataCell(IconButton(
-        icon: data[index].employeeDetail,
-        onPressed: (() {
-          print('Details clicked.');
-        }),
-        color: Colors.blue,
-        iconSize: 20.0,
-      )),
       DataCell(
-        Builder(builder: (BuildContext context) {
-          return IconButton(
-            icon: data[index].editEmployee,
-            onPressed: (() {
-              onEditStaff(context);
-            }),
+        PopupMenuButton(
+          padding: EdgeInsets.zero,
+          icon: const Icon(
+            Icons.more_horiz,
             color: Colors.blue,
-            iconSize: 20.0,
-          );
-        }),
-      ),
-      DataCell(
-        Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: data[index].deleteEmployee,
-              onPressed: (() {
-                onDeleteStaff(context);
-              }),
-              color: Colors.blue,
-              iconSize: 20.0,
-            );
-          },
+          ),
+          tooltip: 'نمایش مینو',
+          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+            PopupMenuItem(
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: ListTile(
+                  leading: const Icon(
+                    Icons.list,
+                    size: 20.0,
+                  ),
+                  title: const Text(
+                    'جزییات',
+                    style: TextStyle(fontSize: 15.0),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            ),
+            PopupMenuItem(
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Builder(builder: (BuildContext context) {
+                  return ListTile(
+                    leading: const Icon(
+                      Icons.edit,
+                      size: 20.0,
+                    ),
+                    title: const Text(
+                      'تغییر دادن',
+                      style: TextStyle(fontSize: 15.0),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      onEditStaff(context);
+                    },
+                  );
+                }),
+              ),
+            ),
+            PopupMenuItem(
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: ListTile(
+                    leading: const Icon(
+                      Icons.delete,
+                      size: 20.0,
+                    ),
+                    title: const Text(
+                      'حذف کردن',
+                      style: TextStyle(fontSize: 15.0),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      onDeleteStaff(context);
+                    }),
+              ),
+            ),
+          ],
+          onSelected: null,
         ),
       ),
     ]);
@@ -687,22 +711,16 @@ class MyStaff {
   final String phone;
   final String tazkira;
   final String address;
-  final Icon employeeDetail;
-  final Icon editEmployee;
-  final Icon deleteEmployee;
-
-  MyStaff(
-      {this.photo,
-      required this.firstName,
-      required this.lastName,
-      required this.position,
-      required this.salary,
-      required this.phone,
-      required this.tazkira,
-      required this.address,
-      required this.employeeDetail,
-      required this.editEmployee,
-      required this.deleteEmployee});
+  MyStaff({
+    this.photo,
+    required this.firstName,
+    required this.lastName,
+    required this.position,
+    required this.salary,
+    required this.phone,
+    required this.tazkira,
+    required this.address,
+  });
 
   @override
   String toString() {
