@@ -990,7 +990,7 @@ onCreateUserAccount(BuildContext context, int staff_id) {
 
 // This is for updating a user account.
 onUpdateUserAccount(
-    BuildContext context, int staff_id, String user_name, user_role) {
+    BuildContext context, int staff_id, String user_name, String user_role) {
   // position types dropdown variables
   String roleDropDown = 'کمک مدیر';
   var roleItems = [
