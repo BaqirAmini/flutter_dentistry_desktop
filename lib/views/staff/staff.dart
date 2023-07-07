@@ -414,8 +414,6 @@ class MyData extends DataTableSource {
                         // ignore: use_build_context_synchronously
                         onCreateUserAccount(context, staffId);
                       }
-
-                      // onCreateUserAccount(context, data[index].staffID);
                     },
                   );
                 }),
@@ -960,21 +958,13 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                             String pwd = pwdController.text;
                             String role = roleDropDown;
                             var conn = await onConnToDb();
-                            var checkQuery = await conn.query(
-                                'SELECT username FROM staff_auth WHERE staff_ID = ?',
-                                [staff_id]);
-                            /*    var queryResult = await conn.query(
+
+                            var queryResult = await conn.query(
                                 'INSERT INTO staff_auth (staff_ID, username, password, role) VALUES (?, ?, PASSWORD(?), ?)',
-                                [staffId, userName, pwd, role]); */
-                            if (checkQuery.isNotEmpty) {
-                              final row = checkQuery.first;
-                              final uName = row['username'];
-                              userNameController.text = uName;
-                            } else {
-                              print('The user not found.');
-                            }
-                            /*   if (queryResult.affectedRows! > 0) {
-                              print('success!');
+                                [staffId, userName, pwd, role]);
+
+                            if (queryResult.affectedRows! > 0) {
+                              print('Insert success!');
                               userNameController.clear();
                               pwdController.clear();
                               confirmController.clear();
@@ -983,7 +973,7 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                               // ignore: use_build_context_synchronously
                               onShowSnackBar(
                                   context, 'حساب کاربری موفقانه ایجاد شد.');
-                            } */
+                            }
                           }
                         },
                         child: const Text('ثبت کردن'),
