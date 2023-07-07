@@ -396,9 +396,26 @@ class MyData extends DataTableSource {
                       'حساب کاربری',
                       style: TextStyle(fontSize: 15.0),
                     ),
-                    onTap: () {
+                    onTap: () async {
+                      int staffId = data[index].staffID;
                       Navigator.pop(context);
-                      onCreateUserAccount(context, data[index].staffID);
+                      var conn = await onConnToDb();
+                      var results = await conn.query(
+                          'SELECT username, password, role FROM staff_auth WHERE staff_ID = ?',
+                          [staffId]);
+
+                      if (results.isNotEmpty) {
+                        final row = results.first;
+                        final userName = row['username'];
+                        final role = row['role'];
+                        // ignore: use_build_context_synchronously
+                        onUpdateUserAccount(context, staffId, userName, role);
+                      } else {
+                        // ignore: use_build_context_synchronously
+                        onCreateUserAccount(context, staffId);
+                      }
+
+                      // onCreateUserAccount(context, data[index].staffID);
                     },
                   );
                 }),
@@ -931,7 +948,9 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () {
+                            Navigator.of(context, rootNavigator: true).pop();
+                          },
                           child: const Text('لغو')),
                       ElevatedButton(
                         onPressed: () async {
@@ -941,28 +960,30 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                             String pwd = pwdController.text;
                             String role = roleDropDown;
                             var conn = await onConnToDb();
-                            var queryResult = await conn.query(
+                            var checkQuery = await conn.query(
+                                'SELECT username FROM staff_auth WHERE staff_ID = ?',
+                                [staff_id]);
+                            /*    var queryResult = await conn.query(
                                 'INSERT INTO staff_auth (staff_ID, username, password, role) VALUES (?, ?, PASSWORD(?), ?)',
-                                [staffId, userName, pwd, role]);
-
-                            if (queryResult.affectedRows! > 0) {
+                                [staffId, userName, pwd, role]); */
+                            if (checkQuery.isNotEmpty) {
+                              final row = checkQuery.first;
+                              final uName = row['username'];
+                              userNameController.text = uName;
+                            } else {
+                              print('The user not found.');
+                            }
+                            /*   if (queryResult.affectedRows! > 0) {
                               print('success!');
                               userNameController.clear();
                               pwdController.clear();
                               confirmController.clear();
+                              // ignore: use_build_context_synchronously
                               Navigator.pop(context);
-                                final snackbar = SnackBar(
-                                content: Center(
-                                  child: Text(
-                                    'حساب کاربری موفقانه افزوده شد.',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                                backgroundColor: Colors.blue,
-                              );
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackbar);
-                            }
+                              // ignore: use_build_context_synchronously
+                              onShowSnackBar(
+                                  context, 'حساب کاربری موفقانه ایجاد شد.');
+                            } */
                           }
                         },
                         child: const Text('ثبت کردن'),
@@ -975,6 +996,271 @@ onCreateUserAccount(BuildContext context, int staff_id) {
       );
     }),
   );
+}
+
+// This is for updating a user account.
+onUpdateUserAccount(
+    BuildContext context, int staff_id, String user_name, user_role) {
+  // position types dropdown variables
+  String roleDropDown = 'کمک مدیر';
+  var roleItems = [
+    'کمک مدیر',
+    'مدیر سیستم',
+  ];
+// The global for the form
+  final formKey = GlobalKey<FormState>();
+// The text editing controllers for the TextFormFields
+  final userNameController = TextEditingController();
+  final pwdController = TextEditingController();
+  final confirmController = TextEditingController();
+  const regExUserName = "[a-zA-Z0-9]";
+
+// Set values into fields to update
+  userNameController.text = user_name;
+  roleDropDown = user_role;
+
+  return showDialog(
+    context: context,
+    builder: ((context) {
+      return StatefulBuilder(
+        builder: ((context, setState) {
+          return AlertDialog(
+            title: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text(
+                'تغییر حساب کاربری (یوزر اکونت)',
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
+            content: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Form(
+                key: formKey,
+                child: SizedBox(
+                  width: 500.0,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 20.0),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: userNameController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(regExUserName),
+                              ),
+                            ],
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'نام کابری الزامی است.';
+                              } else if (value.length < 6 ||
+                                  value.length > 10) {
+                                return 'نام کاربری باید بین 6 و 10 حرف باشد.';
+                              }
+                            },
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نام کاربری (نام یوزر)',
+                              suffixIcon: Icon(Icons.person),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: pwdController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'رمز الزامی است.';
+                              } else if (value.length < 8) {
+                                return 'رمز باید حداقل 8 حرف باشد.';
+                              }
+                            },
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'رمز (پاسورد)',
+                              suffixIcon: Icon(Icons.lock_open_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: confirmController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'تایید رمز الزامی است.';
+                              } else if (pwdController.text !=
+                                  confirmController.text) {
+                                return 'رمز تان همخوانی ندارد. دوباره سعی کنید.';
+                              }
+                            },
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'تایید رمز (پاسورد)',
+                              suffixIcon: Icon(Icons.lock_open_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'تعیین صلاحیت',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: roleDropDown,
+                                  items: roleItems.map((String positionItems) {
+                                    return DropdownMenuItem(
+                                      value: positionItems,
+                                      alignment: Alignment.centerRight,
+                                      child: Text(positionItems),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      roleDropDown = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.of(context, rootNavigator: true).pop();
+                          },
+                          child: const Text('لغو')),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (formKey.currentState!.validate()) {
+                            final userName = userNameController.text;
+                            final pwd = pwdController.text;
+                            final userRole = roleDropDown;
+                            var conn = await onConnToDb();
+                            var queryResult = await conn.query(
+                                'UPDATE staff_auth SET username = ?, password = PASSWORD(?), role = ? WHERE staff_ID = ?',
+                                [userName, pwd, userRole, staff_id]);
+
+                            if (queryResult.affectedRows! > 0) {
+                              print('success!');
+                              userNameController.clear();
+                              pwdController.clear();
+                              confirmController.clear();
+                              // ignore: use_build_context_synchronously
+                              Navigator.pop(context);
+                              // ignore: use_build_context_synchronously
+                              onShowSnackBar(
+                                  context, 'حساب کاربری موفقانه ایجاد شد.');
+                            }
+                          }
+                        },
+                        child: const Text('تغییر دادن'),
+                      ),
+                    ],
+                  ))
+            ],
+          );
+        }),
+      );
+    }),
+  );
+}
+
+void onShowSnackBar(BuildContext context, String content) {
+  final snackbar = SnackBar(
+    content: Center(
+      child: Text(
+        content,
+        style: const TextStyle(color: Colors.white),
+      ),
+    ),
+    backgroundColor: Colors.blue,
+  );
+  ScaffoldMessenger.of(context).showSnackBar(snackbar);
 }
 
 class MyStaff {
