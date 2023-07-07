@@ -59,7 +59,7 @@ class _MyDataTableState extends State<MyDataTable> {
   Future<void> _fetchData() async {
     final conn = await onConnToDb();
     final queryResult = await conn.query(
-        'SELECT photo, firstname, lastname, position, salary, phone, tazkira_ID, address FROM staff');
+        'SELECT photo, firstname, lastname, position, salary, phone, tazkira_ID, address, staff_ID FROM staff');
     conn.close();
 
     _data = queryResult.map((row) {
@@ -72,6 +72,7 @@ class _MyDataTableState extends State<MyDataTable> {
         phone: row[5],
         tazkira: row[6],
         address: row[7],
+        staffID: row[8],
       );
     }).toList();
     _filteredData = List.from(_data);
@@ -397,7 +398,7 @@ class MyData extends DataTableSource {
                     ),
                     onTap: () {
                       Navigator.pop(context);
-                      onCreateUserAccount(context);
+                      onCreateUserAccount(context, data[index].staffID);
                     },
                   );
                 }),
@@ -724,7 +725,7 @@ onEditStaff(BuildContext context) {
 }
 
 // This is for creating a new user account.
-onCreateUserAccount(BuildContext context) {
+onCreateUserAccount(BuildContext context, int staff_id) {
   // position types dropdown variables
   String roleDropDown = 'کمک مدیر';
   var roleItems = [
@@ -737,6 +738,7 @@ onCreateUserAccount(BuildContext context) {
   final userNameController = TextEditingController();
   final pwdController = TextEditingController();
   final confirmController = TextEditingController();
+  const regExUserName = "[a-zA-Z0-9]";
 
   return showDialog(
     context: context,
@@ -767,6 +769,19 @@ onCreateUserAccount(BuildContext context) {
                           margin: const EdgeInsets.all(20.0),
                           child: TextFormField(
                             controller: userNameController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(regExUserName),
+                              ),
+                            ],
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'نام کابری الزامی است.';
+                              } else if (value.length < 6 ||
+                                  value.length > 10) {
+                                return 'نام کاربری باید بین 6 و 10 حرف باشد.';
+                              }
+                            },
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'نام کاربری (نام یوزر)',
@@ -779,6 +794,15 @@ onCreateUserAccount(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -786,6 +810,13 @@ onCreateUserAccount(BuildContext context) {
                           margin: const EdgeInsets.all(20.0),
                           child: TextFormField(
                             controller: pwdController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'رمز الزامی است.';
+                              } else if (value.length < 8) {
+                                return 'رمز باید حداقل 6 حرف باشد.';
+                              }
+                            },
                             obscureText: true,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -799,6 +830,15 @@ onCreateUserAccount(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -806,6 +846,14 @@ onCreateUserAccount(BuildContext context) {
                           margin: const EdgeInsets.all(20.0),
                           child: TextFormField(
                             controller: confirmController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'تایید رمز الزامی است.';
+                              } else if (pwdController.text !=
+                                  confirmController.text) {
+                                return 'رمز تان همخوانی ندارد. دوباره سعی کنید.';
+                              }
+                            },
                             obscureText: true,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -819,6 +867,15 @@ onCreateUserAccount(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -844,8 +901,7 @@ onCreateUserAccount(BuildContext context) {
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
                                   value: roleDropDown,
-                                  items:
-                                      roleItems.map((String positionItems) {
+                                  items: roleItems.map((String positionItems) {
                                     return DropdownMenuItem(
                                       value: positionItems,
                                       alignment: Alignment.centerRight,
@@ -878,7 +934,12 @@ onCreateUserAccount(BuildContext context) {
                           onPressed: () => Navigator.pop(context),
                           child: const Text('لغو')),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          if (formKey.currentState!.validate()) {
+                            var conn = await onConnToDb();
+                            var queryResult = await conn.query('INSERT INTO ')
+                          }
+                        },
                         child: const Text('ثبت کردن'),
                       ),
                     ],
@@ -900,6 +961,7 @@ class MyStaff {
   final String phone;
   final String tazkira;
   final String address;
+  final int staffID;
   MyStaff({
     this.photo,
     required this.firstName,
@@ -909,6 +971,7 @@ class MyStaff {
     required this.phone,
     required this.tazkira,
     required this.address,
+    required this.staffID,
   });
 
   @override
