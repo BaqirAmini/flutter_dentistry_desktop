@@ -388,6 +388,27 @@ class MyData extends DataTableSource {
                 child: Builder(builder: (BuildContext context) {
                   return ListTile(
                     leading: const Icon(
+                      Icons.lock_person_outlined,
+                      size: 20.0,
+                    ),
+                    title: const Text(
+                      'حساب کاربری',
+                      style: TextStyle(fontSize: 15.0),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      onCreateUserAccount(context);
+                    },
+                  );
+                }),
+              ),
+            ),
+            PopupMenuItem(
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Builder(builder: (BuildContext context) {
+                  return ListTile(
+                    leading: const Icon(
                       Icons.edit,
                       size: 20.0,
                     ),
@@ -691,6 +712,174 @@ onEditStaff(BuildContext context) {
                       ElevatedButton(
                         onPressed: () {},
                         child: const Text('تغییر'),
+                      ),
+                    ],
+                  ))
+            ],
+          );
+        }),
+      );
+    }),
+  );
+}
+
+// This is for creating a new user account.
+onCreateUserAccount(BuildContext context) {
+  // position types dropdown variables
+  String roleDropDown = 'کمک مدیر';
+  var roleItems = [
+    'کمک مدیر',
+    'مدیر سیستم',
+  ];
+// The global for the form
+  final formKey = GlobalKey<FormState>();
+// The text editing controllers for the TextFormFields
+  final userNameController = TextEditingController();
+  final pwdController = TextEditingController();
+  final confirmController = TextEditingController();
+
+  return showDialog(
+    context: context,
+    builder: ((context) {
+      return StatefulBuilder(
+        builder: ((context, setState) {
+          return AlertDialog(
+            title: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text(
+                'ایجاد حساب کاربری (یوزر اکونت)',
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
+            content: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Form(
+                key: formKey,
+                child: SizedBox(
+                  width: 500.0,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 20.0),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: userNameController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نام کاربری (نام یوزر)',
+                              suffixIcon: Icon(Icons.person),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: pwdController,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'رمز (پاسورد)',
+                              suffixIcon: Icon(Icons.lock_open_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: confirmController,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'تایید رمز (پاسورد)',
+                              suffixIcon: Icon(Icons.lock_open_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'تعیین صلاحیت',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: roleDropDown,
+                                  items:
+                                      roleItems.map((String positionItems) {
+                                    return DropdownMenuItem(
+                                      value: positionItems,
+                                      alignment: Alignment.centerRight,
+                                      child: Text(positionItems),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      roleDropDown = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('لغو')),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: const Text('ثبت کردن'),
                       ),
                     ],
                   ))
