@@ -814,7 +814,7 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                               if (value!.isEmpty) {
                                 return 'رمز الزامی است.';
                               } else if (value.length < 8) {
-                                return 'رمز باید حداقل 6 حرف باشد.';
+                                return 'رمز باید حداقل 8 حرف باشد.';
                               }
                             },
                             obscureText: true,
@@ -936,8 +936,33 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                       ElevatedButton(
                         onPressed: () async {
                           if (formKey.currentState!.validate()) {
+                            int staffId = staff_id;
+                            String userName = userNameController.text;
+                            String pwd = pwdController.text;
+                            String role = roleDropDown;
                             var conn = await onConnToDb();
-                            var queryResult = await conn.query('INSERT INTO ')
+                            var queryResult = await conn.query(
+                                'INSERT INTO staff_auth (staff_ID, username, password, role) VALUES (?, ?, PASSWORD(?), ?)',
+                                [staffId, userName, pwd, role]);
+
+                            if (queryResult.affectedRows! > 0) {
+                              print('success!');
+                              userNameController.clear();
+                              pwdController.clear();
+                              confirmController.clear();
+                              Navigator.pop(context);
+                                final snackbar = SnackBar(
+                                content: Center(
+                                  child: Text(
+                                    'حساب کاربری موفقانه افزوده شد.',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                backgroundColor: Colors.blue,
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackbar);
+                            }
                           }
                         },
                         child: const Text('ثبت کردن'),
