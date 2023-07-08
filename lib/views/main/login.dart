@@ -21,6 +21,14 @@ class _LoginState extends State<Login> {
   final _pwdController = TextEditingController();
   final _regExUName = '[a-zA-Z0-9-@]';
 
+// Show/Hide password using eye icons
+  bool _isHidden = true;
+  void _togglePwdView() {
+    setState(() {
+      _isHidden = !_isHidden;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -71,8 +79,8 @@ class _LoginState extends State<Login> {
                                   ),
                                 ],
                                 decoration: const InputDecoration(
+                                  contentPadding: EdgeInsets.all(15.0),
                                   border: OutlineInputBorder(),
-                                  suffixIcon: Icon(Icons.person),
                                   labelText: 'نام یوزر (نام کاربری)',
                                   enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
@@ -116,27 +124,37 @@ class _LoginState extends State<Login> {
                                   FilteringTextInputFormatter.allow(
                                       RegExp(_regExUName)),
                                 ],
-                                obscureText: true,
-                                decoration: const InputDecoration(
-                                  suffixIcon: Icon(Icons.visibility_off),
-                                  border: OutlineInputBorder(),
+                                obscureText: _isHidden,
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.all(15.0),
+                                  prefix: InkWell(
+                                    onTap: _togglePwdView,
+                                    child: Icon(
+                                      _isHidden
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
+                                      color: Colors.blue,
+                                      size: 18.0,
+                                    ),
+                                  ),
+                                  border: const OutlineInputBorder(),
                                   labelText: 'رمز عبور',
-                                  enabledBorder: OutlineInputBorder(
+                                  enabledBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
+                                  focusedBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.blue)),
-                                  errorBorder: OutlineInputBorder(
+                                  errorBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: OutlineInputBorder(
+                                  focusedErrorBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide: BorderSide(
@@ -145,7 +163,11 @@ class _LoginState extends State<Login> {
                               ),
                             ),
                             Container(
-                              margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 5.0),
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 5.0),
                               width: 300.0,
                               child: Builder(
                                 builder: (context) {
