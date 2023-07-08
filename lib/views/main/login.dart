@@ -32,6 +32,9 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        '/dashboard' : (context) => const Dashboard()
+      },
         debugShowCheckedModeBanner: false,
         home: Directionality(
           textDirection: TextDirection.rtl,
@@ -193,14 +196,25 @@ class _LoginState extends State<Login> {
                                             [userName, pwd]);
 
                                         if (results.isNotEmpty) {
+                                          final row = results.first;
+                                          final staffID = row["staff_ID"];
+                                          final role = row["role"];
+                                          Map<String, String> userData = {
+                                            "staffID": staffID.toString(),
+                                            "role": role
+                                          };
                                           // ignore: use_build_context_synchronously
-                                          Navigator.push(
+                                          Navigator.pushNamed(
+                                              context, '/dashboard',
+                                              arguments: userData);
+                                          // ignore: use_build_context_synchronously
+                                         /*  Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   const Dashboard(),
                                             ),
-                                          );
+                                          ); */
                                         } else {
                                           // ignore: use_build_context_synchronously
                                           ScaffoldMessenger.of(context)
