@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 
 void main() {
@@ -13,6 +15,12 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+// The global for the form
+  final _formKey = GlobalKey<FormState>();
+  final _userNameController = TextEditingController();
+  final _pwdController = TextEditingController();
+  final _regExUName = '[a-zA-Z0-9-@]';
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,62 +40,128 @@ class _LoginState extends State<Login> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children:  [
-                          const Text(
-                            'خوش آمدید!',
-                            style: TextStyle(fontSize: 40.0),
-                          ),
-                          const SizedBox(
-                            height: 40.0,
-                          ),
-                          const SizedBox(
-                            width: 300.0,
-                            child: TextField(
-                              decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  suffixIcon: Icon(Icons.person),
-                                  labelText: 'یوزر نیم'),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              'خوش آمدید!',
+                              style: TextStyle(fontSize: 40.0),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 40.0,
-                          ),
-                          const SizedBox(
-                            width: 300.0,
-                            child: TextField(
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                suffixIcon: Icon(Icons.visibility_off),
-                                  border: OutlineInputBorder(),
-                                  labelText: 'رمز عبور'),
+                            const SizedBox(
+                              height: 40.0,
                             ),
-                          ),
-                          const SizedBox(
-                            height: 40.0,
-                          ),
-                          SizedBox(
-                            width: 300.0,
-                            child:  ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const Dashboard()));
+                            SizedBox(
+                              width: 300.0,
+                              child: TextFormField(
+                                textDirection: TextDirection.ltr,
+                                controller: _userNameController,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'نام یوزر نمی تواند خالی باشد.';
+                                  }
                                 },
-                              style:  ElevatedButton.styleFrom(
-                                backgroundColor: Colors.lightBlue,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(_regExUName),
+                                  ),
+                                ],
+                                decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    suffixIcon: Icon(Icons.person),
+                                    labelText: 'نام یوزر (نام کاربری)'),
                               ),
-                                child: const Text('ورود به سیستم'),
                             ),
-                          ),
-                           TextButton(
+                            const SizedBox(
+                              height: 40.0,
+                            ),
+                            SizedBox(
+                              width: 300.0,
+                              child: TextFormField(
+                                textDirection: TextDirection.ltr,
+                                controller: _pwdController,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'رمز عبور نمی تواند خالی باشد.';
+                                  }
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(_regExUName)),
+                                ],
+                                obscureText: true,
+                                decoration: const InputDecoration(
+                                    suffixIcon: Icon(Icons.visibility_off),
+                                    border: OutlineInputBorder(),
+                                    labelText: 'رمز عبور'),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 40.0,
+                            ),
+                            SizedBox(
+                              width: 300.0,
+                              child: Builder(
+                                builder: (context) {
+                                  return ElevatedButton(
+                                    onPressed: () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        final userName =
+                                            _userNameController.text;
+                                        final pwd = _pwdController.text;
+                                        var conn = await onConnToDb();
+                                        var results = await conn.query(
+                                            'SELECT * FROM staff_auth WHERE username = ? AND password = PASSWORD(?)',
+                                            [userName, pwd]);
+
+                                        if (results.isNotEmpty) {
+                                          // ignore: use_build_context_synchronously
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const Dashboard(),
+                                            ),
+                                          );
+                                        } else {
+                                          // ignore: use_build_context_synchronously
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              backgroundColor: Colors.redAccent,
+                                              content: SizedBox(
+                                                height: 20.0,
+                                                child: Center(
+                                                  child: Text(
+                                                      'متاسفم، نام یوزر و یا رمز عبور تان نا معتبر است.'),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                          _userNameController.clear();
+                                          _pwdController.clear();
+                                        }
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.lightBlue,
+                                    ),
+                                    child: const Text('ورود به سیستم'),
+                                  );
+                                },
+                              ),
+                            ),
+                            TextButton(
                               onPressed: () {},
-                             style: TextButton.styleFrom(
-                               foregroundColor: Colors.grey,
-                             ),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.grey,
+                              ),
                               child: const Text('رمز فراموش تان شده؟'),
-                           ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
                       const Image(
                         image: AssetImage('assets/graphics/login_img1.png'),
