@@ -36,6 +36,11 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final userData =
+        ModalRoute.of(context)!.settings.arguments as Map<String, String>;
+    final staffId = userData["staffID"];
+    final staffRole = userData["role"];
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Directionality(
@@ -74,166 +79,153 @@ class _DashboardState extends State<Dashboard> {
                       children: [
                         Card(
                           color: Colors.blue,
-                          
-                            child: SizedBox(
-                              height: 120,
-                              width: 270.0,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Colors.blue[400],
-                                    child: const Icon(
-                                        Icons.supervised_user_circle,
-                                        color: Colors.white),
+                          child: SizedBox(
+                            height: 120,
+                            width: 270.0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: Colors.blue[400],
+                                  child: const Icon(
+                                      Icons.supervised_user_circle,
+                                      color: Colors.white),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 0.0,
+                                      top: 0.0,
+                                      right: 15.0,
+                                      bottom: 0.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Text('بیماران امروز',
+                                          style: TextStyle(
+                                              fontSize: 16.0,
+                                              color: Colors.white)),
+                                      Text('20',
+                                          style: TextStyle(
+                                              fontSize: 16.0,
+                                              color: Colors.white)),
+                                    ],
                                   ),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 0.0,
-                                        top: 0.0,
-                                        right: 15.0,
-                                        bottom: 0.0),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: const [
-                                        Text('بیماران امروز',
-                                            style: TextStyle(
-                                                fontSize: 16.0,
-                                                color: Colors.white)),
-                                        Text('20',
-                                            style: TextStyle(
-                                                fontSize: 16.0,
-                                                color: Colors.white)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          
+                          ),
                         ),
                         Card(
                           color: Colors.orange,
-                          
-                            child: SizedBox(
-                              height: 120,
-                              width: 270.0,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Colors.orange[400],
-                                    child: const Icon(
-                                        Icons.attach_money_rounded,
-                                        color: Colors.white),
+                          child: SizedBox(
+                            height: 120,
+                            width: 270.0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: Colors.orange[400],
+                                  child: const Icon(Icons.attach_money_rounded,
+                                      color: Colors.white),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 0.0,
+                                      top: 0.0,
+                                      right: 15.0,
+                                      bottom: 0.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Text('مصارف ماه جاری',
+                                          style: TextStyle(
+                                              fontSize: 16.0,
+                                              color: Colors.white)),
+                                      Text('20',
+                                          style: TextStyle(
+                                              fontSize: 16.0,
+                                              color: Colors.white)),
+                                    ],
                                   ),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 0.0,
-                                        top: 0.0,
-                                        right: 15.0,
-                                        bottom: 0.0),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: const [
-                                        Text('مصارف ماه جاری',
-                                            style: TextStyle(
-                                                fontSize: 16.0,
-                                                color: Colors.white)),
-                                        Text('20',
-                                            style: TextStyle(
-                                                fontSize: 16.0,
-                                                color: Colors.white)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          
+                          ),
                         ),
                         Card(
                           color: Colors.green,
-                          
-                            child: SizedBox(
-                              height: 120,
-                              width: 270.0,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Colors.green[400],
-                                    child: const Icon(
-                                        Icons.money_off_csred_outlined,
-                                        color: Colors.white),
+                          child: SizedBox(
+                            height: 120,
+                            width: 270.0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: Colors.green[400],
+                                  child: const Icon(
+                                      Icons.money_off_csred_outlined,
+                                      color: Colors.white),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 0.0,
+                                      top: 0.0,
+                                      right: 15.0,
+                                      bottom: 0.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Text('مالیات امسال',
+                                          style: TextStyle(
+                                              fontSize: 16.0,
+                                              color: Colors.white)),
+                                      Text('20',
+                                          style: TextStyle(
+                                              fontSize: 16.0,
+                                              color: Colors.white)),
+                                    ],
                                   ),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 0.0,
-                                        top: 0.0,
-                                        right: 15.0,
-                                        bottom: 0.0),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: const [
-                                        Text('مالیات امسال',
-                                            style: TextStyle(
-                                                fontSize: 16.0,
-                                                color: Colors.white)),
-                                        Text('20',
-                                            style: TextStyle(
-                                                fontSize: 16.0,
-                                                color: Colors.white)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          
+                          ),
                         ),
                         Card(
                           color: Colors.brown,
-                          
-                            child: SizedBox(
-                              height: 120,
-                              width: 270.0,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Colors.brown[400],
-                                    child: const Icon(Icons.people_outline,
-                                        color: Colors.white),
+                          child: SizedBox(
+                            height: 120,
+                            width: 270.0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor: Colors.brown[400],
+                                  child: const Icon(Icons.people_outline,
+                                      color: Colors.white),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 0.0,
+                                      top: 0.0,
+                                      right: 15.0,
+                                      bottom: 0.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Text('همه مریض ها',
+                                          style: TextStyle(
+                                              fontSize: 16.0,
+                                              color: Colors.white)),
+                                      Text('1050',
+                                          style: TextStyle(
+                                              fontSize: 16.0,
+                                              color: Colors.white)),
+                                    ],
                                   ),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 0.0,
-                                        top: 0.0,
-                                        right: 15.0,
-                                        bottom: 0.0),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: const [
-                                        Text('همه مریض ها',
-                                            style: TextStyle(
-                                                fontSize: 16.0,
-                                                color: Colors.white)),
-                                        Text('1050',
-                                            style: TextStyle(
-                                                fontSize: 16.0,
-                                                color: Colors.white)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          
+                          ),
                         ),
                       ],
                     ),
@@ -243,77 +235,70 @@ class _DashboardState extends State<Dashboard> {
                     child: Row(
                       children: [
                         Card(
-                          
-                            child: SizedBox(
-                              height: 350,
-                              width: 800.0,
-                              child: Column(
-                                children: [
-                                  SfCartesianChart(
-                                      primaryXAxis: CategoryAxis(),
-                                      // Chart title
-                                      title: ChartTitle(
-                                          text:
-                                              'مراجعه بیماران در شش ماه گذشته'),
-                                      // Enable legend
-                                      legend: Legend(isVisible: true),
-                                      // Enable tooltip
-                                      tooltipBehavior:
-                                          TooltipBehavior(enable: true),
-                                      series: <ChartSeries<_SalesData, String>>[
-                                        LineSeries<_SalesData, String>(
-                                            dataSource: data,
-                                            xValueMapper:
-                                                (_SalesData sales, _) =>
-                                                    sales.year,
-                                            yValueMapper:
-                                                (_SalesData sales, _) =>
-                                                    sales.sales,
-                                            name: 'بیماران',
-                                            // Enable data label
-                                            dataLabelSettings:
-                                                const DataLabelSettings(
-                                                    isVisible: true))
-                                      ]),
-                                ],
-                              ),
-                            ),
-                          
-                        ),
-                        Card(
-                          
-                            child: SizedBox(
-                              height: 350.0,
-                              width: 300.0,
-                              child: Column(
-                                children: [
-                                  SfCircularChart(
-                                    title:
-                                        ChartTitle(text: 'مصارف سه ماه اخیر'),
+                          child: SizedBox(
+                            height: 350,
+                            width: 800.0,
+                            child: Column(
+                              children: [
+                                SfCartesianChart(
+                                    primaryXAxis: CategoryAxis(),
+                                    // Chart title
+                                    title: ChartTitle(
+                                        text: 'مراجعه بیماران در شش ماه گذشته'),
                                     // Enable legend
                                     legend: Legend(isVisible: true),
                                     // Enable tooltip
                                     tooltipBehavior:
                                         TooltipBehavior(enable: true),
-                                    series: <PieSeries<_PieData, String>>[
-                                      PieSeries<_PieData, String>(
-                                          explode: true,
-                                          explodeIndex: 0,
-                                          dataSource: pieData,
-                                          xValueMapper: (_PieData data, _) =>
-                                              data.xData,
-                                          yValueMapper: (_PieData data, _) =>
-                                              data.yData,
-                                          dataLabelMapper: (_PieData data, _) =>
-                                              data.text,
-                                          dataLabelSettings: const DataLabelSettings(
-                                              isVisible: true)),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                    series: <ChartSeries<_SalesData, String>>[
+                                      LineSeries<_SalesData, String>(
+                                          dataSource: data,
+                                          xValueMapper: (_SalesData sales, _) =>
+                                              sales.year,
+                                          yValueMapper: (_SalesData sales, _) =>
+                                              sales.sales,
+                                          name: 'بیماران',
+                                          // Enable data label
+                                          dataLabelSettings:
+                                              const DataLabelSettings(
+                                                  isVisible: true))
+                                    ]),
+                              ],
                             ),
-                          
+                          ),
+                        ),
+                        Card(
+                          child: SizedBox(
+                            height: 350.0,
+                            width: 300.0,
+                            child: Column(
+                              children: [
+                                SfCircularChart(
+                                  title: ChartTitle(text: 'مصارف سه ماه اخیر'),
+                                  // Enable legend
+                                  legend: Legend(isVisible: true),
+                                  // Enable tooltip
+                                  tooltipBehavior:
+                                      TooltipBehavior(enable: true),
+                                  series: <PieSeries<_PieData, String>>[
+                                    PieSeries<_PieData, String>(
+                                        explode: true,
+                                        explodeIndex: 0,
+                                        dataSource: pieData,
+                                        xValueMapper: (_PieData data, _) =>
+                                            data.xData,
+                                        yValueMapper: (_PieData data, _) =>
+                                            data.yData,
+                                        dataLabelMapper: (_PieData data, _) =>
+                                            data.text,
+                                        dataLabelSettings:
+                                            const DataLabelSettings(
+                                                isVisible: true)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
