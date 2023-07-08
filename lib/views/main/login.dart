@@ -64,7 +64,7 @@ class _LoginState extends State<Login> {
                                   right: 20.0,
                                   top: 20.0,
                                   bottom: 10.0),
-                              width: 300.0,
+                              width: 330.0,
                               child: TextFormField(
                                 textDirection: TextDirection.ltr,
                                 controller: _userNameController,
@@ -111,7 +111,7 @@ class _LoginState extends State<Login> {
                                   right: 20.0,
                                   top: 10.0,
                                   bottom: 10.0),
-                              width: 300.0,
+                              width: 330.0,
                               child: TextFormField(
                                 textDirection: TextDirection.ltr,
                                 controller: _pwdController,
@@ -169,63 +169,59 @@ class _LoginState extends State<Login> {
                                   top: 10.0,
                                   bottom: 5.0),
                               width: 300.0,
+                              height: 35.0,
                               child: Builder(
                                 builder: (context) {
-                                  return Container(
-                                    width: 400.0,
-                                    height: 35.0,
-                                    child: OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20.0),
-                                        ),
-                                        side: const BorderSide(
-                                          color: Colors.blue,
-                                        ),
+                                  return OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
                                       ),
-                                      onPressed: () async {
-                                        if (_formKey.currentState!.validate()) {
-                                          final userName =
-                                              _userNameController.text;
-                                          final pwd = _pwdController.text;
-                                          var conn = await onConnToDb();
-                                          var results = await conn.query(
-                                              'SELECT * FROM staff_auth WHERE username = ? AND password = PASSWORD(?)',
-                                              [userName, pwd]);
+                                      side: const BorderSide(
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        final userName =
+                                            _userNameController.text;
+                                        final pwd = _pwdController.text;
+                                        var conn = await onConnToDb();
+                                        var results = await conn.query(
+                                            'SELECT * FROM staff_auth WHERE username = ? AND password = PASSWORD(?)',
+                                            [userName, pwd]);
 
-                                          if (results.isNotEmpty) {
-                                            // ignore: use_build_context_synchronously
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const Dashboard(),
-                                              ),
-                                            );
-                                          } else {
-                                            // ignore: use_build_context_synchronously
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                backgroundColor:
-                                                    Colors.redAccent,
-                                                content: SizedBox(
-                                                  height: 20.0,
-                                                  child: Center(
-                                                    child: Text(
-                                                        'متاسفم، نام یوزر و یا رمز عبور تان نا معتبر است.'),
-                                                  ),
+                                        if (results.isNotEmpty) {
+                                          // ignore: use_build_context_synchronously
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const Dashboard(),
+                                            ),
+                                          );
+                                        } else {
+                                          // ignore: use_build_context_synchronously
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              backgroundColor: Colors.redAccent,
+                                              content: SizedBox(
+                                                height: 20.0,
+                                                child: Center(
+                                                  child: Text(
+                                                      'متاسفم، نام یوزر و یا رمز عبور تان نا معتبر است.'),
                                                 ),
                                               ),
-                                            );
-                                            _userNameController.clear();
-                                            _pwdController.clear();
-                                          }
+                                            ),
+                                          );
+                                          _userNameController.clear();
+                                          _pwdController.clear();
                                         }
-                                      },
-                                      child: const Text('ورود به سیستم'),
-                                    ),
+                                      }
+                                    },
+                                    child: const Text('ورود به سیستم'),
                                   );
                                 },
                               ),
