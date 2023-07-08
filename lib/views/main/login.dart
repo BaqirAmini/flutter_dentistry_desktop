@@ -50,10 +50,12 @@ class _LoginState extends State<Login> {
                               'خوش آمدید!',
                               style: TextStyle(fontSize: 40.0),
                             ),
-                            const SizedBox(
-                              height: 40.0,
-                            ),
-                            SizedBox(
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 20.0,
+                                  bottom: 10.0),
                               width: 300.0,
                               child: TextFormField(
                                 textDirection: TextDirection.ltr,
@@ -69,15 +71,38 @@ class _LoginState extends State<Login> {
                                   ),
                                 ],
                                 decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    suffixIcon: Icon(Icons.person),
-                                    labelText: 'نام یوزر (نام کاربری)'),
+                                  border: OutlineInputBorder(),
+                                  suffixIcon: Icon(Icons.person),
+                                  labelText: 'نام یوزر (نام کاربری)',
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
                               ),
                             ),
-                            const SizedBox(
-                              height: 40.0,
-                            ),
-                            SizedBox(
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
                               width: 300.0,
                               child: TextFormField(
                                 textDirection: TextDirection.ltr,
@@ -93,62 +118,92 @@ class _LoginState extends State<Login> {
                                 ],
                                 obscureText: true,
                                 decoration: const InputDecoration(
-                                    suffixIcon: Icon(Icons.visibility_off),
-                                    border: OutlineInputBorder(),
-                                    labelText: 'رمز عبور'),
+                                  suffixIcon: Icon(Icons.visibility_off),
+                                  border: OutlineInputBorder(),
+                                  labelText: 'رمز عبور',
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
                               ),
                             ),
-                            const SizedBox(
-                              height: 40.0,
-                            ),
-                            SizedBox(
+                            Container(
+                              margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 5.0),
                               width: 300.0,
                               child: Builder(
                                 builder: (context) {
-                                  return ElevatedButton(
-                                    onPressed: () async {
-                                      if (_formKey.currentState!.validate()) {
-                                        final userName =
-                                            _userNameController.text;
-                                        final pwd = _pwdController.text;
-                                        var conn = await onConnToDb();
-                                        var results = await conn.query(
-                                            'SELECT * FROM staff_auth WHERE username = ? AND password = PASSWORD(?)',
-                                            [userName, pwd]);
+                                  return Container(
+                                    width: 400.0,
+                                    height: 35.0,
+                                    child: OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
+                                        ),
+                                        side: const BorderSide(
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                      onPressed: () async {
+                                        if (_formKey.currentState!.validate()) {
+                                          final userName =
+                                              _userNameController.text;
+                                          final pwd = _pwdController.text;
+                                          var conn = await onConnToDb();
+                                          var results = await conn.query(
+                                              'SELECT * FROM staff_auth WHERE username = ? AND password = PASSWORD(?)',
+                                              [userName, pwd]);
 
-                                        if (results.isNotEmpty) {
-                                          // ignore: use_build_context_synchronously
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const Dashboard(),
-                                            ),
-                                          );
-                                        } else {
-                                          // ignore: use_build_context_synchronously
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              backgroundColor: Colors.redAccent,
-                                              content: SizedBox(
-                                                height: 20.0,
-                                                child: Center(
-                                                  child: Text(
-                                                      'متاسفم، نام یوزر و یا رمز عبور تان نا معتبر است.'),
+                                          if (results.isNotEmpty) {
+                                            // ignore: use_build_context_synchronously
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const Dashboard(),
+                                              ),
+                                            );
+                                          } else {
+                                            // ignore: use_build_context_synchronously
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                backgroundColor:
+                                                    Colors.redAccent,
+                                                content: SizedBox(
+                                                  height: 20.0,
+                                                  child: Center(
+                                                    child: Text(
+                                                        'متاسفم، نام یوزر و یا رمز عبور تان نا معتبر است.'),
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          );
-                                          _userNameController.clear();
-                                          _pwdController.clear();
+                                            );
+                                            _userNameController.clear();
+                                            _pwdController.clear();
+                                          }
                                         }
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.lightBlue,
+                                      },
+                                      child: const Text('ورود به سیستم'),
                                     ),
-                                    child: const Text('ورود به سیستم'),
                                   );
                                 },
                               ),
