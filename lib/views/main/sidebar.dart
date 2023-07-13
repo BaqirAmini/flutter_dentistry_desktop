@@ -98,8 +98,32 @@ class Sidebar extends StatelessWidget {
             leading: const Icon(Icons.exit_to_app),
             title: const Text('خروج'),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const Login()));
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  content: const Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Text('آیا میخواهید از سیستم خارج شوید؟'),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () =>
+                            Navigator.of(context, rootNavigator: true).pop(),
+                        child: const Text('لغو')),
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Login(),
+                            ),
+                          );
+                          Navigator.of(context, rootNavigator: true).pop();
+                        },
+                        child: const Text('خروج')),
+                  ],
+                ),
+              );
             },
           ),
         ],
