@@ -89,8 +89,11 @@ class _NewPatientState extends State<NewPatient> {
   final _lNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _addrController = TextEditingController();
+  final _totalExpController = TextEditingController();
+  final _recievableController = TextEditingController();
   final _regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
   final _regExOnlydigits = "[0-9+]";
+  final _regExDecimal = "[0-9.]";
 
   bool _isVisibleForFilling = true;
   bool _isVisibleForBleaching = false;
@@ -105,6 +108,7 @@ class _NewPatientState extends State<NewPatient> {
   bool _isVisibleForPayment = false;
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
+  final _formKey3 = GlobalKey<FormState>();
   // Declare a list to contain patients' info
   List<Step> stepList() => [
         Step(
@@ -1100,91 +1104,36 @@ class _NewPatientState extends State<NewPatient> {
           ),
         ),
         Step(
-            state: _currentStep <= 1 ? StepState.editing : StepState.complete,
-            isActive: _currentStep >= 1,
-            title: const Text('هزینه ها / فیس'),
-            content: SizedBox(
-                child: Center(
-              child: SizedBox(
-                width: 500.0,
-                child: Column(
-                  children: [
-                    const Text(
-                        'لطفاً هزینه و اقساط را در خانه های ذیل انتخاب نمایید.'),
-                    Container(
-                      margin: const EdgeInsets.all(20.0),
-                      child: const TextField(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'کل مصارف',
-                          suffixIcon: Icon(Icons.money_rounded),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(20.0),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'نوعیت پرداخت',
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: Container(
-                            height: 26.0,
-                            child: DropdownButton(
-                              isExpanded: true,
-                              icon: const Icon(Icons.arrow_drop_down),
-                              value: payTypeDropdown,
-                              items: onPayInstallment()
-                                  .map((String installmentItems) {
-                                return DropdownMenuItem(
-                                  alignment: Alignment.centerRight,
-                                  value: installmentItems,
-                                  child: Directionality(
-                                    textDirection: TextDirection.rtl,
-                                    child: Text(installmentItems),
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  payTypeDropdown = newValue!;
-                                  if (payTypeDropdown != 'تکمیل') {
-                                    _isVisibleForPayment = true;
-                                  } else {
-                                    _isVisibleForPayment = false;
-                                  }
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible: _isVisibleForPayment,
-                      child: Container(
+          state: _currentStep <= 1 ? StepState.editing : StepState.complete,
+          isActive: _currentStep >= 1,
+          title: const Text('هزینه ها / فیس'),
+          content: SizedBox(
+            child: Center(
+              child: Form(
+                key: _formKey3,
+                child: SizedBox(
+                  width: 500.0,
+                  child: Column(
+                    children: [
+                      const Text(
+                          'لطفاً هزینه و اقساط را در خانه های ذیل انتخاب نمایید.'),
+                      Container(
                         margin: const EdgeInsets.all(20.0),
-                        child: const TextField(
-                          decoration: InputDecoration(
+                        child: TextFormField(
+                          controller: _totalExpController,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'مصارف کل نمیتواند خالی باشد.';
+                            }
+                          },
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(_regExDecimal),
+                            ),
+                          ],
+                          decoration: const InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: 'مبلغ رسید',
+                            labelText: 'کل مصارف',
                             suffixIcon: Icon(Icons.money_rounded),
                             enabledBorder: OutlineInputBorder(
                                 borderRadius:
@@ -1194,14 +1143,109 @@ class _NewPatientState extends State<NewPatient> {
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
+                            errorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.red)),
+                            focusedErrorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 1.5)),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      Container(
+                        margin: const EdgeInsets.all(20.0),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'نوعیت پرداخت',
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.blue)),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: Container(
+                              height: 26.0,
+                              child: DropdownButton(
+                                isExpanded: true,
+                                icon: const Icon(Icons.arrow_drop_down),
+                                value: payTypeDropdown,
+                                items: onPayInstallment()
+                                    .map((String installmentItems) {
+                                  return DropdownMenuItem(
+                                    alignment: Alignment.centerRight,
+                                    value: installmentItems,
+                                    child: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: Text(installmentItems),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    payTypeDropdown = newValue!;
+                                    if (payTypeDropdown != 'تکمیل') {
+                                      _isVisibleForPayment = true;
+                                    } else {
+                                      _isVisibleForPayment = false;
+                                    }
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: _isVisibleForPayment,
+                        child: Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            controller: _recievableController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'مبلغ رسید نمی تواند خالی باشد.';
+                              }
+                            },
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'مبلغ رسید',
+                              suffixIcon: Icon(Icons.money_rounded),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ))),
+            ),
+          ),
+        ),
       ];
 
   @override
@@ -1241,8 +1285,36 @@ class _NewPatientState extends State<NewPatient> {
                   if (_formKey1.currentState!.validate()) {
                     _currentStep++;
                   }
+                } else {
+                   if (_formKey3.currentState!.validate()) {
+                    print('$_currentStep');
+                  }
                 }
               });
+            },
+            controlsBuilder: (BuildContext context, ControlsDetails details) {
+              return Row(
+                children: [
+                  TextButton(
+                    onPressed: details.onStepCancel,
+                    child: const Text('قبلی'),
+                  ),
+                  ElevatedButton(
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                      side: const BorderSide(
+                        color: Colors.blue,
+                      ),
+                    ),
+                    onPressed: details.onStepContinue,
+                    child: Text(_currentStep == stepList().length - 1
+                        ? 'ثبت کردن'
+                        : 'ادامه'),
+                  ),
+                ],
+              );
             },
           ),
         ),
