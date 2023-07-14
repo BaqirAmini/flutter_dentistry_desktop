@@ -63,7 +63,7 @@ class _NewPatientState extends State<NewPatient> {
   int gumSurgeryDropDown = 1;
 
   // Declare a variable for canal root surgery
-  String canalRootSurgery = 'بالا - راست';
+  String _gumTypeSelected = 'بالا - راست';
 
   // Declare a variable for teeth covering
   String teethCovering = 'پورسلن';
@@ -77,13 +77,14 @@ class _NewPatientState extends State<NewPatient> {
   // Declare a variable for teeth numbers
   int teethNumbers = 1;
 
+  // Declase a variable for removing teeth
+  String _teethRemoveSelected = 'ساده';
+
   // Declare a variable for payment installment
   String installments = 'تکمیل';
 
   int _currentStep = 0;
 
-  final _formKey1 = GlobalKey<FormState>();
-  final _formKey2 = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _lNameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -91,342 +92,351 @@ class _NewPatientState extends State<NewPatient> {
   final _regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
   final _regExOnlydigits = "[0-9+]";
 
+  bool _isVisibleForFilling = true;
+  bool _isVisibleForBleaching = false;
+  bool _isVisibleForScaling = false;
+  bool _isVisibleForOrtho = false;
+  bool _isVisibleForProthesis = false;
+  bool _isVisibleForRoot = false;
+  bool _isVisibleGum = false;
+  bool _isVisibleForTeethRemove = false;
+  bool _isVisibleForCover = false;
+  bool _isVisibleMouth = false;
+  final _formKey1 = GlobalKey<FormState>();
+  final _formKey2 = GlobalKey<FormState>();
   // Declare a list to contain patients' info
   List<Step> stepList() => [
         Step(
           state: _currentStep <= 0 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 0,
           title: const Text('معلومات شخصی مریض'),
-          content: SizedBox(
-            width: 100.0,
-            child: Center(
+          content: Center(
+            child: SizedBox(
+              width: 500.0,
               child: Form(
                 key: _formKey1,
-                child: SizedBox(
-                  width: 500.0,
-                  child: Column(
-                    children: [
-                      const Text(
-                          'لطفا معلومات شخصی مریض را با دقت در خانه های ذیل وارد کنید.'),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: TextFormField(
-                          controller: _nameController,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(_regExOnlyAbc),
-                            ),
-                          ],
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'نام مریض الزامی است.';
-                            } else if (value.length < 3 || value.length > 10) {
-                              return 'نام مریض باید بین 3 و 12 حرف باشد.';
-                            }
-                          },
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'نام',
-                            suffixIcon: Icon(Icons.person),
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                            errorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.red)),
-                            focusedErrorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide:
-                                    BorderSide(color: Colors.red, width: 1.5)),
+                child: Column(
+                  children: [
+                    const Text(
+                        'لطفا معلومات شخصی مریض را با دقت در خانه های ذیل وارد کنید.'),
+                    Container(
+                      margin: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        controller: _nameController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(_regExOnlyAbc),
                           ),
+                        ],
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'نام مریض الزامی است.';
+                          } else if (value.length < 3 || value.length > 10) {
+                            return 'نام مریض باید بین 3 و 12 حرف باشد.';
+                          }
+                        },
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'نام',
+                          suffixIcon: Icon(Icons.person),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
+                          errorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.red)),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 1.5)),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: TextFormField(
-                          controller: _lNameController,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(_regExOnlyAbc),
-                            ),
-                          ],
-                          validator: (value) {
-                            if (value!.isNotEmpty) {
-                              if (value.length < 3 || value.length > 10) {
-                                return 'تخلص باید از سه الی ده حرف باشد.';
-                              } else {
-                                return null;
-                              }
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        controller: _lNameController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(_regExOnlyAbc),
+                          ),
+                        ],
+                        validator: (value) {
+                          if (value!.isNotEmpty) {
+                            if (value.length < 3 || value.length > 10) {
+                              return 'تخلص باید از سه الی ده حرف باشد.';
                             } else {
                               return null;
                             }
-                          },
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'تخلص',
-                            suffixIcon: Icon(Icons.person),
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                            errorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.red)),
-                            focusedErrorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide:
-                                    BorderSide(color: Colors.red, width: 1.5)),
-                          ),
+                          } else {
+                            return null;
+                          }
+                        },
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'تخلص',
+                          suffixIcon: Icon(Icons.person),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
+                          errorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.red)),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 1.5)),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'سن',
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Container(
-                              height: 26.0,
-                              child: DropdownButton(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: ageDropDown,
-                                items: getAges().map((int ageItems) {
-                                  return DropdownMenuItem(
-                                    alignment: Alignment.centerRight,
-                                    value: ageItems,
-                                    child: Directionality(
-                                      textDirection: TextDirection.rtl,
-                                      child: Text('$ageItems سال '),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (int? newValue) {
-                                  setState(() {
-                                    ageDropDown = newValue!;
-                                  });
-                                },
-                              ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(20.0),
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'سن',
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: Container(
+                            height: 26.0,
+                            child: DropdownButton(
+                              isExpanded: true,
+                              icon: const Icon(Icons.arrow_drop_down),
+                              value: ageDropDown,
+                              items: getAges().map((int ageItems) {
+                                return DropdownMenuItem(
+                                  alignment: Alignment.centerRight,
+                                  value: ageItems,
+                                  child: Directionality(
+                                    textDirection: TextDirection.rtl,
+                                    child: Text('$ageItems سال '),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (int? newValue) {
+                                setState(() {
+                                  ageDropDown = newValue!;
+                                });
+                              },
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'جنیست',
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Container(
-                              height: 26.0,
-                              child: DropdownButton(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: genderDropDown,
-                                items: genderItems.map((String genderItems) {
-                                  return DropdownMenuItem(
-                                    alignment: Alignment.centerRight,
-                                    value: genderItems,
-                                    child: Text(genderItems),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    genderDropDown = newValue!;
-                                  });
-                                },
-                              ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(20.0),
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'جنیست',
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: Container(
+                            height: 26.0,
+                            child: DropdownButton(
+                              isExpanded: true,
+                              icon: const Icon(Icons.arrow_drop_down),
+                              value: genderDropDown,
+                              items: genderItems.map((String genderItems) {
+                                return DropdownMenuItem(
+                                  alignment: Alignment.centerRight,
+                                  value: genderItems,
+                                  child: Text(genderItems),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  genderDropDown = newValue!;
+                                });
+                              },
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'حالت مدنی',
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Container(
-                              height: 26.0,
-                              child: DropdownButton(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: dropdownValue,
-                                items: items.map((String items) {
-                                  return DropdownMenuItem(
-                                    alignment: Alignment.centerRight,
-                                    value: items,
-                                    child: Text(items),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    dropdownValue = newValue!;
-                                  });
-                                },
-                              ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(20.0),
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'حالت مدنی',
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: Container(
+                            height: 26.0,
+                            child: DropdownButton(
+                              isExpanded: true,
+                              icon: const Icon(Icons.arrow_drop_down),
+                              value: dropdownValue,
+                              items: items.map((String items) {
+                                return DropdownMenuItem(
+                                  alignment: Alignment.centerRight,
+                                  value: items,
+                                  child: Text(items),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  dropdownValue = newValue!;
+                                });
+                              },
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'گروپ خون',
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Container(
-                              height: 26.0,
-                              child: DropdownButton(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: bloodDropDown,
-                                items: bloodGroupItems
-                                    .map((String bloodGroupItems) {
-                                  return DropdownMenuItem(
-                                    alignment: Alignment.centerRight,
-                                    value: bloodGroupItems,
-                                    child: Text(bloodGroupItems),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    bloodDropDown = newValue!;
-                                  });
-                                },
-                              ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(20.0),
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'گروپ خون',
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: Container(
+                            height: 26.0,
+                            child: DropdownButton(
+                              isExpanded: true,
+                              icon: const Icon(Icons.arrow_drop_down),
+                              value: bloodDropDown,
+                              items:
+                                  bloodGroupItems.map((String bloodGroupItems) {
+                                return DropdownMenuItem(
+                                  alignment: Alignment.centerRight,
+                                  value: bloodGroupItems,
+                                  child: Text(bloodGroupItems),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  bloodDropDown = newValue!;
+                                });
+                              },
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: TextFormField(
-                          textDirection: TextDirection.ltr,
-                          controller: _phoneController,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(_regExOnlydigits),
-                            ),
-                          ],
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'نمبر تماس الزامی است.';
-                            } else if (value.startsWith('07')) {
-                              if (value.length < 10 || value.length > 10) {
-                                return 'نمبر تماس باید 10 عدد باشد.';
-                              }
-                            } else if (value.startsWith('+93')) {
-                              if (value.length < 12 || value.length > 12) {
-                                return 'نمبر تماس  همراه با کود کشور باید 12 عدد باشد.';
-                              }
-                            } else {
-                              return 'نمبر تماس نا معتبر است.';
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        textDirection: TextDirection.ltr,
+                        controller: _phoneController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(_regExOnlydigits),
+                          ),
+                        ],
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'نمبر تماس الزامی است.';
+                          } else if (value.startsWith('07')) {
+                            if (value.length < 10 || value.length > 10) {
+                              return 'نمبر تماس باید 10 عدد باشد.';
                             }
-                          },
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'نمبر تماس',
-                            suffixIcon: Icon(Icons.phone),
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                            errorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.red)),
-                            focusedErrorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide:
-                                    BorderSide(color: Colors.red, width: 1.5)),
-                          ),
+                          } else if (value.startsWith('+93')) {
+                            if (value.length < 12 || value.length > 12) {
+                              return 'نمبر تماس  همراه با کود کشور باید 12 عدد باشد.';
+                            }
+                          } else {
+                            return 'نمبر تماس نا معتبر است.';
+                          }
+                        },
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'نمبر تماس',
+                          suffixIcon: Icon(Icons.phone),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
+                          errorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.red)),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 1.5)),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: TextFormField(
-                          controller: _addrController,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(_regExOnlyAbc),
-                            ),
-                          ],
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'آدرس',
-                            suffixIcon: Icon(Icons.location_on_outlined),
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(20.0),
+                      child: TextFormField(
+                        controller: _addrController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(_regExOnlyAbc),
                           ),
+                        ],
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'آدرس',
+                          suffixIcon: Icon(Icons.location_on_outlined),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -478,6 +488,136 @@ class _NewPatientState extends State<NewPatient> {
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     serviceDropDown = newValue!;
+                                    if (serviceDropDown == 'پرکاری دندان') {
+                                      _isVisibleForFilling = true;
+                                      _isVisibleForBleaching = false;
+                                      _isVisibleForScaling = false;
+                                      _isVisibleForOrtho = false;
+                                      _isVisibleForProthesis = false;
+                                      _isVisibleForTeethRemove = false;
+                                      _isVisibleForCover = false;
+                                      _isVisibleGum = false;
+                                      _isVisibleForRoot = false;
+                                      _isVisibleMouth = false;
+                                    } else if (serviceDropDown ==
+                                        'سفید کردن دندان') {
+                                      _isVisibleForFilling = false;
+                                      _isVisibleForBleaching = true;
+                                      _isVisibleForProthesis = false;
+                                      _isVisibleForScaling = false;
+                                      _isVisibleForTeethRemove = false;
+                                      _isVisibleForCover = false;
+                                      _isVisibleGum = false;
+                                      _isVisibleForOrtho = false;
+                                      _isVisibleForRoot = false;
+                                      _isVisibleMouth = false;
+                                    } else if (serviceDropDown ==
+                                        'جرم گیری دندان') {
+                                      _isVisibleForScaling = true;
+                                      _isVisibleForFilling = false;
+                                      _isVisibleForBleaching = false;
+                                      _isVisibleForProthesis = false;
+                                      _isVisibleForTeethRemove = false;
+                                      _isVisibleForCover = false;
+                                      _isVisibleForOrtho = false;
+                                      _isVisibleGum = false;
+                                      _isVisibleForRoot = false;
+                                      _isVisibleMouth = false;
+                                    } else if (serviceDropDown == 'ارتودانسی') {
+                                      _isVisibleForOrtho = true;
+                                      _isVisibleForFilling = false;
+                                      _isVisibleForBleaching = false;
+                                      _isVisibleForScaling = false;
+                                      _isVisibleForProthesis = false;
+                                      _isVisibleGum = false;
+                                      _isVisibleForTeethRemove = false;
+                                      _isVisibleForCover = false;
+                                      _isVisibleForRoot = false;
+                                      _isVisibleMouth = false;
+                                    } else if (serviceDropDown ==
+                                        'پروتیز دندان') {
+                                      _isVisibleForProthesis = true;
+                                      _isVisibleForOrtho = false;
+                                      _isVisibleForFilling = false;
+                                      _isVisibleForBleaching = false;
+                                      _isVisibleForScaling = false;
+                                      _isVisibleGum = false;
+                                      _isVisibleForTeethRemove = false;
+                                      _isVisibleForCover = false;
+                                      _isVisibleForRoot = false;
+                                      _isVisibleMouth = false;
+                                    } else if (serviceDropDown ==
+                                        'جراحی ریشه دندان') {
+                                      _isVisibleForRoot = true;
+                                      _isVisibleForProthesis = false;
+                                      _isVisibleForOrtho = false;
+                                      _isVisibleForFilling = false;
+                                      _isVisibleForBleaching = false;
+                                      _isVisibleForScaling = false;
+                                      _isVisibleGum = false;
+                                      _isVisibleForTeethRemove = false;
+                                      _isVisibleForCover = false;
+                                      _isVisibleMouth = false;
+                                    } else if (serviceDropDown ==
+                                        'جراحی لثه دندان') {
+                                      _isVisibleGum = true;
+                                      _isVisibleForProthesis = false;
+                                      _isVisibleForOrtho = false;
+                                      _isVisibleForFilling = false;
+                                      _isVisibleForBleaching = false;
+                                      _isVisibleForScaling = false;
+                                      _isVisibleForRoot = false;
+                                      _isVisibleForTeethRemove = false;
+                                      _isVisibleForCover = false;
+                                      _isVisibleMouth = false;
+                                    } else if (serviceDropDown ==
+                                        'معاینه دهن') {
+                                      _isVisibleMouth = true;
+                                      _isVisibleForProthesis = false;
+                                      _isVisibleForOrtho = false;
+                                      _isVisibleForFilling = false;
+                                      _isVisibleForBleaching = false;
+                                      _isVisibleForScaling = false;
+                                      _isVisibleForRoot = false;
+                                      _isVisibleGum = false;
+                                      _isVisibleForTeethRemove = false;
+                                      _isVisibleForCover = false;
+                                    } else if (serviceDropDown ==
+                                        'کشیدن دندان') {
+                                      _isVisibleForTeethRemove = true;
+                                      _isVisibleForProthesis = false;
+                                      _isVisibleForOrtho = false;
+                                      _isVisibleForFilling = false;
+                                      _isVisibleForBleaching = false;
+                                      _isVisibleForScaling = false;
+                                      _isVisibleForRoot = false;
+                                      _isVisibleGum = false;
+                                      _isVisibleForCover = false;
+                                      _isVisibleMouth = false;
+                                    } else if (serviceDropDown ==
+                                        'پوش کردن دندان') {
+                                      _isVisibleForCover = true;
+                                      _isVisibleForProthesis = false;
+                                      _isVisibleForOrtho = false;
+                                      _isVisibleForFilling = false;
+                                      _isVisibleForBleaching = false;
+                                      _isVisibleForScaling = false;
+                                      _isVisibleForRoot = false;
+                                      _isVisibleGum = false;
+                                      _isVisibleForTeethRemove = false;
+                                      _isVisibleMouth = false;
+                                    } else {
+                                      _isVisibleForProthesis = false;
+                                      _isVisibleForOrtho = false;
+                                      _isVisibleForFilling = false;
+                                      _isVisibleForBleaching = false;
+                                      _isVisibleForScaling = false;
+                                      _isVisibleForRoot = false;
+                                      _isVisibleMouth = false;
+                                      _isVisibleGum = false;
+                                      _isVisibleForTeethRemove = false;
+                                      _isVisibleForCover = false;
+                                    }
                                   });
                                 },
                               ),
@@ -485,368 +625,469 @@ class _NewPatientState extends State<NewPatient> {
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'نوعیت سفید کردن دندانها',
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Container(
-                              height: 26.0,
-                              child: DropdownButton(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: stageDropDown,
-                                items:
-                                    onTeethBleaching().map((String stageItems) {
-                                  return DropdownMenuItem(
-                                    alignment: Alignment.centerRight,
-                                    value: stageItems,
-                                    child: Directionality(
-                                      textDirection: TextDirection.rtl,
-                                      child: Text(stageItems),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    stageDropDown = newValue!;
-                                  });
-                                },
+                      Visibility(
+                        visible: _isVisibleForBleaching,
+                        child: Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نوعیت سفید کردن دندانها',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: stageDropDown,
+                                  items: onTeethBleaching()
+                                      .map((String stageItems) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: stageItems,
+                                      child: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Text(stageItems),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      stageDropDown = newValue!;
+                                    });
+                                  },
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'فک / لثه',
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Container(
-                              height: 26.0,
-                              child: DropdownButton(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: gumDropDown,
-                                items: onTeethScaling().map((String gumItems) {
-                                  return DropdownMenuItem(
-                                    alignment: Alignment.centerRight,
-                                    value: gumItems,
-                                    child: Directionality(
-                                      textDirection: TextDirection.rtl,
-                                      child: Text(gumItems),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    gumDropDown = newValue!;
-                                  });
-                                },
+                      Visibility(
+                        visible: _isVisibleForTeethRemove,
+                        child: Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نوعیت دندان',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: _teethRemoveSelected,
+                                  items:
+                                      onTeethRemove().map((String teethType) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: teethType,
+                                      child: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Text(teethType),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _teethRemoveSelected = newValue!;
+                                    });
+                                  },
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'گواردینات',
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Container(
-                              height: 26.0,
-                              child: DropdownButton(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: gumSurgeryDropDown,
-                                items: onGumSurgery().map((int gumItems) {
-                                  return DropdownMenuItem(
-                                    alignment: Alignment.centerRight,
-                                    value: gumItems,
-                                    child: Directionality(
-                                      textDirection: TextDirection.rtl,
-                                      child: Text('$gumItems'),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (int? newValue) {
-                                  setState(() {
-                                    gumSurgeryDropDown = newValue!;
-                                  });
-                                },
+                      Visibility(
+                        visible: _isVisibleForScaling
+                            ? _isVisibleForScaling
+                            : _isVisibleForOrtho
+                                ? _isVisibleForOrtho
+                                : false,
+                        child: Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'فک / لثه',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: gumDropDown,
+                                  items:
+                                      onTeethScaling().map((String gumItems) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: gumItems,
+                                      child: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Text(gumItems),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      gumDropDown = newValue!;
+                                    });
+                                  },
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'جراحی ریشه دندان',
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Container(
-                              height: 26.0,
-                              child: DropdownButton(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: canalRootSurgery,
-                                items: onCanalRootSurgery()
-                                    .map((String rootItems) {
-                                  return DropdownMenuItem(
-                                    alignment: Alignment.centerRight,
-                                    value: rootItems,
-                                    child: Directionality(
-                                      textDirection: TextDirection.rtl,
-                                      child: Text(rootItems),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    canalRootSurgery = newValue!;
-                                  });
-                                },
+                      Visibility(
+                        visible: _isVisibleGum ? _isVisibleGum : false,
+                        child: Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'گواردینات',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: gumSurgeryDropDown,
+                                  items: onGumSurgery().map((int gumItems) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: gumItems,
+                                      child: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Text('$gumItems'),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (int? newValue) {
+                                    setState(() {
+                                      gumSurgeryDropDown = newValue!;
+                                    });
+                                  },
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'نوعیت پوش دندان',
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Container(
-                              height: 26.0,
-                              child: DropdownButton(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: teethCovering,
-                                items:
-                                    onTeethCovering().map((String coverItems) {
-                                  return DropdownMenuItem(
-                                    alignment: Alignment.centerRight,
-                                    value: coverItems,
-                                    child: Directionality(
-                                      textDirection: TextDirection.rtl,
-                                      child: Text(coverItems),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    teethCovering = newValue!;
-                                  });
-                                },
+                      Visibility(
+                        visible: _isVisibleForFilling
+                            ? _isVisibleForFilling
+                            : _isVisibleForBleaching
+                                ? _isVisibleForBleaching
+                                : _isVisibleForProthesis
+                                    ? _isVisibleForProthesis
+                                    : _isVisibleForRoot
+                                        ? _isVisibleForRoot
+                                        : _isVisibleForTeethRemove
+                                            ? _isVisibleForTeethRemove
+                                            : _isVisibleForCover
+                                                ? _isVisibleForCover
+                                                : false,
+                        child: Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'فک / لثه',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: _gumTypeSelected,
+                                  items: gumTypes2().map((String rootItems) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: rootItems,
+                                      child: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Text(rootItems),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _gumTypeSelected = newValue!;
+                                    });
+                                  },
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'نوعیت پروتز',
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Container(
-                              height: 26.0,
-                              child: DropdownButton(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: teethProsthesis,
-                                items: onTeethProsthesis()
-                                    .map((String prosthesisItems) {
-                                  return DropdownMenuItem(
-                                    alignment: Alignment.centerRight,
-                                    value: prosthesisItems,
-                                    child: Directionality(
-                                      textDirection: TextDirection.rtl,
-                                      child: Text(prosthesisItems),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    teethProsthesis = newValue!;
-                                  });
-                                },
+                      Visibility(
+                        visible: _isVisibleForCover,
+                        child: Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نوعیت مواد پوش',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: teethCovering,
+                                  items: onTeethCovering()
+                                      .map((String coverItems) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: coverItems,
+                                      child: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Text(coverItems),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      teethCovering = newValue!;
+                                    });
+                                  },
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'نوعیت مواد',
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Container(
-                              height: 26.0,
-                              child: DropdownButton(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: teethFilling,
-                                items: onTeethFilling()
-                                    .map((String teethFillingItems) {
-                                  return DropdownMenuItem(
-                                    alignment: Alignment.centerRight,
-                                    value: teethFillingItems,
-                                    child: Directionality(
-                                      textDirection: TextDirection.rtl,
-                                      child: Text(teethFillingItems),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    teethFilling = newValue!;
-                                  });
-                                },
+                      Visibility(
+                        visible: _isVisibleForProthesis
+                            ? _isVisibleForProthesis
+                            : false,
+                        child: Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نوعیت پروتیز',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: teethProsthesis,
+                                  items: onTeethProsthesis()
+                                      .map((String prosthesisItems) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: prosthesisItems,
+                                      child: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Text(prosthesisItems),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      teethProsthesis = newValue!;
+                                    });
+                                  },
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'دندان',
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Container(
-                              height: 26.0,
-                              child: DropdownButton(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: teethNumbers,
-                                items: onTeethNumbers().map((int teethNumber) {
-                                  return DropdownMenuItem(
-                                    alignment: Alignment.centerRight,
-                                    value: teethNumber,
-                                    child: Directionality(
-                                      textDirection: TextDirection.rtl,
-                                      child: Text('دندان $teethNumber'),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (int? newValue) {
-                                  setState(() {
-                                    teethNumbers = newValue!;
-                                  });
-                                },
+                      Visibility(
+                        // ignore: unrelated_type_equality_checks
+                        visible: _isVisibleForFilling,
+                        child: Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نوعیت مواد',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: teethFilling,
+                                  items: onTeethFilling()
+                                      .map((String teethFillingItems) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: teethFillingItems,
+                                      child: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Text(teethFillingItems),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      teethFilling = newValue!;
+                                    });
+                                  },
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20.0),
-                        child: TextFormField(
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(_regExOnlyAbc),
+                      Visibility(
+                        visible: _isVisibleForFilling
+                            ? _isVisibleForFilling
+                            : _isVisibleForRoot
+                                ? _isVisibleForRoot
+                                : _isVisibleForProthesis
+                                    ? _isVisibleForProthesis
+                                    : _isVisibleForCover
+                                        ? _isVisibleForCover
+                                        : false,
+                        child: Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'دندان',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
                             ),
-                          ],
-                          maxLines: 3,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'توضیحات',
-                            suffixIcon: Icon(Icons.note_alt_outlined),
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: teethNumbers,
+                                  items:
+                                      onTeethNumbers().map((int teethNumber) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: teethNumber,
+                                      child: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Text('دندان $teethNumber'),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (int? newValue) {
+                                    setState(() {
+                                      teethNumbers = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: true,
+                        child: Container(
+                          margin: const EdgeInsets.all(20.0),
+                          child: TextFormField(
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(_regExOnlyAbc),
+                              ),
+                            ],
+                            maxLines: 3,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'توضیحات',
+                              suffixIcon: Icon(Icons.note_alt_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
                           ),
                         ),
                       ),
@@ -1021,7 +1262,13 @@ class _NewPatientState extends State<NewPatient> {
     return stageItems;
   }
 
-  //  جرم گیری دندان
+//  نوعیت کشیدن دندان
+  List<String> onTeethRemove() {
+    List<String> _teethRemoveItems = ['ساده', 'عقلی', 'امپکت'];
+    return _teethRemoveItems;
+  }
+
+  //  لثه برای جرم گیری
   List<String> onTeethScaling() {
     List<String> gumItems = ['بالا', 'پایین', 'هردو'];
     return gumItems;
@@ -1033,8 +1280,8 @@ class _NewPatientState extends State<NewPatient> {
     return gumSurgeryItems;
   }
 
-  //  جراحی ریشه دندان
-  List<String> onCanalRootSurgery() {
+  //  لثه برای استفاده متعدد
+  List<String> gumTypes2() {
     List<String> canalRootItems = [
       'بالا - راست',
       'بالا - چپ',
