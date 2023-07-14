@@ -81,7 +81,7 @@ class _NewPatientState extends State<NewPatient> {
   String _teethRemoveSelected = 'ساده';
 
   // Declare a variable for payment installment
-  String installments = 'تکمیل';
+  String payTypeDropdown = 'تکمیل';
 
   int _currentStep = 0;
 
@@ -102,6 +102,7 @@ class _NewPatientState extends State<NewPatient> {
   bool _isVisibleForTeethRemove = false;
   bool _isVisibleForCover = false;
   bool _isVisibleMouth = false;
+  bool _isVisibleForPayment = false;
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
   // Declare a list to contain patients' info
@@ -1149,7 +1150,7 @@ class _NewPatientState extends State<NewPatient> {
                             child: DropdownButton(
                               isExpanded: true,
                               icon: const Icon(Icons.arrow_drop_down),
-                              value: installments,
+                              value: payTypeDropdown,
                               items: onPayInstallment()
                                   .map((String installmentItems) {
                                 return DropdownMenuItem(
@@ -1163,7 +1164,12 @@ class _NewPatientState extends State<NewPatient> {
                               }).toList(),
                               onChanged: (String? newValue) {
                                 setState(() {
-                                  installments = newValue!;
+                                  payTypeDropdown = newValue!;
+                                  if (payTypeDropdown != 'تکمیل') {
+                                    _isVisibleForPayment = true;
+                                  } else {
+                                    _isVisibleForPayment = false;
+                                  }
                                 });
                               },
                             ),
@@ -1171,21 +1177,24 @@ class _NewPatientState extends State<NewPatient> {
                         ),
                       ),
                     ),
-                    Container(
-                      margin: const EdgeInsets.all(20.0),
-                      child: const TextField(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'مبلغ رسید',
-                          suffixIcon: Icon(Icons.money_rounded),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
+                    Visibility(
+                      visible: _isVisibleForPayment,
+                      child: Container(
+                        margin: const EdgeInsets.all(20.0),
+                        child: const TextField(
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'مبلغ رسید',
+                            suffixIcon: Icon(Icons.money_rounded),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.blue)),
+                          ),
                         ),
                       ),
                     ),
