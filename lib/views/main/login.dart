@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
+import 'package:flutter_dentistry/views/staff/staff_info.dart';
 
 void main() {
   runApp(const Login());
@@ -42,12 +43,23 @@ class _LoginState extends State<Login> {
         final row = results.first;
         final staffID = row["staff_ID"];
         final role = row["role"];
-        Map<String, String> userData = {
+        // Global variables to be assigned staff info
+        StaffInfo.staffID = staffID;
+        StaffInfo.staffRole = role;
+
+       /*  Map<String, String> userData = {
           "staffID": staffID.toString(),
           "role": role
-        };
+        }; */
         // ignore: use_build_context_synchronously
-        Navigator.pushNamed(context, '/dashboard', arguments: userData);
+        // Navigator.pushNamed(context, '/dashboard', arguments: userData);
+        // ignore: use_build_context_synchronously
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const Dashboard(),
+          ),
+        );
       } else {
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
@@ -82,7 +94,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      routes: {'/dashboard': (context) => const Dashboard()},
+      // routes: {'/dashboard': (context) => const Dashboard()},
       debugShowCheckedModeBanner: false,
       home: Directionality(
         textDirection: TextDirection.rtl,
