@@ -1,6 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
+import 'package:flutter_dentistry/views/staff/staff_info.dart';
 
 void main() {
   return runApp(const NewPatient());
@@ -14,7 +18,10 @@ class NewPatient extends StatefulWidget {
 }
 
 class _NewPatientState extends State<NewPatient> {
-  String dropdownValue = 'مجرد';
+  final GlobalKey<ScaffoldMessengerState> _globalKey =
+      GlobalKey<ScaffoldMessengerState>();
+
+  String maritalStatusDD = 'مجرد';
   var items = ['مجرد', 'متاهل'];
 
   // ِDeclare variables for gender dropdown
@@ -125,7 +132,8 @@ class _NewPatientState extends State<NewPatient> {
                     const Text(
                         'لطفا معلومات شخصی مریض را با دقت در خانه های ذیل وارد کنید.'),
                     Container(
-                      margin: const EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.only(
+                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                       child: TextFormField(
                         controller: _nameController,
                         inputFormatters: [
@@ -165,7 +173,8 @@ class _NewPatientState extends State<NewPatient> {
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.only(
+                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                       child: TextFormField(
                         controller: _lNameController,
                         inputFormatters: [
@@ -209,7 +218,8 @@ class _NewPatientState extends State<NewPatient> {
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.only(
+                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                       child: InputDecorator(
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -251,7 +261,8 @@ class _NewPatientState extends State<NewPatient> {
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.only(
+                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                       child: InputDecorator(
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -290,7 +301,8 @@ class _NewPatientState extends State<NewPatient> {
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.only(
+                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                       child: InputDecorator(
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -310,7 +322,7 @@ class _NewPatientState extends State<NewPatient> {
                             child: DropdownButton(
                               isExpanded: true,
                               icon: const Icon(Icons.arrow_drop_down),
-                              value: dropdownValue,
+                              value: maritalStatusDD,
                               items: items.map((String items) {
                                 return DropdownMenuItem(
                                   alignment: Alignment.centerRight,
@@ -320,7 +332,7 @@ class _NewPatientState extends State<NewPatient> {
                               }).toList(),
                               onChanged: (String? newValue) {
                                 setState(() {
-                                  dropdownValue = newValue!;
+                                  maritalStatusDD = newValue!;
                                 });
                               },
                             ),
@@ -329,7 +341,8 @@ class _NewPatientState extends State<NewPatient> {
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.only(
+                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                       child: InputDecorator(
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -369,7 +382,8 @@ class _NewPatientState extends State<NewPatient> {
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.only(
+                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                       child: TextFormField(
                         textDirection: TextDirection.ltr,
                         controller: _phoneController,
@@ -418,7 +432,8 @@ class _NewPatientState extends State<NewPatient> {
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.only(
+                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                       child: TextFormField(
                         controller: _addrController,
                         inputFormatters: [
@@ -462,7 +477,8 @@ class _NewPatientState extends State<NewPatient> {
                       const Text(
                           'لطفا نوعیت سرویس (خدمات) و خانه های مربوطه آنرا با دقت پر کنید.'),
                       Container(
-                        margin: const EdgeInsets.all(20.0),
+                        margin: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
@@ -633,7 +649,8 @@ class _NewPatientState extends State<NewPatient> {
                       Visibility(
                         visible: _isVisibleForBleaching,
                         child: Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -679,7 +696,8 @@ class _NewPatientState extends State<NewPatient> {
                       Visibility(
                         visible: _isVisibleForTeethRemove,
                         child: Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -729,7 +747,8 @@ class _NewPatientState extends State<NewPatient> {
                                 ? _isVisibleForOrtho
                                 : false,
                         child: Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -775,7 +794,8 @@ class _NewPatientState extends State<NewPatient> {
                       Visibility(
                         visible: _isVisibleGum ? _isVisibleGum : false,
                         child: Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -832,7 +852,8 @@ class _NewPatientState extends State<NewPatient> {
                                                 ? _isVisibleForCover
                                                 : false,
                         child: Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -877,7 +898,8 @@ class _NewPatientState extends State<NewPatient> {
                       Visibility(
                         visible: _isVisibleForCover,
                         child: Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -925,7 +947,8 @@ class _NewPatientState extends State<NewPatient> {
                             ? _isVisibleForProthesis
                             : false,
                         child: Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -972,7 +995,8 @@ class _NewPatientState extends State<NewPatient> {
                         // ignore: unrelated_type_equality_checks
                         visible: _isVisibleForFilling,
                         child: Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -1026,7 +1050,8 @@ class _NewPatientState extends State<NewPatient> {
                                         ? _isVisibleForCover
                                         : false,
                         child: Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -1072,7 +1097,8 @@ class _NewPatientState extends State<NewPatient> {
                       Visibility(
                         visible: true,
                         child: Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
@@ -1118,7 +1144,8 @@ class _NewPatientState extends State<NewPatient> {
                       const Text(
                           'لطفاً هزینه و اقساط را در خانه های ذیل انتخاب نمایید.'),
                       Container(
-                        margin: const EdgeInsets.all(20.0),
+                        margin: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: TextFormField(
                           controller: _totalExpController,
                           validator: (value) {
@@ -1156,7 +1183,8 @@ class _NewPatientState extends State<NewPatient> {
                         ),
                       ),
                       Container(
-                        margin: const EdgeInsets.all(20.0),
+                        margin: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
@@ -1206,7 +1234,8 @@ class _NewPatientState extends State<NewPatient> {
                       Visibility(
                         visible: _isVisibleForPayment,
                         child: Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: _recievableController,
                             validator: (value) {
@@ -1248,74 +1277,143 @@ class _NewPatientState extends State<NewPatient> {
         ),
       ];
 
+// Add a new patient
+  Future<void> onAddNewPatient(BuildContext context) async {
+    var staff_id = StaffInfo.staffID;
+    var firstName = _nameController.text;
+    var lastName = _lNameController.text;
+    var sex = genderDropDown;
+    var age = ageDropDown;
+    var maritalStatus = maritalStatusDD;
+    var phone = _phoneController.text;
+    var bGrop = bloodDropDown;
+    var addr = _addrController.text;
+    var conn = await onConnToDb();
+
+    // First Check the patient where it already exists
+    var queryCheck = await conn.query(
+        'SELECT firstname, sex, phone FROM patients WHERE phone = ?', [phone]);
+    if (queryCheck.isNotEmpty) {
+      _onShowSnack(
+          Colors.red, 'مریض با این نمبر تماس قبلا در سیستم وجود دارد.');
+      setState(() {
+        _currentStep = 0;
+      });
+    } else {
+      var queryResult = await conn.query(
+          'INSERT INTO patients (staff_ID, firstname, lastname, sex, age, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          [
+            staff_id,
+            firstName,
+            lastName,
+            sex,
+            age,
+            maritalStatus,
+            phone,
+            bGrop,
+            addr
+          ]);
+
+      if (queryResult.affectedRows! > 0) {
+        _onShowSnack(Colors.green, 'مریض موفقانه افزوده شد.');
+        _nameController.clear();
+        _lNameController.clear();
+        _phoneController.clear();
+        _addrController.clear();
+      } else {
+        print('Adding patient failed.');
+      }
+    }
+  }
+
+// This is shows snackbar when called
+  void _onShowSnack(Color backColor, String msg) {
+    _globalKey.currentState?.showSnackBar(
+      SnackBar(
+        backgroundColor: backColor,
+        content: SizedBox(
+          height: 20.0,
+          child: Center(
+            child: Text(msg),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          appBar: AppBar(
-            leading: Tooltip(
-              message: 'رفتن به صفحه قبلی',
-              child: IconButton(
-                icon: const BackButtonIcon(),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const Patient()));
-                },
+      home: ScaffoldMessenger(
+        key: _globalKey,
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            appBar: AppBar(
+              leading: Tooltip(
+                message: 'رفتن به صفحه قبلی',
+                child: IconButton(
+                  icon: const BackButtonIcon(),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Patient()));
+                  },
+                ),
               ),
+              title: const Text('افزودن مریض'),
             ),
-            title: const Text('افزودن مریض'),
-          ),
-          body: Stepper(
-            steps: stepList(),
-            type: StepperType.horizontal,
-            onStepCancel: () {
-              setState(() {
-                if (_currentStep > 0) {
-                  _currentStep--;
-                }
-              });
-            },
-            currentStep: _currentStep,
-            onStepContinue: () {
-              setState(() {
-                if (_currentStep < stepList().length - 1) {
-                  if (_formKey1.currentState!.validate()) {
-                    _currentStep++;
+            body: Stepper(
+              steps: stepList(),
+              type: StepperType.horizontal,
+              onStepCancel: () {
+                setState(() {
+                  if (_currentStep > 0) {
+                    _currentStep--;
                   }
-                } else {
-                   if (_formKey3.currentState!.validate()) {
-                    print('$_currentStep');
+                });
+              },
+              currentStep: _currentStep,
+              onStepContinue: () {
+                if (_formKey1.currentState!.validate()) {
+                  if (_currentStep < stepList().length - 1) {
+                    setState(() {
+                      _currentStep++;
+                    });
+                  } else {
+                    if (_formKey3.currentState!.validate()) {
+                      onAddNewPatient(context);
+                    }
                   }
                 }
-              });
-            },
-            controlsBuilder: (BuildContext context, ControlsDetails details) {
-              return Row(
-                children: [
-                  TextButton(
-                    onPressed: details.onStepCancel,
-                    child: const Text('قبلی'),
-                  ),
-                  ElevatedButton(
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                      side: const BorderSide(
-                        color: Colors.blue,
-                      ),
+              },
+              controlsBuilder: (BuildContext context, ControlsDetails details) {
+                return Row(
+                  children: [
+                    TextButton(
+                      onPressed: details.onStepCancel,
+                      child: const Text('قبلی'),
                     ),
-                    onPressed: details.onStepContinue,
-                    child: Text(_currentStep == stepList().length - 1
-                        ? 'ثبت کردن'
-                        : 'ادامه'),
-                  ),
-                ],
-              );
-            },
+                    ElevatedButton(
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        side: const BorderSide(
+                          color: Colors.blue,
+                        ),
+                      ),
+                      onPressed: details.onStepContinue,
+                      child: Text(_currentStep == stepList().length - 1
+                          ? 'ثبت کردن'
+                          : 'ادامه'),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
