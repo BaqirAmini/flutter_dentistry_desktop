@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
+import 'package:intl/intl.dart' as intl2;
 
 void main() {
   return runApp(const NewPatient());
@@ -23,6 +24,7 @@ class _NewPatientState extends State<NewPatient> {
 
   String maritalStatusDD = 'مجرد';
   var items = ['مجرد', 'متاهل'];
+  String? selectedToothDetail_ID;
 
   // ِDeclare variables for gender dropdown
   String genderDropDown = 'مرد';
@@ -42,50 +44,44 @@ class _NewPatientState extends State<NewPatient> {
     'O-'
   ];
 
-  // Services types dropdown variables
-  String serviceDropDown = 'پرکاری دندان';
-  var serviceItems = [
-    'پرکاری دندان',
-    'سفید کردن دندان',
-    'جرم گیری دندان',
-    'ارتودانسی',
-    'جراحی ریشه دندان',
-    'جراحی لثه دندان',
-    'معاینه دهن',
-    'پروتیز دندان',
-    'کشیدن دندان',
-    'پوش کردن دندان'
-  ];
+  String? selectedSerId;
+  List<Map<String, dynamic>> services = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchServices();
+    onFillTeeth();
+    onChooseGum2();
+    fetchToothNum();
+    chooseGumType1();
+    fetchBleachings();
+    fetchProtheses();
+    fetchToothCover();
+  }
+
+  Future<void> fetchServices() async {
+    var conn = await onConnToDb();
+    var queryService = await conn
+        .query('SELECT ser_ID, ser_name FROM services WHERE ser_ID > 1');
+    setState(() {
+      services = queryService
+          .map((result) =>
+              {'ser_ID': result[0].toString(), 'ser_name': result[1]})
+          .toList();
+    });
+    selectedSerId = services.isNotEmpty ? services[0]['ser_ID'] : null;
+    await conn.close();
+  }
 
   // Declare a dropdown for ages
   int ageDropDown = 1;
 
-  // Declare a variable for tooth bleaching
-  String stageDropDown = 'یک مرحله یی';
-
-  // Declare a variable for tooth scaling
-  String gumDropDown = 'بالا';
-
   // Declare a variable for gum surgery
   int gumSurgeryDropDown = 1;
 
-  // Declare a variable for canal root surgery
-  String _gumTypeSelected = 'بالا - راست';
-
-  // Declare a variable for teeth covering
-  String teethCovering = 'پورسلن';
-
-  // Declare a variable for teeth prosthesis
-  String teethProsthesis = 'پروتز قسمی';
-
-  // Declare a variable for teeth filling
-  String teethFilling = 'کامپوزیت';
-
   // Declare a variable for teeth numbers
   int teethNumbers = 1;
-
-  // Declase a variable for removing teeth
-  String _teethRemoveSelected = 'ساده';
 
   // Declare a variable for payment installment
   String payTypeDropdown = 'تکمیل';
@@ -98,6 +94,8 @@ class _NewPatientState extends State<NewPatient> {
   final _addrController = TextEditingController();
   final _totalExpController = TextEditingController();
   final _recievableController = TextEditingController();
+  final _meetController = TextEditingController();
+  final _noteController = TextEditingController();
   final _regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
   final _regExOnlydigits = "[0-9+]";
   final _regExDecimal = "[0-9.]";
@@ -116,6 +114,11 @@ class _NewPatientState extends State<NewPatient> {
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
   final _formKey3 = GlobalKey<FormState>();
+
+  /* ---------------- variable to get assigned values based on services types dropdown */
+
+  /* ----------------END variable to get assigned values based on services types dropdown */
+
   // Declare a list to contain patients' info
   List<Step> stepList() => [
         Step(
@@ -479,6 +482,60 @@ class _NewPatientState extends State<NewPatient> {
                       Container(
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                        child: TextFormField(
+                          controller: _meetController,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'لطفا تاریخ مراجعه مریض را انتخاب کنید.';
+                            }
+                          },
+                          onTap: () async {
+                            FocusScope.of(context).requestFocus(
+                              FocusNode(),
+                            );
+                            final DateTime? dateTime = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(1900),
+                                lastDate: DateTime(2100));
+                            if (dateTime != null) {
+                              final intl2.DateFormat formatter =
+                                  intl2.DateFormat('yyyy-MM-dd');
+                              final String formattedDate =
+                                  formatter.format(dateTime);
+                              _meetController.text = formattedDate;
+                            }
+                          },
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+                          ],
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'تاریخ اولین مراجعه',
+                            suffixIcon: Icon(Icons.calendar_month_outlined),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.blue)),
+                            errorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.red)),
+                            focusedErrorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 1.5)),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
@@ -495,21 +552,21 @@ class _NewPatientState extends State<NewPatient> {
                           child: DropdownButtonHideUnderline(
                             child: Container(
                               height: 26.0,
-                              child: DropdownButton(
+                              child: DropdownButton<String>(
                                 isExpanded: true,
                                 icon: const Icon(Icons.arrow_drop_down),
-                                value: serviceDropDown,
-                                items: serviceItems.map((String serviceItems) {
-                                  return DropdownMenuItem(
-                                    value: serviceItems,
+                                value: selectedSerId,
+                                items: services.map((service) {
+                                  return DropdownMenuItem<String>(
+                                    value: service['ser_ID'],
                                     alignment: Alignment.centerRight,
-                                    child: Text(serviceItems),
+                                    child: Text(service['ser_name']),
                                   );
                                 }).toList(),
                                 onChanged: (String? newValue) {
                                   setState(() {
-                                    serviceDropDown = newValue!;
-                                    if (serviceDropDown == 'پرکاری دندان') {
+                                    selectedSerId = newValue;
+                                    if (selectedSerId == '2') {
                                       _isVisibleForFilling = true;
                                       _isVisibleForBleaching = false;
                                       _isVisibleForScaling = false;
@@ -520,8 +577,7 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleGum = false;
                                       _isVisibleForRoot = false;
                                       _isVisibleMouth = false;
-                                    } else if (serviceDropDown ==
-                                        'سفید کردن دندان') {
+                                    } else if (selectedSerId == '3') {
                                       _isVisibleForFilling = false;
                                       _isVisibleForBleaching = true;
                                       _isVisibleForProthesis = false;
@@ -532,8 +588,7 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleForOrtho = false;
                                       _isVisibleForRoot = false;
                                       _isVisibleMouth = false;
-                                    } else if (serviceDropDown ==
-                                        'جرم گیری دندان') {
+                                    } else if (selectedSerId == '4') {
                                       _isVisibleForScaling = true;
                                       _isVisibleForFilling = false;
                                       _isVisibleForBleaching = false;
@@ -544,7 +599,7 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleGum = false;
                                       _isVisibleForRoot = false;
                                       _isVisibleMouth = false;
-                                    } else if (serviceDropDown == 'ارتودانسی') {
+                                    } else if (selectedSerId == '5') {
                                       _isVisibleForOrtho = true;
                                       _isVisibleForFilling = false;
                                       _isVisibleForBleaching = false;
@@ -555,8 +610,7 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleForCover = false;
                                       _isVisibleForRoot = false;
                                       _isVisibleMouth = false;
-                                    } else if (serviceDropDown ==
-                                        'پروتیز دندان') {
+                                    } else if (selectedSerId == '9') {
                                       _isVisibleForProthesis = true;
                                       _isVisibleForOrtho = false;
                                       _isVisibleForFilling = false;
@@ -567,8 +621,7 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleForCover = false;
                                       _isVisibleForRoot = false;
                                       _isVisibleMouth = false;
-                                    } else if (serviceDropDown ==
-                                        'جراحی ریشه دندان') {
+                                    } else if (selectedSerId == '6') {
                                       _isVisibleForRoot = true;
                                       _isVisibleForProthesis = false;
                                       _isVisibleForOrtho = false;
@@ -579,8 +632,7 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleForTeethRemove = false;
                                       _isVisibleForCover = false;
                                       _isVisibleMouth = false;
-                                    } else if (serviceDropDown ==
-                                        'جراحی لثه دندان') {
+                                    } else if (selectedSerId == '7') {
                                       _isVisibleGum = true;
                                       _isVisibleForProthesis = false;
                                       _isVisibleForOrtho = false;
@@ -591,8 +643,7 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleForTeethRemove = false;
                                       _isVisibleForCover = false;
                                       _isVisibleMouth = false;
-                                    } else if (serviceDropDown ==
-                                        'معاینه دهن') {
+                                    } else if (selectedSerId == '8') {
                                       _isVisibleMouth = true;
                                       _isVisibleForProthesis = false;
                                       _isVisibleForOrtho = false;
@@ -603,8 +654,7 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleGum = false;
                                       _isVisibleForTeethRemove = false;
                                       _isVisibleForCover = false;
-                                    } else if (serviceDropDown ==
-                                        'کشیدن دندان') {
+                                    } else if (selectedSerId == '10') {
                                       _isVisibleForTeethRemove = true;
                                       _isVisibleForProthesis = false;
                                       _isVisibleForOrtho = false;
@@ -615,8 +665,7 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleGum = false;
                                       _isVisibleForCover = false;
                                       _isVisibleMouth = false;
-                                    } else if (serviceDropDown ==
-                                        'پوش کردن دندان') {
+                                    } else if (selectedSerId == '11') {
                                       _isVisibleForCover = true;
                                       _isVisibleForProthesis = false;
                                       _isVisibleForOrtho = false;
@@ -670,21 +719,18 @@ class _NewPatientState extends State<NewPatient> {
                                 child: DropdownButton(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: stageDropDown,
-                                  items: onTeethBleaching()
-                                      .map((String stageItems) {
-                                    return DropdownMenuItem(
+                                  value: selectedBleachStep,
+                                  items: teethBleachings.map((step) {
+                                    return DropdownMenuItem<String>(
+                                      value: step['ser_det_ID'],
                                       alignment: Alignment.centerRight,
-                                      value: stageItems,
-                                      child: Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: Text(stageItems),
-                                      ),
+                                      child:
+                                          Text(step['service_specific_value']),
                                     );
                                   }).toList(),
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      stageDropDown = newValue!;
+                                      selectedBleachStep = newValue;
                                     });
                                   },
                                 ),
@@ -717,21 +763,17 @@ class _NewPatientState extends State<NewPatient> {
                                 child: DropdownButton(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: _teethRemoveSelected,
-                                  items:
-                                      onTeethRemove().map((String teethType) {
-                                    return DropdownMenuItem(
+                                  value: selectedTooth,
+                                  items: removeTeeth.map((tooth) {
+                                    return DropdownMenuItem<String>(
+                                      value: tooth['td_ID'],
                                       alignment: Alignment.centerRight,
-                                      value: teethType,
-                                      child: Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: Text(teethType),
-                                      ),
+                                      child: Text(tooth['tooth']),
                                     );
                                   }).toList(),
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      _teethRemoveSelected = newValue!;
+                                      selectedTooth = newValue;
                                     });
                                   },
                                 ),
@@ -745,7 +787,9 @@ class _NewPatientState extends State<NewPatient> {
                             ? _isVisibleForScaling
                             : _isVisibleForOrtho
                                 ? _isVisibleForOrtho
-                                : false,
+                                : _isVisibleGum
+                                    ? _isVisibleGum
+                                    : false,
                         child: Container(
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
@@ -768,67 +812,17 @@ class _NewPatientState extends State<NewPatient> {
                                 child: DropdownButton(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: gumDropDown,
-                                  items:
-                                      onTeethScaling().map((String gumItems) {
-                                    return DropdownMenuItem(
+                                  value: selectedGumType1,
+                                  items: gumsType1.map((gumType1) {
+                                    return DropdownMenuItem<String>(
+                                      value: gumType1['teeth_ID'],
                                       alignment: Alignment.centerRight,
-                                      value: gumItems,
-                                      child: Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: Text(gumItems),
-                                      ),
+                                      child: Text(gumType1['gum']),
                                     );
                                   }).toList(),
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      gumDropDown = newValue!;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Visibility(
-                        visible: _isVisibleGum ? _isVisibleGum : false,
-                        child: Container(
-                          margin: const EdgeInsets.only(
-                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'گواردینات',
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: Container(
-                                height: 26.0,
-                                child: DropdownButton(
-                                  isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: gumSurgeryDropDown,
-                                  items: onGumSurgery().map((int gumItems) {
-                                    return DropdownMenuItem(
-                                      alignment: Alignment.centerRight,
-                                      value: gumItems,
-                                      child: Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: Text('$gumItems'),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (int? newValue) {
-                                    setState(() {
-                                      gumSurgeryDropDown = newValue!;
+                                      selectedGumType1 = newValue;
                                     });
                                   },
                                 ),
@@ -870,23 +864,23 @@ class _NewPatientState extends State<NewPatient> {
                             child: DropdownButtonHideUnderline(
                               child: Container(
                                 height: 26.0,
-                                child: DropdownButton(
+                                child: DropdownButton<String>(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: _gumTypeSelected,
-                                  items: gumTypes2().map((String rootItems) {
-                                    return DropdownMenuItem(
+                                  value: selectedGumType2,
+                                  items: gums.map((gums) {
+                                    return DropdownMenuItem<String>(
+                                      value: gums['teeth_ID'],
                                       alignment: Alignment.centerRight,
-                                      value: rootItems,
-                                      child: Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: Text(rootItems),
-                                      ),
+                                      child: Text(gums['gum']),
                                     );
                                   }).toList(),
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      _gumTypeSelected = newValue!;
+                                      selectedGumType2 = newValue;
+                                      if (selectedSerId == '10') {
+                                        fetchRemoveTooth();
+                                      }
                                     });
                                   },
                                 ),
@@ -919,21 +913,18 @@ class _NewPatientState extends State<NewPatient> {
                                 child: DropdownButton(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: teethCovering,
-                                  items: onTeethCovering()
-                                      .map((String coverItems) {
-                                    return DropdownMenuItem(
+                                  value: selectedCover,
+                                  items: coverings.map((covering) {
+                                    return DropdownMenuItem<String>(
+                                      value: covering['ser_det_ID'],
                                       alignment: Alignment.centerRight,
-                                      value: coverItems,
-                                      child: Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: Text(coverItems),
-                                      ),
+                                      child: Text(
+                                          covering['service_specific_value']),
                                     );
                                   }).toList(),
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      teethCovering = newValue!;
+                                      selectedCover = newValue;
                                     });
                                   },
                                 ),
@@ -968,21 +959,18 @@ class _NewPatientState extends State<NewPatient> {
                                 child: DropdownButton(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: teethProsthesis,
-                                  items: onTeethProsthesis()
-                                      .map((String prosthesisItems) {
-                                    return DropdownMenuItem(
+                                  value: selectedProthesis,
+                                  items: protheses.map((prothesis) {
+                                    return DropdownMenuItem<String>(
+                                      value: prothesis['ser_det_ID'],
                                       alignment: Alignment.centerRight,
-                                      value: prosthesisItems,
-                                      child: Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: Text(prosthesisItems),
-                                      ),
+                                      child: Text(
+                                          prothesis['service_specific_value']),
                                     );
                                   }).toList(),
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      teethProsthesis = newValue!;
+                                      selectedProthesis = newValue;
                                     });
                                   },
                                 ),
@@ -1013,24 +1001,24 @@ class _NewPatientState extends State<NewPatient> {
                             child: DropdownButtonHideUnderline(
                               child: Container(
                                 height: 26.0,
-                                child: DropdownButton(
+                                child: DropdownButton<String>(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: teethFilling,
-                                  items: onTeethFilling()
-                                      .map((String teethFillingItems) {
-                                    return DropdownMenuItem(
+                                  value: selectedFilling,
+                                  items: teethFillings.map((material) {
+                                    return DropdownMenuItem<String>(
                                       alignment: Alignment.centerRight,
-                                      value: teethFillingItems,
+                                      value: material['ser_det_ID'],
                                       child: Directionality(
                                         textDirection: TextDirection.rtl,
-                                        child: Text(teethFillingItems),
+                                        child: Text(
+                                            material['service_specific_value']),
                                       ),
                                     );
                                   }).toList(),
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      teethFilling = newValue!;
+                                      selectedFilling = newValue!;
                                     });
                                   },
                                 ),
@@ -1071,21 +1059,17 @@ class _NewPatientState extends State<NewPatient> {
                                 child: DropdownButton(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: teethNumbers,
-                                  items:
-                                      onTeethNumbers().map((int teethNumber) {
-                                    return DropdownMenuItem(
+                                  value: selectedToothDetail_ID,
+                                  items: teeth.map((tooth) {
+                                    return DropdownMenuItem<String>(
+                                      value: tooth['td_ID'],
                                       alignment: Alignment.centerRight,
-                                      value: teethNumber,
-                                      child: Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: Text('دندان $teethNumber'),
-                                      ),
+                                      child: Text(tooth['tooth']),
                                     );
                                   }).toList(),
-                                  onChanged: (int? newValue) {
+                                  onChanged: (String? newValue) {
                                     setState(() {
-                                      teethNumbers = newValue!;
+                                      selectedToothDetail_ID = newValue;
                                     });
                                   },
                                 ),
@@ -1100,6 +1084,14 @@ class _NewPatientState extends State<NewPatient> {
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
+                            controller: _noteController,
+                            validator: (value) {
+                              if (value!.isNotEmpty) {
+                                if (value.length > 40 || value.length < 10) {
+                                  return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                }
+                              }
+                            },
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
                                 RegExp(_regExOnlyAbc),
@@ -1118,6 +1110,15 @@ class _NewPatientState extends State<NewPatient> {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -1291,8 +1292,8 @@ class _NewPatientState extends State<NewPatient> {
     var conn = await onConnToDb();
 
     // First Check the patient where it already exists
-    var queryCheck = await conn.query(
-        'SELECT firstname, sex, phone FROM patients WHERE phone = ?', [phone]);
+    var queryCheck = await conn
+        .query('SELECT pat_ID, phone FROM patients WHERE phone = ?', [phone]);
     if (queryCheck.isNotEmpty) {
       _onShowSnack(
           Colors.red, 'مریض با این نمبر تماس قبلا در سیستم وجود دارد.');
@@ -1300,6 +1301,16 @@ class _NewPatientState extends State<NewPatient> {
         _currentStep = 0;
       });
     } else {
+      int toothDetID = int.parse(selectedToothDetail_ID!);
+      // Fetch tooth ID based on its primary key from tooth_details.
+      int? toothID;
+      var toothResult = await conn.query(
+          'SELECT tooth_ID FROM tooth_Details WHERE td_ID = ?', [toothDetID]);
+      if (toothResult.isNotEmpty) {
+        var tdRow = toothResult.first;
+        toothID = tdRow['tooth_ID'];
+      }
+
       var queryResult = await conn.query(
           'INSERT INTO patients (staff_ID, firstname, lastname, sex, age, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
@@ -1315,13 +1326,61 @@ class _NewPatientState extends State<NewPatient> {
           ]);
 
       if (queryResult.affectedRows! > 0) {
-        _onShowSnack(Colors.green, 'مریض موفقانه افزوده شد.');
-        _nameController.clear();
-        _lNameController.clear();
-        _phoneController.clear();
-        _addrController.clear();
+        String meetDate = _meetController.text;
+        int serviceID = int.parse(selectedSerId!);
+        String note = _noteController.text;
+        var queryResult1 = await conn.query(
+            'SELECT * FROM patients WHERE firstname = ? AND sex = ? AND age = ? AND phone = ?',
+            [firstName, sex, age, phone]);
+        final row = queryResult1.first;
+        final patId = row['pat_ID'];
+        double totalAmount = double.parse(_totalExpController.text);
+        double recieved = totalAmount;
+        double dueAmount = 0;
+        int installment = payTypeDropdown == 'تکمیل'
+            ? 1
+            : payTypeDropdown == 'دو قسط'
+                ? 2
+                : 3;
+        if (payTypeDropdown != 'تکمیل') {
+          recieved = double.parse(_recievableController.text);
+          dueAmount = totalAmount - recieved;
+        }
+
+        print(
+            'patient ID: $patId, total amount: $totalAmount, recieved: $recieved, Due amount: $dueAmount, installment: $installment, Staff: $staff_id');
+        // Now add appointment of the patient
+        var queryResult2 = await conn.query(
+            'INSERT INTO appointments (pat_ID, tooth_detail_ID, ser_ID, installment, round, paid_amount, due_amount, meet_date, staff_ID, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+              patId,
+              toothDetID,
+              serviceID,
+              installment,
+              1,
+              recieved,
+              dueAmount,
+              meetDate,
+              staff_id,
+              note
+            ]);
+
+        if (queryResult2.affectedRows! > 0) {
+          _onShowSnack(Colors.green, 'مریض موفقانه افزوده شد.');
+          _nameController.clear();
+          _lNameController.clear();
+          _phoneController.clear();
+          _addrController.clear();
+          _totalExpController.clear();
+          _recievableController.clear();
+          setState(() {
+            _currentStep = 0;
+          });
+        } else {
+          print('Adding appointments faield.');
+        }
       } else {
-        print('Adding patient failed.');
+        print('Patient registration faield.');
       }
     }
   }
@@ -1339,6 +1398,37 @@ class _NewPatientState extends State<NewPatient> {
         ),
       ),
     );
+  }
+
+// Create an alert dialog to confirm fields are inserted correctly.
+  onConfirmForm() {
+    return showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: const Directionality(
+                textDirection: TextDirection.rtl,
+                child: Text('کسب اطمینان'),
+              ),
+              content: const Directionality(
+                textDirection: TextDirection.rtl,
+                child:
+                    Text('آیا کاملاً مطمیین هستید در قسمت خانه پری این صفحه؟'),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () =>
+                        Navigator.of(context, rootNavigator: true).pop(),
+                    child: const Text('نگاه مجدد')),
+                ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _currentStep++;
+                      });
+                      Navigator.of(context, rootNavigator: true).pop();
+                    },
+                    child: const Text('بله')),
+              ],
+            ));
   }
 
   @override
@@ -1380,7 +1470,13 @@ class _NewPatientState extends State<NewPatient> {
                 if (_formKey1.currentState!.validate()) {
                   if (_currentStep < stepList().length - 1) {
                     setState(() {
-                      _currentStep++;
+                      if (_currentStep == 1) {
+                        if (_formKey2.currentState!.validate()) {
+                          onConfirmForm();
+                        }
+                      } else {
+                        onConfirmForm();
+                      }
                     });
                   } else {
                     if (_formKey3.currentState!.validate()) {
@@ -1393,7 +1489,8 @@ class _NewPatientState extends State<NewPatient> {
                 return Row(
                   children: [
                     TextButton(
-                      onPressed: details.onStepCancel,
+                      onPressed:
+                          _currentStep == 0 ? null : details.onStepCancel,
                       child: const Text('قبلی'),
                     ),
                     ElevatedButton(
@@ -1431,23 +1528,57 @@ class _NewPatientState extends State<NewPatient> {
   }
 
 //  سفید کردن دندان
-  List<String> onTeethBleaching() {
-    List<String> stageItems = [
-      'یک مرحله یی',
-      'دو مرحله یی',
-      'سه مرحله یی',
-      'چهار مرحله یی'
-    ];
-    return stageItems;
+  String? selectedBleachStep;
+  List<Map<String, dynamic>> teethBleachings = [];
+
+  Future<void> fetchBleachings() async {
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_id = 3');
+    setState(() {
+      teethBleachings = results
+          .map((result) => {
+                'ser_det_ID': result[0].toString(),
+                'service_specific_value': result[1]
+              })
+          .toList();
+    });
+    selectedBleachStep =
+        teethBleachings.isNotEmpty ? teethBleachings[0]['ser_det_ID'] : null;
+    await conn.close();
   }
 
 //  نوعیت کشیدن دندان
-  List<String> onTeethRemove() {
-    List<String> _teethRemoveItems = ['ساده', 'عقلی', 'امپکت'];
-    return _teethRemoveItems;
+  String? selectedTooth;
+  List<Map<String, dynamic>> removeTeeth = [];
+  Future<void> fetchRemoveTooth() async {
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT td_ID, tooth FROM tooth_details WHERE td_ID >= 35 AND tooth_ID = ?',
+        [selectedGumType2]);
+    setState(() {
+      removeTeeth = results
+          .map((result) => {'td_ID': result[0].toString(), 'tooth': result[1]})
+          .toList();
+    });
+    selectedTooth = removeTeeth.isNotEmpty ? removeTeeth[0]['td_ID'] : null;
+    await conn.close();
   }
 
   //  لثه برای جرم گیری
+  String? selectedGumType1;
+  List<Map<String, dynamic>> gumsType1 = [];
+  Future<void> chooseGumType1() async {
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT teeth_ID, gum from teeth WHERE teeth_ID IN (1, 2, 3) ORDER BY teeth_ID DESC');
+    gumsType1 = results
+        .map((result) => {'teeth_ID': result[0].toString(), 'gum': result[1]})
+        .toList();
+    selectedGumType1 = gumsType1.isNotEmpty ? gumsType1[0]['teeth_ID'] : null;
+    await conn.close();
+  }
+
   List<String> onTeethScaling() {
     List<String> gumItems = ['بالا', 'پایین', 'هردو'];
     return gumItems;
@@ -1460,39 +1591,92 @@ class _NewPatientState extends State<NewPatient> {
   }
 
   //  لثه برای استفاده متعدد
-  List<String> gumTypes2() {
-    List<String> canalRootItems = [
-      'بالا - راست',
-      'بالا - چپ',
-      'پایین - راست',
-      'پایین - چپ',
-      'هردو'
-    ];
-    return canalRootItems;
+  String? selectedGumType2;
+  List<Map<String, dynamic>> gums = [];
+
+  Future<void> onChooseGum2() async {
+    var conn = await onConnToDb();
+    var queryResult = await conn.query(
+        'SELECT teeth_ID, gum FROM teeth WHERE teeth_ID IN (4, 5, 6, 7, 1)');
+    gums = queryResult
+        .map((row) => {'teeth_ID': row[0].toString(), 'gum': row[1]})
+        .toList();
+    selectedGumType2 = gums.isNotEmpty ? gums[1]['teeth_ID'] : null;
+    await conn.close();
   }
 
   //  پوش کردن دندان
-  List<String> onTeethCovering() {
-    List<String> teethCoverItems = ['پورسلن', 'میتل', 'زرگونیم', 'گیگم'];
-    return teethCoverItems;
+  String? selectedCover;
+  List<Map<String, dynamic>> coverings = [];
+  Future<void> fetchToothCover() async {
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_id = 11');
+    setState(() {
+      coverings = results
+          .map((result) => {
+                'ser_det_ID': result[0].toString(),
+                'service_specific_value': result[1]
+              })
+          .toList();
+    });
+    selectedCover = coverings.isNotEmpty ? coverings[0]['ser_det_ID'] : null;
+    await conn.close();
   }
 
   //  پروتز دندان
-  List<String> onTeethProsthesis() {
-    List<String> prosthesisItems = ['پروتز قسمی', 'پروتز کامل'];
-    return prosthesisItems;
+  String? selectedProthesis;
+  List<Map<String, dynamic>> protheses = [];
+  Future<void> fetchProtheses() async {
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_id = 9');
+    setState(() {
+      protheses = results
+          .map((result) => {
+                'ser_det_ID': result[0].toString(),
+                'service_specific_value': result[1]
+              })
+          .toList();
+    });
+    selectedProthesis =
+        protheses.isNotEmpty ? protheses[0]['ser_det_ID'] : null;
+    await conn.close();
   }
 
   //  پرکاری دندان
-  List<String> onTeethFilling() {
-    List<String> teethFillingItems = ['کامپوزیت', 'املگم', 'سایر مواد'];
-    return teethFillingItems;
+  String? selectedFilling;
+  List<Map<String, dynamic>> teethFillings = [];
+
+  Future<void> onFillTeeth() async {
+    var conn = await onConnToDb();
+    var queryFill = await conn.query(
+        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_det_ID >= 1 AND ser_det_ID < 4');
+    teethFillings = queryFill
+        .map((result) => {
+              'ser_det_ID': result[0].toString(),
+              'service_specific_value': result[1]
+            })
+        .toList();
+
+    selectedFilling =
+        teethFillings.isNotEmpty ? teethFillings[0]['ser_det_ID'] : null;
+    await conn.close();
   }
 
   //  تعداد دندان
-  List<int> onTeethNumbers() {
-    List<int> teethNumItems = [1, 2, 3, 4, 5, 6, 7, 8];
-    return teethNumItems;
+  List<Map<String, dynamic>> teeth = [];
+  Future<void> fetchToothNum() async {
+    String? toothId = selectedGumType2 ?? '4';
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT td_ID, tooth from tooth_details WHERE tooth_ID = ? LIMIT 8',
+        [toothId]);
+    teeth = results
+        .map((result) => {'td_ID': result[0].toString(), 'tooth': result[1]})
+        .toList();
+    selectedToothDetail_ID = teeth.isNotEmpty ? teeth[0]['td_ID'] : null;
+    await conn.close();
   }
 
   //  اقساط پرداخت
