@@ -4,6 +4,25 @@ import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/staff/new_staff.dart';
 
+// Create the global key at the top level of your Dart file
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
+
+// This is shows snackbar when called
+void _onShowSnack(Color backColor, String msg) {
+  scaffoldMessengerKey.currentState?.showSnackBar(
+    SnackBar(
+      backgroundColor: backColor,
+      content: SizedBox(
+        height: 20.0,
+        child: Center(
+          child: Text(msg),
+        ),
+      ),
+    ),
+  );
+}
+
 void main() {
   return runApp(const Staff());
 }
@@ -15,25 +34,28 @@ class Staff extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          appBar: AppBar(
-            leading: Tooltip(
-              message: 'رفتن به داشبورد',
-              child: IconButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const Dashboard(),
+      home: ScaffoldMessenger(
+        key: scaffoldMessengerKey,
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            appBar: AppBar(
+              leading: Tooltip(
+                message: 'رفتن به داشبورد',
+                child: IconButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const Dashboard(),
+                    ),
                   ),
+                  icon: const Icon(Icons.home_outlined),
                 ),
-                icon: const Icon(Icons.home_outlined),
               ),
+              title: const Text('کارمندان'),
             ),
-            title: const Text('کارمندان'),
+            body: const MyDataTable(),
           ),
-          body: const MyDataTable(),
         ),
       ),
     );
@@ -452,9 +474,18 @@ class MyData extends DataTableSource {
                       'حذف کردن',
                       style: TextStyle(fontSize: 15.0),
                     ),
-                    onTap: () {
+                    onTap: () async {
+                      int staffID = data[index].staffID;
+                      final conn = await onConnToDb();
+                      final results = await conn.query(
+                          'SELECT * FROM staff WHERE staff_ID = ?', [staffID]);
+                      final row = results.first;
+                      String firstName = row['firstname'];
+                      String lastName = row['lastname'];
+                      // ignore: use_build_context_synchronously
                       Navigator.pop(context);
-                      onDeleteStaff(context);
+                      // ignore: use_build_context_synchronously
+                      onDeleteStaff(context, staffID, firstName, lastName);
                     }),
               ),
             ),
@@ -476,26 +507,46 @@ class MyData extends DataTableSource {
 }
 
 // This is to display an alert dialog to delete a patient
-onDeleteStaff(BuildContext context) {
+onDeleteStaff(
+    BuildContext context, int staffId, String firstName, String lastName) {
   return showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-            title: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text('حذف کارمند'),
+    context: context,
+    builder: (ctx) => StatefulBuilder(
+      builder: (BuildContext context, StateSetter setState) {
+        return AlertDialog(
+          title: const Directionality(
+            textDirection: TextDirection.rtl,
+            child: Text('حذف کارمند'),
+          ),
+          content: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Text('آیا میخواهید $firstName $lastName را حذف کنید؟'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+              child: const Text('لغو'),
             ),
-            content: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text('آیا میخواهید این کارمند را حذف کنید؟'),
+            TextButton(
+              onPressed: () async {
+                final conn = await onConnToDb();
+                final deleteResult = await conn
+                    .query('DELETE FROM staff WHERE staff_ID = ?', [staffId]);
+                if (deleteResult.affectedRows! > 0) {
+                  _onShowSnack(Colors.green, 'کارمند موفقانه حذف شد.');
+                  setState(() {
+                  });
+                }
+                await conn.close();
+                Navigator.of(context, rootNavigator: true).pop();
+              },
+              child: const Text('حذف'),
             ),
-            actions: [
-              TextButton(
-                  onPressed: () =>
-                      Navigator.of(context, rootNavigator: true).pop(),
-                  child: const Text('لغو')),
-              TextButton(onPressed: () {}, child: const Text('حذف')),
-            ],
-          ));
+          ],
+        );
+      },
+    ),
+  );
 }
 
 // This dialog edits a staff
@@ -508,7 +559,7 @@ onEditStaff(BuildContext context) {
     'مدیر سیستم',
   ];
 // The global for the form
-  final formKey = GlobalKey<FormState>();
+  final formKey1 = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
   final nameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -533,7 +584,7 @@ onEditStaff(BuildContext context) {
             content: Directionality(
               textDirection: TextDirection.rtl,
               child: Form(
-                key: formKey,
+                key: formKey1,
                 child: SizedBox(
                   width: 500.0,
                   child: SingleChildScrollView(
@@ -748,7 +799,7 @@ onCreateUserAccount(BuildContext context, int staff_id) {
     'مدیر سیستم',
   ];
 // The global for the form
-  final formKey = GlobalKey<FormState>();
+  final formKey2 = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
   final userNameController = TextEditingController();
   final pwdController = TextEditingController();
@@ -771,7 +822,7 @@ onCreateUserAccount(BuildContext context, int staff_id) {
             content: Directionality(
               textDirection: TextDirection.rtl,
               child: Form(
-                key: formKey,
+                key: formKey2,
                 child: SizedBox(
                   width: 500.0,
                   child: SingleChildScrollView(
@@ -952,7 +1003,7 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                           child: const Text('لغو')),
                       ElevatedButton(
                         onPressed: () async {
-                          if (formKey.currentState!.validate()) {
+                          if (formKey2.currentState!.validate()) {
                             int staffId = staff_id;
                             String userName = userNameController.text;
                             String pwd = pwdController.text;
@@ -971,8 +1022,8 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                               // ignore: use_build_context_synchronously
                               Navigator.pop(context);
                               // ignore: use_build_context_synchronously
-                              onShowSnackBar(
-                                  context, 'حساب کاربری موفقانه ایجاد شد.');
+                              _onShowSnack(Colors.green,
+                                  'حساب کاربری موفقانه ایجاد شد.');
                             }
                           }
                         },
@@ -998,7 +1049,7 @@ onUpdateUserAccount(
     'مدیر سیستم',
   ];
 // The global for the form
-  final formKey = GlobalKey<FormState>();
+  final formKey3 = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
   final userNameController = TextEditingController();
   final pwdController = TextEditingController();
@@ -1025,7 +1076,7 @@ onUpdateUserAccount(
             content: Directionality(
               textDirection: TextDirection.rtl,
               child: Form(
-                key: formKey,
+                key: formKey3,
                 child: SizedBox(
                   width: 500.0,
                   child: SingleChildScrollView(
@@ -1206,7 +1257,7 @@ onUpdateUserAccount(
                           child: const Text('لغو')),
                       ElevatedButton(
                         onPressed: () async {
-                          if (formKey.currentState!.validate()) {
+                          if (formKey3.currentState!.validate()) {
                             final userName = userNameController.text;
                             final pwd = pwdController.text;
                             final userRole = roleDropDown;
@@ -1223,8 +1274,8 @@ onUpdateUserAccount(
                               // ignore: use_build_context_synchronously
                               Navigator.pop(context);
                               // ignore: use_build_context_synchronously
-                              onShowSnackBar(
-                                  context, 'حساب کاربری موفقانه ایجاد شد.');
+                              _onShowSnack(Colors.green,
+                                  'حساب کاربری موفقانه تغییر کرد.');
                             }
                           }
                         },
@@ -1238,19 +1289,6 @@ onUpdateUserAccount(
       );
     }),
   );
-}
-
-void onShowSnackBar(BuildContext context, String content) {
-  final snackbar = SnackBar(
-    content: Center(
-      child: Text(
-        content,
-        style: const TextStyle(color: Colors.white),
-      ),
-    ),
-    backgroundColor: Colors.blue,
-  );
-  ScaffoldMessenger.of(context).showSnackBar(snackbar);
 }
 
 class MyStaff {
