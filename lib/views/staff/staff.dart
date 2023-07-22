@@ -5,12 +5,12 @@ import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/staff/new_staff.dart';
 
 // Create the global key at the top level of your Dart file
-final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+final GlobalKey<ScaffoldMessengerState> _globalMKey =
     GlobalKey<ScaffoldMessengerState>();
 
 // This is shows snackbar when called
 void _onShowSnack(Color backColor, String msg) {
-  scaffoldMessengerKey.currentState?.showSnackBar(
+  _globalMKey.currentState?.showSnackBar(
     SnackBar(
       backgroundColor: backColor,
       content: SizedBox(
@@ -35,7 +35,7 @@ class Staff extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: ScaffoldMessenger(
-        key: scaffoldMessengerKey,
+        key: _globalMKey,
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
@@ -462,8 +462,16 @@ class MyData extends DataTableSource {
                       final staffRow = results.first;
                       String firstName = staffRow['firstname'];
                       String lastName = staffRow['lastname'];
+                      String position = staffRow['position'];
+                      double salary = staffRow['salary'];
+                      String phone = staffRow['phone'];
+                      String tazkira = staffRow['tazkira_ID'];
+                      String address = staffRow['address'];
+                      // ignore: use_build_context_synchronously
                       Navigator.pop(context);
-                      onEditStaff(context, staffId, firstName, lastName);
+                      // ignore: use_build_context_synchronously
+                      onEditStaff(context, staffId, firstName, lastName,
+                          position, salary, phone, tazkira, address);
                     },
                   );
                 }),
@@ -557,7 +565,15 @@ onDeleteStaff(
 
 // This dialog edits a stafflastNameController
 onEditStaff(
-    BuildContext context, int staffID, String firstname, String lastname) {
+    BuildContext context,
+    int staffID,
+    String firstname,
+    String lastname,
+    String position,
+    double salary,
+    String phoneNum,
+    String tazkira,
+    String address) {
   // position types dropdown variables
   String positionDropDown = 'داکتر دندان';
   var positionItems = [
@@ -579,6 +595,15 @@ onEditStaff(
   const regExOnlydigits = "[0-9+]";
   final tazkiraPattern = RegExp(r'^\d{4}-\d{4}-\d{5}$');
 
+/* ------------- Set all staff related values into their fields.----------- */
+  nameController.text = firstname;
+  lastNameController.text = lastname;
+  positionDropDown = position;
+  salaryController.text = salary.toString();
+  phoneController.text = phoneNum;
+  tazkiraController.text = tazkira;
+  addressController.text = address;
+/* ------------- END Set all staff related values into their fields.----------- */
   return showDialog(
     context: context,
     builder: ((context) {
@@ -905,8 +930,38 @@ onEditStaff(
                           onPressed: () => Navigator.pop(context),
                           child: const Text('لغو')),
                       ElevatedButton(
-                        onPressed: () {
-                          if (formKey1.currentState!.validate()) {}
+                        onPressed: () async {
+                          if (formKey1.currentState!.validate()) {
+                            String fname = nameController.text;
+                            String lname = lastNameController.text;
+                            String pos = positionDropDown;
+                            String phone = phoneController.text;
+                            double salary = double.parse(salaryController.text);
+                            String tazkiraId = tazkiraController.text;
+                            String addr = addressController.text;
+                            final conn = await onConnToDb();
+                            final results = await conn.query(
+                                'UPDATE staff SET firstname = ?, lastname = ?, position = ?, salary = ?, phone = ?, tazkira_ID = ?, address = ? WHERE staff_ID = ?',
+                                [
+                                  fname,
+                                  lname,
+                                  pos,
+                                  salary,
+                                  phone,
+                                  tazkiraId,
+                                  addr,
+                                  staffID
+                                ]);
+                            if (results.affectedRows! > 0) {
+                              _onShowSnack(Colors.green,
+                                  'مشخصات این کارمند موفقانه تغییر کرد.');
+                              Navigator.pop(context);
+                            } else {
+                              _onShowSnack(
+                                  Colors.red, 'متاسفم، تغییرات ناکام شد.');
+                              Navigator.pop(context);
+                            }
+                          }
                         },
                         child: const Text('تغییر'),
                       ),
