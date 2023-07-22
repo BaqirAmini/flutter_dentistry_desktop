@@ -454,9 +454,16 @@ class MyData extends DataTableSource {
                       'تغییر دادن',
                       style: TextStyle(fontSize: 15.0),
                     ),
-                    onTap: () {
+                    onTap: () async {
+                      int staffId = data[index].staffID;
+                      final conn = await onConnToDb();
+                      final results = await conn.query(
+                          'SELECT * FROM staff WHERE staff_ID = ?', [staffId]);
+                      final staffRow = results.first;
+                      String firstName = staffRow['firstname'];
+                      String lastName = staffRow['lastname'];
                       Navigator.pop(context);
-                      onEditStaff(context);
+                      onEditStaff(context, staffId, firstName, lastName);
                     },
                   );
                 }),
@@ -534,8 +541,7 @@ onDeleteStaff(
                     .query('DELETE FROM staff WHERE staff_ID = ?', [staffId]);
                 if (deleteResult.affectedRows! > 0) {
                   _onShowSnack(Colors.green, 'کارمند موفقانه حذف شد.');
-                  setState(() {
-                  });
+                  setState(() {});
                 }
                 await conn.close();
                 Navigator.of(context, rootNavigator: true).pop();
@@ -549,8 +555,9 @@ onDeleteStaff(
   );
 }
 
-// This dialog edits a staff
-onEditStaff(BuildContext context) {
+// This dialog edits a stafflastNameController
+onEditStaff(
+    BuildContext context, int staffID, String firstname, String lastname) {
   // position types dropdown variables
   String positionDropDown = 'داکتر دندان';
   var positionItems = [
@@ -568,17 +575,21 @@ onEditStaff(BuildContext context) {
   final tazkiraController = TextEditingController();
   final addressController = TextEditingController();
 
+  const regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
+  const regExOnlydigits = "[0-9+]";
+  final tazkiraPattern = RegExp(r'^\d{4}-\d{4}-\d{5}$');
+
   return showDialog(
     context: context,
     builder: ((context) {
       return StatefulBuilder(
         builder: ((context, setState) {
           return AlertDialog(
-            title: const Directionality(
+            title: Directionality(
               textDirection: TextDirection.rtl,
               child: Text(
-                'تغییر مشخصات کارمند  ',
-                style: TextStyle(color: Colors.blue),
+                'تغییر مشخصات $firstname $lastname',
+                style: const TextStyle(color: Colors.blue),
               ),
             ),
             content: Directionality(
@@ -597,6 +608,13 @@ onEditStaff(BuildContext context) {
                           margin: const EdgeInsets.all(20.0),
                           child: TextFormField(
                             controller: nameController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'نام الزامی است.';
+                              } else if (value.length < 3) {
+                                return 'نام باید حداقل 3 حرف باشد.';
+                              }
+                            },
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'نام',
@@ -609,6 +627,15 @@ onEditStaff(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -616,6 +643,17 @@ onEditStaff(BuildContext context) {
                           margin: const EdgeInsets.all(20.0),
                           child: TextFormField(
                             controller: lastNameController,
+                            validator: (value) {
+                              if (value!.isNotEmpty) {
+                                if (value.length < 3 || value.length > 10) {
+                                  return 'تخلص باید از سه الی ده حرف باشد.';
+                                } else {
+                                  return null;
+                                }
+                              } else {
+                                return null;
+                              }
+                            },
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'تخلص',
@@ -628,6 +666,15 @@ onEditStaff(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -645,6 +692,15 @@ onEditStaff(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                             child: DropdownButtonHideUnderline(
                               child: Container(
@@ -674,10 +730,28 @@ onEditStaff(BuildContext context) {
                         Container(
                           margin: const EdgeInsets.all(20.0),
                           child: TextFormField(
+                            textDirection: TextDirection.ltr,
                             controller: phoneController,
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                RegExp(regExOnlydigits),
+                              ),
                             ],
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'نمبر تماس الزامی است.';
+                              } else if (value.startsWith('07')) {
+                                if (value.length < 10 || value.length > 10) {
+                                  return 'نمبر تماس باید 10 عدد باشد.';
+                                }
+                              } else if (value.startsWith('+93')) {
+                                if (value.length < 12 || value.length > 12) {
+                                  return 'نمبر تماس  همراه با کود کشور باید 12 عدد باشد.';
+                                }
+                              } else {
+                                return 'نمبر تماس نا معتبر است.';
+                              }
+                            },
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'نمبر تماس',
@@ -690,6 +764,15 @@ onEditStaff(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -697,6 +780,14 @@ onEditStaff(BuildContext context) {
                           margin: const EdgeInsets.all(20.0),
                           child: TextFormField(
                             controller: salaryController,
+                            validator: (value) {
+                              if (value!.isNotEmpty) {
+                                final salary = double.tryParse(value!);
+                                if (salary! < 1000 || salary > 100000) {
+                                  return 'مقدار معاش باید بین 1000 افغانی و 100,000 افغانی باشد.';
+                                }
+                              }
+                            },
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
                                   RegExp(r'[0-9.]'))
@@ -713,6 +804,15 @@ onEditStaff(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -720,9 +820,17 @@ onEditStaff(BuildContext context) {
                           margin: const EdgeInsets.all(20.0),
                           child: TextFormField(
                             controller: tazkiraController,
+                            validator: (value) {
+                              if (value!.isNotEmpty) {
+                                if (!tazkiraPattern.hasMatch(value)) {
+                                  return 'فورمت نمبر تذکره باید xxxx-xxxx-xxxxx باشد.';
+                                }
+                              }
+                              return null;
+                            },
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9.]'))
+                                  RegExp(r'[0-9-]'))
                             ],
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -736,6 +844,15 @@ onEditStaff(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -744,7 +861,9 @@ onEditStaff(BuildContext context) {
                           child: TextFormField(
                             controller: addressController,
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                RegExp(regExOnlyAbc),
+                              ),
                             ],
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -758,6 +877,15 @@ onEditStaff(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -777,7 +905,9 @@ onEditStaff(BuildContext context) {
                           onPressed: () => Navigator.pop(context),
                           child: const Text('لغو')),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (formKey1.currentState!.validate()) {}
+                        },
                         child: const Text('تغییر'),
                       ),
                     ],
