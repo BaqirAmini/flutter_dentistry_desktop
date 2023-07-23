@@ -5,12 +5,12 @@ import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/staff/new_staff.dart';
 
 // Create the global key at the top level of your Dart file
-final GlobalKey<ScaffoldMessengerState> _globalMKey =
+final GlobalKey<ScaffoldMessengerState> _globalKey3 =
     GlobalKey<ScaffoldMessengerState>();
 
 // This is shows snackbar when called
 void _onShowSnack(Color backColor, String msg) {
-  _globalMKey.currentState?.showSnackBar(
+  _globalKey3.currentState?.showSnackBar(
     SnackBar(
       backgroundColor: backColor,
       content: SizedBox(
@@ -35,7 +35,7 @@ class Staff extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: ScaffoldMessenger(
-        key: _globalMKey,
+        key: _globalKey3,
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
@@ -117,9 +117,16 @@ class _MyDataTableState extends State<MyDataTable> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _fetchData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Create a new instance of the PatientDataSource class and pass it the _filteredData list
-    final dataSource = MyData(_filteredData);
+    // final dataSource = MyData(_filteredData);
+    final dataSource = MyData(_filteredData, _fetchData, _fetchData);
 
     return Scaffold(
         body: Column(
@@ -351,7 +358,10 @@ class _MyDataTableState extends State<MyDataTable> {
 
 class MyData extends DataTableSource {
   List<MyStaff> data;
-  MyData(this.data);
+  // This two instance variable of type Function are for refreshing after update and delete
+  Function onUpdate;
+  Function onDelete;
+  MyData(this.data, this.onUpdate, this.onDelete);
 
   void sort(Comparator<MyStaff> compare, bool ascending) {
     data.sort(compare);
@@ -471,7 +481,7 @@ class MyData extends DataTableSource {
                       Navigator.pop(context);
                       // ignore: use_build_context_synchronously
                       onEditStaff(context, staffId, firstName, lastName,
-                          position, salary, phone, tazkira, address);
+                          position, salary, phone, tazkira, address, onUpdate);
                     },
                   );
                 }),
@@ -500,7 +510,8 @@ class MyData extends DataTableSource {
                       // ignore: use_build_context_synchronously
                       Navigator.pop(context);
                       // ignore: use_build_context_synchronously
-                      onDeleteStaff(context, staffID, firstName, lastName);
+                      onDeleteStaff(
+                          context, staffID, firstName, lastName, onDelete);
                     }),
               ),
             ),
@@ -522,8 +533,8 @@ class MyData extends DataTableSource {
 }
 
 // This is to display an alert dialog to delete a patient
-onDeleteStaff(
-    BuildContext context, int staffId, String firstName, String lastName) {
+onDeleteStaff(BuildContext context, int staffId, String firstName,
+    String lastName, Function onDelete) {
   return showDialog(
     context: context,
     builder: (ctx) => StatefulBuilder(
@@ -549,7 +560,7 @@ onDeleteStaff(
                     .query('DELETE FROM staff WHERE staff_ID = ?', [staffId]);
                 if (deleteResult.affectedRows! > 0) {
                   _onShowSnack(Colors.green, 'کارمند موفقانه حذف شد.');
-                  setState(() {});
+                  onDelete();
                 }
                 await conn.close();
                 Navigator.of(context, rootNavigator: true).pop();
@@ -573,7 +584,8 @@ onEditStaff(
     double salary,
     String phoneNum,
     String tazkira,
-    String address) {
+    String address,
+    Function onUpdate) {
   // position types dropdown variables
   String positionDropDown = 'داکتر دندان';
   var positionItems = [
@@ -956,6 +968,7 @@ onEditStaff(
                               _onShowSnack(Colors.green,
                                   'مشخصات این کارمند موفقانه تغییر کرد.');
                               Navigator.pop(context);
+                              onUpdate();
                             } else {
                               _onShowSnack(
                                   Colors.red, 'متاسفم، تغییرات ناکام شد.');
