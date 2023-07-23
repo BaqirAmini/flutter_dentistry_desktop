@@ -436,19 +436,30 @@ onCreateExpenseType(BuildContext context) {
                           if (formKey1.currentState!.validate()) {
                             String expName = itemNameController.text;
                             var conn = await onConnToDb();
-                            var results = await conn.query(
-                                'INSERT INTO expenses (exp_name) VALUES (?)',
+                            // Avoid duplicate entry of expenses category
+                            var results1 = await conn.query(
+                                'SELECT * FROM expenses WHERE exp_name = ?',
                                 [expName]);
-                            if (results.affectedRows! > 0) {
-                              _onShowSnack(Colors.green,
-                                  'نوعیت مصرف موفقانه افزوده شد.');
-                              Navigator.pop(context);
+                            if (results1.isNotEmpty) {
+                              _onShowSnack(Colors.red,
+                                  'متاسفم، این کتگوری مصارف قبلاً موجود است.');
+                                  Navigator.pop(context);
                             } else {
-                              _onShowSnack(
-                                  Colors.red, 'متاسفم، عملیه انجام نشد.');
-                              Navigator.pop(context);
+                              // Insert into expenses
+                              var result2 = await conn.query(
+                                  'INSERT INTO expenses (exp_name) VALUES (?)',
+                                  [expName]);
+                              if (result2.affectedRows! > 0) {
+                                _onShowSnack(Colors.green,
+                                    'نوعیت مصرف موفقانه افزوده شد.');
+                                Navigator.pop(context);
+                              } else {
+                                _onShowSnack(
+                                    Colors.red, 'متاسفم، عملیه انجام نشد.');
+                                Navigator.pop(context);
+                              }
+                              await conn.close();
                             }
-                            await conn.close();
                           }
                         },
                         child: const Text('افزودن'),
