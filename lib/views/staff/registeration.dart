@@ -21,7 +21,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
     'مدیر سیستم',
   ];
 // The global for the form
-  final _formKey = GlobalKey<FormState>();
+  final _newStaffFormKey = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
   final _nameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -42,7 +42,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
           style: TextStyle(color: Colors.white),
         ),
       ),
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.green,
     );
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
@@ -52,7 +52,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
     return SingleChildScrollView(
       child: Center(
         child: Form(
-          key: _formKey,
+          key: _newStaffFormKey,
           child: SizedBox(
             width: 500.0,
             child: Column(
@@ -360,7 +360,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                         salary = double.parse(_salaryController.text);
                       }
 
-                      if (_formKey.currentState!.validate()) {
+                      if (_newStaffFormKey.currentState!.validate()) {
                         try {
                           final conn = await onConnToDb();
                           var query = await conn.query(
