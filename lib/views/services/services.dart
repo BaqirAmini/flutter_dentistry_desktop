@@ -60,6 +60,20 @@ class _ServiceState extends State<Service> {
         child: Scaffold(
           backgroundColor: Color.fromARGB(255, 234, 231, 231),
           appBar: AppBar(
+            leading:   Tooltip(
+                message: 'رفتن به داشبورد',
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Dashboard(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.home_outlined),
+                ),
+              ),
             actions: [
               IconButton(
                 icon: Icon(_isSearching ? Icons.close : Icons.search),
@@ -87,20 +101,7 @@ class _ServiceState extends State<Service> {
                 );
               }),
               const SizedBox(width: 20),
-              Tooltip(
-                message: 'رفتن به داشبورد',
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const Dashboard(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.home_outlined),
-                ),
-              ),
+            
             ],
             title: _isSearching
                 ? TextField(
