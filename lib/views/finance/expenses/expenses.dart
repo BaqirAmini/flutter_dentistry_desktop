@@ -28,7 +28,7 @@ void _onShowSnack(Color backColor, String msg) {
 void main() => runApp(const ExpenseList());
 
 class ExpenseList extends StatefulWidget {
-  const ExpenseList({Key? key}): super(key: key);
+  const ExpenseList({Key? key}) : super(key: key);
 
   @override
   State<ExpenseList> createState() => _ExpenseListState();
@@ -77,12 +77,7 @@ class _ExpenseListState extends State<ExpenseList> {
               leading: Tooltip(
                 message: 'رفتن به داشبورد',
                 child: IconButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Dashboard(),
-                    ),
-                  ),
+                  onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.home_outlined),
                 ),
               ),
@@ -111,17 +106,30 @@ class _ExpenseListState extends State<ExpenseList> {
     await conn.close();
   }
 
+// The text editing controllers for the TextFormFields
+  final itemNameController = TextEditingController();
+  final quantityController = TextEditingController();
+  final unitPriceController = TextEditingController();
+  final purchaseDateController = TextEditingController();
+  final totalPriceController = TextEditingController();
+  final descriptionController = TextEditingController();
+
+// Sets the total price into its related field
+  void _onSetTotalPrice(String text) {
+    int qty = quantityController.text.isEmpty
+        ? 0
+        : int.parse(quantityController.text);
+    double unitPrice = unitPriceController.text.isEmpty
+        ? 0
+        : double.parse(unitPriceController.text);
+    double totalPrice = qty * unitPrice;
+    totalPriceController.text = totalPrice.toString() + ' افغانی';
+  }
+
 // This dialog creates a new Expense
   onCreateExpenseItem(BuildContext context) {
 // The global for the form
     final formKey2 = GlobalKey<FormState>();
-// The text editing controllers for the TextFormFields
-    final itemNameController = TextEditingController();
-    final quantityController = TextEditingController();
-    final unitPriceController = TextEditingController();
-    final purchaseDateController = TextEditingController();
-    final totalPriceController = TextEditingController();
-    final descriptionController = TextEditingController();
 
     return showDialog(
       context: context,
@@ -162,6 +170,15 @@ class _ExpenseListState extends State<ExpenseList> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
                               ),
                               child: DropdownButtonHideUnderline(
                                 child: Container(
@@ -211,6 +228,15 @@ class _ExpenseListState extends State<ExpenseList> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
                               ),
                             ),
                           ),
@@ -232,6 +258,7 @@ class _ExpenseListState extends State<ExpenseList> {
                                   return 'تعداد/مقدار نمی تواند خالی باشد.';
                                 }
                               },
+                              onChanged: _onSetTotalPrice,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'تعداد / مقدار',
@@ -245,6 +272,15 @@ class _ExpenseListState extends State<ExpenseList> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
                               ),
                             ),
                           ),
@@ -252,9 +288,15 @@ class _ExpenseListState extends State<ExpenseList> {
                             margin: const EdgeInsets.all(20.0),
                             child: TextFormField(
                               controller: unitPriceController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'قیمت نمی تواند خالی باشد.';
+                                }
+                              },
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly
                               ],
+                              onChanged: _onSetTotalPrice,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'قیمت فی واحد جنس',
@@ -267,12 +309,22 @@ class _ExpenseListState extends State<ExpenseList> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
                               ),
                             ),
                           ),
                           Container(
                             margin: const EdgeInsets.all(20.0),
                             child: TextFormField(
+                              readOnly: true,
                               controller: totalPriceController,
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
@@ -290,6 +342,15 @@ class _ExpenseListState extends State<ExpenseList> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
                               ),
                             ),
                           ),
@@ -297,6 +358,13 @@ class _ExpenseListState extends State<ExpenseList> {
                             margin: const EdgeInsets.all(20.0),
                             child: TextFormField(
                               controller: descriptionController,
+                              validator: (value) {
+                                if (value!.isNotEmpty) {
+                                  if (value.length < 5 || value.length > 30) {
+                                    return 'توضیحات باید بین 5 و 30 حرف باشد.';
+                                  }
+                                }
+                              },
                               maxLines: 3,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
@@ -310,6 +378,15 @@ class _ExpenseListState extends State<ExpenseList> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(30.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
                               ),
                             ),
                           ),
@@ -317,6 +394,11 @@ class _ExpenseListState extends State<ExpenseList> {
                             margin: const EdgeInsets.all(20.0),
                             child: TextFormField(
                               controller: purchaseDateController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'تاریخ خرید نمی تواند خالی باشد.';
+                                }
+                              },
                               onTap: () async {
                                 FocusScope.of(context)
                                     .requestFocus(new FocusNode());
@@ -349,6 +431,15 @@ class _ExpenseListState extends State<ExpenseList> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
                               ),
                             ),
                           ),
@@ -369,7 +460,9 @@ class _ExpenseListState extends State<ExpenseList> {
                             child: const Text('لغو')),
                         ElevatedButton(
                           onPressed: () {
-                            if (formKey2.currentState!.validate()) {}
+                            if (formKey2.currentState!.validate()) {
+                              print('Item Name: ${itemNameController.text}');
+                            }
                           },
                           child: const Text('افزودن'),
                         ),
@@ -437,6 +530,15 @@ onCreateExpenseType(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
