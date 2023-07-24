@@ -7,7 +7,7 @@ void main() {
 }
 
 class NewStaff extends StatelessWidget {
-  const NewStaff({super.key});
+  const NewStaff({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +23,7 @@ class NewStaff extends StatelessWidget {
               child: IconButton(
                 icon: const BackButtonIcon(),
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: ((context) => const Staff())));
+                  Navigator.pop(context);
                 },
               ),
             ),

@@ -43,12 +43,7 @@ class Staff extends StatelessWidget {
               leading: Tooltip(
                 message: 'رفتن به داشبورد',
                 child: IconButton(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const Dashboard(),
-                    ),
-                  ),
+                  onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.home_outlined),
                 ),
               ),
