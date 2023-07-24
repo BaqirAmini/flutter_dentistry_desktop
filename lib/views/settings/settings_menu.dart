@@ -276,7 +276,7 @@ onShowProfile(void Function() onUpdatePhoto) {
           // ignore: sized_box_for_whitespace
           Flexible(
             flex: 1,
-            child: Container(
+            child: SizedBox(
               width: 100,
               height: 100,
               child: Stack(
@@ -289,7 +289,7 @@ onShowProfile(void Function() onUpdatePhoto) {
                   Positioned(
                     top: 0,
                     left: 0,
-                    child: Container(
+                    child: SizedBox(
                       height: 38,
                       width: 38,
                       child: Card(
@@ -299,7 +299,7 @@ onShowProfile(void Function() onUpdatePhoto) {
                             message: 'تغییر عکس پروفایل',
                             child: IconButton(
                               onPressed: onUpdatePhoto,
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.edit,
                                 size: 14.0,
                               ),
@@ -353,9 +353,9 @@ onShowProfile(void Function() onUpdatePhoto) {
                       Container(
                         padding: const EdgeInsets.all(10.0),
                         color: const Color.fromARGB(255, 240, 239, 239),
-                        child: Column(
+                        child: const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
                               'نام',
                               style: TextStyle(
@@ -377,9 +377,9 @@ onShowProfile(void Function() onUpdatePhoto) {
                             width: 240.0,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
-                            child: Column(
+                            child: const Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: const [
+                              children: [
                                 Text(
                                   'تخلص',
                                   style: TextStyle(
@@ -395,9 +395,9 @@ onShowProfile(void Function() onUpdatePhoto) {
                             width: 240.0,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
-                            child: Column(
+                            child: const Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: const [
+                              children: [
                                 Text(
                                   'وظیفه',
                                   style: TextStyle(
@@ -417,9 +417,9 @@ onShowProfile(void Function() onUpdatePhoto) {
                       Container(
                         padding: const EdgeInsets.all(10.0),
                         color: const Color.fromARGB(255, 240, 239, 239),
-                        child: Column(
+                        child: const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
                               'نمبر تذکره',
                               style: TextStyle(
@@ -441,9 +441,9 @@ onShowProfile(void Function() onUpdatePhoto) {
                             width: 240.0,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
-                            child: Column(
+                            child: const Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: const [
+                              children: [
                                 Text(
                                   'معاش',
                                   style: TextStyle(
@@ -459,9 +459,9 @@ onShowProfile(void Function() onUpdatePhoto) {
                             width: 240.0,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
-                            child: Column(
+                            child: const Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: const [
+                              children: [
                                 Text(
                                   'نمبر تماس',
                                   style: TextStyle(
@@ -479,9 +479,9 @@ onShowProfile(void Function() onUpdatePhoto) {
                       Container(
                         padding: const EdgeInsets.all(10.0),
                         color: const Color.fromARGB(255, 240, 239, 239),
-                        child: Column(
+                        child: const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
                               'آدرس',
                               style: TextStyle(
@@ -498,7 +498,7 @@ onShowProfile(void Function() onUpdatePhoto) {
                   Positioned(
                     top: 0,
                     left: 0,
-                    child: Container(
+                    child: SizedBox(
                       width: 40,
                       height: 40,
                       child: Card(
@@ -718,7 +718,7 @@ onEditProfileInfo(BuildContext context) {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton(
                                   isExpanded: true,

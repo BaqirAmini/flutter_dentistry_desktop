@@ -423,7 +423,7 @@ onCreateNewTax(BuildContext context) {
                             controller: delDateCotnroller,
                             onTap: () async {
                               FocusScope.of(context)
-                                  .requestFocus(new FocusNode());
+                                  .requestFocus(FocusNode());
                               final DateTime? dateTime = await showDatePicker(
                                   context: context,
                                   initialDate: DateTime.now(),
@@ -680,7 +680,7 @@ onEditTax(BuildContext context) {
                             controller: delDateCotnroller,
                             onTap: () async {
                               FocusScope.of(context)
-                                  .requestFocus(new FocusNode());
+                                  .requestFocus(FocusNode());
                               final DateTime? dateTime = await showDatePicker(
                                   context: context,
                                   initialDate: DateTime.now(),

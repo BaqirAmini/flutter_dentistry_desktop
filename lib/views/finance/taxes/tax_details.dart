@@ -14,9 +14,9 @@ class TaxDetails extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10.0),
             color: const Color.fromARGB(255, 240, 239, 239),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   'نمبر تشخیصیه مالیه دهنده (TIN)',
                   style: TextStyle(
@@ -38,9 +38,9 @@ class TaxDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [
+                  children: [
                     Text(
                       'مالیات سال',
                       style: TextStyle(
@@ -56,9 +56,9 @@ class TaxDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [
+                  children: [
                     Text(
                       'فیصدی مالیات (%)',
                       style: TextStyle(
@@ -82,9 +82,9 @@ class TaxDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [
+                  children: [
                     Text(
                       'تاریخ تحویلی',
                       style: TextStyle(
@@ -100,9 +100,9 @@ class TaxDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [
+                  children: [
                     Text(
                       'مجموع مالیات',
                       style: TextStyle(
@@ -122,9 +122,9 @@ class TaxDetails extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10.0),
             color: const Color.fromARGB(255, 240, 239, 239),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.end,
-              children: const [
+              children: [
                 Text(
                   'مبلع باقی',
                   style: TextStyle(
@@ -142,9 +142,9 @@ class TaxDetails extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10.0),
             color: const Color.fromARGB(255, 240, 239, 239),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   'تحویل مالیات توسط',
                   style: TextStyle(

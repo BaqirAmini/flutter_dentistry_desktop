@@ -93,7 +93,7 @@ class Sidebar extends StatelessWidget {
               );
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
             leading: const Icon(Icons.exit_to_app),
             title: const Text('خروج'),

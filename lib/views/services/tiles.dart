@@ -60,8 +60,8 @@ class ServicesTile extends StatelessWidget {
                                     child: Directionality(
                                       textDirection: TextDirection.rtl,
                                       child: ListTile(
-                                        leading: Icon(Icons.delete),
-                                        title: Text('حذف کردن'),
+                                        leading: const Icon(Icons.delete),
+                                        title: const Text('حذف کردن'),
                                         onTap: () => onDeleteDentalService(context),
                                       ),
                                     ),

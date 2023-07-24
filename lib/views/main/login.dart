@@ -17,7 +17,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
 // The global for the form
-  final _formKey = GlobalKey<FormState>();
+  final _loginFormKey = GlobalKey<FormState>();
   final _userNameController = TextEditingController();
   final _pwdController = TextEditingController();
   final _regExUName = '[a-zA-Z0-9-@]';
@@ -31,7 +31,7 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> _onPressLoginButton(BuildContext context) async {
-    if (_formKey.currentState!.validate()) {
+    if (_loginFormKey.currentState!.validate()) {
       final userName = _userNameController.text;
       final pwd = _pwdController.text;
       var conn = await onConnToDb();
@@ -112,7 +112,7 @@ class _LoginState extends State<Login> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Form(
-                      key: _formKey,
+                      key: _loginFormKey,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
@@ -143,6 +143,7 @@ class _LoginState extends State<Login> {
                                   if (value!.isEmpty) {
                                     return 'نام یوزر نمی تواند خالی باشد.';
                                   }
+                                  return null;
                                 },
                                 inputFormatters: [
                                   FilteringTextInputFormatter.allow(
@@ -198,6 +199,7 @@ class _LoginState extends State<Login> {
                                     if (value!.isEmpty) {
                                       return 'رمز عبور نمی تواند خالی باشد.';
                                     }
+                                    return null;
                                   },
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(

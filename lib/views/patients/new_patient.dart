@@ -12,14 +12,14 @@ void main() {
 }
 
 class NewPatient extends StatefulWidget {
-  const NewPatient({super.key});
+  const NewPatient({Key? key}): super(key: key);
 
   @override
   _NewPatientState createState() => _NewPatientState();
 }
 
 class _NewPatientState extends State<NewPatient> {
-  final GlobalKey<ScaffoldMessengerState> _globalKey =
+   GlobalKey<ScaffoldMessengerState> _globalKey2 =
       GlobalKey<ScaffoldMessengerState>();
 
   String maritalStatusDD = 'مجرد';
@@ -150,6 +150,7 @@ class _NewPatientState extends State<NewPatient> {
                           } else if (value.length < 3 || value.length > 10) {
                             return 'نام مریض باید بین 3 و 12 حرف باشد.';
                           }
+                          return null;
                         },
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -237,7 +238,7 @@ class _NewPatientState extends State<NewPatient> {
                               borderSide: BorderSide(color: Colors.blue)),
                         ),
                         child: DropdownButtonHideUnderline(
-                          child: Container(
+                          child: SizedBox(
                             height: 26.0,
                             child: DropdownButton(
                               isExpanded: true,
@@ -280,7 +281,7 @@ class _NewPatientState extends State<NewPatient> {
                               borderSide: BorderSide(color: Colors.blue)),
                         ),
                         child: DropdownButtonHideUnderline(
-                          child: Container(
+                          child: SizedBox(
                             height: 26.0,
                             child: DropdownButton(
                               isExpanded: true,
@@ -320,7 +321,7 @@ class _NewPatientState extends State<NewPatient> {
                               borderSide: BorderSide(color: Colors.blue)),
                         ),
                         child: DropdownButtonHideUnderline(
-                          child: Container(
+                          child: SizedBox(
                             height: 26.0,
                             child: DropdownButton(
                               isExpanded: true,
@@ -360,7 +361,7 @@ class _NewPatientState extends State<NewPatient> {
                               borderSide: BorderSide(color: Colors.blue)),
                         ),
                         child: DropdownButtonHideUnderline(
-                          child: Container(
+                          child: SizedBox(
                             height: 26.0,
                             child: DropdownButton(
                               isExpanded: true,
@@ -409,6 +410,7 @@ class _NewPatientState extends State<NewPatient> {
                           } else {
                             return 'نمبر تماس نا معتبر است.';
                           }
+                          return null;
                         },
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
@@ -488,6 +490,7 @@ class _NewPatientState extends State<NewPatient> {
                             if (value!.isEmpty) {
                               return 'لطفا تاریخ مراجعه مریض را انتخاب کنید.';
                             }
+                            return null;
                           },
                           onTap: () async {
                             FocusScope.of(context).requestFocus(
@@ -550,7 +553,7 @@ class _NewPatientState extends State<NewPatient> {
                                 borderSide: BorderSide(color: Colors.blue)),
                           ),
                           child: DropdownButtonHideUnderline(
-                            child: Container(
+                            child: SizedBox(
                               height: 26.0,
                               child: DropdownButton<String>(
                                 isExpanded: true,
@@ -714,7 +717,7 @@ class _NewPatientState extends State<NewPatient> {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton(
                                   isExpanded: true,
@@ -758,7 +761,7 @@ class _NewPatientState extends State<NewPatient> {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton(
                                   isExpanded: true,
@@ -807,7 +810,7 @@ class _NewPatientState extends State<NewPatient> {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton(
                                   isExpanded: true,
@@ -862,7 +865,7 @@ class _NewPatientState extends State<NewPatient> {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton<String>(
                                   isExpanded: true,
@@ -908,7 +911,7 @@ class _NewPatientState extends State<NewPatient> {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton(
                                   isExpanded: true,
@@ -954,7 +957,7 @@ class _NewPatientState extends State<NewPatient> {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton(
                                   isExpanded: true,
@@ -999,7 +1002,7 @@ class _NewPatientState extends State<NewPatient> {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton<String>(
                                   isExpanded: true,
@@ -1054,7 +1057,7 @@ class _NewPatientState extends State<NewPatient> {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton(
                                   isExpanded: true,
@@ -1091,6 +1094,7 @@ class _NewPatientState extends State<NewPatient> {
                                   return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
                                 }
                               }
+                              return null;
                             },
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
@@ -1153,6 +1157,7 @@ class _NewPatientState extends State<NewPatient> {
                             if (value!.isEmpty) {
                               return 'مصارف کل نمیتواند خالی باشد.';
                             }
+                            return null;
                           },
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
@@ -1200,7 +1205,7 @@ class _NewPatientState extends State<NewPatient> {
                                 borderSide: BorderSide(color: Colors.blue)),
                           ),
                           child: DropdownButtonHideUnderline(
-                            child: Container(
+                            child: SizedBox(
                               height: 26.0,
                               child: DropdownButton(
                                 isExpanded: true,
@@ -1243,6 +1248,7 @@ class _NewPatientState extends State<NewPatient> {
                               if (value!.isEmpty) {
                                 return 'مبلغ رسید نمی تواند خالی باشد.';
                               }
+                              return null;
                             },
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -1280,7 +1286,7 @@ class _NewPatientState extends State<NewPatient> {
 
 // Add a new patient
   Future<void> onAddNewPatient(BuildContext context) async {
-    var staff_id = StaffInfo.staffID;
+    var staffId = StaffInfo.staffID;
     var firstName = _nameController.text;
     var lastName = _lNameController.text;
     var sex = genderDropDown;
@@ -1314,7 +1320,7 @@ class _NewPatientState extends State<NewPatient> {
       var queryResult = await conn.query(
           'INSERT INTO patients (staff_ID, firstname, lastname, sex, age, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
-            staff_id,
+            staffId,
             firstName,
             lastName,
             sex,
@@ -1348,7 +1354,7 @@ class _NewPatientState extends State<NewPatient> {
         }
 
         print(
-            'patient ID: $patId, total amount: $totalAmount, recieved: $recieved, Due amount: $dueAmount, installment: $installment, Staff: $staff_id');
+            'patient ID: $patId, total amount: $totalAmount, recieved: $recieved, Due amount: $dueAmount, installment: $installment, Staff: $staffId');
         // Now add appointment of the patient
         var queryResult2 = await conn.query(
             'INSERT INTO appointments (pat_ID, tooth_detail_ID, ser_ID, installment, round, paid_amount, due_amount, meet_date, staff_ID, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -1361,7 +1367,7 @@ class _NewPatientState extends State<NewPatient> {
               recieved,
               dueAmount,
               meetDate,
-              staff_id,
+              staffId,
               note
             ]);
 
@@ -1387,7 +1393,7 @@ class _NewPatientState extends State<NewPatient> {
 
 // This is shows snackbar when called
   void _onShowSnack(Color backColor, String msg) {
-    _globalKey.currentState?.showSnackBar(
+    _globalKey2.currentState?.showSnackBar(
       SnackBar(
         backgroundColor: backColor,
         content: SizedBox(
@@ -1436,7 +1442,7 @@ class _NewPatientState extends State<NewPatient> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: ScaffoldMessenger(
-        key: _globalKey,
+        key: _globalKey2,
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(

@@ -13,9 +13,9 @@ class ExpenseDetails extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10.0),
             color: const Color.fromARGB(255, 240, 239, 239),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text(
                   'نوعیت مصرف',
                   style: TextStyle(
@@ -37,9 +37,9 @@ class ExpenseDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [
+                  children: [
                     Text(
                       'نام جنس',
                       style: TextStyle(
@@ -55,9 +55,9 @@ class ExpenseDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [
+                  children: [
                     Text(
                       'تعداد / مقدار',
                       style: TextStyle(
@@ -81,9 +81,9 @@ class ExpenseDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [
+                  children: [
                     Text(
                       'تاریخ خرید',
                       style: TextStyle(
@@ -99,9 +99,9 @@ class ExpenseDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: const [
+                  children: [
                     Text(
                       'قیمت فی واحد',
                       style: TextStyle(
@@ -121,9 +121,9 @@ class ExpenseDetails extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10.0),
             color: const Color.fromARGB(255, 240, 239, 239),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.end,
-              children: const [
+              children: [
                 Text(
                   'مجموع قیمت',
                   style: TextStyle(

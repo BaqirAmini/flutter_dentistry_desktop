@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 import 'package:flutter_dentistry/views/main/sidebar.dart';
 
 void main() {
@@ -97,9 +96,9 @@ class _DashboardState extends State<Dashboard> {
                                       top: 0.0,
                                       right: 15.0,
                                       bottom: 0.0),
-                                  child: Column(
+                                  child: const Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    children: const [
+                                    children: [
                                       Text('بیماران امروز',
                                           style: TextStyle(
                                               fontSize: 16.0,
@@ -134,9 +133,9 @@ class _DashboardState extends State<Dashboard> {
                                       top: 0.0,
                                       right: 15.0,
                                       bottom: 0.0),
-                                  child: Column(
+                                  child: const Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    children: const [
+                                    children: [
                                       Text('مصارف ماه جاری',
                                           style: TextStyle(
                                               fontSize: 16.0,
@@ -172,9 +171,9 @@ class _DashboardState extends State<Dashboard> {
                                       top: 0.0,
                                       right: 15.0,
                                       bottom: 0.0),
-                                  child: Column(
+                                  child: const Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    children: const [
+                                    children: [
                                       Text('مالیات امسال',
                                           style: TextStyle(
                                               fontSize: 16.0,
@@ -209,9 +208,9 @@ class _DashboardState extends State<Dashboard> {
                                       top: 0.0,
                                       right: 15.0,
                                       bottom: 0.0),
-                                  child: Column(
+                                  child: const Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    children: const [
+                                    children: [
                                       Text('همه مریض ها',
                                           style: TextStyle(
                                               fontSize: 16.0,

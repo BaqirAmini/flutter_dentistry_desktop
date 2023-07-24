@@ -10,7 +10,7 @@ class StaffMoreDetail extends StatefulWidget {
 class _StaffMoreDetailState extends State<StaffMoreDetail> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: Row(
         mainAxisSize: MainAxisSize.max,
@@ -39,28 +39,28 @@ class _StaffMoreDetailState extends State<StaffMoreDetail> {
                       ),
                     ),
                   ),
-                  Center(
+                  const Center(
                     child: Column(
                       children: [
                         SizedBox(
                           height: 30.0,
                         ),
-                        const Text('Ali Ahmadi'),
-                        const Text('Dentist'),
-                        const SizedBox(
+                        Text('Ali Ahmadi'),
+                        Text('Dentist'),
+                        SizedBox(
                           height: 20.0,
                         ),
                         Column(
-                          children: const [
+                          children: [
                             Text('نام'),
                             Text('علی'),
                           ],
                         ),
-                        const SizedBox(
+                        SizedBox(
                           height: 20.0,
                         ),
                         Column(
-                          children: const [
+                          children: [
                             Text('نمبر تذکره'),
                             Text('1399-1205-56273'),
                           ],

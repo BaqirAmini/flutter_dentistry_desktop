@@ -183,10 +183,10 @@ class _PatientDataTableState extends State<PatientDataTable> {
           child: ListView(
             children: [
               if (_filteredData.isEmpty)
-                Container(
+                const SizedBox(
                   width: 200,
                   height: 200,
-                  child: const Center(child: Text('هیچ مریضی یافت نشد.')),
+                  child: Center(child: Text('هیچ مریضی یافت نشد.')),
                 )
               else
                 PaginatedDataTable(

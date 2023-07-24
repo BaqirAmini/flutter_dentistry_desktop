@@ -60,15 +60,15 @@ class _PatientDetailState extends State<PatientDetail> {
           ),
           body: Column(
             children: [
-              Container(
+              SizedBox(
                   height: 200.0,
                   child: Row(
                     children: [
-                      Card(
+                      const Card(
                         child: SizedBox(
                           width: 200.0,
                           child: Column(
-                            children: const [
+                            children: [
                               CircleAvatar(
                                 radius: 40.0,
                                 backgroundImage:
@@ -101,8 +101,8 @@ class _PatientDetailState extends State<PatientDetail> {
                                   Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0, bottom: 20.0),
-                                    child: Column(
-                                      children: const [
+                                    child: const Column(
+                                      children: [
                                         Text(
                                           'جنیست',
                                           style: TextStyle(
@@ -116,8 +116,8 @@ class _PatientDetailState extends State<PatientDetail> {
                                   Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0, bottom: 20.0),
-                                    child: Column(
-                                      children: const [
+                                    child: const Column(
+                                      children: [
                                         Text('حالت مدنی',
                                             style: TextStyle(
                                                 color: Colors.grey,
@@ -134,8 +134,8 @@ class _PatientDetailState extends State<PatientDetail> {
                                   Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0, bottom: 20.0),
-                                    child: Column(
-                                      children: const [
+                                    child: const Column(
+                                      children: [
                                         Text('سن',
                                             style: TextStyle(
                                                 color: Colors.grey,
@@ -147,8 +147,8 @@ class _PatientDetailState extends State<PatientDetail> {
                                   Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0, bottom: 20.0),
-                                    child: Column(
-                                      children: const [
+                                    child: const Column(
+                                      children: [
                                         Text('گروپ خون',
                                             style: TextStyle(
                                                 color: Colors.grey,
@@ -165,8 +165,8 @@ class _PatientDetailState extends State<PatientDetail> {
                                   Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0, bottom: 20.0),
-                                    child: Column(
-                                      children: const [
+                                    child: const Column(
+                                      children: [
                                         Text('آدرس',
                                             style: TextStyle(
                                                 color: Colors.grey,
@@ -178,8 +178,8 @@ class _PatientDetailState extends State<PatientDetail> {
                                   Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0, bottom: 20.0),
-                                    child: Column(
-                                      children: const [
+                                    child: const Column(
+                                      children: [
                                         Text('تاریخ ثبت',
                                             style: TextStyle(
                                                 color: Colors.grey,
@@ -418,11 +418,11 @@ class _PatientDetailState extends State<PatientDetail> {
                               8: FixedColumnWidth(50),
                               9: FixedColumnWidth(50),
                             },
-                            children:  [
+                            children:  const [
                               // add your table rows here
                               TableRow(
                                 children: [
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'سرویس',
@@ -430,7 +430,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'تاریخ مراجعه',
@@ -438,7 +438,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'فک / بیره',
@@ -446,7 +446,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'نوعیت دندان',
@@ -454,7 +454,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'توضیحات',
@@ -462,7 +462,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'جلسه / نوبت',
@@ -470,7 +470,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'داکتر',
@@ -478,7 +478,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'ویرایش',
@@ -486,7 +486,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'حذف',
@@ -494,7 +494,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           fontSize: 12.0, color: Colors.grey),
                                     ),
                                   ),
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.all(5.0),
                                     child: Text(
                                       'عکس',
@@ -837,7 +837,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton(
                                   isExpanded: true,
@@ -879,7 +879,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton(
                                   isExpanded: true,
@@ -918,7 +918,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton(
                                   isExpanded: true,
@@ -957,7 +957,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton(
                                   isExpanded: true,
@@ -1096,7 +1096,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                 borderSide: BorderSide(color: Colors.blue)),
                           ),
                           child: DropdownButtonHideUnderline(
-                            child: Container(
+                            child: SizedBox(
                               height: 26.0,
                               child: DropdownButton(
                                 isExpanded: true,
@@ -1195,7 +1195,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                   borderSide: BorderSide(color: Colors.blue)),
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: Container(
+                              child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton(
                                   isExpanded: true,

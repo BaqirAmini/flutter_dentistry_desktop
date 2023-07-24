@@ -142,7 +142,7 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                         borderSide: BorderSide(color: Colors.blue)),
                   ),
                   child: DropdownButtonHideUnderline(
-                    child: Container(
+                    child: SizedBox(
                       height: 25.0,
                       child: DropdownButton(
                         isExpanded: true,
@@ -388,7 +388,7 @@ onEditExpense(BuildContext context) {
                                 ),
                               ],
                             ),
-                            Container(
+                            SizedBox(
                               height: 500.0,
                               child: TabBarView(
                                 children: [
@@ -571,7 +571,7 @@ onEditExpense(BuildContext context) {
                                               onTap: () async {
                                                 FocusScope.of(context)
                                                     .requestFocus(
-                                                        new FocusNode());
+                                                        FocusNode());
                                                 final DateTime? dateTime =
                                                     await showDatePicker(
                                                         context: context,
@@ -643,11 +643,11 @@ onEditExpense(BuildContext context) {
                       ),
                     ), // Footer of the dialog
                     Container(
-                      padding: EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(16.0),
                       alignment: Alignment.centerLeft,
                       child: ElevatedButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text('لغو'),
+                        child: const Text('لغو'),
                       ),
                     )
                   ],
@@ -666,7 +666,10 @@ onShowExpenseDetails(BuildContext context) {
     builder: (ctx) => AlertDialog(
       title: const Directionality(
         textDirection: TextDirection.rtl,
-        child: Text('جزییات مصارف', style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),),
+        child: Text(
+          'جزییات مصارف',
+          style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+        ),
       ),
       content: const Directionality(
         textDirection: TextDirection.rtl,

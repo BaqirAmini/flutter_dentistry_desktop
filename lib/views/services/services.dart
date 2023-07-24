@@ -58,7 +58,7 @@ class _ServiceState extends State<Service> {
       home: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          backgroundColor: Color.fromARGB(255, 234, 231, 231),
+          backgroundColor: const Color.fromARGB(255, 234, 231, 231),
           appBar: AppBar(
             leading:   Tooltip(
                 message: 'رفتن به داشبورد',

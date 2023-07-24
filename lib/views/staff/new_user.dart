@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class NewUser extends StatefulWidget {
   const NewUser({super.key});
@@ -17,7 +16,7 @@ class _NewUserState extends State<NewUser> {
     'مدیر سیستم',
   ];
 // The global for the form
-  final _formKey = GlobalKey<FormState>();
+  final _newUserFormKey = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
   final _userNameController = TextEditingController();
   final _unConfirmController = TextEditingController();
@@ -28,7 +27,7 @@ class _NewUserState extends State<NewUser> {
       child: Card(
         child: Center(
           child: Form(
-            key: _formKey,
+            key: _newUserFormKey,
             child: SizedBox(
               width: 500.0,
               child: Column(

@@ -79,6 +79,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                       } else if (value.length < 3) {
                         return 'نام باید حداقل 3 حرف باشد.';
                       }
+                      return null;
                     },
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -162,7 +163,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                               BorderSide(color: Colors.red, width: 1.5)),
                     ),
                     child: DropdownButtonHideUnderline(
-                      child: Container(
+                      child: SizedBox(
                         height: 26.0,
                         child: DropdownButton(
                           isExpanded: true,
@@ -209,6 +210,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                       } else {
                         return 'نمبر تماس نا معتبر است.';
                       }
+                      return null;
                     },
                     // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     decoration: const InputDecoration(
@@ -237,11 +239,12 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     controller: _salaryController,
                     validator: (value) {
                       if (value!.isNotEmpty) {
-                        final salary = double.tryParse(value!);
+                        final salary = double.tryParse(value);
                         if (salary! < 1000 || salary > 100000) {
                           return 'مقدار معاش باید بین 1000 افغانی و 100,000 افغانی باشد.';
                         }
                       }
+                      return null;
                     },
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
@@ -386,7 +389,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                             print('Inserting staff failed!');
                           }
                           await conn.close();
-                        } on SocketException catch (e) {
+                        } on SocketException {
                           onShowSnackBar('Database not found.');
                         }
                       }

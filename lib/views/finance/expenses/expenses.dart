@@ -28,7 +28,7 @@ void _onShowSnack(Color backColor, String msg) {
 void main() => runApp(const ExpenseList());
 
 class ExpenseList extends StatefulWidget {
-  const ExpenseList({super.key});
+  const ExpenseList({Key? key}): super(key: key);
 
   @override
   State<ExpenseList> createState() => _ExpenseListState();
@@ -191,6 +191,14 @@ class _ExpenseListState extends State<ExpenseList> {
                             margin: const EdgeInsets.all(20.0),
                             child: TextFormField(
                               controller: itemNameController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'نام جنس نمی تواند خالی باشد.';
+                                } else if (value.length < 3 ||
+                                    value.length > 10) {
+                                  return 'نام جنس باید بین 3 و 10 حرف باشد.';
+                                }
+                              },
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'نام جنس',
@@ -210,6 +218,20 @@ class _ExpenseListState extends State<ExpenseList> {
                             margin: const EdgeInsets.all(20.0),
                             child: TextFormField(
                               controller: quantityController,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[0-9.]'))
+                              ],
+                              validator: (value) {
+                                if (value!.isNotEmpty) {
+                                  final qty = double.tryParse(value!);
+                                  if (qty! < 1 || qty > 100) {
+                                    return 'تعداد/مقدار باید بین 1 و 100 واحد باشد.';
+                                  }
+                                } else if (value.isEmpty) {
+                                  return 'تعداد/مقدار نمی تواند خالی باشد.';
+                                }
+                              },
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'تعداد / مقدار',
@@ -346,7 +368,9 @@ class _ExpenseListState extends State<ExpenseList> {
                             onPressed: () => Navigator.pop(context),
                             child: const Text('لغو')),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if (formKey2.currentState!.validate()) {}
+                          },
                           child: const Text('افزودن'),
                         ),
                       ],
@@ -443,7 +467,7 @@ onCreateExpenseType(BuildContext context) {
                             if (results1.isNotEmpty) {
                               _onShowSnack(Colors.red,
                                   'متاسفم، این کتگوری مصارف قبلاً موجود است.');
-                                  Navigator.pop(context);
+                              Navigator.pop(context);
                             } else {
                               // Insert into expenses
                               var result2 = await conn.query(

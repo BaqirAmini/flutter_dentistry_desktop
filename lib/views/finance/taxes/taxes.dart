@@ -24,7 +24,7 @@ class TaxList extends StatelessWidget {
                     builder: (context) => const Dashboard(),
                   ),
                 ),
-                icon: Icon(Icons.home_outlined),
+                icon: const Icon(Icons.home_outlined),
               ),
             ),
             title: const Text('مالیات کلینیک'),
