@@ -52,6 +52,7 @@ class _ExpenseListState extends State<ExpenseList> {
                     child: IconButton(
                       onPressed: () async {
                         await fetchExpenseTypes();
+                        await fetchStaff();
                         // ignore: use_build_context_synchronously
                         await onCreateExpenseItem(context);
                       },
@@ -106,6 +107,26 @@ class _ExpenseListState extends State<ExpenseList> {
     await conn.close();
   }
 
+  // Fetch staff for purchased by fields
+  String? selectedStaffId;
+  List<Map<String, dynamic>> staffList = [];
+  Future<void> fetchStaff() async {
+    var conn = await onConnToDb();
+    var results =
+        await conn.query('SELECT staff_ID, firstname, lastname FROM staff');
+    setState(() {
+      staffList = results
+          .map((result) => {
+                'staff_ID': result[0].toString(),
+                'firstname': result[1],
+                'lastname': result[2]
+              })
+          .toList();
+    });
+    selectedStaffId = staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
+    await conn.close();
+  }
+
 // The text editing controllers for the TextFormFields
   final itemNameController = TextEditingController();
   final quantityController = TextEditingController();
@@ -114,15 +135,16 @@ class _ExpenseListState extends State<ExpenseList> {
   final totalPriceController = TextEditingController();
   final descriptionController = TextEditingController();
 
+  double? totalPrice;
 // Sets the total price into its related field
   void _onSetTotalPrice(String text) {
-    int qty = quantityController.text.isEmpty
+    double qty = quantityController.text.isEmpty
         ? 0
-        : int.parse(quantityController.text);
+        : double.parse(quantityController.text);
     double unitPrice = unitPriceController.text.isEmpty
         ? 0
         : double.parse(unitPriceController.text);
-    double totalPrice = qty * unitPrice;
+    totalPrice = qty * unitPrice;
     totalPriceController.text = totalPrice.toString() + ' افغانی';
   }
 
@@ -261,7 +283,11 @@ class _ExpenseListState extends State<ExpenseList> {
                               onChanged: _onSetTotalPrice,
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: 'تعداد / مقدار',
+                                labelText: 'تعداد/مقدار واحد',
+                                hintText:
+                                    'واحد نظر به اجناس مختف متفاوت است مثل گرام، کیلوگرام، متر، عدد...',
+                                hintStyle: TextStyle(
+                                    color: Colors.blue, fontSize: 12.0),
                                 suffixIcon: Icon(
                                     Icons.production_quantity_limits_outlined),
                                 enabledBorder: OutlineInputBorder(
@@ -326,13 +352,17 @@ class _ExpenseListState extends State<ExpenseList> {
                             child: TextFormField(
                               readOnly: true,
                               controller: totalPriceController,
+                              style: const TextStyle(
+                                  color: Colors.blue,
+                                  fontWeight: FontWeight.bold,
+                                  backgroundColor: Colors.yellow),
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
                                     RegExp(r'[0-9.]'))
                               ],
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: 'جمله / مجموعه پرداخت',
+                                labelText: 'جمله / مجموعه پول پرداخت شده',
                                 suffixIcon: Icon(Icons.money),
                                 enabledBorder: OutlineInputBorder(
                                     borderRadius:
@@ -443,6 +473,56 @@ class _ExpenseListState extends State<ExpenseList> {
                               ),
                             ),
                           ),
+                          Container(
+                            margin: const EdgeInsets.all(20.0),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'خریداری شده توسط',
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: Container(
+                                  height: 26.0,
+                                  child: DropdownButton(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: selectedStaffId,
+                                    items: staffList.map((staff) {
+                                      return DropdownMenuItem<String>(
+                                        value: staff['staff_ID'],
+                                        alignment: Alignment.centerRight,
+                                        child: Text(staff['firstname'] +
+                                            ' ' +
+                                            staff['lastname']),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        selectedStaffId = newValue;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -459,9 +539,49 @@ class _ExpenseListState extends State<ExpenseList> {
                             onPressed: () => Navigator.pop(context),
                             child: const Text('لغو')),
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (formKey2.currentState!.validate()) {
-                              print('Item Name: ${itemNameController.text}');
+                              int expID = int.parse(selectedExpType!);
+                              int staffID = int.parse(selectedStaffId!);
+                              String itemName = itemNameController.text;
+                              double itemQty =
+                                  double.parse(quantityController.text);
+                              double unitPrice =
+                                  double.parse(unitPriceController.text);
+                              String datePurchased =
+                                  purchaseDateController.text;
+                              String notes = descriptionController.text;
+                              // Do connection with the database
+                              var conn = await onConnToDb();
+                              // Insert the item into expense_detail table
+                              var result = await conn.query(
+                                  'INSERT INTO expense_detail (exp_ID, purchased_by, item_name, quantity, unit_price, total, purchase_date, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                                  [
+                                    expID,
+                                    staffID,
+                                    itemName,
+                                    itemQty,
+                                    unitPrice,
+                                    totalPrice,
+                                    datePurchased,
+                                    notes
+                                  ]);
+                              if (result.affectedRows! > 0) {
+                                _onShowSnack(Colors.green,
+                                    'این جنس مورد مصرف موفقانه افزوده شد.');
+                                itemNameController.clear();
+                                quantityController.clear();
+                                unitPriceController.clear();
+                                purchaseDateController.clear();
+                                totalPriceController.clear();
+                                descriptionController.clear();
+                              } else {
+                                _onShowSnack(
+                                    Colors.red, 'متاسفم، جنس مصرفی اضافه نشد.');
+                              }
+                              await conn.close();
+                              // ignore: use_build_context_synchronously
+                              Navigator.pop(context);
                             }
                           },
                           child: const Text('افزودن'),
