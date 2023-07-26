@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import '/views/finance/expenses/expense_info.dart';
 
 class ExpenseDetails extends StatelessWidget {
   const ExpenseDetails({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Get expenses info to later use
+    String? expCtg = ExpenseInfo.expenseCategory;
+    String? itemName = ExpenseInfo.itemName;
+    String? purchasedBy = ExpenseInfo.purchasedBy;
+    String? descrip = ExpenseInfo.description;
+    double? itemQty = ExpenseInfo.qty;
+
     return SizedBox(
       width: 600.0,
       child: Column(
@@ -13,17 +21,17 @@ class ExpenseDetails extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10.0),
             color: const Color.fromARGB(255, 240, 239, 239),
-            child: const Column(
+            child:  Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'نوعیت مصرف',
                   style: TextStyle(
                     fontSize: 14.0,
                     color: Color.fromARGB(255, 118, 116, 116),
                   ),
                 ),
-                Text('مواد مورد نیاز دندان'),
+                Text('$expCtg'),
               ],
             ),
           ),
@@ -37,17 +45,17 @@ class ExpenseDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: const Column(
+                child:  Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    const Text(
                       'نام جنس',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Color.fromARGB(255, 118, 116, 116),
                       ),
                     ),
-                    Text('نقره'),
+                    Text('$itemName'),
                   ],
                 ),
               ),
@@ -55,17 +63,17 @@ class ExpenseDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: const Column(
+                child:  Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    const Text(
                       'تعداد / مقدار',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Color.fromARGB(255, 118, 116, 116),
                       ),
                     ),
-                    Text('500 گرام'),
+                    Text('$itemQty واحد'),
                   ],
                 ),
               ),
@@ -81,17 +89,17 @@ class ExpenseDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: const Column(
+                child:  Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      'تاریخ خرید',
+                    const Text(
+                      'خرید توسط',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Color.fromARGB(255, 118, 116, 116),
                       ),
                     ),
-                    Text('2022/06/06'),
+                    Text('$purchasedBy'),
                   ],
                 ),
               ),
@@ -121,17 +129,17 @@ class ExpenseDetails extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10.0),
             color: const Color.fromARGB(255, 240, 239, 239),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            child:  Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  'مجموع قیمت',
+                const Text(
+                  'توضیحات',
                   style: TextStyle(
                     fontSize: 14.0,
                     color: Color.fromARGB(255, 118, 116, 116),
                   ),
                 ),
-                Text('500,000 افغانی'),
+                Text('$descrip'),
               ],
             ),
           ),

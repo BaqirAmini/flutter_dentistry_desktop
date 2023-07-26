@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '/views/finance/expenses/expense_details.dart';
 import 'package:intl/intl.dart' as intl2;
+import '/views/finance/expenses/expense_info.dart';
 
 import 'db_conn.dart';
 
@@ -408,20 +409,20 @@ class MyDataSource extends DataTableSource {
           return IconButton(
             icon: data[index].expenseDetail,
             onPressed: () {
-            
-              onShowExpenseDetails(
-                  context,
-                );
-                  String expCategory = data[index].expenseType;
+              String expCategory = data[index].expenseType;
               String itemName = data[index].expenseItem;
               double itemQty = data[index].quantity;
               String purBy = data[index].purchasedBy;
+              String purDate = data[index].purchasedDate;
               String desc = data[index].description;
-              print('Category: $expCategory');
-              print('Item: $itemName');
-              print('item Quantity: $itemQty');
-              print('Purchased By: $purBy');
-              print('Descriptoin: $desc');
+
+              ExpenseInfo.expenseCategory = expCategory;
+              ExpenseInfo.itemName = itemName;
+              ExpenseInfo.qty = itemQty;
+              ExpenseInfo.purchasedBy = purBy;
+              ExpenseInfo.purchaseDate = purDate;
+              ExpenseInfo.description = desc;
+              onShowExpenseDetails(context);
             },
             color: Colors.blue,
             iconSize: 20.0,
