@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import '/views/finance/expenses/expense_details.dart';
 import 'package:intl/intl.dart' as intl2;
 
+import 'db_conn.dart';
+
 class ExpenseData extends StatelessWidget {
   const ExpenseData({super.key});
 
@@ -23,39 +25,40 @@ class ExpenseDataTable extends StatefulWidget {
 class ExpenseDataTableState extends State<ExpenseDataTable> {
   int _sortColumnIndex = 0;
   bool _sortAscending = true;
+  // The filtered data source
+  List<Expense> _filteredData = [];
 
-  // The original data source
-  final List<MyData> _data = [
-    MyData('مواد مورد نیاز دندان', 'نقره', '500 گرام', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('مواد مورد نیاز دندان', 'نقره', '200 گرام', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('مواد مورد نیاز دندان', 'پورسلن', '100 گرام', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData(
-        'مواد مورد نیاز دندان',
-        'آمپول بی حس کننده',
-        '10 عدد',
-        const Icon(Icons.list),
-        const Icon(Icons.edit),
-        const Icon(Icons.delete)),
-    MyData('تجهیزات برای کلینیک', 'میز کار', '1 عدد', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('تجهیزات برای کلینیک', 'میز کار', '1 عدد', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('تجهیزات برای کلینیک', 'فرش', '5 متر مربع', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('تجهیزات برای کلینیک', 'گروپ برق', '3 عدد', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('مواد غذایی', 'نان خشک', '10 قرص', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('مواد غذایی', 'آب', '100 مترمربع', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('مواد غذایی', 'میوه', '4 کیلوگرام', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('مواد غذایی', 'چای', '1 کیلوگرام', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-  ];
+  List<Expense> _data = [];
+
+// Fetch expenses records from the database
+  Future<void> _fetchData() async {
+    final conn = await onConnToDb();
+    final results = await conn.query(
+        'SELECT  A.exp_name, B.item_name, B.quantity, B.unit_price, B.total, C.firstname, C.lastname, DATE_FORMAT(B.purchase_date, "%Y-%m-%d"), B.note, B.exp_detail_ID FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID INNER JOIN staff C ON B.purchased_by = C.staff_ID');
+
+    _data = results.map((row) {
+      return Expense(
+        expenseType: row[0],
+        expenseItem: row[1],
+        quantity: row[2],
+        unitPrice: row[3],
+        totalPrice: row[4],
+        purchasedBy: row[5] + ' ' + row[6],
+        purchasedDate: row[7].toString(),
+        description: row[8],
+        expDetID: row[9],
+        expenseDetail: const Icon(Icons.list),
+        editExpense: const Icon(Icons.edit),
+        deleteExpense: const Icon(Icons.delete),
+      );
+    }).toList();
+    _filteredData = List.from(_data);
+    await conn.close();
+    // Notify the framework that the state of the widget has changed
+    setState(() {});
+    // Print the data that was fetched from the database
+    print('Data from database: $_data');
+  }
 
   // Expense types dropdown variables
   String expenseDropDown = 'مواد غذایی';
@@ -65,156 +68,239 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
     'مواد مورد نیاز دندان',
   ];
 
-// The filtered data source
-  late List<MyData> _filteredData;
-
 // The text editing controller for the search TextField
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-// Set the filtered data to the original data at first
-    _filteredData = _data;
+    // Set the filtered data to the original data at first
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchData());
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
   Widget build(BuildContext context) {
+    final dataSource = MyDataSource(_filteredData);
     return Scaffold(
+        key: _scaffoldKey,
         body: ListView(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                width: 400.0,
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: 'جستجو...',
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: 400.0,
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: 'جستجو...',
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            setState(() {
+                              _searchController.clear();
+                              _filteredData = _data;
+                            });
+                          },
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.grey)),
+                        focusedBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.blue)),
+                      ),
+                      onChanged: (value) {
                         setState(() {
-                          _searchController.clear();
-                          _filteredData = _data;
+                          _filteredData = _data
+                              .where((element) =>
+                                  element.expenseType
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase()) ||
+                                  element.expenseItem
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase()) ||
+                                  element.quantity
+                                      .toString()
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase()) ||
+                                  element.purchasedDate
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase()))
+                              .toList();
                         });
                       },
                     ),
-                    enabledBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.grey)),
-                    focusedBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.blue)),
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      _filteredData = _data
-                          .where((element) => element.expenseType
-                              .toLowerCase()
-                              .contains(value.toLowerCase()))
-                          .toList();
-                    });
-                  },
-                ),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.print),
-              ),
-              Container(
-                width: 180.0,
-                height: 50.0,
-                margin: const EdgeInsets.only(top: 6.0, left: 6.0),
-                child: InputDecorator(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'فلتر کردن',
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        borderSide: BorderSide(color: Colors.grey)),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        borderSide: BorderSide(color: Colors.blue)),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.print),
                   ),
-                  child: DropdownButtonHideUnderline(
-                    child: SizedBox(
-                      height: 25.0,
-                      child: DropdownButton(
-                        isExpanded: true,
-                        icon: const Icon(Icons.arrow_drop_down),
-                        value: expenseDropDown,
-                        items: expensItems.map((String expensItems) {
-                          return DropdownMenuItem(
-                            value: expensItems,
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              expensItems,
-                              style: const TextStyle(fontSize: 14.0),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            expenseDropDown = newValue!;
-                          });
-                        },
+                  Container(
+                    width: 180.0,
+                    height: 50.0,
+                    margin: const EdgeInsets.only(top: 6.0, left: 6.0),
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'فلتر کردن',
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0)),
+                            borderSide: BorderSide(color: Colors.grey)),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0)),
+                            borderSide: BorderSide(color: Colors.blue)),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: SizedBox(
+                          height: 25.0,
+                          child: DropdownButton(
+                            isExpanded: true,
+                            icon: const Icon(Icons.arrow_drop_down),
+                            value: expenseDropDown,
+                            items: expensItems.map((String expensItems) {
+                              return DropdownMenuItem(
+                                value: expensItems,
+                                alignment: Alignment.centerRight,
+                                child: Text(
+                                  expensItems,
+                                  style: const TextStyle(fontSize: 14.0),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                expenseDropDown = newValue!;
+                              });
+                            },
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ),
-        PaginatedDataTable(
-          sortAscending: _sortAscending,
-          sortColumnIndex: _sortColumnIndex,
-          header: const Text("همه مصارف |"),
-          columns: [
-            DataColumn(
-              label: const Text(
-                "نوعیت مصرف",
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-              ),
-              onSort: (columnIndex, ascending) {
-                setState(() {
-                  _sortColumnIndex = columnIndex;
-                  _sortAscending = ascending;
-                  _filteredData
-                      .sort((a, b) => a.expenseType.compareTo(b.expenseType));
-                  if (!ascending) {
-                    _filteredData = _filteredData.reversed.toList();
-                  }
-                });
-              },
             ),
-            DataColumn(
+            if (_filteredData.isEmpty)
+              const SizedBox(
+                width: 200,
+                height: 200,
+                child:
+                    Center(child: Text('هیچ اطلاعاتی مربوط مصارف یافت نشد.')),
+              )
+            else
+              PaginatedDataTable(
+                sortAscending: _sortAscending,
+                sortColumnIndex: _sortColumnIndex,
+                header: const Text("همه مصارف |"),
+                columns: [
+                  DataColumn(
+                    label: const Text(
+                      "نوعیت مصرف",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (columnIndex, ascending) {
+                      setState(() {
+                        _sortColumnIndex = columnIndex;
+                        _sortAscending = ascending;
+                        _filteredData.sort(
+                            (a, b) => a.expenseType.compareTo(b.expenseType));
+                        if (!ascending) {
+                          _filteredData = _filteredData.reversed.toList();
+                        }
+                      });
+                    },
+                  ),
+                  DataColumn(
+                    label: const Text(
+                      "نام جنس",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (columnIndex, ascending) {
+                      setState(() {
+                        _sortColumnIndex = columnIndex;
+                        _sortAscending = ascending;
+                        _filteredData.sort(
+                            ((a, b) => a.expenseItem.compareTo(b.expenseItem)));
+                        if (!ascending) {
+                          _filteredData = _filteredData.reversed.toList();
+                        }
+                      });
+                    },
+                  ),
+                  DataColumn(
+                    label: const Text(
+                      "تعداد / مقدار",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (columnIndex, ascending) {
+                      setState(() {
+                        _sortColumnIndex = columnIndex;
+                        _sortAscending = ascending;
+                        _filteredData
+                            .sort(((a, b) => a.quantity.compareTo(b.quantity)));
+                        if (!ascending) {
+                          _filteredData = _filteredData.reversed.toList();
+                        }
+                      });
+                    },
+                  ),
+                  DataColumn(
+                    label: const Text(
+                      "فی قیمت",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (columnIndex, ascending) {
+                      setState(() {
+                        _sortColumnIndex = columnIndex;
+                        _sortAscending = ascending;
+                        _filteredData.sort(
+                            ((a, b) => a.unitPrice.compareTo(b.unitPrice)));
+                        if (!ascending) {
+                          _filteredData = _filteredData.reversed.toList();
+                        }
+                      });
+                    },
+                  ),
+                  DataColumn(
+                    label: const Text(
+                      "مجموع مبلغ",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (columnIndex, ascending) {
+                      setState(() {
+                        _sortColumnIndex = columnIndex;
+                        _sortAscending = ascending;
+                        _filteredData.sort(
+                            ((a, b) => a.totalPrice.compareTo(b.totalPrice)));
+                        if (!ascending) {
+                          _filteredData = _filteredData.reversed.toList();
+                        }
+                      });
+                    },
+                  ),
+                  /*     DataColumn(
               label: const Text(
-                "نام جنس",
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-              ),
-              onSort: (columnIndex, ascending) {
-                setState(() {
-                  _sortColumnIndex = columnIndex;
-                  _sortAscending = ascending;
-                  _filteredData
-                      .sort(((a, b) => a.expenseItem.compareTo(b.expenseItem)));
-                  if (!ascending) {
-                    _filteredData = _filteredData.reversed.toList();
-                  }
-                });
-              },
-            ),
-            DataColumn(
-              label: const Text(
-                "تعداد / مقدار",
+                "خریداری شده توسط",
                 style:
                     TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
               ),
@@ -229,37 +315,76 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                   }
                 });
               },
-            ),
-            const DataColumn(
-              label: Text(
-                "شرح",
+            ), */
+                  DataColumn(
+                    label: const Text(
+                      "تاریخ خرید",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (columnIndex, ascending) {
+                      setState(() {
+                        _sortColumnIndex = columnIndex;
+                        _sortAscending = ascending;
+                        _filteredData.sort(((a, b) =>
+                            a.purchasedDate.compareTo(b.purchasedDate)));
+                        if (!ascending) {
+                          _filteredData = _filteredData.reversed.toList();
+                        }
+                      });
+                    },
+                  ),
+                  /*  DataColumn(
+              label: const Text(
+                "توضیحات",
                 style:
                     TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
               ),
-            ),
-            const DataColumn(
-                label: Text("تغییر",
-                    style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold))),
-            const DataColumn(
-                label: Text("حذف",
-                    style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold))),
+              onSort: (columnIndex, ascending) {
+                setState(() {
+                  _sortColumnIndex = columnIndex;
+                  _sortAscending = ascending;
+                  _filteredData
+                      .sort(((a, b) => a.quantity.compareTo(b.quantity)));
+                  if (!ascending) {
+                    _filteredData = _filteredData.reversed.toList();
+                  }
+                });
+              },
+            ), */
+                  const DataColumn(
+                    label: Text(
+                      "شرح",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const DataColumn(
+                      label: Text("تغییر",
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold))),
+                  const DataColumn(
+                      label: Text("حذف",
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold))),
+                ],
+                source: dataSource,
+                rowsPerPage:
+                    _filteredData.length < 8 ? _filteredData.length : 8,
+              )
           ],
-          source: MyDataSource(_filteredData),
-          rowsPerPage: _filteredData.length < 5 ? _filteredData.length : 5,
-        )
-      ],
-    ));
+        ));
   }
 }
 
 class MyDataSource extends DataTableSource {
-  List<MyData> data;
+  List<Expense> data;
 
   MyDataSource(this.data);
 
-  void sort(Comparator<MyData> compare, bool ascending) {
+  void sort(Comparator<Expense> compare, bool ascending) {
     data.sort(compare);
     if (!ascending) {
       data = data.reversed.toList();
@@ -272,12 +397,32 @@ class MyDataSource extends DataTableSource {
     return DataRow(cells: [
       DataCell(Text(data[index].expenseType)),
       DataCell(Text(data[index].expenseItem)),
-      DataCell(Text(data[index].quantity)),
+      DataCell(Text(data[index].quantity.toString())),
+      DataCell(Text('${data[index].unitPrice} افغانی')),
+      DataCell(Text('${data[index].totalPrice} افغانی')),
+      // DataCell(Text(data[index].purchasedBy)),
+      DataCell(Text(data[index].purchasedDate)),
+      // DataCell(Text(data[index].description)),
       DataCell(
         Builder(builder: (BuildContext context) {
           return IconButton(
             icon: data[index].expenseDetail,
-            onPressed: (() => onShowExpenseDetails(context)),
+            onPressed: () {
+            
+              onShowExpenseDetails(
+                  context,
+                );
+                  String expCategory = data[index].expenseType;
+              String itemName = data[index].expenseItem;
+              double itemQty = data[index].quantity;
+              String purBy = data[index].purchasedBy;
+              String desc = data[index].description;
+              print('Category: $expCategory');
+              print('Item: $itemName');
+              print('item Quantity: $itemQty');
+              print('Purchased By: $purBy');
+              print('Descriptoin: $desc');
+            },
             color: Colors.blue,
             iconSize: 20.0,
           );
@@ -337,7 +482,8 @@ onDeleteExpense(BuildContext context) {
             ),
             actions: [
               TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () =>
+                      Navigator.of(context, rootNavigator: true).pop(),
                   child: const Text('لغو')),
               TextButton(onPressed: () {}, child: const Text('حذف')),
             ],
@@ -570,8 +716,7 @@ onEditExpense(BuildContext context) {
                                               controller: purDateController,
                                               onTap: () async {
                                                 FocusScope.of(context)
-                                                    .requestFocus(
-                                                        FocusNode());
+                                                    .requestFocus(FocusNode());
                                                 final DateTime? dateTime =
                                                     await showDatePicker(
                                                         context: context,
@@ -662,39 +807,57 @@ onEditExpense(BuildContext context) {
 // This is to display an alert dialog to expenses details
 onShowExpenseDetails(BuildContext context) {
   return showDialog(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Directionality(
-        textDirection: TextDirection.rtl,
-        child: Text(
-          'جزییات مصارف',
-          style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-        ),
-      ),
-      content: const Directionality(
-        textDirection: TextDirection.rtl,
-        child: Directionality(
-            textDirection: TextDirection.rtl, child: ExpenseDetails()),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('تایید'),
-        ),
-      ],
-      actionsAlignment: MainAxisAlignment.start,
-    ),
-  );
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Directionality(
+            textDirection: TextDirection.rtl,
+            child: Text(
+              'جزییات مصارف',
+              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+            ),
+          ),
+          content: const Directionality(
+            textDirection: TextDirection.rtl,
+            child: Directionality(
+                textDirection: TextDirection.rtl, child: ExpenseDetails()),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('تایید'),
+            ),
+          ],
+          actionsAlignment: MainAxisAlignment.start,
+        );
+      });
 }
 
-class MyData {
+class Expense {
+  final int expDetID;
   final String expenseType;
   final String expenseItem;
-  final String quantity;
+  final double quantity;
+  final double unitPrice;
+  final double totalPrice;
+  final String purchasedBy;
+  final String purchasedDate;
+  final String description;
   final Icon expenseDetail;
   final Icon editExpense;
   final Icon deleteExpense;
 
-  MyData(this.expenseType, this.expenseItem, this.quantity, this.expenseDetail,
-      this.editExpense, this.deleteExpense);
+  Expense(
+      {required this.expDetID,
+      required this.expenseType,
+      required this.expenseItem,
+      required this.quantity,
+      required this.unitPrice,
+      required this.totalPrice,
+      required this.purchasedBy,
+      required this.purchasedDate,
+      required this.description,
+      required this.expenseDetail,
+      required this.editExpense,
+      required this.deleteExpense});
 }
