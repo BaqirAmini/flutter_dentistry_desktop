@@ -6,6 +6,25 @@ import '/views/finance/expenses/expense_info.dart';
 
 import 'db_conn.dart';
 
+// Create the global key at the top level of your Dart file
+final GlobalKey<ScaffoldMessengerState> _globalKeyExpDM =
+    GlobalKey<ScaffoldMessengerState>();
+
+// This is shows snackbar when called
+void _onShowSnack(Color backColor, String msg) {
+  _globalKeyExpDM.currentState?.showSnackBar(
+    SnackBar(
+      backgroundColor: backColor,
+      content: SizedBox(
+        height: 20.0,
+        child: Center(
+          child: Text(msg),
+        ),
+      ),
+    ),
+  );
+}
+
 class ExpenseData extends StatelessWidget {
   const ExpenseData({super.key});
 
@@ -35,7 +54,7 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
   Future<void> _fetchData() async {
     final conn = await onConnToDb();
     final results = await conn.query(
-        'SELECT  A.exp_name, B.item_name, B.quantity, B.unit_price, B.total, C.firstname, C.lastname, DATE_FORMAT(B.purchase_date, "%Y-%m-%d"), B.note, B.exp_detail_ID FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID INNER JOIN staff C ON B.purchased_by = C.staff_ID');
+        'SELECT  A.exp_name, B.item_name, B.quantity, B.unit_price, B.total, C.firstname, C.lastname, DATE_FORMAT(B.purchase_date, "%Y-%m-%d"), B.note, B.exp_detail_ID, A.exp_ID FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID INNER JOIN staff C ON B.purchased_by = C.staff_ID');
 
     _data = results.map((row) {
       return Expense(
@@ -48,6 +67,7 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
         purchasedDate: row[7].toString(),
         description: row[8],
         expDetID: row[9],
+        expTypeID: row[10],
         expenseDetail: const Icon(Icons.list),
         editExpense: const Icon(Icons.edit),
         deleteExpense: const Icon(Icons.delete),
@@ -88,8 +108,10 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
 
   @override
   Widget build(BuildContext context) {
-    final dataSource = MyDataSource(_filteredData);
-    return Scaffold(
+    final dataSource = MyDataSource(_filteredData, _fetchData);
+    return ScaffoldMessenger(
+      key: _globalKeyExpDM,
+      child: Scaffold(
         key: _scaffoldKey,
         body: ListView(
           children: [
@@ -376,14 +398,17 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                     _filteredData.length < 8 ? _filteredData.length : 8,
               )
           ],
-        ));
+        ),
+      ),
+    );
   }
 }
 
 class MyDataSource extends DataTableSource {
   List<Expense> data;
-
-  MyDataSource(this.data);
+// Create these variables for refreshing the page after a record deleted or updated.
+  Function onUpdate;
+  MyDataSource(this.data, this.onUpdate);
 
   void sort(Comparator<Expense> compare, bool ascending) {
     data.sort(compare);
@@ -434,7 +459,9 @@ class MyDataSource extends DataTableSource {
           return IconButton(
             icon: data[index].editExpense,
             onPressed: (() {
-              onEditExpense(context);
+              ExpenseInfo.expenseCategory = data[index].expenseType;
+              int expTypeID = data[index].expTypeID;
+              onEditExpense(context, expTypeID, onUpdate);
             }),
             color: Colors.blue,
             iconSize: 20.0,
@@ -492,7 +519,7 @@ onDeleteExpense(BuildContext context) {
 }
 
 // This dialog edits expenses
-onEditExpense(BuildContext context) {
+onEditExpense(BuildContext context, int expTypeId, Function onUpdate) {
 // The global for the form
   final formKey = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
@@ -503,6 +530,8 @@ onEditExpense(BuildContext context) {
   final totalPriceController = TextEditingController();
   final purDateController = TextEditingController();
   final expenseTypeController = TextEditingController();
+
+  expenseTypeController.text = ExpenseInfo.expenseCategory!;
 
   return showDialog(
       context: context,
@@ -547,6 +576,14 @@ onEditExpense(BuildContext context) {
                                           margin: const EdgeInsets.all(20.0),
                                           child: TextFormField(
                                             controller: expenseTypeController,
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return 'نوعیت (کتگوری جنس نمی تواند خالی باشد.)';
+                                              } else if (value.length < 3 ||
+                                                  value.length > 20) {
+                                                return 'نام کتگوری یا نوعیت مصرف باید بین 3 و 20 حرف باشد.';
+                                              }
+                                            },
                                             decoration: const InputDecoration(
                                               border: OutlineInputBorder(),
                                               labelText: 'نوعیت مصارف',
@@ -573,7 +610,29 @@ onEditExpense(BuildContext context) {
                                             width: 400.0,
                                             margin: const EdgeInsets.all(20.0),
                                             child: ElevatedButton(
-                                              onPressed: () {},
+                                              onPressed: () async {
+                                                if (formKey2.currentState!
+                                                    .validate()) {
+                                                  String expCatName =
+                                                      expenseTypeController
+                                                          .text;
+                                                  final conn =
+                                                      await onConnToDb();
+                                                  var results = await conn.query(
+                                                      'UPDATE expenses SET exp_name = ? WHERE exp_ID = ?',
+                                                      [expCatName, expTypeId]);
+                                                  if (results.affectedRows! >
+                                                      0) {
+                                                    _onShowSnack(Colors.green,
+                                                        'نوعیت (کتگوری) مصارف موفقانه تغییر کرد.');
+                                                    onUpdate();
+                                                  } else {
+                                                    _onShowSnack(Colors.red,
+                                                        'متاسفم، شما هیچ تغییرانی نیاوردید.');
+                                                  }
+                                                  Navigator.pop(context);
+                                                }
+                                              },
                                               child: const Text('تغییر دادن'),
                                             )),
                                       ],
@@ -836,6 +895,7 @@ onShowExpenseDetails(BuildContext context) {
 
 class Expense {
   final int expDetID;
+  final int expTypeID;
   final String expenseType;
   final String expenseItem;
   final double quantity;
@@ -850,6 +910,7 @@ class Expense {
 
   Expense(
       {required this.expDetID,
+      required this.expTypeID,
       required this.expenseType,
       required this.expenseItem,
       required this.quantity,

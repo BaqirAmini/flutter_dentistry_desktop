@@ -145,7 +145,7 @@ class _ExpenseListState extends State<ExpenseList> {
         ? 0
         : double.parse(unitPriceController.text);
     totalPrice = qty * unitPrice;
-    totalPriceController.text = totalPrice.toString() + ' افغانی';
+    totalPriceController.text = '$totalPrice افغانی';
   }
 
 // This dialog creates a new Expense
