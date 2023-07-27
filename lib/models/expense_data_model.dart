@@ -108,7 +108,7 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
 
   @override
   Widget build(BuildContext context) {
-    final dataSource = MyDataSource(_filteredData, _fetchData);
+    final dataSource = MyDataSource(_filteredData, _fetchData, _fetchData);
     return ScaffoldMessenger(
       key: _globalKeyExpDM,
       child: Scaffold(
@@ -408,7 +408,8 @@ class MyDataSource extends DataTableSource {
   List<Expense> data;
 // Create these variables for refreshing the page after a record deleted or updated.
   Function onUpdate;
-  MyDataSource(this.data, this.onUpdate);
+  Function onUpdateItem;
+  MyDataSource(this.data, this.onUpdate, this.onUpdateItem);
 
   void sort(Comparator<Expense> compare, bool ascending) {
     data.sort(compare);
@@ -458,11 +459,20 @@ class MyDataSource extends DataTableSource {
         Builder(builder: (BuildContext context) {
           return IconButton(
             icon: data[index].editExpense,
-            onPressed: (() {
+            onPressed: () {
+              ExpenseInfo.exp_detail_ID = data[index].expDetID;
               ExpenseInfo.expenseCategory = data[index].expenseType;
+              ExpenseInfo.itemName = data[index].expenseItem;
+              ExpenseInfo.qty = data[index].quantity;
+              ExpenseInfo.unitPrice = data[index].unitPrice;
+              ExpenseInfo.purchasedBy = data[index].purchasedBy;
+              ExpenseInfo.purchaseDate = data[index].purchasedDate;
+              ExpenseInfo.description = data[index].description;
+              ExpenseInfo.totalPrice = data[index].totalPrice;
+
               int expTypeID = data[index].expTypeID;
-              onEditExpense(context, expTypeID, onUpdate);
-            }),
+              onEditExpense(context, expTypeID, onUpdate, onUpdateItem);
+            },
             color: Colors.blue,
             iconSize: 20.0,
           );
@@ -519,7 +529,8 @@ onDeleteExpense(BuildContext context) {
 }
 
 // This dialog edits expenses
-onEditExpense(BuildContext context, int expTypeId, Function onUpdate) {
+onEditExpense(BuildContext context, int expTypeId, Function onUpdate,
+    Function onUpdateItem) {
 // The global for the form
   final formKey = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
@@ -530,8 +541,29 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate) {
   final totalPriceController = TextEditingController();
   final purDateController = TextEditingController();
   final expenseTypeController = TextEditingController();
+  final purByController = TextEditingController();
+  final descController = TextEditingController();
 
+// Fetch values from a static class and assign them into textfields.
   expenseTypeController.text = ExpenseInfo.expenseCategory!;
+  itemNameController.text = ExpenseInfo.itemName!;
+  qtyController.text = ExpenseInfo.qty.toString();
+  unitPriceController.text = ExpenseInfo.unitPrice.toString();
+  totalPriceController.text = ExpenseInfo.totalPrice.toString();
+  purDateController.text = ExpenseInfo.purchaseDate!;
+  descController.text = ExpenseInfo.description!;
+
+  double? totalPrice = ExpenseInfo.totalPrice;
+// Sets the total price into its related field
+  void onSetTotalPrice(String text) {
+    double qty =
+        qtyController.text.isEmpty ? 0 : double.parse(qtyController.text);
+    double unitPrice = unitPriceController.text.isEmpty
+        ? 0
+        : double.parse(unitPriceController.text);
+    totalPrice = qty * unitPrice;
+    totalPriceController.text = '$totalPrice افغانی';
+  }
 
   return showDialog(
       context: context,
@@ -555,12 +587,12 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate) {
                               tabs: [
                                 Tab(
                                   text: 'تغییر نوعیت مصارف',
-                                  icon: Icon(Icons.category_outlined),
+                                  icon: Icon(Icons.edit_outlined),
                                 ),
                                 Tab(
                                   text: 'تغییر اجناس مصارف',
                                   icon: Icon(Icons
-                                      .production_quantity_limits_outlined),
+                                      .edit_outlined),
                                 ),
                               ],
                             ),
@@ -573,7 +605,8 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate) {
                                     child: Column(
                                       children: [
                                         Container(
-                                          margin: const EdgeInsets.all(20.0),
+                                          margin: const EdgeInsets.only(
+                                              top: 30.0, left: 20, right: 20),
                                           child: TextFormField(
                                             controller: expenseTypeController,
                                             validator: (value) {
@@ -603,38 +636,73 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate) {
                                                               50.0)),
                                                   borderSide: BorderSide(
                                                       color: Colors.blue)),
+                                              errorBorder: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(
+                                                              50.0)),
+                                                  borderSide: BorderSide(
+                                                      color: Colors.red)),
+                                              focusedErrorBorder:
+                                                  OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  50.0)),
+                                                      borderSide: BorderSide(
+                                                          color: Colors.red,
+                                                          width: 1.5)),
                                             ),
                                           ),
                                         ),
                                         Container(
-                                            width: 400.0,
-                                            margin: const EdgeInsets.all(20.0),
-                                            child: ElevatedButton(
-                                              onPressed: () async {
-                                                if (formKey2.currentState!
-                                                    .validate()) {
-                                                  String expCatName =
-                                                      expenseTypeController
-                                                          .text;
-                                                  final conn =
-                                                      await onConnToDb();
-                                                  var results = await conn.query(
-                                                      'UPDATE expenses SET exp_name = ? WHERE exp_ID = ?',
-                                                      [expCatName, expTypeId]);
-                                                  if (results.affectedRows! >
-                                                      0) {
-                                                    _onShowSnack(Colors.green,
-                                                        'نوعیت (کتگوری) مصارف موفقانه تغییر کرد.');
-                                                    onUpdate();
-                                                  } else {
-                                                    _onShowSnack(Colors.red,
-                                                        'متاسفم، شما هیچ تغییرانی نیاوردید.');
+                                          margin: const EdgeInsets.all(20.0),
+                                          width: 430.0,
+                                          height: 35.0,
+                                          child: Builder(
+                                            builder: (context) {
+                                              return OutlinedButton(
+                                                style: OutlinedButton.styleFrom(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.0),
+                                                  ),
+                                                  side: const BorderSide(
+                                                    color: Colors.blue,
+                                                  ),
+                                                ),
+                                                onPressed: () async {
+                                                  if (formKey2.currentState!
+                                                      .validate()) {
+                                                    String expCatName =
+                                                        expenseTypeController
+                                                            .text;
+                                                    final conn =
+                                                        await onConnToDb();
+                                                    var results = await conn.query(
+                                                        'UPDATE expenses SET exp_name = ? WHERE exp_ID = ?',
+                                                        [
+                                                          expCatName,
+                                                          expTypeId
+                                                        ]);
+                                                    if (results.affectedRows! >
+                                                        0) {
+                                                      _onShowSnack(Colors.green,
+                                                          'نوعیت (کتگوری) مصارف موفقانه تغییر کرد.');
+                                                      onUpdate();
+                                                    } else {
+                                                      _onShowSnack(Colors.red,
+                                                          'متاسفم، شما هیچ تغییرانی نیاوردید.');
+                                                    }
+                                                    Navigator.pop(context);
                                                   }
-                                                  Navigator.pop(context);
-                                                }
-                                              },
-                                              child: const Text('تغییر دادن'),
-                                            )),
+                                                },
+                                                child: const Text('تغییر دادن'),
+                                              );
+                                            },
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -644,9 +712,15 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate) {
                                       child: Column(
                                         children: [
                                           Container(
-                                            margin: const EdgeInsets.all(20.0),
+                                            margin: const EdgeInsets.only(
+                                                top: 30.0, left: 20, right: 20),
                                             child: TextFormField(
                                               controller: itemNameController,
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'نام جنس مصرفی نمی تواند خالی باشد.';
+                                                }
+                                              },
                                               decoration: const InputDecoration(
                                                 border: OutlineInputBorder(),
                                                 labelText: 'نام جنس',
@@ -670,13 +744,36 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate) {
                                                         borderSide: BorderSide(
                                                             color:
                                                                 Colors.blue)),
+                                                errorBorder: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.red)),
+                                                focusedErrorBorder:
+                                                    OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    50.0)),
+                                                        borderSide: BorderSide(
+                                                            color: Colors.red,
+                                                            width: 1.5)),
                                               ),
                                             ),
                                           ),
                                           Container(
-                                            margin: const EdgeInsets.all(20.0),
+                                            margin: const EdgeInsets.only(
+                                                top: 30.0, left: 20, right: 20),
                                             child: TextFormField(
                                               controller: qtyController,
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'تعداد / مقدار نمی تواند خالی باشد.';
+                                                }
+                                              },
+                                              onChanged: onSetTotalPrice,
                                               decoration: const InputDecoration(
                                                 border: OutlineInputBorder(),
                                                 labelText: 'تعداد / مقدار',
@@ -700,13 +797,36 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate) {
                                                         borderSide: BorderSide(
                                                             color:
                                                                 Colors.blue)),
+                                                errorBorder: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.red)),
+                                                focusedErrorBorder:
+                                                    OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    50.0)),
+                                                        borderSide: BorderSide(
+                                                            color: Colors.red,
+                                                            width: 1.5)),
                                               ),
                                             ),
                                           ),
                                           Container(
-                                            margin: const EdgeInsets.all(20.0),
+                                            margin: const EdgeInsets.only(
+                                                top: 30.0, left: 20, right: 20),
                                             child: TextFormField(
                                               controller: unitPriceController,
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'قیمت نمی تواند خالی باشد.';
+                                                }
+                                              },
+                                              onChanged: onSetTotalPrice,
                                               inputFormatters: [
                                                 FilteringTextInputFormatter
                                                     .digitsOnly
@@ -734,20 +854,43 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate) {
                                                         borderSide: BorderSide(
                                                             color:
                                                                 Colors.blue)),
+                                                errorBorder: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.red)),
+                                                focusedErrorBorder:
+                                                    OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    50.0)),
+                                                        borderSide: BorderSide(
+                                                            color: Colors.red,
+                                                            width: 1.5)),
                                               ),
                                             ),
                                           ),
                                           Container(
-                                            margin: const EdgeInsets.all(20.0),
+                                            margin: const EdgeInsets.only(
+                                                top: 30.0, left: 20, right: 20),
                                             child: TextFormField(
+                                              readOnly: true,
                                               controller: totalPriceController,
+                                              style: const TextStyle(
+                                                color: Colors.blue,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                               inputFormatters: [
                                                 FilteringTextInputFormatter
                                                     .allow(RegExp(r'[0-9.]'))
                                               ],
                                               decoration: const InputDecoration(
                                                 border: OutlineInputBorder(),
-                                                labelText: 'قیمت مجموع',
+                                                labelText:
+                                                    'جمله / مجموعه پول پرداخت شده',
                                                 suffixIcon: Icon(Icons.money),
                                                 enabledBorder:
                                                     OutlineInputBorder(
@@ -767,13 +910,35 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate) {
                                                         borderSide: BorderSide(
                                                             color:
                                                                 Colors.blue)),
+                                                errorBorder: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.red)),
+                                                focusedErrorBorder:
+                                                    OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    50.0)),
+                                                        borderSide: BorderSide(
+                                                            color: Colors.red,
+                                                            width: 1.5)),
                                               ),
                                             ),
                                           ),
                                           Container(
-                                            margin: const EdgeInsets.all(20.0),
+                                            margin: const EdgeInsets.only(
+                                                top: 30.0, left: 20, right: 20),
                                             child: TextFormField(
                                               controller: purDateController,
+                                              validator: (value) {
+                                                if (value!.isEmpty) {
+                                                  return 'تاریخ خرید نمی تواند خالی باشد.';
+                                                }
+                                              },
                                               onTap: () async {
                                                 FocusScope.of(context)
                                                     .requestFocus(FocusNode());
@@ -825,15 +990,156 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate) {
                                                         borderSide: BorderSide(
                                                             color:
                                                                 Colors.blue)),
+                                                errorBorder: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.red)),
+                                                focusedErrorBorder:
+                                                    OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    50.0)),
+                                                        borderSide: BorderSide(
+                                                            color: Colors.red,
+                                                            width: 1.5)),
                                               ),
                                             ),
                                           ),
                                           Container(
-                                            width: 400.0,
-                                            margin: const EdgeInsets.all(20.0),
-                                            child: ElevatedButton(
-                                              onPressed: () {},
-                                              child: const Text('تغییر دادن'),
+                                            margin: const EdgeInsets.only(
+                                                top: 30.0, left: 20, right: 20),
+                                            child: TextFormField(
+                                              controller: descController,
+                                              validator: (value) {
+                                                if (value!.isNotEmpty) {
+                                                  if (value.length < 5 ||
+                                                      value.length > 30) {
+                                                    return 'توضیحات باید بین 5 و 30 حرف باشد.';
+                                                  }
+                                                }
+                                              },
+                                              maxLines: 3,
+                                              decoration: const InputDecoration(
+                                                border: OutlineInputBorder(),
+                                                labelText: 'توضیحات',
+                                                suffixIcon: Icon(
+                                                    Icons.description_outlined),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    30.0)),
+                                                        borderSide: BorderSide(
+                                                            color:
+                                                                Colors.grey)),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    30.0)),
+                                                        borderSide: BorderSide(
+                                                            color:
+                                                                Colors.blue)),
+                                                errorBorder: OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.red)),
+                                                focusedErrorBorder:
+                                                    OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                                Radius.circular(
+                                                                    50.0)),
+                                                        borderSide: BorderSide(
+                                                            color: Colors.red,
+                                                            width: 1.5)),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: const EdgeInsets.only(
+                                                top: 30.0, left: 20, right: 20),
+                                            width: 430.0,
+                                            height: 35.0,
+                                            child: Builder(
+                                              builder: (context) {
+                                                return OutlinedButton(
+                                                  style:
+                                                      OutlinedButton.styleFrom(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20.0),
+                                                    ),
+                                                    side: const BorderSide(
+                                                      color: Colors.blue,
+                                                    ),
+                                                  ),
+                                                  onPressed: () async {
+                                                    if (formKey.currentState!
+                                                        .validate()) {
+                                                      String expItem =
+                                                          itemNameController
+                                                              .text;
+                                                      double itemQty =
+                                                          double.parse(
+                                                              qtyController
+                                                                  .text);
+                                                      double unitPrice =
+                                                          double.parse(
+                                                              unitPriceController
+                                                                  .text);
+                                                      String purDate =
+                                                          purDateController
+                                                              .text;
+                                                      String desc =
+                                                          descController.text;
+
+                                                      final conn =
+                                                          await onConnToDb();
+                                                      var results = await conn
+                                                          .query(
+                                                              'UPDATE expense_detail SET item_name = ?, quantity = ?, unit_price = ?, total = ?, purchase_date = ?, note = ? WHERE exp_detail_ID = ?',
+                                                              [
+                                                            expItem,
+                                                            itemQty,
+                                                            unitPrice,
+                                                            totalPrice,
+                                                            purDate,
+                                                            desc,
+                                                            ExpenseInfo
+                                                                .exp_detail_ID
+                                                          ]);
+
+                                                      if (results
+                                                              .affectedRows! >
+                                                          0) {
+                                                        _onShowSnack(
+                                                            Colors.green,
+                                                            'جنس مورد مصرف موفقانه تغییر کرد.');
+                                                        onUpdateItem();
+                                                        await conn.close();
+                                                      } else {
+                                                        _onShowSnack(Colors.red,
+                                                            'متاسفم، شما هیچ تغییراتی نیاوردید.');
+                                                      }
+                                                      Navigator.pop(context);
+                                                    }
+                                                  },
+                                                  child:
+                                                      const Text('تغییر دادن'),
+                                                );
+                                              },
                                             ),
                                           ),
                                         ],
@@ -850,7 +1156,7 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate) {
                     Container(
                       padding: const EdgeInsets.all(16.0),
                       alignment: Alignment.centerLeft,
-                      child: ElevatedButton(
+                      child: TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: const Text('لغو'),
                       ),
