@@ -5,6 +5,7 @@ import 'package:flutter_dentistry/models/expense_data_model.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart' as intl;
 import '../../main/dashboard.dart';
+import '/views/finance/expenses/expense_info.dart';
 
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKey1 =
@@ -569,6 +570,8 @@ class _ExpenseListState extends State<ExpenseList> {
                               if (result.affectedRows! > 0) {
                                 _onShowSnack(Colors.green,
                                     'این جنس مورد مصرف موفقانه افزوده شد.');
+                                ExpenseInfo.onAddExpense!();
+
                                 itemNameController.clear();
                                 quantityController.clear();
                                 unitPriceController.clear();

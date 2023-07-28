@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import '/views/finance/expenses/expense_details.dart';
 import 'package:intl/intl.dart' as intl2;
 import '/views/finance/expenses/expense_info.dart';
-
 import 'db_conn.dart';
 
 // Create the global key at the top level of your Dart file
@@ -110,6 +109,8 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
   Widget build(BuildContext context) {
     final dataSource =
         MyDataSource(_filteredData, _fetchData, _fetchData, _fetchData);
+    // This is to refresh the data table after an expense added.
+    ExpenseInfo.onAddExpense = _fetchData;
     return ScaffoldMessenger(
       key: _globalKeyExpDM,
       child: Scaffold(
@@ -485,12 +486,11 @@ class MyDataSource extends DataTableSource {
           builder: (BuildContext context) {
             return IconButton(
               icon: data[index].deleteExpense,
-              onPressed: () {
-                // Assign ID, item name to the static class to be used later.
+              onPressed: (() {
                 ExpenseInfo.exp_detail_ID = data[index].expDetID;
                 ExpenseInfo.itemName = data[index].expenseItem;
                 onDeleteExpense(context, onDelete);
-              },
+              }),
               color: Colors.blue,
               iconSize: 20.0,
             );
