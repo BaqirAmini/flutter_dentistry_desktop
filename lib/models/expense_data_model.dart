@@ -108,7 +108,8 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
 
   @override
   Widget build(BuildContext context) {
-    final dataSource = MyDataSource(_filteredData, _fetchData, _fetchData);
+    final dataSource =
+        MyDataSource(_filteredData, _fetchData, _fetchData, _fetchData);
     return ScaffoldMessenger(
       key: _globalKeyExpDM,
       child: Scaffold(
@@ -409,7 +410,8 @@ class MyDataSource extends DataTableSource {
 // Create these variables for refreshing the page after a record deleted or updated.
   Function onUpdate;
   Function onUpdateItem;
-  MyDataSource(this.data, this.onUpdate, this.onUpdateItem);
+  Function onDelete;
+  MyDataSource(this.data, this.onUpdate, this.onUpdateItem, this.onDelete);
 
   void sort(Comparator<Expense> compare, bool ascending) {
     data.sort(compare);
@@ -483,9 +485,12 @@ class MyDataSource extends DataTableSource {
           builder: (BuildContext context) {
             return IconButton(
               icon: data[index].deleteExpense,
-              onPressed: (() {
-                onDeleteExpense(context);
-              }),
+              onPressed: () {
+                // Assign ID, item name to the static class to be used later.
+                ExpenseInfo.exp_detail_ID = data[index].expDetID;
+                ExpenseInfo.itemName = data[index].expenseItem;
+                onDeleteExpense(context, onDelete);
+              },
               color: Colors.blue,
               iconSize: 20.0,
             );
@@ -506,7 +511,7 @@ class MyDataSource extends DataTableSource {
 }
 
 // This is to display an alert dialog to delete expenses
-onDeleteExpense(BuildContext context) {
+onDeleteExpense(BuildContext context, Function onDelete) {
   return showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -514,16 +519,32 @@ onDeleteExpense(BuildContext context) {
               textDirection: TextDirection.rtl,
               child: Text('حذف مصارف'),
             ),
-            content: const Directionality(
+            content: Directionality(
               textDirection: TextDirection.rtl,
-              child: Text('آیا میخواهید این مصرف را حذف کنید؟'),
+              child: Text('آیا میخواهید ${ExpenseInfo.itemName} را حذف کنید؟'),
             ),
             actions: [
               TextButton(
                   onPressed: () =>
                       Navigator.of(context, rootNavigator: true).pop(),
                   child: const Text('لغو')),
-              TextButton(onPressed: () {}, child: const Text('حذف')),
+              TextButton(
+                onPressed: () async {
+                  final conn = await onConnToDb();
+                  var results = await conn.query(
+                      'DELETE FROM expense_detail WHERE exp_detail_ID = ?',
+                      [ExpenseInfo.exp_detail_ID]);
+                  if (results.affectedRows! > 0) {
+                    _onShowSnack(Colors.green, 'جنس مورد مصرف موفقانه حذف شد.');
+                    onDelete();
+                    await conn.close();
+                  } else {
+                    _onShowSnack(Colors.red, 'متاسفم، حذف انجام نشد.');
+                  }
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
+                child: const Text('حذف'),
+              ),
             ],
           ));
 }
@@ -591,8 +612,7 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate,
                                 ),
                                 Tab(
                                   text: 'تغییر اجناس مصارف',
-                                  icon: Icon(Icons
-                                      .edit_outlined),
+                                  icon: Icon(Icons.edit_outlined),
                                 ),
                               ],
                             ),
