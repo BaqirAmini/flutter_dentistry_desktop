@@ -9,6 +9,8 @@ import 'db_conn.dart';
 final GlobalKey<ScaffoldMessengerState> _globalKeyExpDM =
     GlobalKey<ScaffoldMessengerState>();
 
+// Declare this variable to assign expenses filter value
+String expFilterValue = 'همه';
 // This is shows snackbar when called
 void _onShowSnack(Color backColor, String msg) {
   _globalKeyExpDM.currentState?.showSnackBar(
@@ -52,8 +54,13 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
 // Fetch expenses records from the database
   Future<void> _fetchData() async {
     final conn = await onConnToDb();
-    final results = await conn.query(
-        'SELECT  A.exp_name, B.item_name, B.quantity, B.unit_price, B.total, C.firstname, C.lastname, DATE_FORMAT(B.purchase_date, "%Y-%m-%d"), B.note, B.exp_detail_ID, A.exp_ID, B.qty_unit FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID INNER JOIN staff C ON B.purchased_by = C.staff_ID');
+    // if expFilterValue = 'همه' then it should not use WHERE to filter.
+    final results = expFilterValue == 'همه'
+        ? await conn.query(
+            'SELECT  A.exp_name, B.item_name, B.quantity, B.unit_price, B.total, C.firstname, C.lastname, DATE_FORMAT(B.purchase_date, "%Y-%m-%d"), B.note, B.exp_detail_ID, A.exp_ID, B.qty_unit FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID INNER JOIN staff C ON B.purchased_by = C.staff_ID ORDER BY B.purchase_date DESC;')
+        : await conn.query(
+            'SELECT  A.exp_name, B.item_name, B.quantity, B.unit_price, B.total, C.firstname, C.lastname, DATE_FORMAT(B.purchase_date, "%Y-%m-%d"), B.note, B.exp_detail_ID, A.exp_ID, B.qty_unit FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID INNER JOIN staff C ON B.purchased_by = C.staff_ID WHERE A.exp_ID = ? ORDER BY B.purchase_date DESC;',
+            [expFilterValue]);
 
     _data = results.map((row) {
       return Expense(
@@ -82,12 +89,22 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
   }
 
   // Expense types dropdown variables
-  String expenseDropDown = 'مواد غذایی';
-  var expensItems = [
-    'مواد غذایی',
-    'تجهیزات برای کلینیک',
-    'مواد مورد نیاز دندان',
-  ];
+  String? selectedFilter;
+  List<Map<String, dynamic>> expenseTypes = [];
+  Future<void> fetchExpenseFilter() async {
+    var conn = await onConnToDb();
+    var results = await conn.query('SELECT exp_ID, exp_name FROM expenses');
+    setState(() {
+      expenseTypes = results
+          .map((result) =>
+              {'exp_ID': result[0].toString(), 'exp_name': result[1]})
+          .toList();
+      expenseTypes.insert(0, {'exp_ID': 'همه', 'exp_name': 'همه'});
+    });
+    selectedFilter =
+        expenseTypes.isNotEmpty ? expenseTypes[0]['exp_ID'] : 'همه';
+    await conn.close();
+  }
 
 // The text editing controller for the search TextField
   final TextEditingController _searchController = TextEditingController();
@@ -97,6 +114,7 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
     super.initState();
     // Set the filtered data to the original data at first
     WidgetsBinding.instance.addPostFrameCallback((_) => _fetchData());
+    fetchExpenseFilter();
   }
 
   @override
@@ -176,7 +194,7 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                   ),
                   Container(
                     width: 180.0,
-                    height: 50.0,
+                    height: 60.0,
                     margin: const EdgeInsets.only(top: 6.0, left: 6.0),
                     child: InputDecorator(
                       decoration: const InputDecoration(
@@ -194,25 +212,29 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                       child: DropdownButtonHideUnderline(
                         child: SizedBox(
                           height: 25.0,
-                          child: DropdownButton(
-                            isExpanded: true,
-                            icon: const Icon(Icons.arrow_drop_down),
-                            value: expenseDropDown,
-                            items: expensItems.map((String expensItems) {
-                              return DropdownMenuItem(
-                                value: expensItems,
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  expensItems,
-                                  style: const TextStyle(fontSize: 14.0),
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                expenseDropDown = newValue!;
-                              });
-                            },
+                          child: ButtonTheme(
+                            alignedDropdown: true,
+                            child: DropdownButton(
+                              // isExpanded: true,
+                              icon: const Icon(Icons.arrow_drop_down),
+                              value: selectedFilter,
+                              style: const TextStyle(
+                                  fontSize: 14.0, color: Colors.black),
+                              items: expenseTypes.map((expense) {
+                                return DropdownMenuItem<String>(
+                                  value: expense['exp_ID'],
+                                  alignment: Alignment.centerRight,
+                                  child: Text(expense['exp_name']),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedFilter = newValue;
+                                  expFilterValue = selectedFilter!;
+                                  _fetchData();
+                                });
+                              },
+                            ),
                           ),
                         ),
                       ),
