@@ -154,6 +154,20 @@ class _ExpenseListState extends State<ExpenseList> {
 // The global for the form
     final formKey2 = GlobalKey<FormState>();
 
+    // Set a dropdown for units
+    String selectedUnit = 'گرام';
+    var unitsItems = [
+      'گرام',
+      'کیلوگرام',
+      'عدد',
+      'قرص',
+      'متر',
+      'سانتی متر',
+      'cc',
+      'خوراک',
+      'ست',
+    ];
+
     return showDialog(
       context: context,
       builder: ((context) {
@@ -263,53 +277,115 @@ class _ExpenseListState extends State<ExpenseList> {
                               ),
                             ),
                           ),
-                          Container(
-                            margin: const EdgeInsets.all(20.0),
-                            child: TextFormField(
-                              controller: quantityController,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r'[0-9.]'))
-                              ],
-                              validator: (value) {
-                                if (value!.isNotEmpty) {
-                                  final qty = double.tryParse(value!);
-                                  if (qty! < 1 || qty > 100) {
-                                    return 'تعداد/مقدار باید بین 1 و 100 واحد باشد.';
-                                  }
-                                } else if (value.isEmpty) {
-                                  return 'تعداد/مقدار نمی تواند خالی باشد.';
-                                }
-                              },
-                              onChanged: _onSetTotalPrice,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'تعداد/مقدار واحد',
-                                hintText:
-                                    'واحد نظر به اجناس مختف متفاوت است مثل گرام، کیلوگرام، متر، عدد...',
-                                hintStyle: TextStyle(
-                                    color: Colors.blue, fontSize: 12.0),
-                                suffixIcon: Icon(
-                                    Icons.production_quantity_limits_outlined),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Container(
+                                  margin: const EdgeInsets.all(20.0),
+                                  child: TextFormField(
+                                    controller: quantityController,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r'[0-9.]'))
+                                    ],
+                                    validator: (value) {
+                                      if (value!.isNotEmpty) {
+                                        final qty = double.tryParse(value!);
+                                        if (qty! < 1 || qty > 100) {
+                                          return 'تعداد/مقدار باید بین 1 و 100 واحد باشد.';
+                                        }
+                                      } else if (value.isEmpty) {
+                                        return 'تعداد/مقدار نمی تواند خالی باشد.';
+                                      }
+                                    },
+                                    onChanged: _onSetTotalPrice,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'تعداد/مقدار واحد',
+                                      suffixIcon: Icon(Icons
+                                          .production_quantity_limits_outlined),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.red)),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide: BorderSide(
+                                              color: Colors.red, width: 1.5)),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              Expanded(
+                                flex: 1,
+                                child: Container(
+                                  margin: const EdgeInsets.all(20.0),
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'واحد',
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.red)),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide: BorderSide(
+                                              color: Colors.red, width: 1.5)),
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: Container(
+                                        height: 26.0,
+                                        child: DropdownButton(
+                                          isExpanded: true,
+                                          icon:
+                                              const Icon(Icons.arrow_drop_down),
+                                          value: selectedUnit,
+                                          items: unitsItems
+                                              .map((String positionItems) {
+                                            return DropdownMenuItem(
+                                              value: positionItems,
+                                              alignment: Alignment.centerRight,
+                                              child: Text(positionItems),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              selectedUnit = newValue!;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           Container(
                             margin: const EdgeInsets.all(20.0),
@@ -354,9 +430,9 @@ class _ExpenseListState extends State<ExpenseList> {
                               readOnly: true,
                               controller: totalPriceController,
                               style: const TextStyle(
-                                  color: Colors.blue,
-                                  fontWeight: FontWeight.bold,
-                                  backgroundColor: Colors.yellow),
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                              ),
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
                                     RegExp(r'[0-9.]'))
