@@ -13,6 +13,7 @@ class ExpenseDetails extends StatelessWidget {
     String? descrip = ExpenseInfo.description;
     double? itemQty = ExpenseInfo.qty;
     String? qtyUnit = ExpenseInfo.qtyUnit;
+    double? uPrice = ExpenseInfo.unitPrice;
 
     return SizedBox(
       width: 600.0,
@@ -108,17 +109,17 @@ class ExpenseDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: const Column(
+                child:  Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    const Text(
                       'قیمت فی واحد',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Color.fromARGB(255, 118, 116, 116),
                       ),
                     ),
-                    Text('1000 افغانی'),
+                    Text('$uPrice افغانی'),
                   ],
                 ),
               ),
