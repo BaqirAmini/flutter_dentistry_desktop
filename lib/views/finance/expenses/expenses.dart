@@ -632,12 +632,13 @@ class _ExpenseListState extends State<ExpenseList> {
                               var conn = await onConnToDb();
                               // Insert the item into expense_detail table
                               var result = await conn.query(
-                                  'INSERT INTO expense_detail (exp_ID, purchased_by, item_name, quantity, unit_price, total, purchase_date, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                                  'INSERT INTO expense_detail (exp_ID, purchased_by, item_name, quantity, qty_unit, unit_price, total, purchase_date, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
                                   [
                                     expID,
                                     staffID,
                                     itemName,
                                     itemQty,
+                                    selectedUnit,
                                     unitPrice,
                                     totalPrice,
                                     datePurchased,
