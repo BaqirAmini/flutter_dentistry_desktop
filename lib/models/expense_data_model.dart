@@ -591,7 +591,7 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate,
   }
 
   // Set a dropdown for units
-  String selectedUnit = 'گرام';
+  String? selectedUnit = ExpenseInfo.qtyUnit;
   var unitsItems = [
     'گرام',
     'کیلوگرام',
