@@ -53,7 +53,7 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
   Future<void> _fetchData() async {
     final conn = await onConnToDb();
     final results = await conn.query(
-        'SELECT  A.exp_name, B.item_name, B.quantity, B.unit_price, B.total, C.firstname, C.lastname, DATE_FORMAT(B.purchase_date, "%Y-%m-%d"), B.note, B.exp_detail_ID, A.exp_ID FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID INNER JOIN staff C ON B.purchased_by = C.staff_ID');
+        'SELECT  A.exp_name, B.item_name, B.quantity, B.unit_price, B.total, C.firstname, C.lastname, DATE_FORMAT(B.purchase_date, "%Y-%m-%d"), B.note, B.exp_detail_ID, A.exp_ID, B.qty_unit FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID INNER JOIN staff C ON B.purchased_by = C.staff_ID');
 
     _data = results.map((row) {
       return Expense(
@@ -67,6 +67,7 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
         description: row[8],
         expDetID: row[9],
         expTypeID: row[10],
+        qtyUnit: row[11],
         expenseDetail: const Icon(Icons.list),
         editExpense: const Icon(Icons.edit),
         deleteExpense: const Icon(Icons.delete),
@@ -427,7 +428,7 @@ class MyDataSource extends DataTableSource {
     return DataRow(cells: [
       DataCell(Text(data[index].expenseType)),
       DataCell(Text(data[index].expenseItem)),
-      DataCell(Text(data[index].quantity.toString())),
+      DataCell(Text('${data[index].quantity} ${data[index].qtyUnit}')),
       DataCell(Text('${data[index].unitPrice} افغانی')),
       DataCell(Text('${data[index].totalPrice} افغانی')),
       // DataCell(Text(data[index].purchasedBy)),
@@ -441,6 +442,7 @@ class MyDataSource extends DataTableSource {
               String expCategory = data[index].expenseType;
               String itemName = data[index].expenseItem;
               double itemQty = data[index].quantity;
+              String qtyUnit = data[index].qtyUnit;
               String purBy = data[index].purchasedBy;
               String purDate = data[index].purchasedDate;
               String desc = data[index].description;
@@ -448,6 +450,7 @@ class MyDataSource extends DataTableSource {
               ExpenseInfo.expenseCategory = expCategory;
               ExpenseInfo.itemName = itemName;
               ExpenseInfo.qty = itemQty;
+              ExpenseInfo.qtyUnit = qtyUnit;
               ExpenseInfo.purchasedBy = purBy;
               ExpenseInfo.purchaseDate = purDate;
               ExpenseInfo.description = desc;
@@ -467,6 +470,7 @@ class MyDataSource extends DataTableSource {
               ExpenseInfo.expenseCategory = data[index].expenseType;
               ExpenseInfo.itemName = data[index].expenseItem;
               ExpenseInfo.qty = data[index].quantity;
+              ExpenseInfo.qtyUnit = data[index].qtyUnit;
               ExpenseInfo.unitPrice = data[index].unitPrice;
               ExpenseInfo.purchasedBy = data[index].purchasedBy;
               ExpenseInfo.purchaseDate = data[index].purchasedDate;
@@ -1489,6 +1493,7 @@ class Expense {
   final String expenseType;
   final String expenseItem;
   final double quantity;
+  final String qtyUnit;
   final double unitPrice;
   final double totalPrice;
   final String purchasedBy;
@@ -1504,6 +1509,7 @@ class Expense {
       required this.expenseType,
       required this.expenseItem,
       required this.quantity,
+      required this.qtyUnit,
       required this.unitPrice,
       required this.totalPrice,
       required this.purchasedBy,

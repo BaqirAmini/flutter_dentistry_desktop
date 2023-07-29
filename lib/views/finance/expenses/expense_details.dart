@@ -12,6 +12,7 @@ class ExpenseDetails extends StatelessWidget {
     String? purchasedBy = ExpenseInfo.purchasedBy;
     String? descrip = ExpenseInfo.description;
     double? itemQty = ExpenseInfo.qty;
+    String? qtyUnit = ExpenseInfo.qtyUnit;
 
     return SizedBox(
       width: 600.0,
@@ -73,7 +74,7 @@ class ExpenseDetails extends StatelessWidget {
                         color: Color.fromARGB(255, 118, 116, 116),
                       ),
                     ),
-                    Text('$itemQty واحد'),
+                    Text('$itemQty $qtyUnit'),
                   ],
                 ),
               ),
