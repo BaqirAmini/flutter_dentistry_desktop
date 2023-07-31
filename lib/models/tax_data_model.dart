@@ -4,6 +4,25 @@ import '../views/finance/taxes/tax_details.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:flutter_dentistry/models/db_conn.dart';
 
+// Create the global key at the top level of your Dart file
+final GlobalKey<ScaffoldMessengerState> _globalKeyForTaxes =
+    GlobalKey<ScaffoldMessengerState>();
+
+// This is shows snackbar when called
+void _onShowSnack(Color backColor, String msg) {
+  _globalKeyForTaxes.currentState?.showSnackBar(
+    SnackBar(
+      backgroundColor: backColor,
+      content: SizedBox(
+        height: 20.0,
+        child: Center(
+          child: Text(msg),
+        ),
+      ),
+    ),
+  );
+}
+
 class TaxData extends StatelessWidget {
   const TaxData({super.key});
 
@@ -86,6 +105,7 @@ class TaxDataTableState extends State<TaxDataTable> {
     double? paidTaxes;
     double? dueTaxes;
     // ignore: no_leading_underscores_for_local_identifiers
+    // Deduct the paid taxes amount from total taxes.
     void _onPaidTaxes(String text) {
       paidTaxes = taxPaidController.text.isNotEmpty
           ? double.parse(taxPaidController.text)
@@ -122,7 +142,10 @@ class TaxDataTableState extends State<TaxDataTable> {
                           ),
                           Container(
                             margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
                             child: TextFormField(
                               controller: TINController,
                               validator: (value) {
@@ -216,7 +239,10 @@ class TaxDataTableState extends State<TaxDataTable> {
                           ),
                           Container(
                             margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
                             child: TextFormField(
                               controller: taxRateController,
                               validator: (value) {
@@ -263,7 +289,10 @@ class TaxDataTableState extends State<TaxDataTable> {
                           ),
                           Container(
                             margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
                             child: TextFormField(
                               controller: annualIncomeController,
                               validator: (value) {
@@ -304,7 +333,10 @@ class TaxDataTableState extends State<TaxDataTable> {
                           ),
                           Container(
                             margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
                             child: TextFormField(
                               controller: taxTotalController,
                               inputFormatters: [
@@ -339,7 +371,10 @@ class TaxDataTableState extends State<TaxDataTable> {
                           ),
                           Container(
                             margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
                             child: TextFormField(
                               controller: taxPaidController,
                               validator: (value) {
@@ -385,7 +420,10 @@ class TaxDataTableState extends State<TaxDataTable> {
                           ),
                           Container(
                             margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
                             child: TextFormField(
                               controller: taxDueController,
                               inputFormatters: [
@@ -419,7 +457,10 @@ class TaxDataTableState extends State<TaxDataTable> {
                           ),
                           Container(
                             margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
                             child: TextFormField(
                               controller: delDateCotnroller,
                               validator: (value) {
@@ -473,7 +514,10 @@ class TaxDataTableState extends State<TaxDataTable> {
                           ),
                           Container(
                             margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
                             child: InputDecorator(
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
@@ -538,8 +582,51 @@ class TaxDataTableState extends State<TaxDataTable> {
                             onPressed: () => Navigator.pop(context),
                             child: const Text('لغو')),
                         ElevatedButton(
-                          onPressed: () {
-                            if (formKeyNewTax.currentState!.validate()) {}
+                          onPressed: () async {
+                            if (formKeyNewTax.currentState!.validate()) {
+                              double annualIncome =
+                                  double.parse(annualIncomeController.text);
+                              String tin = TINController.text;
+                              double taxRate =
+                                  double.parse(taxRateController.text);
+                              double totalAnnualTax = totalTaxesofYear!;
+                              double deliAmount =
+                                  double.parse(taxPaidController.text);
+                              double dueAmount = dueTaxes!;
+                              String deliDate = delDateCotnroller.text;
+                              int taxYear = selectedYear;
+                              int staffID = int.parse(selectedStaffId!);
+                              final conn = await onConnToDb();
+                              var results1 = await conn.query(
+                                  'SELECT * FROM taxes WHERE TIN = ? AND tax_for_year = ?',
+                                  [tin, taxYear]);
+                              if (results1.isNotEmpty) {
+                                _onShowSnack(Colors.red,
+                                    'متاسفم، مالیات با این مشخصات قبلاً در سیستم وجود دارد.');
+                              } else {
+                                var results2 = await conn.query(
+                                    'INSERT INTO taxes (annual_income, tax_rate, total_annual_tax, delivered_amount, due_amount, TIN, delivery_date, tax_for_year, delivered_by) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                    [
+                                      annualIncome,
+                                      taxRate,
+                                      totalAnnualTax,
+                                      deliAmount,
+                                      dueAmount,
+                                      tin,
+                                      deliDate,
+                                      taxYear,
+                                      staffID
+                                    ]);
+                                if (results2.affectedRows! > 0) {
+                                  _onShowSnack(
+                                      Colors.green, 'مالیات موفقانه ثبت شد.');
+                                } else {
+                                  _onShowSnack(Colors.red,
+                                      'متاسفم، ثبت مالیات ناکام شد.');
+                                }
+                              }
+                              Navigator.pop(context);
+                            }
                           },
                           child: const Text('ثبت کردن'),
                         ),
@@ -599,140 +686,147 @@ class TaxDataTableState extends State<TaxDataTable> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScaffoldMessenger(
+      key: _globalKeyForTaxes,
+      child: Scaffold(
         body: ListView(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                width: 400.0,
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: 'جستجو...',
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: 400.0,
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: 'جستجو...',
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            setState(() {
+                              _searchController.clear();
+                              _filteredData = _data;
+                            });
+                          },
+                        ),
+                        enabledBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.grey)),
+                        focusedBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.blue)),
+                      ),
+                      onChanged: (value) {
                         setState(() {
-                          _searchController.clear();
-                          _filteredData = _data;
+                          _filteredData = _data
+                              .where((element) => element.taxTin
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()))
+                              .toList();
                         });
                       },
                     ),
-                    enabledBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.grey)),
-                    focusedBorder: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.blue)),
                   ),
-                  onChanged: (value) {
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.print),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      onCreateNewTax(context);
+                    },
+                    child: const Text('افزودن مالیات جدید'),
+                  ),
+                ],
+              ),
+            ),
+            PaginatedDataTable(
+              sortAscending: _sortAscending,
+              sortColumnIndex: _sortColumnIndex,
+              header: const Text("همه مالیات |"),
+              columns: [
+                DataColumn(
+                  label: const Text(
+                    "ن.ت. مالیه دهنده (TIN)",
+                    style: TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (columnIndex, ascending) {
                     setState(() {
-                      _filteredData = _data
-                          .where((element) => element.taxTin
-                              .toLowerCase()
-                              .contains(value.toLowerCase()))
-                          .toList();
+                      _sortColumnIndex = columnIndex;
+                      _sortAscending = ascending;
+                      _filteredData
+                          .sort((a, b) => a.taxTin.compareTo(b.taxTin));
+                      if (!ascending) {
+                        _filteredData = _filteredData.reversed.toList();
+                      }
                     });
                   },
                 ),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.print),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  onCreateNewTax(context);
-                },
-                child: const Text('افزودن مالیات جدید'),
-              ),
-            ],
-          ),
-        ),
-        PaginatedDataTable(
-          sortAscending: _sortAscending,
-          sortColumnIndex: _sortColumnIndex,
-          header: const Text("همه مالیات |"),
-          columns: [
-            DataColumn(
-              label: const Text(
-                "ن.ت. مالیه دهنده (TIN)",
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-              ),
-              onSort: (columnIndex, ascending) {
-                setState(() {
-                  _sortColumnIndex = columnIndex;
-                  _sortAscending = ascending;
-                  _filteredData.sort((a, b) => a.taxTin.compareTo(b.taxTin));
-                  if (!ascending) {
-                    _filteredData = _filteredData.reversed.toList();
-                  }
-                });
-              },
-            ),
-            DataColumn(
-              label: const Text(
-                "مالیات سال",
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-              ),
-              onSort: (columnIndex, ascending) {
-                setState(() {
-                  _sortColumnIndex = columnIndex;
-                  _sortAscending = ascending;
-                  _filteredData
-                      .sort(((a, b) => a.taxOfYear.compareTo(b.taxOfYear)));
-                  if (!ascending) {
-                    _filteredData = _filteredData.reversed.toList();
-                  }
-                });
-              },
-            ),
-            DataColumn(
-              label: const Text(
-                "فیصدی مالیات (%)",
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-              ),
-              onSort: (columnIndex, ascending) {
-                setState(() {
-                  _sortColumnIndex = columnIndex;
-                  _sortAscending = ascending;
-                  _filteredData
-                      .sort(((a, b) => a.taxRate.compareTo(b.taxRate)));
-                  if (!ascending) {
-                    _filteredData = _filteredData.reversed.toList();
-                  }
-                });
-              },
-            ),
-            const DataColumn(
-              label: Text(
-                "شرح",
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const DataColumn(
-                label: Text("تغییر",
+                DataColumn(
+                  label: const Text(
+                    "مالیات سال",
                     style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold))),
-            const DataColumn(
-                label: Text("حذف",
+                        color: Colors.blue, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (columnIndex, ascending) {
+                    setState(() {
+                      _sortColumnIndex = columnIndex;
+                      _sortAscending = ascending;
+                      _filteredData
+                          .sort(((a, b) => a.taxOfYear.compareTo(b.taxOfYear)));
+                      if (!ascending) {
+                        _filteredData = _filteredData.reversed.toList();
+                      }
+                    });
+                  },
+                ),
+                DataColumn(
+                  label: const Text(
+                    "فیصدی مالیات (%)",
                     style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold))),
+                        color: Colors.blue, fontWeight: FontWeight.bold),
+                  ),
+                  onSort: (columnIndex, ascending) {
+                    setState(() {
+                      _sortColumnIndex = columnIndex;
+                      _sortAscending = ascending;
+                      _filteredData
+                          .sort(((a, b) => a.taxRate.compareTo(b.taxRate)));
+                      if (!ascending) {
+                        _filteredData = _filteredData.reversed.toList();
+                      }
+                    });
+                  },
+                ),
+                const DataColumn(
+                  label: Text(
+                    "شرح",
+                    style: TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const DataColumn(
+                    label: Text("تغییر",
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold))),
+                const DataColumn(
+                    label: Text("حذف",
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold))),
+              ],
+              source: MyDataSource(_filteredData),
+              rowsPerPage: _filteredData.length < 5 ? _filteredData.length : 5,
+            )
           ],
-          source: MyDataSource(_filteredData),
-          rowsPerPage: _filteredData.length < 5 ? _filteredData.length : 5,
-        )
-      ],
-    ));
+        ),
+      ),
+    );
   }
 }
 
