@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../views/finance/taxes/tax_details.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/finance/taxes/tax_info.dart';
 
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKeyForTaxes =
@@ -77,6 +78,7 @@ class TaxDataTableState extends State<TaxDataTable> {
     final taxDueController = TextEditingController();
     final delByController = TextEditingController();
     final delDateCotnroller = TextEditingController();
+    final noteController = TextEditingController();
 
     const regExOnlydigits = "[0-9]";
     const regExpDecimal = r'^\d+\.?\d{0,2}';
@@ -102,6 +104,7 @@ class TaxDataTableState extends State<TaxDataTable> {
       taxTotalController.text = '$totalTaxesofYear افغانی';
     }
 
+    bool checked = false;
     double? paidTaxes;
     double? dueTaxes;
     // ignore: no_leading_underscores_for_local_identifiers
@@ -347,8 +350,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'مجموع مالیات',
-                                suffixIcon:
-                                    Icon(Icons.money_off_csred_outlined),
+                                suffixIcon: Icon(Icons.money),
                                 enabledBorder: OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
@@ -369,54 +371,86 @@ class TaxDataTableState extends State<TaxDataTable> {
                               ),
                             ),
                           ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: taxPaidController,
-                              validator: (value) {
-                                double taxPaid =
-                                    taxPaidController.text.isNotEmpty
-                                        ? double.parse(taxPaidController.text)
-                                        : 0;
-                                if (value!.isEmpty) {
-                                  return 'مالیات تحویل شده الزامی میباشد.';
-                                } else if (taxPaid > totalTaxesofYear!) {
-                                  return 'مالیات تحویل شده نمی تواند بیشتر از کل مالیات باشد.';
-                                }
-                              },
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(regExpDecimal))
-                              ],
-                              onChanged: _onPaidTaxes,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'مالیات تحویل شده',
-                                suffixIcon:
-                                    Icon(Icons.money_off_csred_outlined),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 3,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: TextFormField(
+                                    controller: taxPaidController,
+                                    validator: (value) {
+                                      double taxPaid = taxPaidController
+                                              .text.isNotEmpty
+                                          ? double.parse(taxPaidController.text)
+                                          : 0;
+                                      if (value!.isEmpty) {
+                                        return 'مالیات تحویل شده الزامی میباشد.';
+                                      } else if (taxPaid > totalTaxesofYear!) {
+                                        return 'مالیات تحویل شده نمی تواند بیشتر از کل مالیات باشد.';
+                                      }
+                                    },
+                                    readOnly: checked ? true : false,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(regExpDecimal))
+                                    ],
+                                    onChanged:
+                                        checked ? _onPaidTaxes : _onPaidTaxes,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'مالیات تحویل شده',
+                                      suffixIcon:
+                                          Icon(Icons.money_off_csred_outlined),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.red)),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide: BorderSide(
+                                              color: Colors.red, width: 1.5)),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              Expanded(
+                                flex: 1,
+                                child: CheckboxListTile(
+                                  value: checked,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      checked = value!;
+                                      if (checked) {
+                                        dueTaxes = 0;
+                                        paidTaxes = totalTaxesofYear;
+                                        taxPaidController.text =
+                                            paidTaxes.toString();
+                                        taxDueController.text =
+                                            dueTaxes.toString();
+                                      }
+                                    });
+                                  },
+                                  title: const Text('پرداخت همه'),
+                                ),
+                              ),
+                            ],
                           ),
                           Container(
                             margin: const EdgeInsets.only(
@@ -518,6 +552,52 @@ class TaxDataTableState extends State<TaxDataTable> {
                                 right: 20.0,
                                 top: 10.0,
                                 bottom: 10.0),
+                            child: TextFormField(
+                              controller: noteController,
+                              validator: (value) {
+                                if (value!.isNotEmpty) {
+                                  if (value.length > 40 || value.length < 10) {
+                                    return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                  }
+                                }
+                                return null;
+                              },
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(regExOnlyAbc),
+                                ),
+                              ],
+                              maxLines: 3,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'توضیحات',
+                                suffixIcon: Icon(Icons.note_alt_outlined),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(30.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(30.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(30.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(30.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
                             child: InputDecorator(
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
@@ -590,39 +670,59 @@ class TaxDataTableState extends State<TaxDataTable> {
                               double taxRate =
                                   double.parse(taxRateController.text);
                               double totalAnnualTax = totalTaxesofYear!;
-                              double deliAmount =
+                              double paidAmount =
                                   double.parse(taxPaidController.text);
                               double dueAmount = dueTaxes!;
-                              String deliDate = delDateCotnroller.text;
+                              String paidDate = delDateCotnroller.text;
                               int taxYear = selectedYear;
                               int staffID = int.parse(selectedStaffId!);
+                              String note = noteController.text;
                               final conn = await onConnToDb();
+
+                              // First ensure not to add duplicate years
                               var results1 = await conn.query(
-                                  'SELECT * FROM taxes WHERE TIN = ? AND tax_for_year = ?',
-                                  [tin, taxYear]);
+                                  'SELECT * FROM taxes WHERE tax_for_year = ?',
+                                  [taxYear]);
                               if (results1.isNotEmpty) {
                                 _onShowSnack(Colors.red,
-                                    'متاسفم، مالیات با این مشخصات قبلاً در سیستم وجود دارد.');
+                                    'متاسفم، مالیات سال $taxYear ه.ش قبلا در سیستم وجود دارد.');
                               } else {
+                                // Secondly add a record into taxes first
                                 var results2 = await conn.query(
-                                    'INSERT INTO taxes (annual_income, tax_rate, total_annual_tax, delivered_amount, due_amount, TIN, delivery_date, tax_for_year, delivered_by) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                    'INSERT INTO taxes (annual_income, tax_rate, total_annual_tax, TIN, tax_for_year) VALUES(?, ?, ?, ?, ?)',
                                     [
                                       annualIncome,
                                       taxRate,
                                       totalAnnualTax,
-                                      deliAmount,
-                                      dueAmount,
                                       tin,
-                                      deliDate,
-                                      taxYear,
-                                      staffID
+                                      taxYear
                                     ]);
                                 if (results2.affectedRows! > 0) {
-                                  _onShowSnack(
-                                      Colors.green, 'مالیات موفقانه ثبت شد.');
-                                } else {
-                                  _onShowSnack(Colors.red,
-                                      'متاسفم، ثبت مالیات ناکام شد.');
+                                  // Fetch tax ID to insert details of it into tax_payments
+                                  var results3 = await conn.query(
+                                      'SELECT * FROM taxes WHERE tax_for_year = ?',
+                                      [taxYear]);
+                                  var row = results3.first;
+                                  int taxID = row['tax_ID'];
+
+                                  var results4 = await conn.query(
+                                      'INSERT INTO tax_payments (tax_ID, paid_date, paid_by, paid_amount, due_amount, note) VALUES (?, ?, ?, ?, ?, ?)',
+                                      [
+                                        taxID,
+                                        paidDate,
+                                        staffID,
+                                        paidAmount,
+                                        dueAmount,
+                                        note
+                                      ]);
+                                  if (results4.affectedRows! > 0) {
+                                    _onShowSnack(Colors.green,
+                                        'مالیات موفقانه افزوده شد.');
+                                    TaxInfo.onAddTax!();
+                                  } else {
+                                    _onShowSnack(Colors.red,
+                                        'متاسفم، افزودن مالیات ناکام شد.');
+                                  }
                                 }
                               }
                               Navigator.pop(context);
@@ -643,36 +743,44 @@ class TaxDataTableState extends State<TaxDataTable> {
   int _sortColumnIndex = 0;
   bool _sortAscending = true;
 
-  // The original data source
-  final List<MyData> _data = [
-    MyData('8008319499', '1398', '12%', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('8008319499', '1398', '15%', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('8008319499', '1397', '20%', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('8008319499', '1402', '30%', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('8008319497', '1400', '25%', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('8008319497', '1400', '25%', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('8008319497', '1401', '15%', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('8008319497', '1402', '15%', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('8008319496', '1399', '15%', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('8008319496', '1396', '15%', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('8008319496', '1395', '12%', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-    MyData('8008319496', '1394', '12%', const Icon(Icons.list),
-        const Icon(Icons.edit), const Icon(Icons.delete)),
-  ];
+  // The filtered data source
+  List<Tax> _filteredData = [];
 
-// The filtered data source
-  late List<MyData> _filteredData;
+  List<Tax> _data = [];
+
+// Fetch expenses records from the database
+  Future<void> _fetchData() async {
+    final conn = await onConnToDb();
+    // if expFilterValue = 'همه' then it should not use WHERE to filter.
+    final results = await conn.query(
+        'SELECT A.tax_ID, A.annual_income, A.tax_rate, A.total_annual_tax, B.paid_amount, B.due_amount, A.TIN, DATE_FORMAT(B.paid_date, "%Y-%m-%d"), A.tax_for_year, B.paid_by, C.firstname, C.lastname FROM taxes A INNER JOIN tax_payments B ON A.tax_ID = B.tax_ID INNER JOIN staff C ON B.paid_by = C.staff_ID ORDER BY B.paid_date DESC');
+
+    _data = results.map((row) {
+      return Tax(
+        taxID: row[0],
+        annualIncom: row[1],
+        taxRate: row[2],
+        annualTaxes: row[3],
+        deliveredTax: row[4],
+        dueTax: row[5],
+        taxTin: row[6],
+        deliverDate: row[7].toString(),
+        taxOfYear: row[8].toString(),
+        staffID: row[9],
+        firstName: row[10],
+        lastName: row[11],
+        taxDetail: const Icon(Icons.list),
+        editTax: const Icon(Icons.edit),
+        deleteTax: const Icon(Icons.delete),
+      );
+    }).toList();
+    _filteredData = List.from(_data);
+    await conn.close();
+    // Notify the framework that the state of the widget has changed
+    setState(() {});
+    // Print the data that was fetched from the database
+    print('Data from database: $_data');
+  }
 
 // The text editing controller for the search TextField
   final TextEditingController _searchController = TextEditingController();
@@ -681,11 +789,13 @@ class TaxDataTableState extends State<TaxDataTable> {
   void initState() {
     super.initState();
 // Set the filtered data to the original data at first
-    _filteredData = _data;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchData());
   }
 
   @override
   Widget build(BuildContext context) {
+    TaxInfo.onAddTax = _fetchData;
+    final dataSource = MyDataSource(_filteredData);
     return ScaffoldMessenger(
       key: _globalKeyForTaxes,
       child: Scaffold(
@@ -724,9 +834,25 @@ class TaxDataTableState extends State<TaxDataTable> {
                       onChanged: (value) {
                         setState(() {
                           _filteredData = _data
-                              .where((element) => element.taxTin
-                                  .toLowerCase()
-                                  .contains(value.toLowerCase()))
+                              .where((element) =>
+                                  element.taxOfYear
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase()) ||
+                                  element.annualIncom
+                                      .toString()
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase()) ||
+                                  element.taxRate
+                                      .toString()
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase()) ||
+                                  element.annualTaxes
+                                      .toString()
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase()) ||
+                                  element.deliverDate
+                                      .toLowerCase()
+                                      .contains(value.toLowerCase()))
                               .toList();
                         });
                       },
@@ -745,84 +871,149 @@ class TaxDataTableState extends State<TaxDataTable> {
                 ],
               ),
             ),
-            PaginatedDataTable(
-              sortAscending: _sortAscending,
-              sortColumnIndex: _sortColumnIndex,
-              header: const Text("همه مالیات |"),
-              columns: [
-                DataColumn(
-                  label: const Text(
-                    "ن.ت. مالیه دهنده (TIN)",
-                    style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold),
+            if (_filteredData.isEmpty)
+              const SizedBox(
+                width: 200,
+                height: 200,
+                child:
+                    Center(child: Text('هیچ ریکاردی مربوط مالیات یافت نشد.')),
+              )
+            else
+              PaginatedDataTable(
+                sortAscending: _sortAscending,
+                sortColumnIndex: _sortColumnIndex,
+                header: const Text("همه مالیات |"),
+                columns: [
+                  DataColumn(
+                    label: const Text(
+                      "سالهای مالی",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (columnIndex, ascending) {
+                      setState(() {
+                        _sortColumnIndex = columnIndex;
+                        _sortAscending = ascending;
+                        _filteredData
+                            .sort((a, b) => a.taxTin.compareTo(b.taxTin));
+                        if (!ascending) {
+                          _filteredData = _filteredData.reversed.toList();
+                        }
+                      });
+                    },
                   ),
-                  onSort: (columnIndex, ascending) {
-                    setState(() {
-                      _sortColumnIndex = columnIndex;
-                      _sortAscending = ascending;
-                      _filteredData
-                          .sort((a, b) => a.taxTin.compareTo(b.taxTin));
-                      if (!ascending) {
-                        _filteredData = _filteredData.reversed.toList();
-                      }
-                    });
-                  },
-                ),
-                DataColumn(
-                  label: const Text(
-                    "مالیات سال",
-                    style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold),
+                  DataColumn(
+                    label: const Text(
+                      "عواید سالانه",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (columnIndex, ascending) {
+                      setState(() {
+                        _sortColumnIndex = columnIndex;
+                        _sortAscending = ascending;
+                        _filteredData
+                            .sort((a, b) => a.taxTin.compareTo(b.taxTin));
+                        if (!ascending) {
+                          _filteredData = _filteredData.reversed.toList();
+                        }
+                      });
+                    },
                   ),
-                  onSort: (columnIndex, ascending) {
-                    setState(() {
-                      _sortColumnIndex = columnIndex;
-                      _sortAscending = ascending;
-                      _filteredData
-                          .sort(((a, b) => a.taxOfYear.compareTo(b.taxOfYear)));
-                      if (!ascending) {
-                        _filteredData = _filteredData.reversed.toList();
-                      }
-                    });
-                  },
-                ),
-                DataColumn(
-                  label: const Text(
-                    "فیصدی مالیات (%)",
-                    style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold),
+                  DataColumn(
+                    label: const Text(
+                      "فیصدی مالیات",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (columnIndex, ascending) {
+                      setState(() {
+                        _sortColumnIndex = columnIndex;
+                        _sortAscending = ascending;
+                        _filteredData
+                            .sort(((a, b) => a.taxRate.compareTo(b.taxRate)));
+                        if (!ascending) {
+                          _filteredData = _filteredData.reversed.toList();
+                        }
+                      });
+                    },
                   ),
-                  onSort: (columnIndex, ascending) {
-                    setState(() {
-                      _sortColumnIndex = columnIndex;
-                      _sortAscending = ascending;
-                      _filteredData
-                          .sort(((a, b) => a.taxRate.compareTo(b.taxRate)));
-                      if (!ascending) {
-                        _filteredData = _filteredData.reversed.toList();
-                      }
-                    });
-                  },
-                ),
-                const DataColumn(
-                  label: Text(
-                    "شرح",
-                    style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold),
+                  DataColumn(
+                    label: const Text(
+                      "مجموع مالیات سالانه",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (columnIndex, ascending) {
+                      setState(() {
+                        _sortColumnIndex = columnIndex;
+                        _sortAscending = ascending;
+                        _filteredData.sort(
+                            ((a, b) => a.taxOfYear.compareTo(b.taxOfYear)));
+                        if (!ascending) {
+                          _filteredData = _filteredData.reversed.toList();
+                        }
+                      });
+                    },
                   ),
-                ),
-                const DataColumn(
-                    label: Text("تغییر",
-                        style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold))),
-                const DataColumn(
-                    label: Text("حذف",
-                        style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold))),
-              ],
-              source: MyDataSource(_filteredData),
-              rowsPerPage: _filteredData.length < 5 ? _filteredData.length : 5,
-            )
+                  DataColumn(
+                    label: const Text(
+                      "مالیات پرداخت شده",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (columnIndex, ascending) {
+                      setState(() {
+                        _sortColumnIndex = columnIndex;
+                        _sortAscending = ascending;
+                        _filteredData.sort(
+                            ((a, b) => a.taxOfYear.compareTo(b.taxOfYear)));
+                        if (!ascending) {
+                          _filteredData = _filteredData.reversed.toList();
+                        }
+                      });
+                    },
+                  ),
+                  DataColumn(
+                    label: const Text(
+                      "تاریخ پرداخت",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    onSort: (columnIndex, ascending) {
+                      setState(() {
+                        _sortColumnIndex = columnIndex;
+                        _sortAscending = ascending;
+                        _filteredData.sort(
+                            ((a, b) => a.taxOfYear.compareTo(b.taxOfYear)));
+                        if (!ascending) {
+                          _filteredData = _filteredData.reversed.toList();
+                        }
+                      });
+                    },
+                  ),
+                  const DataColumn(
+                    label: Text(
+                      "شرح",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const DataColumn(
+                      label: Text("تغییر",
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold))),
+                  const DataColumn(
+                      label: Text("حذف",
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold))),
+                ],
+                source: dataSource,
+                rowsPerPage:
+                    _filteredData.length < 5 ? _filteredData.length : 5,
+              )
           ],
         ),
       ),
@@ -831,11 +1022,10 @@ class TaxDataTableState extends State<TaxDataTable> {
 }
 
 class MyDataSource extends DataTableSource {
-  List<MyData> data;
-
+  List<Tax> data;
   MyDataSource(this.data);
 
-  void sort(Comparator<MyData> compare, bool ascending) {
+  void sort(Comparator<Tax> compare, bool ascending) {
     data.sort(compare);
     if (!ascending) {
       data = data.reversed.toList();
@@ -846,9 +1036,12 @@ class MyDataSource extends DataTableSource {
   @override
   DataRow getRow(int index) {
     return DataRow(cells: [
-      DataCell(Text(data[index].taxTin)),
-      DataCell(Text(data[index].taxOfYear)),
-      DataCell(Text(data[index].taxRate)),
+      DataCell(Text('${data[index].taxOfYear} ه.ش')),
+      DataCell(Text('${data[index].annualIncom} افغانی')),
+      DataCell(Text('${data[index].taxRate}%')),
+      DataCell(Text('${data[index].annualTaxes} افغانی')),
+      DataCell(Text('${data[index].deliveredTax} افغانی')),
+      DataCell(Text(data[index].deliverDate.toString())),
       DataCell(
         Builder(builder: (BuildContext context) {
           return IconButton(
@@ -1173,7 +1366,7 @@ onShowTaxDetails(BuildContext context) {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
           child: const Text('تایید'),
         ),
       ],
@@ -1182,14 +1375,37 @@ onShowTaxDetails(BuildContext context) {
   );
 }
 
-class MyData {
+class Tax {
+  final int taxID;
   final String taxTin;
+  final double annualIncom;
+  final double annualTaxes;
+  final double deliveredTax;
+  final double dueTax;
+  final String deliverDate;
+  final int staffID;
   final String taxOfYear;
-  final String taxRate;
+  final double taxRate;
+  final String firstName;
+  final String lastName;
   final Icon taxDetail;
   final Icon editTax;
   final Icon deleteTax;
 
-  MyData(this.taxTin, this.taxOfYear, this.taxRate, this.taxDetail,
-      this.editTax, this.deleteTax);
+  Tax(
+      {required this.taxID,
+      required this.taxTin,
+      required this.annualIncom,
+      required this.annualTaxes,
+      required this.deliveredTax,
+      required this.dueTax,
+      required this.deliverDate,
+      required this.staffID,
+      required this.taxOfYear,
+      required this.taxRate,
+      required this.firstName,
+      required this.lastName,
+      required this.taxDetail,
+      required this.editTax,
+      required this.deleteTax});
 }
