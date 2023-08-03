@@ -9,6 +9,23 @@ import 'package:flutter_dentistry/views/finance/taxes/tax_info.dart';
 final GlobalKey<ScaffoldMessengerState> _globalKeyForTaxes =
     GlobalKey<ScaffoldMessengerState>();
 
+const regExOnlydigits = "[0-9]";
+const regExpDecimal = r'^\d+\.?\d{0,2}';
+const regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
+
+// The text editing controllers for the TextFormFields
+// ignore: non_constant_identifier_names
+final TINController = TextEditingController();
+final taxOfYearController = TextEditingController();
+final taxRateController = TextEditingController();
+final taxTotalController = TextEditingController();
+final annualIncomeController = TextEditingController();
+final taxPaidController = TextEditingController();
+final taxDueController = TextEditingController();
+final delByController = TextEditingController();
+final delDateCotnroller = TextEditingController();
+final noteController = TextEditingController();
+
 // This is shows snackbar when called
 void _onShowSnack(Color backColor, String msg) {
   _globalKeyForTaxes.currentState?.showSnackBar(
@@ -67,22 +84,6 @@ class TaxDataTableState extends State<TaxDataTable> {
     fetchStaff();
 // The global for the form
     final formKeyNewTax = GlobalKey<FormState>();
-// The text editing controllers for the TextFormFields
-    // ignore: non_constant_identifier_names
-    final TINController = TextEditingController();
-    final taxOfYearController = TextEditingController();
-    final taxRateController = TextEditingController();
-    final taxTotalController = TextEditingController();
-    final annualIncomeController = TextEditingController();
-    final taxPaidController = TextEditingController();
-    final taxDueController = TextEditingController();
-    final delByController = TextEditingController();
-    final delDateCotnroller = TextEditingController();
-    final noteController = TextEditingController();
-
-    const regExOnlydigits = "[0-9]";
-    const regExpDecimal = r'^\d+\.?\d{0,2}';
-    const regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
 
     // Create a dropdown for financial years.
     int selectedYear = 1300;
@@ -1071,6 +1072,18 @@ class MyDataSource extends DataTableSource {
           return IconButton(
             icon: data[index].editTax,
             onPressed: (() {
+              // Assign values into static class members for later use
+              TaxInfo.TIN = data[index].taxTin;
+              TaxInfo.taxID = data[index].taxID;
+              TaxInfo.annualIncomes = data[index].annualIncom;
+              TaxInfo.annTotTaxes = data[index].annualTaxes;
+              TaxInfo.dueTaxes = data[index].dueTax;
+              TaxInfo.paidDate = data[index].deliverDate;
+              TaxInfo.taxRate = data[index].taxRate;
+              TaxInfo.staffID = data[index].staffID;
+              TaxInfo.taxOfYear = data[index].taxOfYear;
+              TaxInfo.firstName = data[index].firstName;
+              TaxInfo.lastName = data[index].lastName;
               onEditTax(context);
             }),
             color: Colors.blue,
@@ -1131,16 +1144,12 @@ onDeleteTax(BuildContext context) {
 onEditTax(BuildContext context) {
 // The global for the form
   final formKey = GlobalKey<FormState>();
-// The text editing controllers for the TextFormFields
-  // ignore: non_constant_identifier_names
-  final TINController = TextEditingController();
-  final taxOfYearController = TextEditingController();
-  final taxRateController = TextEditingController();
-  final taxTotalController = TextEditingController();
-  final taxDueController = TextEditingController();
-  final delByController = TextEditingController();
-  final delDateCotnroller = TextEditingController();
-
+    // Create a dropdown for financial years.
+    int selectedYear = 1300;
+    List<int> years = [];
+    for (var i = 1300; i < 1500; i++) {
+      years.add(i);
+    }
   return showDialog(
     context: context,
     builder: ((context) {
@@ -1170,6 +1179,19 @@ onEditTax(BuildContext context) {
                           margin: const EdgeInsets.all(20.0),
                           child: TextFormField(
                             controller: TINController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'TIN الزامی میباشد.';
+                              } else if (value.length < 10 ||
+                                  value.length > 10) {
+                                return 'TIN باید 10 عدد باشد.';
+                              }
+                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(regExOnlydigits),
+                              ),
+                            ],
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'نمبر تشخیصیه مالیه دهنده (TIN)',
@@ -1186,13 +1208,12 @@ onEditTax(BuildContext context) {
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
-                          child: TextFormField(
-                            controller: taxOfYearController,
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                          child: InputDecorator(
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'مالیه سال',
-                              suffixIcon: Icon(Icons.date_range_outlined),
                               enabledBorder: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
@@ -1201,6 +1222,37 @@ onEditTax(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: SizedBox(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: selectedYear,
+                                  items: years.map((int year) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: year,
+                                      child: Text(year.toString()),
+                                    );
+                                  }).toList(),
+                                  onChanged: (int? newValue) {
+                                    setState(() {
+                                      selectedYear = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -1348,7 +1400,9 @@ onEditTax(BuildContext context) {
                           onPressed: () => Navigator.pop(context),
                           child: const Text('لغو')),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (formKey.currentState!.validate()) {}
+                        },
                         child: const Text('تغییر'),
                       ),
                     ],
