@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/views/finance/taxes/tax_info.dart';
 
 class TaxDetails extends StatelessWidget {
   const TaxDetails({super.key});
@@ -14,17 +15,17 @@ class TaxDetails extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10.0),
             color: const Color.fromARGB(255, 240, 239, 239),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'نمبر تشخیصیه مالیه دهنده (TIN)',
                   style: TextStyle(
                     fontSize: 14.0,
                     color: Color.fromARGB(255, 118, 116, 116),
                   ),
                 ),
-                Text('8008319497'),
+                Text('${TaxInfo.TIN}'),
               ],
             ),
           ),
@@ -38,17 +39,17 @@ class TaxDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: const Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    const Text(
                       'مالیات سال',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Color.fromARGB(255, 118, 116, 116),
                       ),
                     ),
-                    Text('1402'),
+                    Text('${TaxInfo.taxOfYear} ه.ش'),
                   ],
                 ),
               ),
@@ -56,17 +57,17 @@ class TaxDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: const Column(
+                child:  Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    const Text(
                       'فیصدی مالیات (%)',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Color.fromARGB(255, 118, 116, 116),
                       ),
                     ),
-                    Text('30%'),
+                    Text('${TaxInfo.taxRate} %'),
                   ],
                 ),
               ),
@@ -82,17 +83,17 @@ class TaxDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: const Column(
+                child:  Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    const Text(
                       'تاریخ تحویلی',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Color.fromARGB(255, 118, 116, 116),
                       ),
                     ),
-                    Text('2022/06/06'),
+                    Text('${TaxInfo.paidDate}'),
                   ],
                 ),
               ),
@@ -100,17 +101,17 @@ class TaxDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child: const Column(
+                child:  Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    const Text(
                       'مجموع مالیات',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Color.fromARGB(255, 118, 116, 116),
                       ),
                     ),
-                    Text('100,000 افغانی'),
+                    Text('${TaxInfo.annTotTaxes.toString()} افغانی'),
                   ],
                 ),
               ),
@@ -122,17 +123,17 @@ class TaxDetails extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10.0),
             color: const Color.fromARGB(255, 240, 239, 239),
-            child: const Column(
+            child:  Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
+                const Text(
                   'مبلع باقی',
                   style: TextStyle(
                     fontSize: 14.0,
                     color: Color.fromARGB(255, 118, 116, 116),
                   ),
                 ),
-                Text('50,000 افغانی'),
+                Text('${TaxInfo.dueTaxes} افغانی'),
               ],
             ),
           ),
@@ -142,17 +143,17 @@ class TaxDetails extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10.0),
             color: const Color.fromARGB(255, 240, 239, 239),
-            child: const Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'تحویل مالیات توسط',
                   style: TextStyle(
                     fontSize: 14.0,
                     color: Color.fromARGB(255, 118, 116, 116),
                   ),
                 ),
-                Text('علی احمدی'),
+                Text('${TaxInfo.firstName} ${TaxInfo.lastName}'),
               ],
             ),
           ),

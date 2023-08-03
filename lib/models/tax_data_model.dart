@@ -1046,7 +1046,21 @@ class MyDataSource extends DataTableSource {
         Builder(builder: (BuildContext context) {
           return IconButton(
             icon: data[index].taxDetail,
-            onPressed: (() => onShowTaxDetails(context)),
+            onPressed: (() {
+              // Assign values into static class members for later use
+              TaxInfo.TIN = data[index].taxTin;
+              TaxInfo.taxID = data[index].taxID;
+              TaxInfo.annualIncomes = data[index].annualIncom;
+              TaxInfo.annTotTaxes = data[index].annualTaxes;
+              TaxInfo.dueTaxes = data[index].dueTax;
+              TaxInfo.paidDate = data[index].deliverDate;
+              TaxInfo.taxRate = data[index].taxRate;
+              TaxInfo.staffID = data[index].staffID;
+              TaxInfo.taxOfYear = data[index].taxOfYear;
+              TaxInfo.firstName = data[index].firstName;
+              TaxInfo.lastName = data[index].lastName;
+              onShowTaxDetails(context);
+            }),
             color: Colors.blue,
             iconSize: 20.0,
           );
@@ -1352,11 +1366,34 @@ onShowTaxDetails(BuildContext context) {
   return showDialog(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: const Directionality(
+      title: Directionality(
         textDirection: TextDirection.rtl,
-        child: Text(
-          'جزییات مالیات',
-          style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+        child: Row(
+          children: [
+            const Expanded(
+              flex: 2,
+              child: Text(
+                'جزییات مالیات',
+                style:
+                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              ),
+            ),
+            if (TaxInfo.dueTaxes! > 0)
+              ElevatedButton(
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  side: const BorderSide(
+                    color: Colors.blue,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
+                child: const Text('تصفیه مالیاتی'),
+              ),
+          ],
         ),
       ),
       content: const Directionality(
