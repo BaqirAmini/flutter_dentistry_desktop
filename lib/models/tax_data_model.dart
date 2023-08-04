@@ -13,19 +13,6 @@ const regExOnlydigits = "[0-9]";
 const regExpDecimal = r'^\d+\.?\d{0,2}';
 const regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
 
-// The text editing controllers for the TextFormFields
-// ignore: non_constant_identifier_names
-final TINController = TextEditingController();
-final taxOfYearController = TextEditingController();
-final taxRateController = TextEditingController();
-final taxTotalController = TextEditingController();
-final annualIncomeController = TextEditingController();
-final taxPaidController = TextEditingController();
-final taxDueController = TextEditingController();
-final delByController = TextEditingController();
-final delDateCotnroller = TextEditingController();
-final noteController = TextEditingController();
-
 // This is shows snackbar when called
 void _onShowSnack(Color backColor, String msg) {
   _globalKeyForTaxes.currentState?.showSnackBar(
@@ -76,6 +63,8 @@ class TaxDataTableState extends State<TaxDataTable> {
           .toList();
     });
     selectedStaffId = staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
+    TaxInfo.StaffList = staffList;
+    TaxInfo.selectedStaff = selectedStaffId;
     await conn.close();
   }
 
@@ -85,6 +74,18 @@ class TaxDataTableState extends State<TaxDataTable> {
 // The global for the form
     final formKeyNewTax = GlobalKey<FormState>();
 
+// The text editing controllers for the TextFormFields
+// ignore: non_constant_identifier_names
+    final TINController = TextEditingController();
+    final taxOfYearController = TextEditingController();
+    final taxRateController = TextEditingController();
+    final taxTotalController = TextEditingController();
+    final annualIncomeController = TextEditingController();
+    final taxPaidController = TextEditingController();
+    final taxDueController = TextEditingController();
+    final delByController = TextEditingController();
+    final delDateCotnroller = TextEditingController();
+    final noteController = TextEditingController();
     // Create a dropdown for financial years.
     int selectedYear = 1300;
     List<int> years = [];
@@ -754,7 +755,7 @@ class TaxDataTableState extends State<TaxDataTable> {
     final conn = await onConnToDb();
     // if expFilterValue = 'همه' then it should not use WHERE to filter.
     final results = await conn.query(
-        'SELECT A.tax_ID, A.annual_income, A.tax_rate, A.total_annual_tax, B.paid_amount, B.due_amount, A.TIN, DATE_FORMAT(B.paid_date, "%Y-%m-%d"), A.tax_for_year, B.paid_by, C.firstname, C.lastname FROM taxes A INNER JOIN tax_payments B ON A.tax_ID = B.tax_ID INNER JOIN staff C ON B.paid_by = C.staff_ID ORDER BY B.paid_date DESC');
+        'SELECT A.tax_ID, A.annual_income, A.tax_rate, A.total_annual_tax, B.paid_amount, B.due_amount, A.TIN, DATE_FORMAT(B.paid_date, "%Y-%m-%d"), A.tax_for_year, B.paid_by, C.firstname, C.lastname, B.note, B.tax_pay_ID FROM taxes A INNER JOIN tax_payments B ON A.tax_ID = B.tax_ID INNER JOIN staff C ON B.paid_by = C.staff_ID ORDER BY B.paid_date DESC');
 
     _data = results.map((row) {
       return Tax(
@@ -770,6 +771,8 @@ class TaxDataTableState extends State<TaxDataTable> {
         staffID: row[9],
         firstName: row[10],
         lastName: row[11],
+        notes: row[12].toString(),
+        taxPayID: row[13],
         taxDetail: const Icon(Icons.list),
         editTax: const Icon(Icons.edit),
         deleteTax: const Icon(Icons.delete),
@@ -796,7 +799,10 @@ class TaxDataTableState extends State<TaxDataTable> {
   @override
   Widget build(BuildContext context) {
     TaxInfo.onAddTax = _fetchData;
-    final dataSource = MyDataSource(_filteredData);
+    // Assign fetchStaff to static function and immediatly call it here since when onEditTax() is called the staff dropdown is initially blank.
+    TaxInfo.onFetchStaff = fetchStaff;
+    TaxInfo.onFetchStaff!();
+    final dataSource = MyDataSource(_filteredData, _fetchData);
     return ScaffoldMessenger(
       key: _globalKeyForTaxes,
       child: Scaffold(
@@ -1024,8 +1030,8 @@ class TaxDataTableState extends State<TaxDataTable> {
 
 class MyDataSource extends DataTableSource {
   List<Tax> data;
-  MyDataSource(this.data);
-
+  Function onUpdate;
+  MyDataSource(this.data, this.onUpdate);
   void sort(Comparator<Tax> compare, bool ascending) {
     data.sort(compare);
     if (!ascending) {
@@ -1075,16 +1081,20 @@ class MyDataSource extends DataTableSource {
               // Assign values into static class members for later use
               TaxInfo.TIN = data[index].taxTin;
               TaxInfo.taxID = data[index].taxID;
+              TaxInfo.taxPayID = data[index].taxPayID;
               TaxInfo.annualIncomes = data[index].annualIncom;
               TaxInfo.annTotTaxes = data[index].annualTaxes;
               TaxInfo.dueTaxes = data[index].dueTax;
+              TaxInfo.paidTaxes = data[index].deliveredTax;
               TaxInfo.paidDate = data[index].deliverDate;
               TaxInfo.taxRate = data[index].taxRate;
               TaxInfo.staffID = data[index].staffID;
               TaxInfo.taxOfYear = data[index].taxOfYear;
+              TaxInfo.taxNotes = data[index].notes;
               TaxInfo.firstName = data[index].firstName;
               TaxInfo.lastName = data[index].lastName;
-              onEditTax(context);
+              TaxInfo.onFetchStaff!();
+              onEditTax(context, onUpdate);
             }),
             color: Colors.blue,
             iconSize: 20.0,
@@ -1141,15 +1151,68 @@ onDeleteTax(BuildContext context) {
 }
 
 // This dialog edits a tax
-onEditTax(BuildContext context) {
+onEditTax(BuildContext context, Function onUpdate) {
 // The global for the form
   final formKey = GlobalKey<FormState>();
-    // Create a dropdown for financial years.
-    int selectedYear = 1300;
-    List<int> years = [];
-    for (var i = 1300; i < 1500; i++) {
-      years.add(i);
-    }
+  TaxInfo.onFetchStaff!();
+  // The text editing controllers for the TextFormFields
+// ignore: non_constant_identifier_names
+  final TINController = TextEditingController();
+  final taxOfYearController = TextEditingController();
+  final taxRateController = TextEditingController();
+  final taxTotalController = TextEditingController();
+  final annualIncomeController = TextEditingController();
+  final taxPaidController = TextEditingController();
+  final taxDueController = TextEditingController();
+  final delByController = TextEditingController();
+  final delDateCotnroller = TextEditingController();
+  final noteController = TextEditingController();
+  // Create a dropdown for financial years.
+  int selectedYear = 1300;
+  List<int> years = [];
+  for (var i = 1300; i < 1500; i++) {
+    years.add(i);
+  }
+
+  int selectedStaff = int.parse(TaxInfo.selectedStaff!);
+  double totalTaxesofYear = TaxInfo.annTotTaxes!;
+// Sets the total taxes into its related field
+  void _onSetTotalTax(String text) {
+    double taxRate = taxRateController.text.isEmpty
+        ? 0
+        : double.parse(taxRateController.text);
+    double annualIncome = annualIncomeController.text.isEmpty
+        ? 0
+        : double.parse(annualIncomeController.text);
+    totalTaxesofYear = (taxRate * annualIncome) / 100;
+    taxTotalController.text = '$totalTaxesofYear افغانی';
+  }
+
+  bool checked = false;
+  double paidTaxes = TaxInfo.paidTaxes!;
+  double dueTaxes = TaxInfo.dueTaxes!;
+  // ignore: no_leading_underscores_for_local_identifiers
+  // Deduct the paid taxes amount from total taxes.
+  void _onPaidTaxes(String text) {
+    paidTaxes = taxPaidController.text.isNotEmpty
+        ? double.parse(taxPaidController.text)
+        : 0;
+    dueTaxes =
+        paidTaxes! <= totalTaxesofYear! ? totalTaxesofYear! - paidTaxes! : 0;
+    taxDueController.text = '$dueTaxes افغانی';
+  }
+
+// Set values into textfields through static members of TaxInfo class.
+  TINController.text = TaxInfo.TIN!;
+  selectedYear = int.parse(TaxInfo.taxOfYear!);
+  taxRateController.text = TaxInfo.taxRate.toString();
+  annualIncomeController.text = TaxInfo.annualIncomes.toString();
+  taxTotalController.text = TaxInfo.annTotTaxes.toString();
+  taxPaidController.text = TaxInfo.paidTaxes.toString();
+  taxDueController.text = TaxInfo.dueTaxes.toString();
+  delDateCotnroller.text = TaxInfo.paidDate!;
+  noteController.text = TaxInfo.taxNotes!;
+
   return showDialog(
     context: context,
     builder: ((context) {
@@ -1170,6 +1233,7 @@ onEditTax(BuildContext context) {
                 child: SizedBox(
                   width: 500.0,
                   child: SingleChildScrollView(
+                    reverse: false,
                     child: Column(
                       children: [
                         Container(
@@ -1204,6 +1268,15 @@ onEditTax(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -1213,7 +1286,7 @@ onEditTax(BuildContext context) {
                           child: InputDecorator(
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: 'مالیه سال',
+                              labelText: 'مالیه سال (هجری شمسی)',
                               enabledBorder: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
@@ -1260,8 +1333,23 @@ onEditTax(BuildContext context) {
                           margin: const EdgeInsets.all(20.0),
                           child: TextFormField(
                             controller: taxRateController,
+                            validator: (value) {
+                              double taxPercentage =
+                                  taxRateController.text.isNotEmpty
+                                      ? double.parse(taxRateController.text)
+                                      : 0;
+                              if (value!.isEmpty) {
+                                return 'فیصدی مالیات الزامی میباشد.';
+                              } else if (taxPercentage < 0 ||
+                                  taxPercentage > 50) {
+                                return 'فیصدی مالیات نا معتبر است.';
+                              }
+                            },
+                            onChanged: _onSetTotalTax,
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(regExpDecimal)),
+                              LengthLimitingTextInputFormatter(4)
                             ],
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -1275,6 +1363,56 @@ onEditTax(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                          child: TextFormField(
+                            controller: annualIncomeController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'مجموع عاید سال الزامی میباشد.';
+                              }
+                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(regExpDecimal))
+                            ],
+                            onChanged: _onSetTotalTax,
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText:
+                                  'مجموع عاید سال ${selectedYear.toString()}',
+                              suffixIcon:
+                                  const Icon(Icons.money_off_csred_outlined),
+                              enabledBorder: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -1284,8 +1422,9 @@ onEditTax(BuildContext context) {
                             controller: taxTotalController,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9.]'))
+                                  RegExp(regExOnlydigits))
                             ],
+                            readOnly: true,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'مجموع مالیات',
@@ -1298,8 +1437,100 @@ onEditTax(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: Container(
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: TextFormField(
+                                  controller: taxPaidController,
+                                  validator: (value) {
+                                    double taxPaid = taxPaidController
+                                            .text.isNotEmpty
+                                        ? double.parse(taxPaidController.text)
+                                        : 0;
+                                    if (value!.isEmpty) {
+                                      return 'مالیات تحویل شده الزامی میباشد.';
+                                    } else if (taxPaid > totalTaxesofYear!) {
+                                      return 'مالیات تحویل شده نمی تواند بیشتر از کل مالیات باشد.';
+                                    }
+                                  },
+                                  readOnly: checked ? true : false,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp(regExpDecimal))
+                                  ],
+                                  onChanged:
+                                      checked ? _onPaidTaxes : _onPaidTaxes,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'مالیات تحویل شده',
+                                    suffixIcon:
+                                        Icon(Icons.money_off_csred_outlined),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                    errorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.red)),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide: BorderSide(
+                                            color: Colors.red, width: 1.5)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: CheckboxListTile(
+                                value: checked,
+                                onChanged: taxTotalController.text.isEmpty
+                                    ? null
+                                    : (bool? value) {
+                                        setState(() {
+                                          checked = value!;
+                                          if (checked) {
+                                            dueTaxes = 0;
+                                            paidTaxes = totalTaxesofYear;
+                                            taxPaidController.text =
+                                                paidTaxes.toString();
+                                            taxDueController.text =
+                                                dueTaxes.toString();
+                                          }
+                                        });
+                                      },
+                                title: const Text('پرداخت همه'),
+                              ),
+                            ),
+                          ],
                         ),
                         Container(
                           margin: const EdgeInsets.all(20.0),
@@ -1307,8 +1538,9 @@ onEditTax(BuildContext context) {
                             controller: taxDueController,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9.]'))
+                                  RegExp(regExpDecimal))
                             ],
+                            readOnly: true,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'مالیات باقی',
@@ -1321,6 +1553,15 @@ onEditTax(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -1328,6 +1569,11 @@ onEditTax(BuildContext context) {
                           margin: const EdgeInsets.all(20.0),
                           child: TextFormField(
                             controller: delDateCotnroller,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'تاریخ تحویلی الزامی میباشد.';
+                              }
+                            },
                             onTap: () async {
                               FocusScope.of(context).requestFocus(FocusNode());
                               final DateTime? dateTime = await showDatePicker(
@@ -1359,20 +1605,68 @@ onEditTax(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
-                            controller: delByController,
+                            controller: noteController,
+                            validator: (value) {
+                              if (value!.isNotEmpty) {
+                                if (value.length > 40 || value.length < 10) {
+                                  return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                }
+                              }
+                              return null;
+                            },
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                RegExp(regExOnlyAbc),
+                              ),
                             ],
+                            maxLines: 3,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: 'تحویل کننده مالیات',
-                              suffixIcon: Icon(Icons.person),
+                              labelText: 'توضیحات',
+                              suffixIcon: Icon(Icons.note_alt_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'تحویل کننده',
                               enabledBorder: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
@@ -1381,6 +1675,42 @@ onEditTax(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: TaxInfo.selectedStaff,
+                                  items: TaxInfo.StaffList?.map((staff) {
+                                    return DropdownMenuItem<String>(
+                                      value: staff['staff_ID'],
+                                      alignment: Alignment.centerRight,
+                                      child: Text(staff['firstname'] +
+                                          ' ' +
+                                          staff['lastname']),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      TaxInfo.selectedStaff = newValue;
+                                      selectedStaff = int.parse(newValue!);
+                                      print(
+                                          'Selected Staff...> $selectedStaff');
+                                    });
+                                  },
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -1400,8 +1730,56 @@ onEditTax(BuildContext context) {
                           onPressed: () => Navigator.pop(context),
                           child: const Text('لغو')),
                       ElevatedButton(
-                        onPressed: () {
-                          if (formKey.currentState!.validate()) {}
+                        onPressed: () async {
+                          if (formKey.currentState!.validate()) {
+                            double editTaxRate =
+                                double.parse(taxRateController.text);
+                            double editAnnIncome =
+                                double.parse(annualIncomeController.text);
+                            double editTotAnnTax = totalTaxesofYear!;
+                            String editTIN = TINController.text;
+                            int editTaxYear = selectedYear;
+                            String editPaidDate = delDateCotnroller.text;
+                            int editStaffId = selectedStaff;
+                            double editPaidAmount = paidTaxes;
+                            double editDueAmount = dueTaxes;
+                            String editNotes = noteController.text;
+
+                            final conn = await onConnToDb();
+                            // First update taxes table (parent table)
+                            var editResult1 = await conn.query(
+                                'UPDATE taxes SET annual_income = ?, tax_rate = ?, total_annual_tax = ?, TIN = ?, tax_for_year = ? WHERE tax_ID = ?',
+                                [
+                                  editAnnIncome,
+                                  editTaxRate,
+                                  editTotAnnTax,
+                                  editTIN,
+                                  editTaxYear,
+                                  TaxInfo.taxID
+                                ]);
+                            // Then update tax_payments table (the child table)
+                            var editResult2 = await conn.query(
+                                'UPDATE tax_payments SET paid_date = ?, paid_by = ?, paid_amount = ?, due_amount = ?, note = ? WHERE tax_pay_ID = ?',
+                                [
+                                  editPaidDate,
+                                  editStaffId,
+                                  editPaidAmount,
+                                  editDueAmount,
+                                  editNotes,
+                                  TaxInfo.taxPayID
+                                ]);
+                            if (editResult1.affectedRows! > 0 ||
+                                editResult2.affectedRows! > 0) {
+                              _onShowSnack(
+                                  Colors.green, 'مالیات موفقانه تغییر کرد.');
+                              onUpdate();
+                            } else {
+                              _onShowSnack(Colors.red,
+                                  'متاسفم، شما هیچ تغییراتی نیاوردید.');
+                            }
+                            await conn.close();
+                            Navigator.pop(context);
+                          }
                         },
                         child: const Text('تغییر'),
                       ),
@@ -1468,6 +1846,7 @@ onShowTaxDetails(BuildContext context) {
 
 class Tax {
   final int taxID;
+  final int taxPayID;
   final String taxTin;
   final double annualIncom;
   final double annualTaxes;
@@ -1477,6 +1856,7 @@ class Tax {
   final int staffID;
   final String taxOfYear;
   final double taxRate;
+  final String? notes;
   final String firstName;
   final String lastName;
   final Icon taxDetail;
@@ -1485,6 +1865,7 @@ class Tax {
 
   Tax(
       {required this.taxID,
+      required this.taxPayID,
       required this.taxTin,
       required this.annualIncom,
       required this.annualTaxes,
@@ -1494,6 +1875,7 @@ class Tax {
       required this.staffID,
       required this.taxOfYear,
       required this.taxRate,
+      this.notes,
       required this.firstName,
       required this.lastName,
       required this.taxDetail,
