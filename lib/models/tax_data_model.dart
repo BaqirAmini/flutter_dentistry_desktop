@@ -346,7 +346,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                               controller: taxTotalController,
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
-                                    RegExp(regExOnlydigits))
+                                    RegExp(regExpDecimal))
                               ],
                               readOnly: true,
                               decoration: const InputDecoration(
@@ -755,7 +755,7 @@ class TaxDataTableState extends State<TaxDataTable> {
     final conn = await onConnToDb();
     // if expFilterValue = 'همه' then it should not use WHERE to filter.
     final results = await conn.query(
-        'SELECT A.tax_ID, A.annual_income, A.tax_rate, A.total_annual_tax, B.paid_amount, B.due_amount, A.TIN, DATE_FORMAT(B.paid_date, "%Y-%m-%d"), A.tax_for_year, B.paid_by, C.firstname, C.lastname, B.note, B.tax_pay_ID FROM taxes A INNER JOIN tax_payments B ON A.tax_ID = B.tax_ID INNER JOIN staff C ON B.paid_by = C.staff_ID ORDER BY B.paid_date DESC');
+        'SELECT A.tax_ID, A.annual_income, A.tax_rate, A.total_annual_tax, B.paid_amount, B.due_amount, A.TIN, DATE_FORMAT(B.paid_date, "%Y-%m-%d"), A.tax_for_year, B.paid_by, C.firstname, C.lastname, B.note, B.tax_pay_ID FROM taxes A INNER JOIN tax_payments B ON A.tax_ID = B.tax_ID INNER JOIN staff C ON B.paid_by = C.staff_ID ORDER BY B.modified_at DESC');
 
     _data = results.map((row) {
       return Tax(
@@ -799,6 +799,7 @@ class TaxDataTableState extends State<TaxDataTable> {
   @override
   Widget build(BuildContext context) {
     TaxInfo.onAddTax = _fetchData;
+    TaxInfo.onUpdateDueTax = _fetchData;
     // Assign fetchStaff to static function and immediatly call it here since when onEditTax() is called the staff dropdown is initially blank.
     TaxInfo.onFetchStaff = fetchStaff;
     TaxInfo.onFetchStaff!();
@@ -1053,12 +1054,13 @@ class MyDataSource extends DataTableSource {
         Builder(builder: (BuildContext context) {
           return IconButton(
             icon: data[index].taxDetail,
-            onPressed: (() {
+            onPressed: (() async {
               // Assign values into static class members for later use
               TaxInfo.TIN = data[index].taxTin;
               TaxInfo.taxID = data[index].taxID;
               TaxInfo.annualIncomes = data[index].annualIncom;
               TaxInfo.annTotTaxes = data[index].annualTaxes;
+              TaxInfo.paidTaxes = data[index].deliveredTax;
               TaxInfo.dueTaxes = data[index].dueTax;
               TaxInfo.paidDate = data[index].deliverDate;
               TaxInfo.taxRate = data[index].taxRate;
@@ -1066,6 +1068,18 @@ class MyDataSource extends DataTableSource {
               TaxInfo.taxOfYear = data[index].taxOfYear;
               TaxInfo.firstName = data[index].firstName;
               TaxInfo.lastName = data[index].lastName;
+// This is find out if there are due taxes (due tax is not get zero)
+              final conn = await onConnToDb();
+              var dueResult = await conn.query(
+                  'SELECT * FROM tax_payments WHERE tax_ID = ? ORDER BY modified_at DESC',
+                  [TaxInfo.taxID]);
+              var row = dueResult.first;
+              double dueTax = row["due_amount"];
+              if (dueTax <= 0) {
+                TaxInfo.isDueTax = false;
+              } else {
+                TaxInfo.isDueTax = true;
+              }
               onShowTaxDetails(context);
             }),
             color: Colors.blue,
@@ -1793,6 +1807,324 @@ onEditTax(BuildContext context, Function onUpdate) {
   );
 }
 
+// This function is to pay the due taxes
+onPayDueTaxes(BuildContext context) {
+// The global for the form
+  final formKeyDueTax = GlobalKey<FormState>();
+
+// The text editing controllers for the TextFormFields
+// ignore: non_constant_identifier_names
+  final taxPaidController = TextEditingController();
+  final taxDueController = TextEditingController();
+  final paidDateController = TextEditingController();
+  final noteController = TextEditingController();
+
+// Assign selected staff here.
+  String selectedStaffForTax = TaxInfo.selectedStaff!;
+
+  // Assign paid amount taxes and due amount taxes
+  taxPaidController.text = '${TaxInfo.paidTaxes} افغانی';
+  taxDueController.text = '${TaxInfo.dueTaxes} افغانی';
+
+  return showDialog(
+    context: context,
+    builder: ((context) {
+      return StatefulBuilder(
+        builder: ((context, setState) {
+          return AlertDialog(
+            title: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text(
+                'پرداخت بقیه مالیات',
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
+            content: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Form(
+                key: formKeyDueTax,
+                child: SizedBox(
+                  width: 500.0,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 20.0),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                          child: TextFormField(
+                            controller: taxPaidController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(regExpDecimal))
+                            ],
+                            readOnly: true,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'مالیات تحویل شده',
+                              suffixIcon: Icon(Icons.money_off_csred_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                          child: TextFormField(
+                            controller: taxDueController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(regExpDecimal))
+                            ],
+                            readOnly: true,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'مالیات باقی',
+                              suffixIcon: Icon(Icons.attach_money_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                          child: TextFormField(
+                            controller: paidDateController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'تاریخ تحویلی الزامی میباشد.';
+                              }
+                            },
+                            onTap: () async {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              final DateTime? dateTime = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(1900),
+                                  lastDate: DateTime(2100));
+                              if (dateTime != null) {
+                                final intl.DateFormat formatter =
+                                    intl.DateFormat('yyyy-MM-dd');
+                                final String formattedDate =
+                                    formatter.format(dateTime);
+                                paidDateController.text = formattedDate;
+                              }
+                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(regExpDecimal))
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'تاریخ تحویل دهی',
+                              suffixIcon: Icon(Icons.calendar_month_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                          child: TextFormField(
+                            controller: noteController,
+                            validator: (value) {
+                              if (value!.isNotEmpty) {
+                                if (value.length > 40 || value.length < 10) {
+                                  return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                }
+                              }
+                              return null;
+                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(regExOnlyAbc),
+                              ),
+                            ],
+                            maxLines: 3,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'توضیحات',
+                              suffixIcon: Icon(Icons.note_alt_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(30.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'خریداری شده توسط',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: selectedStaffForTax,
+                                  items: TaxInfo.StaffList!.map((staff) {
+                                    return DropdownMenuItem<String>(
+                                      value: staff['staff_ID'],
+                                      alignment: Alignment.centerRight,
+                                      child: Text(staff['firstname'] +
+                                          ' ' +
+                                          staff['lastname']),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      selectedStaffForTax = newValue!;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('لغو')),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (formKeyDueTax.currentState!.validate()) {
+                            int taxId = TaxInfo.taxID!;
+                            String paidDate = paidDateController.text;
+                            double paidAmount = TaxInfo.dueTaxes!;
+                            double dueAmount = 0;
+                            String notes = noteController.text;
+// Insert tax_payments table to make the due taxes zero.
+                            final conn = await onConnToDb();
+                            var dueResults = await conn.query(
+                                'INSERT INTO tax_payments (tax_ID, paid_date, paid_by, paid_amount, due_amount, note) VALUES (?, ?, ?, ?, ?, ?)',
+                                [
+                                  taxId,
+                                  paidDate,
+                                  selectedStaffForTax,
+                                  paidAmount,
+                                  dueAmount,
+                                  notes
+                                ]);
+
+                            if (dueResults.affectedRows! > 0) {
+                              _onShowSnack(
+                                  Colors.green, 'بقیه مالیات نیز تصفیه شد.');
+                                  TaxInfo.onUpdateDueTax!();
+                            } else {
+                              _onShowSnack(Colors.green,
+                                  'متاسفم، تصفیه مالیات ناکام شد.');
+                            }
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Text('ثبت کردن'),
+                      ),
+                    ],
+                  ))
+            ],
+          );
+        }),
+      );
+    }),
+  );
+}
+
 // This is to display an alert dialog to expenses details
 onShowTaxDetails(BuildContext context) {
   return showDialog(
@@ -1810,7 +2142,7 @@ onShowTaxDetails(BuildContext context) {
                     TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
               ),
             ),
-            if (TaxInfo.dueTaxes! > 0)
+            if (TaxInfo.isDueTax!)
               ElevatedButton(
                 style: OutlinedButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -1822,6 +2154,7 @@ onShowTaxDetails(BuildContext context) {
                 ),
                 onPressed: () {
                   Navigator.of(context, rootNavigator: true).pop();
+                  onPayDueTaxes(context);
                 },
                 child: const Text('تصفیه مالیاتی'),
               ),

@@ -14,7 +14,9 @@ class TaxInfo {
   static String? firstName;
   static String? lastName;
   static Function? onAddTax;
+  static Function? onUpdateDueTax;
   static Function? onFetchStaff;
   static List<Map<String, dynamic>>? StaffList;
   static String? selectedStaff;
+  static bool? isDueTax;
 }
