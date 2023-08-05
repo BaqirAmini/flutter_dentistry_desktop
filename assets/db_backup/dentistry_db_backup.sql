@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 01, 2023 at 04:55 PM
+-- Generation Time: Aug 05, 2023 at 07:39 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -286,8 +286,11 @@ INSERT INTO `taxes` (`tax_ID`, `annual_income`, `tax_rate`, `total_annual_tax`, 
 (2, 220000.00, '10.00', '22000.00', '10232344', 1394),
 (3, 80000.00, '9.50', '7600.00', '25232300', 1401),
 (4, 250000.00, '20.00', '50000.00', '0023802300', 1402),
-(5, 300000.00, '20.00', '60000.00', '0023233244', 1403),
-(6, 350000.00, '15.50', '54250.00', '1402323210', 1305);
+(5, 300000.00, '12.50', '37500.00', '4023233245', 1400),
+(6, 290000.00, '10.50', '30450.00', '1402323219', 1304),
+(7, 200000.00, '18.50', '37000.00', '1800018232', 1398),
+(8, 200000.00, '15.60', '31200.00', '1234567890', 1308),
+(9, 80000.00, '18.50', '14800.00', '1000123223', 1302);
 
 -- --------------------------------------------------------
 
@@ -303,6 +306,7 @@ CREATE TABLE `tax_payments` (
   `paid_amount` decimal(12,2) NOT NULL,
   `due_amount` decimal(12,2) NOT NULL,
   `note` mediumtext DEFAULT NULL,
+  `modified_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `docs` blob DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -310,9 +314,15 @@ CREATE TABLE `tax_payments` (
 -- Dumping data for table `tax_payments`
 --
 
-INSERT INTO `tax_payments` (`tax_pay_ID`, `tax_ID`, `paid_date`, `paid_by`, `paid_amount`, `due_amount`, `note`, `docs`) VALUES
-(1, 5, '2023-08-01', 14, '30000.00', '30000.00', 'مالیات کلینیک دندان درمان', NULL),
-(2, 6, '2017-08-17', 21, '54250.00', '0.00', '', NULL);
+INSERT INTO `tax_payments` (`tax_pay_ID`, `tax_ID`, `paid_date`, `paid_by`, `paid_amount`, `due_amount`, `note`, `modified_at`, `docs`) VALUES
+(1, 5, '2023-08-04', 21, '10000.00', '27500.00', 'مالیات کلینیک دندان درمان', NULL, NULL),
+(2, 6, '2017-01-01', 14, '30000.00', '450.00', 'حل اشتباهات مالیات', NULL, NULL),
+(3, 7, '2019-08-15', 23, '37000.00', '0.00', 'هیچ مالیاتی باقی نمانده', NULL, NULL),
+(4, 8, '1903-08-19', 14, '31200.00', '0.00', '', NULL, NULL),
+(7, 5, '2023-08-04', 23, '27500.00', '0.00', 'حساب و کتاب', '2023-08-05 04:49:10', NULL),
+(9, 6, '2022-12-28', 24, '450.00', '0.00', 'در آخر پارسال تصفیه شد', '2023-08-05 05:15:51', NULL),
+(10, 9, '2017-08-09', 14, '12000.00', '2800.00', 'کل مالیات تصفیه نشده', '2023-08-05 05:25:22', NULL),
+(11, 9, '2023-08-01', 21, '2800.00', '0.00', 'همه مالیات تصفیه شد', '2023-08-05 05:26:19', NULL);
 
 -- --------------------------------------------------------
 
@@ -564,13 +574,13 @@ ALTER TABLE `staff_auth`
 -- AUTO_INCREMENT for table `taxes`
 --
 ALTER TABLE `taxes`
-  MODIFY `tax_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `tax_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `tax_payments`
 --
 ALTER TABLE `tax_payments`
-  MODIFY `tax_pay_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `tax_pay_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `teeth`
