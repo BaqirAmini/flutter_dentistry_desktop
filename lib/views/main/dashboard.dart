@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
+import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:galileo_mysql/src/single_connection.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter_dentistry/views/main/sidebar.dart';
+import 'package:shamsi_date/shamsi_date.dart';
 
 void main() {
   return runApp(const Dashboard());
@@ -15,6 +18,57 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  int _allPatients = 0;
+  int _todaysPatients = 0;
+// This function fetch patients' records
+  Future<void> _fetchAllPatient() async {
+    final conn = await onConnToDb();
+    // Fetch all patients
+    var allPatResults = await conn.query('SELECT COUNT(*) FROM patients');
+    int allPatients = allPatResults.first[0];
+
+    // Fetch the patients who are added today
+    var todayResult = await conn.query(
+        'SELECT COUNT(*) FROM patients WHERE DATE(reg_date) = CURDATE()');
+    int todayPat = todayResult.first[0];
+    await conn.close();
+    setState(() {
+      _allPatients = allPatients;
+      _todaysPatients = todayPat;
+    });
+  }
+
+  double _currentMonthExp = 0;
+  double _curYearTax = 0;
+  Future<void> _fetchFinance() async {
+    final conn = await onConnToDb();
+    // Fetch sum of current month expenses
+    var expResults = await conn.query(
+        'SELECT SUM(total) FROM expense_detail WHERE YEAR(purchase_date) = YEAR(CURDATE()) AND MONTH(purchase_date) = MONTH(CURDATE())');
+    double curMonthExp = expResults.first[0] ?? 0;
+    // Firstly, fetch jalali(hijri shamsi) from current date.
+    final jalaliDate = Jalali.now();
+    final hijriYear = jalaliDate.year;
+    // Query taxes of current hijri year
+    var taxResults = await conn.query(
+        'SELECT total_annual_tax FROM taxes WHERE tax_for_year = ?',
+        [hijriYear]);
+    double curYearTax = taxResults.first[0] ?? 0;
+
+    await conn.close();
+    setState(() {
+      _currentMonthExp = curMonthExp;
+      _curYearTax = curYearTax;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAllPatient();
+    _fetchFinance();
+  }
+
   PageController page = PageController();
   List<_SalesData> data = [
     _SalesData('Jan', 10),
@@ -35,7 +89,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-   /*  final userData =
+    /*  final userData =
         ModalRoute.of(context)!.settings.arguments as Map<String, String>;
     final staffId = userData["staffID"];
     final staffRole = userData["role"]; */
@@ -96,15 +150,15 @@ class _DashboardState extends State<Dashboard> {
                                       top: 0.0,
                                       right: 15.0,
                                       bottom: 0.0),
-                                  child: const Column(
+                                  child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text('بیماران امروز',
+                                      const Text('مریض های امروز',
                                           style: TextStyle(
                                               fontSize: 16.0,
                                               color: Colors.white)),
-                                      Text('20',
-                                          style: TextStyle(
+                                      Text('$_todaysPatients نفر',
+                                          style: const TextStyle(
                                               fontSize: 16.0,
                                               color: Colors.white)),
                                     ],
@@ -133,15 +187,15 @@ class _DashboardState extends State<Dashboard> {
                                       top: 0.0,
                                       right: 15.0,
                                       bottom: 0.0),
-                                  child: const Column(
+                                  child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text('مصارف ماه جاری',
+                                      const Text('مصارف ماه جاری',
                                           style: TextStyle(
                                               fontSize: 16.0,
                                               color: Colors.white)),
-                                      Text('20',
-                                          style: TextStyle(
+                                      Text('$_currentMonthExp افغانی',
+                                          style: const TextStyle(
                                               fontSize: 16.0,
                                               color: Colors.white)),
                                     ],
@@ -171,15 +225,15 @@ class _DashboardState extends State<Dashboard> {
                                       top: 0.0,
                                       right: 15.0,
                                       bottom: 0.0),
-                                  child: const Column(
+                                  child:  Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text('مالیات امسال',
+                                      const Text('مالیات امسال',
                                           style: TextStyle(
                                               fontSize: 16.0,
                                               color: Colors.white)),
-                                      Text('20',
-                                          style: TextStyle(
+                                      Text('$_curYearTax افغانی',
+                                          style: const TextStyle(
                                               fontSize: 16.0,
                                               color: Colors.white)),
                                     ],
@@ -208,15 +262,15 @@ class _DashboardState extends State<Dashboard> {
                                       top: 0.0,
                                       right: 15.0,
                                       bottom: 0.0),
-                                  child: const Column(
+                                  child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Text('همه مریض ها',
+                                      const Text('همه مریض ها',
                                           style: TextStyle(
                                               fontSize: 16.0,
                                               color: Colors.white)),
-                                      Text('1050',
-                                          style: TextStyle(
+                                      Text('$_allPatients نفر',
+                                          style: const TextStyle(
                                               fontSize: 16.0,
                                               color: Colors.white)),
                                     ],
