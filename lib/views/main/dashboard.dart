@@ -62,11 +62,14 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  bool _isPieDataInitialized = false;
+
   @override
   void initState() {
     super.initState();
     _fetchAllPatient();
     _fetchFinance();
+    _getPieData();
   }
 
   PageController page = PageController();
@@ -79,11 +82,33 @@ class _DashboardState extends State<Dashboard> {
     _SalesData('Jun', 35)
   ];
 
-  List<_PieData> pieData = [
+  late List<_PieData> pieData;
+// Fetch the expenses of last three months into pie char
+  Future<void> _getPieData() async {
+    final conn = await onConnToDb();
+    // Execute the query
+    final results = await conn.query(
+        "SELECT A.exp_name, DATE_FORMAT(B.purchase_date, '%M'), SUM(B.total) FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID WHERE B.purchase_date >= CURDATE() - INTERVAL 3 MONTH GROUP BY A.exp_name");
+
+    // Close the connection
+    await conn.close();
+
+    // Map the results to a list of _PieData objects
+    pieData = results
+        .map((row) =>
+            _PieData(row[0].toString(), row[2] as double, row[1].toString()))
+        .toList();
+
+    // Set _isPieDataInitialized to true
+    _isPieDataInitialized = true;
+    setState(() {});
+  }
+
+/*   List<_PieData> pieData = [
     _PieData('Jan', 9000, 'خوراک'),
     _PieData('Feb', 15000, 'آب'),
     _PieData('Mar', 100000, 'مالیات'),
-  ];
+  ]; */
 
   SideMenuController sideMenu = SideMenuController();
 
@@ -225,7 +250,7 @@ class _DashboardState extends State<Dashboard> {
                                       top: 0.0,
                                       right: 15.0,
                                       bottom: 0.0),
-                                  child:  Column(
+                                  child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       const Text('مالیات امسال',
@@ -326,29 +351,41 @@ class _DashboardState extends State<Dashboard> {
                             width: 300.0,
                             child: Column(
                               children: [
-                                SfCircularChart(
-                                  title: ChartTitle(text: 'مصارف سه ماه اخیر'),
-                                  // Enable legend
-                                  legend: Legend(isVisible: true),
-                                  // Enable tooltip
-                                  tooltipBehavior:
-                                      TooltipBehavior(enable: true),
-                                  series: <PieSeries<_PieData, String>>[
-                                    PieSeries<_PieData, String>(
-                                        explode: true,
-                                        explodeIndex: 0,
-                                        dataSource: pieData,
-                                        xValueMapper: (_PieData data, _) =>
-                                            data.xData,
-                                        yValueMapper: (_PieData data, _) =>
-                                            data.yData,
-                                        dataLabelMapper: (_PieData data, _) =>
-                                            data.text,
-                                        dataLabelSettings:
-                                            const DataLabelSettings(
-                                                isVisible: true)),
-                                  ],
-                                ),
+                                if (!_isPieDataInitialized)
+                                  const CircularProgressIndicator()
+                                else
+                                  SfCircularChart(
+                                    title:
+                                        ChartTitle(text: 'مصارف سه ماه اخیر'),
+                                    // Enable legend
+                                    legend: Legend(
+                                      isVisible: true,
+                                      width: '75',
+                                      height: '100',
+                                      position: LegendPosition.left,
+                                      textStyle: const TextStyle(fontSize: 10.0),
+                                    ),
+                                    // Enable tooltip
+                                    tooltipBehavior: TooltipBehavior(
+                                      enable: true,
+                                      format: 'point.y افغانی : point.x',
+                                    ),
+                                    series: <PieSeries<_PieData, String>>[
+                                      PieSeries<_PieData, String>(
+                                          explode: true,
+                                          explodeIndex: 0,
+                                          dataSource: pieData,
+                                          xValueMapper: (_PieData data, _) =>
+                                              data.xData,
+                                          yValueMapper: (_PieData data, _) =>
+                                              data.yData,
+                                          dataLabelMapper: (_PieData data, _) =>
+                                              data.text,
+                                          dataLabelSettings:
+                                              const DataLabelSettings(
+                                                  isVisible: true)),
+                                    ],
+                                  ),
                               ],
                             ),
                           ),
