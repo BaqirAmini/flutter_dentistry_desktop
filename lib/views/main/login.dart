@@ -43,11 +43,29 @@ class _LoginState extends State<Login> {
         final row = results.first;
         final staffID = row["staff_ID"];
         final role = row["role"];
+
+        var results2 = await conn
+            .query('SELECT * FROM staff WHERE staff_ID = ?', [staffID]);
+        final row2 = results2.first;
+        String firstName = row2["firstname"];
+        String lastName = row2["lastname"];
+        String position = row2["position"];
+        double salary = row2["salary"];
+        String phone = row2["phone"];
+        String tazkira = row2["tazkira_ID"];
+        String addr = row2["address"];
         // Global variables to be assigned staff info
         StaffInfo.staffID = staffID;
         StaffInfo.staffRole = role;
+        StaffInfo.firstName = firstName;
+        StaffInfo.lastName = lastName;
+        StaffInfo.position = position;
+        StaffInfo.salary = salary;
+        StaffInfo.phone = phone;
+        StaffInfo.tazkira = tazkira;
+        StaffInfo.address = addr;
 
-       /*  Map<String, String> userData = {
+        /*  Map<String, String> userData = {
           "staffID": staffID.toString(),
           "role": role
         }; */
