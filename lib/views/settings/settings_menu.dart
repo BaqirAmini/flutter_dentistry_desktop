@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
+import 'package:flutter_dentistry/views/staff/staff_info.dart';
+
+import 'package:flutter_dentistry/models/db_conn.dart';
 
 FilePickerResult? filePickerResult;
 File? pickedFile;
@@ -268,6 +271,8 @@ onChangePwd() {
 }
 
 onShowProfile(void Function() onUpdatePhoto) {
+  
+
   return Card(
     child: Center(
       child: Column(
@@ -318,9 +323,9 @@ onShowProfile(void Function() onUpdatePhoto) {
           ),
           Column(
             children: [
-              const Text(
-                'Ali Ahmadi',
-                style: TextStyle(fontWeight: FontWeight.bold),
+               Text(
+                '${StaffInfo.firstName} ${StaffInfo.lastName ?? ""}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               Container(
                 padding: const EdgeInsets.only(
@@ -331,9 +336,9 @@ onShowProfile(void Function() onUpdatePhoto) {
                     Radius.circular(12.0),
                   ),
                 ),
-                child: const Text(
-                  'داکتر دندان',
-                  style: TextStyle(color: Colors.blue, fontSize: 12.0),
+                child:  Text(
+                  '${StaffInfo.position}',
+                  style: const TextStyle(color: Colors.blue, fontSize: 12.0),
                 ),
               ),
             ],
@@ -353,17 +358,17 @@ onShowProfile(void Function() onUpdatePhoto) {
                       Container(
                         padding: const EdgeInsets.all(10.0),
                         color: const Color.fromARGB(255, 240, 239, 239),
-                        child: const Column(
+                        child:  Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'نام',
                               style: TextStyle(
                                 fontSize: 14.0,
                                 color: Color.fromARGB(255, 118, 116, 116),
                               ),
                             ),
-                            Text('علی'),
+                            Text('${StaffInfo.firstName}'),
                           ],
                         ),
                       ),
@@ -377,17 +382,17 @@ onShowProfile(void Function() onUpdatePhoto) {
                             width: 240.0,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
-                            child: const Column(
+                            child:  Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Text(
+                                const Text(
                                   'تخلص',
                                   style: TextStyle(
                                     fontSize: 14.0,
                                     color: Color.fromARGB(255, 118, 116, 116),
                                   ),
                                 ),
-                                Text('حیدری'),
+                                Text('${StaffInfo.lastName ?? StaffInfo.lastName}'),
                               ],
                             ),
                           ),
@@ -395,17 +400,17 @@ onShowProfile(void Function() onUpdatePhoto) {
                             width: 240.0,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
-                            child: const Column(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Text(
+                                const Text(
                                   'وظیفه',
                                   style: TextStyle(
                                     fontSize: 14.0,
                                     color: Color.fromARGB(255, 118, 116, 116),
                                   ),
                                 ),
-                                Text('داکتر دندان'),
+                                Text('${StaffInfo.position}'),
                               ],
                             ),
                           ),
@@ -417,17 +422,17 @@ onShowProfile(void Function() onUpdatePhoto) {
                       Container(
                         padding: const EdgeInsets.all(10.0),
                         color: const Color.fromARGB(255, 240, 239, 239),
-                        child: const Column(
+                        child:  Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'نمبر تذکره',
                               style: TextStyle(
                                 fontSize: 14.0,
                                 color: Color.fromARGB(255, 118, 116, 116),
                               ),
                             ),
-                            Text('1399-2813-23823'),
+                            Text('${StaffInfo.tazkira}'),
                           ],
                         ),
                       ),
@@ -441,17 +446,17 @@ onShowProfile(void Function() onUpdatePhoto) {
                             width: 240.0,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
-                            child: const Column(
+                            child:  Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Text(
+                                const Text(
                                   'معاش',
                                   style: TextStyle(
                                     fontSize: 14.0,
                                     color: Color.fromARGB(255, 118, 116, 116),
                                   ),
                                 ),
-                                Text('30,000'),
+                                Text('${StaffInfo.salary} افغانی'),
                               ],
                             ),
                           ),
@@ -459,17 +464,17 @@ onShowProfile(void Function() onUpdatePhoto) {
                             width: 240.0,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
-                            child: const Column(
+                            child:  Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Text(
+                                const Text(
                                   'نمبر تماس',
                                   style: TextStyle(
                                     fontSize: 14.0,
                                     color: Color.fromARGB(255, 118, 116, 116),
                                   ),
                                 ),
-                                Text('+93771020303'),
+                                Text('${StaffInfo.phone}'),
                               ],
                             ),
                           ),
@@ -479,17 +484,17 @@ onShowProfile(void Function() onUpdatePhoto) {
                       Container(
                         padding: const EdgeInsets.all(10.0),
                         color: const Color.fromARGB(255, 240, 239, 239),
-                        child: const Column(
+                        child:  Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'آدرس',
                               style: TextStyle(
                                 fontSize: 14.0,
                                 color: Color.fromARGB(255, 118, 116, 116),
                               ),
                             ),
-                            Text('کابل، چهارراهی دهبوری'),
+                            Text('${StaffInfo.address}'),
                           ],
                         ),
                       ),
