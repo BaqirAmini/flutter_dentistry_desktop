@@ -42,6 +42,7 @@ dependencies:
   galileo_mysql: ^3.0.0
   mysql1: ^0.20.0
   shamsi_date: ^1.0.1
+  shared_preferences: ^2.2.0
 
 dev_dependencies:
   flutter_test:

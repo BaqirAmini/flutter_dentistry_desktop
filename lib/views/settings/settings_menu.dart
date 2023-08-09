@@ -132,15 +132,52 @@ class _SettingsMenuState extends State<SettingsMenu> {
     );
   }
 
-//  This method picks an image when called
+// This method is to update profile picture of the user
   void onUpdatePhoto() async {
     final result = await FilePicker.platform.pickFiles(
         allowMultiple: true,
         type: FileType.custom,
         allowedExtensions: ['jpg', 'jpeg', 'png']);
     if (result != null) {
+      final conn = await onConnToDb();
+      pickedFile = File(result.files.single.path.toString());
+      final bytes = await pickedFile!.readAsBytes();
+      // Check if the file size is larger than 1MB
+      if (bytes.length > 1024 * 1024) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            content: Center(
+              child: Text('عکس حداکثر باید 1MB باشد.'),
+            ),
+          ),
+        );
+        return;
+      }
+      // final photo = MySQL.escapeBuffer(bytes);
+      var results = await conn.query(
+          'UPDATE staff SET photo = ? WHERE staff_ID = ?',
+          [bytes, StaffInfo.staffID]);
       setState(() {
-        pickedFile = File(result.files.single.path.toString());
+        if (results.affectedRows! > 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              content: Center(
+                child: Text('عکس پروفایل تان موفقانه تغییر کرد.'),
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.red,
+              content: Center(
+                child: Text('متاسفم، تغییر عکس پروفایل ناکام شد..'),
+              ),
+            ),
+          );
+        }
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -271,8 +308,6 @@ onChangePwd() {
 }
 
 onShowProfile(void Function() onUpdatePhoto) {
-  
-
   return Card(
     child: Center(
       child: Column(
@@ -323,7 +358,7 @@ onShowProfile(void Function() onUpdatePhoto) {
           ),
           Column(
             children: [
-               Text(
+              Text(
                 '${StaffInfo.firstName} ${StaffInfo.lastName ?? ""}',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
@@ -336,7 +371,7 @@ onShowProfile(void Function() onUpdatePhoto) {
                     Radius.circular(12.0),
                   ),
                 ),
-                child:  Text(
+                child: Text(
                   '${StaffInfo.position}',
                   style: const TextStyle(color: Colors.blue, fontSize: 12.0),
                 ),
@@ -358,7 +393,7 @@ onShowProfile(void Function() onUpdatePhoto) {
                       Container(
                         padding: const EdgeInsets.all(10.0),
                         color: const Color.fromARGB(255, 240, 239, 239),
-                        child:  Column(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
@@ -382,7 +417,7 @@ onShowProfile(void Function() onUpdatePhoto) {
                             width: 240.0,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
-                            child:  Column(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 const Text(
@@ -392,7 +427,8 @@ onShowProfile(void Function() onUpdatePhoto) {
                                     color: Color.fromARGB(255, 118, 116, 116),
                                   ),
                                 ),
-                                Text('${StaffInfo.lastName ?? StaffInfo.lastName}'),
+                                Text(
+                                    '${StaffInfo.lastName ?? StaffInfo.lastName}'),
                               ],
                             ),
                           ),
@@ -422,7 +458,7 @@ onShowProfile(void Function() onUpdatePhoto) {
                       Container(
                         padding: const EdgeInsets.all(10.0),
                         color: const Color.fromARGB(255, 240, 239, 239),
-                        child:  Column(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
@@ -446,7 +482,7 @@ onShowProfile(void Function() onUpdatePhoto) {
                             width: 240.0,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
-                            child:  Column(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 const Text(
@@ -464,7 +500,7 @@ onShowProfile(void Function() onUpdatePhoto) {
                             width: 240.0,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
-                            child:  Column(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 const Text(
@@ -484,7 +520,7 @@ onShowProfile(void Function() onUpdatePhoto) {
                       Container(
                         padding: const EdgeInsets.all(10.0),
                         color: const Color.fromARGB(255, 240, 239, 239),
-                        child:  Column(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
