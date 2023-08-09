@@ -671,7 +671,7 @@ onEditProfileInfo(BuildContext context) {
     'مدیر سیستم',
   ];
 // The global for the form
-  final formKey = GlobalKey<FormState>();
+  final formKeyEditStaff = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
   final nameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -679,6 +679,19 @@ onEditProfileInfo(BuildContext context) {
   final salaryController = TextEditingController();
   final tazkiraController = TextEditingController();
   final addressController = TextEditingController();
+
+  const regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
+  const regExOnlydigits = "[0-9+]";
+  final tazkiraPattern = RegExp(r'^\d{4}-\d{4}-\d{5}$');
+
+  // Assign values from static class members
+  nameController.text = StaffInfo.firstName!;
+  lastNameController.text =
+      StaffInfo.lastName == null ? '' : StaffInfo.lastName!;
+  phoneController.text = StaffInfo.phone!;
+  salaryController.text = StaffInfo.salary.toString();
+  tazkiraController.text = StaffInfo.tazkira!;
+  addressController.text = StaffInfo.address!;
 
   return showDialog(
     context: context,
@@ -696,19 +709,22 @@ onEditProfileInfo(BuildContext context) {
             content: Directionality(
               textDirection: TextDirection.rtl,
               child: Form(
-                key: formKey,
+                key: formKeyEditStaff,
                 child: SizedBox(
                   width: 500.0,
                   child: SingleChildScrollView(
                     child: Column(
                       children: [
                         Container(
-                          margin: const EdgeInsets.only(top: 20.0),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: nameController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'نام نمی تواند خالی باشد.';
+                              }
+                            },
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'نام',
@@ -721,13 +737,30 @@ onEditProfileInfo(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: lastNameController,
+                            validator: (value) {
+                              if (value!.isNotEmpty) {
+                                if (value.length < 3 || value.length > 10) {
+                                  return 'تخلص باید حداقل 3 و حداکثر 10 حرف باشد.';
+                                }
+                              }
+                            },
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'تخلص',
@@ -740,56 +773,44 @@ onEditProfileInfo(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'عنوان وظیفه',
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: SizedBox(
-                                height: 26.0,
-                                child: DropdownButton(
-                                  isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: positionDropDown,
-                                  items:
-                                      positionItems.map((String positionItems) {
-                                    return DropdownMenuItem(
-                                      value: positionItems,
-                                      alignment: Alignment.centerRight,
-                                      child: Text(positionItems),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      positionDropDown = newValue!;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: phoneController,
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                RegExp(regExOnlydigits),
+                              ),
                             ],
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'نمبر تماس الزامی است.';
+                              } else if (value.startsWith('07')) {
+                                if (value.length < 10 || value.length > 10) {
+                                  return 'نمبر تماس باید 10 عدد باشد.';
+                                }
+                              } else if (value.startsWith('+93')) {
+                                if (value.length < 12 || value.length > 12) {
+                                  return 'نمبر تماس  همراه با کود کشور باید 12 عدد باشد.';
+                                }
+                              } else {
+                                return 'نمبر تماس نا معتبر است.';
+                              }
+                              return null;
+                            },
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'نمبر تماس',
@@ -802,20 +823,39 @@ onEditProfileInfo(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: salaryController,
+                            validator: (value) {
+                              if (value!.isNotEmpty) {
+                                final salary = double.tryParse(value);
+                                if (salary! < 1000 || salary > 100000) {
+                                  return 'مقدار معاش باید بین 1000 افغانی و 100,000 افغانی باشد.';
+                                }
+                              }
+                              return null;
+                            },
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
                                   RegExp(r'[0-9.]'))
                             ],
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: 'مقدار معاش',
+                              labelText: 'مقدار معاش (به افغانی)',
                               suffixIcon: Icon(Icons.money),
                               enabledBorder: OutlineInputBorder(
                                   borderRadius:
@@ -825,16 +865,36 @@ onEditProfileInfo(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: tazkiraController,
+                            validator: (value) {
+                              if (value!.isNotEmpty) {
+                                if (!tazkiraPattern.hasMatch(value)) {
+                                  return 'فورمت نمبر تذکره باید xxxx-xxxx-xxxxx باشد.';
+                                }
+                              }
+                              return null;
+                            },
+                            // keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9.]'))
+                                RegExp(r'[0-9-]'),
+                              ),
                             ],
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -848,15 +908,27 @@ onEditProfileInfo(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: addressController,
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
+                              FilteringTextInputFormatter.allow(
+                                RegExp(regExOnlyAbc),
+                              ),
                             ],
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
@@ -870,6 +942,15 @@ onEditProfileInfo(BuildContext context) {
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
                         ),
@@ -889,7 +970,11 @@ onEditProfileInfo(BuildContext context) {
                           onPressed: () => Navigator.pop(context),
                           child: const Text('لغو')),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          if (formKeyEditStaff.currentState!.validate()) {
+
+                          }
+                        },
                         child: const Text('تغییر'),
                       ),
                     ],
