@@ -8,4 +8,5 @@ class StaffInfo {
   static String? phone;
   static String? tazkira;
   static String? address;
+  static Function? onUpdateProfile;
 }
