@@ -7,9 +7,29 @@ import 'dart:io';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:galileo_mysql/galileo_mysql.dart';
 
 FilePickerResult? filePickerResult;
 File? pickedFile;
+
+// Create the global key at the top level of your Dart file
+final GlobalKey<ScaffoldMessengerState> _globalKeyForProfile =
+    GlobalKey<ScaffoldMessengerState>();
+
+// This is shows snackbar when called
+void _onShowSnack(Color backColor, String msg) {
+  _globalKeyForProfile.currentState?.showSnackBar(
+    SnackBar(
+      backgroundColor: backColor,
+      content: SizedBox(
+        height: 20.0,
+        child: Center(
+          child: Text(msg),
+        ),
+      ),
+    ),
+  );
+}
 
 class SettingsMenu extends StatefulWidget {
   const SettingsMenu({super.key});
@@ -19,116 +39,130 @@ class SettingsMenu extends StatefulWidget {
 }
 
 class _SettingsMenuState extends State<SettingsMenu> {
-  int _selectedIndex = 1;
 
+  // Declare this method for refreshing UI of staff info
+  void _onUpdate() {
+    setState(() {});
+  }
+
+  int _selectedIndex = 1;
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Flexible(
-          flex: 1,
-          child: Card(
-            margin: const EdgeInsets.only(left: 0.0),
-            child: ListView(
-              children: [
-                const ListTile(
-                  title: Text(
-                    'معلومات شخصی',
-                    style: TextStyle(
-                        color: Color.fromARGB(255, 119, 118, 118),
-                        fontSize: 14),
-                  ),
+
+    // Assign the method declared above to static function for later use
+    StaffInfo.onUpdateProfile = _onUpdate;
+
+    return ScaffoldMessenger(
+      key: _globalKeyForProfile,
+      child: Scaffold(
+        body: Row(
+          children: [
+            Flexible(
+              flex: 1,
+              child: Card(
+                margin: const EdgeInsets.only(left: 0.0),
+                child: ListView(
+                  children: [
+                    const ListTile(
+                      title: Text(
+                        'معلومات شخصی',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 119, 118, 118),
+                            fontSize: 14),
+                      ),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.person_outline),
+                      title: const Text('پروفایل من'),
+                      onTap: () {
+                        setState(() {
+                          _selectedIndex = 1;
+                        });
+                      },
+                    ),
+                    const Divider(),
+                    const ListTile(
+                      title: Text(
+                        'امنیت',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 119, 118, 118),
+                            fontSize: 14),
+                      ),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.key_outlined),
+                      title: const Text('تغییر رمز'),
+                      onTap: () {
+                        setState(() {
+                          _selectedIndex = 2;
+                        });
+                      },
+                    ),
+                    const Divider(),
+                    const ListTile(
+                      title: Text(
+                        'هنگام سازی',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 119, 118, 118),
+                            fontSize: 14),
+                      ),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.backup_outlined),
+                      title: const Text('پشتیبان گیری'),
+                      onTap: () {
+                        setState(() {
+                          _selectedIndex = 3;
+                        });
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.restore_outlined),
+                      title: const Text('بازیابی'),
+                      onTap: () {
+                        setState(() {
+                          _selectedIndex = 4;
+                        });
+                      },
+                    ),
+                    const Divider(),
+                    const ListTile(
+                      title: Text(
+                        'مرتبط به سیستم',
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 119, 118, 118),
+                            fontSize: 14),
+                      ),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.color_lens_outlined),
+                      title: const Text('نمایه ها'),
+                      onTap: () {
+                        setState(() {
+                          _selectedIndex = 5;
+                        });
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.language_rounded),
+                      title: const Text('زبان'),
+                      onTap: () {
+                        setState(() {
+                          _selectedIndex = 6;
+                        });
+                      },
+                    ),
+                  ],
                 ),
-                ListTile(
-                  leading: const Icon(Icons.person_outline),
-                  title: const Text('پروفایل من'),
-                  onTap: () {
-                    setState(() {
-                      _selectedIndex = 1;
-                    });
-                  },
-                ),
-                const Divider(),
-                const ListTile(
-                  title: Text(
-                    'امنیت',
-                    style: TextStyle(
-                        color: Color.fromARGB(255, 119, 118, 118),
-                        fontSize: 14),
-                  ),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.key_outlined),
-                  title: const Text('تغییر رمز'),
-                  onTap: () {
-                    setState(() {
-                      _selectedIndex = 2;
-                    });
-                  },
-                ),
-                const Divider(),
-                const ListTile(
-                  title: Text(
-                    'هنگام سازی',
-                    style: TextStyle(
-                        color: Color.fromARGB(255, 119, 118, 118),
-                        fontSize: 14),
-                  ),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.backup_outlined),
-                  title: const Text('پشتیبان گیری'),
-                  onTap: () {
-                    setState(() {
-                      _selectedIndex = 3;
-                    });
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.restore_outlined),
-                  title: const Text('بازیابی'),
-                  onTap: () {
-                    setState(() {
-                      _selectedIndex = 4;
-                    });
-                  },
-                ),
-                const Divider(),
-                const ListTile(
-                  title: Text(
-                    'مرتبط به سیستم',
-                    style: TextStyle(
-                        color: Color.fromARGB(255, 119, 118, 118),
-                        fontSize: 14),
-                  ),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.color_lens_outlined),
-                  title: const Text('نمایه ها'),
-                  onTap: () {
-                    setState(() {
-                      _selectedIndex = 5;
-                    });
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.language_rounded),
-                  title: const Text('زبان'),
-                  onTap: () {
-                    setState(() {
-                      _selectedIndex = 6;
-                    });
-                  },
-                ),
-              ],
+              ),
             ),
-          ),
+            Flexible(
+              flex: 3,
+              child: onShowSettingsItem(_selectedIndex, onUpdatePhoto),
+            ),
+          ],
         ),
-        Flexible(
-          flex: 3,
-          child: onShowSettingsItem(_selectedIndex, onUpdatePhoto),
-        ),
-      ],
+      ),
     );
   }
 
@@ -190,7 +224,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
 }
 
 // Switch between settings menu items
-Widget onShowSettingsItem(int index, void Function() onUpdatePhoto) {
+Widget onShowSettingsItem(int index, [void Function()? onUpdatePhoto]) {
   if (index == 1) {
     return onShowProfile(onUpdatePhoto);
   } else if (index == 2) {
@@ -307,7 +341,7 @@ onChangePwd() {
   );
 }
 
-onShowProfile(void Function() onUpdatePhoto) {
+onShowProfile([void Function()? onUpdatePhoto]) {
   return Card(
     child: Center(
       child: Column(
@@ -970,9 +1004,56 @@ onEditProfileInfo(BuildContext context) {
                           onPressed: () => Navigator.pop(context),
                           child: const Text('لغو')),
                       ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (formKeyEditStaff.currentState!.validate()) {
+                            // Fetch staff info from forms and assign them into variables.
+                            String firstName = nameController.text;
+                            String lastName = lastNameController.text.isEmpty
+                                ? ''
+                                : lastNameController.text;
+                            String phone = phoneController.text;
+                            double salary = salaryController.text.isEmpty
+                                ? 0
+                                : double.parse(salaryController.text);
+                            String tazkiraID = tazkiraController.text.isEmpty
+                                ? ''
+                                : tazkiraController.text;
+                            String address = addressController.text.isEmpty
+                                ? ''
+                                : addressController.text;
 
+                            final conn = await onConnToDb();
+                            var updateResult = await conn.query(
+                                'UPDATE staff SET firstname = ?, lastname = ?, salary = ?, phone = ?, tazkira_ID = ?, address = ? WHERE staff_ID = ?',
+                                [
+                                  firstName,
+                                  lastName,
+                                  salary,
+                                  phone,
+                                  tazkiraID,
+                                  address,
+                                  StaffInfo.staffID
+                                ]);
+                            await conn.close();
+                            if (updateResult.affectedRows! > 0) {
+                              _onShowSnack(Colors.green,
+                                  'معلومات تان موفقانه تغییر کرد.');
+                              setState(() {
+                                StaffInfo.firstName = firstName;
+                                StaffInfo.lastName = lastName;
+                                StaffInfo.phone = phone;
+                                StaffInfo.salary = salary;
+                                StaffInfo.tazkira = tazkiraID;
+                                StaffInfo.address = address;
+
+                                // Call this function to refresh staff info UI
+                                StaffInfo.onUpdateProfile!();
+                              });
+                            } else {
+                              _onShowSnack(
+                                  Colors.red, 'شما هیچ تغییراتی نیاوردید.');
+                            }
+                            Navigator.pop(context);
                           }
                         },
                         child: const Text('تغییر'),
