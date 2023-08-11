@@ -241,7 +241,7 @@ onChangePwd() {
 // The global for the form
   final formKeyChangePwd = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
-  final oldPwdController = TextEditingController();
+  final currentPwdController = TextEditingController();
   final newPwdController = TextEditingController();
   final unConfirmController = TextEditingController();
   bool oldPwdFound = false;
@@ -265,7 +265,7 @@ onChangePwd() {
                     left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
                 child: TextFormField(
                   textDirection: TextDirection.ltr,
-                  controller: oldPwdController,
+                  controller: currentPwdController,
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'رمز فعلی تان الزامی است.';
@@ -377,15 +377,30 @@ onChangePwd() {
                   ),
                   onPressed: () async {
                     if (formKeyChangePwd.currentState!.validate()) {
-                      String oldPwd = oldPwdController.text;
+                      String currentPwd = currentPwdController.text;
+                      String newPwd = newPwdController.text;
                       final conn = await onConnToDb();
+                      // First make sure the current password matches.
                       var results = await conn.query(
                           'SELECT * FROM staff_auth WHERE password = PASSWORD(?)',
-                          [oldPwd]);
+                          [currentPwd]);
 
                       if (results.isNotEmpty) {
+                        var updatedResult = await conn.query(
+                            'UPDATE staff_auth SET password = PASSWORD(?) WHERE staff_ID = ?',
+                            [newPwd, StaffInfo.staffID]);
+                        if (updatedResult.affectedRows! > 0) {
+                          _onShowSnack(
+                              Colors.green, 'رمز تان موفقانه تغییر کرد.');
+                          currentPwdController.clear();
+                          newPwdController.clear();
+                          unConfirmController.clear();
+                        } else {
+                          _onShowSnack(Colors.red,
+                              'شما هیچ تغییراتی در قسمت رمز فعلی تان نیاوردید.');
+                        }
                       } else {
-                        _onShowSnack(Colors.red, 'رمز فعلی تان نادرست اشت.');
+                        _onShowSnack(Colors.red, 'رمز فعلی تان نادرست است.');
                       }
                     }
                   },
