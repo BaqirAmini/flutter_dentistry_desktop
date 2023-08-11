@@ -244,174 +244,246 @@ onChangePwd() {
   final currentPwdController = TextEditingController();
   final newPwdController = TextEditingController();
   final unConfirmController = TextEditingController();
-  bool oldPwdFound = false;
-  return Card(
-    child: Center(
-      child: Form(
-        key: formKeyChangePwd,
-        child: SizedBox(
-          width: 500.0,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 20.0),
-                child: const Text(
-                  'لطفا رمز فعلی و جدید تانرا با دقت وارد نمایید.',
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(
-                    left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
-                child: TextFormField(
-                  textDirection: TextDirection.ltr,
-                  controller: currentPwdController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'رمز فعلی تان الزامی است.';
-                    }
-                  },
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'رمز فعلی',
-                    suffixIcon: Icon(Icons.password_rounded),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.grey)),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.blue)),
-                    errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.red)),
-                    focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.red, width: 1.5)),
-                  ),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(
-                    left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
-                child: TextFormField(
-                  textDirection: TextDirection.ltr,
-                  controller: newPwdController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'رمز جدید تانرا وارد کنید.';
-                    } else if (value.length < 6) {
-                      return 'رمز تان باید حداقل 6 حرف باشد.';
-                    }
-                  },
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'رمز جدید',
-                    suffixIcon: Icon(Icons.password_rounded),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.grey)),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.blue)),
-                    errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.red)),
-                    focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.red, width: 1.5)),
-                  ),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(
-                    left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
-                child: TextFormField(
-                  textDirection: TextDirection.ltr,
-                  controller: unConfirmController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'لطفا رمز جدید تانرا دوباره وارد کنید.';
-                    } else if (unConfirmController.text !=
-                        newPwdController.text) {
-                      return 'تکرار رمز تان با اصل آن مطابقت نمیکند.';
-                    }
-                  },
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'تکرار رمز جدید',
-                    hintStyle: TextStyle(color: Colors.blue, fontSize: 12.0),
-                    hintText:
-                        'هر آنچه که در اینجا وارد میکنید باید با رمز تان مطابقت کند',
-                    suffixIcon: Icon(Icons.password_rounded),
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.grey)),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.blue)),
-                    errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.red)),
-                    focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                        borderSide: BorderSide(color: Colors.red, width: 1.5)),
-                  ),
-                ),
-              ),
-              Container(
-                width: 400.0,
-                height: 35.0,
-                margin: const EdgeInsets.only(
-                    left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    side: const BorderSide(
-                      color: Colors.blue,
-                    ),
-                  ),
-                  onPressed: () async {
-                    if (formKeyChangePwd.currentState!.validate()) {
-                      String currentPwd = currentPwdController.text;
-                      String newPwd = newPwdController.text;
-                      final conn = await onConnToDb();
-                      // First make sure the current password matches.
-                      var results = await conn.query(
-                          'SELECT * FROM staff_auth WHERE password = PASSWORD(?)',
-                          [currentPwd]);
+  bool isHiddenCurrentPwd = true;
+  bool isHiddenNewPwd = true;
+  bool isHiddenRetypePwd = true;
+  return StatefulBuilder(
+    builder: (context, setState) {
+      // 1) Toggle to show/hide current password only using eye icons
 
-                      if (results.isNotEmpty) {
-                        var updatedResult = await conn.query(
-                            'UPDATE staff_auth SET password = PASSWORD(?) WHERE staff_ID = ?',
-                            [newPwd, StaffInfo.staffID]);
-                        if (updatedResult.affectedRows! > 0) {
-                          _onShowSnack(
-                              Colors.green, 'رمز تان موفقانه تغییر کرد.');
-                          currentPwdController.clear();
-                          newPwdController.clear();
-                          unConfirmController.clear();
-                        } else {
-                          _onShowSnack(Colors.red,
-                              'شما هیچ تغییراتی در قسمت رمز فعلی تان نیاوردید.');
+      void toggleCurrentPassword() {
+        setState(() {
+          isHiddenCurrentPwd = !isHiddenCurrentPwd;
+        });
+      }
+
+      // 2) Toggle to show/hide new password only using eye icons
+      void toggleNewPassword() {
+        setState(() {
+          isHiddenNewPwd = !isHiddenNewPwd;
+        });
+      }
+
+      // 3) Toggle to show/hide re-type password only using eye icons
+      void toggleConfirmPassword() {
+        setState(() {
+          isHiddenRetypePwd = !isHiddenRetypePwd;
+        });
+      }
+
+      return Card(
+        child: Center(
+          child: Form(
+            key: formKeyChangePwd,
+            child: SizedBox(
+              width: 500.0,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 20.0),
+                    child: const Text(
+                      'لطفا رمز فعلی و جدید تانرا با دقت وارد نمایید.',
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(
+                        left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
+                    child: TextFormField(
+                      textDirection: TextDirection.ltr,
+                      controller: currentPwdController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'رمز فعلی تان الزامی است.';
                         }
-                      } else {
-                        _onShowSnack(Colors.red, 'رمز فعلی تان نادرست است.');
-                      }
-                    }
-                  },
-                  child: const Text('تغییر دادن'),
-                ),
-              )
-            ],
+                      },
+                      obscureText: isHiddenCurrentPwd,
+                      decoration: InputDecoration(
+                        prefix: InkWell(
+                          onTap: toggleCurrentPassword,
+                          child: Icon(
+                            isHiddenCurrentPwd
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        border: const OutlineInputBorder(),
+                        labelText: 'رمز فعلی',
+                        suffixIcon: const Icon(Icons.password_rounded),
+                        enabledBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.grey)),
+                        focusedBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.blue)),
+                        errorBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.red)),
+                        focusedErrorBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide:
+                                BorderSide(color: Colors.red, width: 1.5)),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(
+                        left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
+                    child: TextFormField(
+                      textDirection: TextDirection.ltr,
+                      controller: newPwdController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'رمز جدید تانرا وارد کنید.';
+                        } else if (value.length < 6) {
+                          return 'رمز تان باید حداقل 6 حرف باشد.';
+                        }
+                      },
+                      obscureText: isHiddenNewPwd,
+                      decoration: InputDecoration(
+                        prefix: InkWell(
+                          onTap: toggleNewPassword,
+                          child: Icon(
+                            isHiddenNewPwd
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        border: const OutlineInputBorder(),
+                        labelText: 'رمز جدید',
+                        suffixIcon: const Icon(Icons.password_rounded),
+                        enabledBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.grey)),
+                        focusedBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.blue)),
+                        errorBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.red)),
+                        focusedErrorBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide:
+                                BorderSide(color: Colors.red, width: 1.5)),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(
+                        left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
+                    child: TextFormField(
+                      textDirection: TextDirection.ltr,
+                      controller: unConfirmController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'لطفا رمز جدید تانرا دوباره وارد کنید.';
+                        } else if (unConfirmController.text !=
+                            newPwdController.text) {
+                          return 'تکرار رمز تان با اصل آن مطابقت نمیکند.';
+                        }
+                      },
+                      obscureText: isHiddenRetypePwd,
+                      decoration: InputDecoration(
+                        prefix: InkWell(
+                          onTap: toggleConfirmPassword,
+                          child: Icon(
+                            isHiddenRetypePwd
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Colors.blue,
+                          ),
+                        ),
+                        border: const OutlineInputBorder(),
+                        labelText: 'تکرار رمز جدید',
+                        hintStyle:
+                            const TextStyle(color: Colors.blue, fontSize: 12.0),
+                        hintText:
+                            'هر آنچه که در اینجا وارد میکنید باید با رمز تان مطابقت کند',
+                        suffixIcon: const Icon(Icons.password_rounded),
+                        enabledBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.grey)),
+                        focusedBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.blue)),
+                        errorBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.red)),
+                        focusedErrorBorder: const OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide:
+                                BorderSide(color: Colors.red, width: 1.5)),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 400.0,
+                    height: 35.0,
+                    margin: const EdgeInsets.only(
+                        left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        side: const BorderSide(
+                          color: Colors.blue,
+                        ),
+                      ),
+                      onPressed: () async {
+                        if (formKeyChangePwd.currentState!.validate()) {
+                          String currentPwd = currentPwdController.text;
+                          String newPwd = newPwdController.text;
+                          final conn = await onConnToDb();
+                          // First make sure the current password matches.
+                          var results = await conn.query(
+                              'SELECT * FROM staff_auth WHERE password = PASSWORD(?)',
+                              [currentPwd]);
+
+                          if (results.isNotEmpty) {
+                            var updatedResult = await conn.query(
+                                'UPDATE staff_auth SET password = PASSWORD(?) WHERE staff_ID = ?',
+                                [newPwd, StaffInfo.staffID]);
+                            if (updatedResult.affectedRows! > 0) {
+                              _onShowSnack(
+                                  Colors.green, 'رمز تان موفقانه تغییر کرد.');
+                              currentPwdController.clear();
+                              newPwdController.clear();
+                              unConfirmController.clear();
+                            } else {
+                              _onShowSnack(Colors.red,
+                                  'شما هیچ تغییراتی در قسمت رمز فعلی تان نیاوردید.');
+                            }
+                          } else {
+                            _onShowSnack(
+                                Colors.red, 'رمز فعلی تان نادرست است.');
+                          }
+                        }
+                      },
+                      child: const Text('تغییر دادن'),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
         ),
-      ),
-    ),
+      );
+    },
   );
 }
 
