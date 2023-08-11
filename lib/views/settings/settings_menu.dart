@@ -39,7 +39,6 @@ class SettingsMenu extends StatefulWidget {
 }
 
 class _SettingsMenuState extends State<SettingsMenu> {
-
   // Declare this method for refreshing UI of staff info
   void _onUpdate() {
     setState(() {});
@@ -48,7 +47,6 @@ class _SettingsMenuState extends State<SettingsMenu> {
   int _selectedIndex = 1;
   @override
   Widget build(BuildContext context) {
-
     // Assign the method declared above to static function for later use
     StaffInfo.onUpdateProfile = _onUpdate;
 
@@ -241,14 +239,16 @@ Widget onShowSettingsItem(int index, [void Function()? onUpdatePhoto]) {
 // Change/update password using this function
 onChangePwd() {
 // The global for the form
-  final formKey = GlobalKey<FormState>();
+  final formKeyChangePwd = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
-  final userNameController = TextEditingController();
+  final oldPwdController = TextEditingController();
+  final newPwdController = TextEditingController();
   final unConfirmController = TextEditingController();
+  bool oldPwdFound = false;
   return Card(
     child: Center(
       child: Form(
-        key: formKey,
+        key: formKeyChangePwd,
         child: SizedBox(
           width: 500.0,
           child: Column(
@@ -261,9 +261,16 @@ onChangePwd() {
                 ),
               ),
               Container(
-                margin: const EdgeInsets.all(20.0),
+                margin: const EdgeInsets.only(
+                    left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
                 child: TextFormField(
-                  controller: userNameController,
+                  textDirection: TextDirection.ltr,
+                  controller: oldPwdController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'رمز فعلی تان الزامی است.';
+                    }
+                  },
                   obscureText: true,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -275,13 +282,28 @@ onChangePwd() {
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(50.0)),
                         borderSide: BorderSide(color: Colors.blue)),
+                    errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                        borderSide: BorderSide(color: Colors.red)),
+                    focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                        borderSide: BorderSide(color: Colors.red, width: 1.5)),
                   ),
                 ),
               ),
               Container(
-                margin: const EdgeInsets.all(20.0),
+                margin: const EdgeInsets.only(
+                    left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
                 child: TextFormField(
-                  controller: userNameController,
+                  textDirection: TextDirection.ltr,
+                  controller: newPwdController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'رمز جدید تانرا وارد کنید.';
+                    } else if (value.length < 6) {
+                      return 'رمز تان باید حداقل 6 حرف باشد.';
+                    }
+                  },
                   obscureText: true,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
@@ -293,17 +315,34 @@ onChangePwd() {
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(50.0)),
                         borderSide: BorderSide(color: Colors.blue)),
+                    errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                        borderSide: BorderSide(color: Colors.red)),
+                    focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                        borderSide: BorderSide(color: Colors.red, width: 1.5)),
                   ),
                 ),
               ),
               Container(
-                margin: const EdgeInsets.all(20.0),
+                margin: const EdgeInsets.only(
+                    left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
                 child: TextFormField(
+                  textDirection: TextDirection.ltr,
                   controller: unConfirmController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'لطفا رمز جدید تانرا دوباره وارد کنید.';
+                    } else if (unConfirmController.text !=
+                        newPwdController.text) {
+                      return 'تکرار رمز تان با اصل آن مطابقت نمیکند.';
+                    }
+                  },
                   obscureText: true,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'تکرار رمز جدید',
+                    hintStyle: TextStyle(color: Colors.blue, fontSize: 12.0),
                     hintText:
                         'هر آنچه که در اینجا وارد میکنید باید با رمز تان مطابقت کند',
                     suffixIcon: Icon(Icons.password_rounded),
@@ -313,13 +352,20 @@ onChangePwd() {
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(50.0)),
                         borderSide: BorderSide(color: Colors.blue)),
+                    errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                        borderSide: BorderSide(color: Colors.red)),
+                    focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                        borderSide: BorderSide(color: Colors.red, width: 1.5)),
                   ),
                 ),
               ),
               Container(
                 width: 400.0,
                 height: 35.0,
-                margin: const EdgeInsets.only(bottom: 20.0),
+                margin: const EdgeInsets.only(
+                    left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -329,7 +375,20 @@ onChangePwd() {
                       color: Colors.blue,
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    if (formKeyChangePwd.currentState!.validate()) {
+                      String oldPwd = oldPwdController.text;
+                      final conn = await onConnToDb();
+                      var results = await conn.query(
+                          'SELECT * FROM staff_auth WHERE password = PASSWORD(?)',
+                          [oldPwd]);
+
+                      if (results.isNotEmpty) {
+                      } else {
+                        _onShowSnack(Colors.red, 'رمز فعلی تان نادرست اشت.');
+                      }
+                    }
+                  },
                   child: const Text('تغییر دادن'),
                 ),
               )
