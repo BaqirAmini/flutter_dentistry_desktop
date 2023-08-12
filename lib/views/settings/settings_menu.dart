@@ -875,7 +875,7 @@ onBackUpData() {
                           ),
                         )
                       : const Icon(Icons.backup_outlined),
-                  label: isBackupInProg ? const Text('اندکی صبر...') : const Text('صدور فایل پشتیبانی'),
+                  label: isBackupInProg ? const Text('اندکی صبر...') : const Text('ایجاد فایل پشتیبانی'),
                 ),
               ),
               const SizedBox(
