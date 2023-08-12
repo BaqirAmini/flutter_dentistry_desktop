@@ -5,9 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
-
 import 'package:flutter_dentistry/models/db_conn.dart';
-import 'package:galileo_mysql/galileo_mysql.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:intl/intl.dart' as INTL;
 
 FilePickerResult? filePickerResult;
 File? pickedFile;
@@ -750,59 +750,142 @@ onShowProfile([void Function()? onUpdatePhoto]) {
 
 // This function is to create a backup of the system
 onBackUpData() {
-  return Card(
-    child: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const ListTile(
-            title: Card(
-              color: Color.fromARGB(255, 240, 239, 239),
-              child: Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Text(
-                  'احتیاط: برای جلوگیری از دست دادن اطلاعات تان، لطفا فایل پشتیبانی را در یک جای محفوظ که قرار ذیل است ذخیره کنید:',
-                  style: TextStyle(fontSize: 14.0, color: Colors.red),
+  bool isBackupInProg = false;
+  return StatefulBuilder(
+    builder: (context, setState) {
+      return Card(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const ListTile(
+                title: Card(
+                  color: Color.fromARGB(255, 240, 239, 239),
+                  child: Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Text(
+                      'احتیاط: برای جلوگیری از دست دادن اطلاعات تان، لطفا فایل پشتیبانی را در یک جای محفوظ که قرار ذیل است ذخیره کنید:',
+                      style: TextStyle(fontSize: 14.0, color: Colors.red),
+                    ),
+                  ),
+                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 270.0),
+              ),
+              const ListTile(
+                title: Text(
+                  '1 - حافظه کلود (ابری ) مثل Google Drive و یا Microsoft OneDrive است.',
+                  style: TextStyle(fontSize: 12.0),
+                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 280.0),
+              ),
+              const ListTile(
+                title: Text(
+                  '2 - حافظه بیرونی مثل هارددیسک است.',
+                  style: TextStyle(fontSize: 12.0),
+                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 280.0),
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              SizedBox(
+                height: 35.0,
+                width: 400.0,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40.0),
+                    ),
+                    side: const BorderSide(color: Colors.blue),
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      isBackupInProg = true;
+                    });
+                    final conn = await onConnToDb();
+                    // List of tables
+                    var tables = [
+                      'clinics',
+                      'staff',
+                      'staff_auth',
+                      'patients',
+                      'appointments',
+                      'services',
+                      'service_details',
+                      'teeth',
+                      'tooth_details',
+                      'expenses',
+                      'expense_detail',
+                      'taxes',
+                      'tax_payments'
+                    ];
+                    // for (var table in tables) {
+                    // Convert results to CSV format
+                    /*     var csvData = '';
+                // ignore: avoid_function_literals_in_foreach_calls
+                results.forEach((row) {
+                  csvData += '${row.join(',')}\n';
+                }); */
+
+                    // Get local storage directory
+                    var directory = await getApplicationDocumentsDirectory();
+                    var path = directory.path;
+
+                    // Format current date and time as a string
+                    var now = DateTime.now();
+                    var formatter = INTL.DateFormat('yyyy-MM-dd_HH-mm-ssa');
+                    var formattedDate = formatter.format(now);
+                    // Write data to file
+                    var file = File('$path/backup_$formattedDate.csv');
+                    var sink = file.openWrite();
+                    for (var table in tables) {
+                      // Query to export data from any table
+                      var results = await conn.query('SELECT * FROM $table');
+                      // Write table name to CSV file
+                      sink.writeln(table);
+                      // Write column names to CSV file
+                      sink.writeln(
+                          results.fields.map((field) => field.name).join(','));
+
+                      // Write data to CSV file
+                      for (var row in results) {
+                        sink.writeln(row.join(','));
+                      }
+                    }
+
+                    print('The PATH is: $path');
+                    // }
+
+                    // Close connection
+                    await conn.close();
+                    // Close file
+                    await sink.close();
+                    _onShowSnack(
+                        Colors.green, 'فایل پشتبیانی موفقانه ایجاد شد.');
+                    setState(() {
+                      isBackupInProg = false;
+                    });
+                  },
+                  icon: isBackupInProg
+                      ? const Center(
+                          child: SizedBox(
+                            height: 18.0,
+                            width: 18.0,
+                            child: CircularProgressIndicator(strokeWidth: 3.0,),
+                          ),
+                        )
+                      : const Icon(Icons.backup_outlined),
+                  label: const Text('صدور فایل پشتیبانی'),
                 ),
               ),
-            ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 270.0),
-          ),
-          const ListTile(
-            title: Text(
-              '1 - حافظه کلود (ابری ) مثل Google Drive و یا Microsoft OneDrive است.',
-              style: TextStyle(fontSize: 12.0),
-            ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 280.0),
-          ),
-          const ListTile(
-            title: Text(
-              '2 - حافظه بیرونی مثل هارددیسک است.',
-              style: TextStyle(fontSize: 12.0),
-            ),
-            contentPadding: EdgeInsets.symmetric(horizontal: 280.0),
-          ),
-          const SizedBox(
-            height: 20.0,
-          ),
-          SizedBox(
-            height: 35.0,
-            width: 400.0,
-            child: OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40.0),
-                ),
-                side: const BorderSide(color: Colors.blue),
+              const SizedBox(
+                height: 15.0,
               ),
-              onPressed: () {},
-              icon: const Icon(Icons.backup_outlined),
-              label: const Text('صدور فایل پشتیبانی'),
-            ),
+            ],
           ),
-        ],
-      ),
-    ),
+        ),
+      );
+    },
   );
 }
 
