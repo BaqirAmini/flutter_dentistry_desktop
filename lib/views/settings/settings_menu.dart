@@ -1,13 +1,16 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:galileo_mysql/galileo_mysql.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart' as INTL;
+import 'package:csv/csv.dart';
 
 FilePickerResult? filePickerResult;
 File? pickedFile;
@@ -835,9 +838,10 @@ onBackUpData() {
                     var now = DateTime.now();
                     var formatter = INTL.DateFormat('yyyy-MM-dd_HH-mm-ssa');
                     var formattedDate = formatter.format(now);
+
                     // Write data to file
                     var file = File('$path/backup_$formattedDate.csv');
-                    var sink = file.openWrite();
+                    var sink = file.openWrite(encoding: utf8);
                     for (var table in tables) {
                       // Query to export data from any table
                       var results = await conn.query('SELECT * FROM $table');
@@ -849,7 +853,21 @@ onBackUpData() {
 
                       // Write data to CSV file
                       for (var row in results) {
-                        sink.writeln(row.join(','));
+                        var newRow = row.map((value) {
+                          if (value is int ||
+                              value is double ||
+                              value == null) {
+                            return value;
+                          } else if (value is Blob) {
+                            // Convert BLOB data to base64-encoded string
+                            var base64String = base64Encode(value.toBytes());
+                            return "'$base64String'";
+                          } else {
+                            return "'$value'";
+                          }
+                        }).join(',');
+                        sink.writeln(newRow);
+                        // sink.writeln(const ListToCsvConverter().convert(row));
                       }
                     }
 
@@ -871,11 +889,15 @@ onBackUpData() {
                           child: SizedBox(
                             height: 18.0,
                             width: 18.0,
-                            child: CircularProgressIndicator(strokeWidth: 3.0,),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3.0,
+                            ),
                           ),
                         )
                       : const Icon(Icons.backup_outlined),
-                  label: isBackupInProg ? const Text('اندکی صبر...') : const Text('ایجاد فایل پشتیبانی'),
+                  label: isBackupInProg
+                      ? const Text('اندکی صبر...')
+                      : const Text('ایجاد فایل پشتیبانی'),
                 ),
               ),
               const SizedBox(
@@ -891,36 +913,164 @@ onBackUpData() {
 
 // This function is to restore the backedup file
 onRestoreData() {
-  return Card(
-    child: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            'توجه: قبل از انجام بازیابی، از موجودیت فایل پشتیبانی اطمینان حاصل کنید.',
-            style: TextStyle(fontSize: 12.0),
-          ),
-          const SizedBox(
-            height: 20.0,
-          ),
-          SizedBox(
-            height: 35.0,
-            width: 400.0,
-            child: OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40.0),
-                ),
-                side: const BorderSide(color: Colors.blue),
+  bool isRestoreInProg = false;
+  return StatefulBuilder(
+    builder: (context, setState) {
+      return Card(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'توجه: قبل از انجام بازیابی، از موجودیت فایل پشتیبانی اطمینان حاصل کنید.',
+                style: TextStyle(fontSize: 12.0),
               ),
-              onPressed: () {},
-              icon: const Icon(Icons.restore_outlined),
-              label: const Text('بازیابی فایل اطلاعات'),
-            ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              SizedBox(
+                height: 35.0,
+                width: 400.0,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40.0),
+                    ),
+                    side: const BorderSide(color: Colors.blue),
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      isRestoreInProg = true;
+                    });
+
+                    // Show file picker
+                    filePickerResult = await FilePicker.platform.pickFiles(
+                      type: FileType.custom,
+                      allowedExtensions: ['csv'],
+                    );
+                    PlatformFile file;
+                    if (filePickerResult != null) {
+                      // Get Selected file
+                      PlatformFile file = filePickerResult!.files.first;
+                      // Connect to the database
+                      final conn = await onConnToDb();
+
+                      // List of tables
+                      var tables = [
+                        'clinics',
+                        'staff',
+                        'staff_auth',
+                        'patients',
+                        'appointments',
+                        'services',
+                        'service_details',
+                        'teeth',
+                        'tooth_details',
+                        'expenses',
+                        'expense_detail',
+                        'taxes',
+                        'tax_payments'
+                      ];
+
+                      // Primary keys of tables
+                      var primaryKeys = {
+                        'clinics': 'cli_ID',
+                        'staff': 'staff_ID',
+                        'staff_auth': 'auth_ID',
+                        'patients': 'pat_ID',
+                        'appointments': 'apt_ID',
+                        'services': 'ser_ID',
+                        'service_details': 'ser_det_ID',
+                        'teeth': 'teeth_ID',
+                        'tooth_details': 'td_ID',
+                        'expenses': 'exp_ID',
+                        'expense_detail': 'exp_detail_ID',
+                        'taxes': 'tax_ID',
+                        'tax_payments': 'tax_pay_ID'
+                      };
+                      // Open selected file
+                      var lines = File(file.path!).readAsLinesSync();
+                      // Initialize a variable to keep track of the total number of inserted records
+                      int insertedRecords = 0;
+                      // ignore: prefer_typing_uninitialized_variables
+
+                      // ignore: prefer_typing_uninitialized_variables
+                      var currentTable;
+                      for (var line in lines) {
+                        if (tables.contains(line)) {
+                          // Line is a table
+                          currentTable = line;
+                        } else if (line
+                            .startsWith('${primaryKeys[currentTable]},')) {
+                          // Line is column names, ignore
+                          continue;
+                        } else {
+                          // Line is data, insert into table
+                          var values = line.split(',');
+                          // Check if value is a base64-encoded string
+                          if (values[0].startsWith('data:image/')) {
+                            // Decode base64-encoded string
+                            var base64String = values[0].substring(22);
+                            var bytes = base64Decode(base64String);
+
+                            // Create new Blob object from bytes
+                            var blob = Blob.fromBytes(bytes);
+
+                            // Insert Blob object into database
+                            await conn.query(
+                                'INSERT INTO staff (photo) VALUES (?)', [blob]);
+                          } else {
+                            var insertSql = """
+                                  INSERT IGNORE INTO $currentTable 
+                                  VALUES (${values.join(',')}) """;
+
+                            var restoreDone = await conn.query(insertSql);
+                            insertedRecords += restoreDone.affectedRows!;
+                          }
+                        }
+                      }
+                      // Show success or error message after all data has been inserted
+                      if (insertedRecords > 0) {
+                        _onShowSnack(Colors.green, 'بازیابی موفقانه انجام شد.');
+                      } else {
+                        _onShowSnack(
+                            Colors.red, 'این اطلاعات قبلا در سیستم وجود دارد.');
+                      }
+                      setState(() {
+                        isRestoreInProg = false;
+                      });
+
+                      // Close connection
+                      await conn.close();
+                    } else {
+                      _onShowSnack(Colors.red,
+                          'شما هیچ فایل پشتیبانی را انتخاب نکرده اید.');
+                      setState(() {
+                        isRestoreInProg = false;
+                      });
+                    }
+                  },
+                  icon: isRestoreInProg
+                      ? const Center(
+                          child: SizedBox(
+                            height: 18.0,
+                            width: 18.0,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3.0,
+                            ),
+                          ),
+                        )
+                      : const Icon(Icons.restore_outlined),
+                  label: isRestoreInProg
+                      ? const Text('لطفاً صبر...')
+                      : const Text('بازیابی فایل اطلاعات'),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    ),
+        ),
+      );
+    },
   );
 }
 
