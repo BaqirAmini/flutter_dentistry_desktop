@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/staff/new_staff.dart';
+import 'package:galileo_mysql/galileo_mysql.dart';
 
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKey3 =
@@ -1485,7 +1486,7 @@ onUpdateUserAccount(
 }
 
 class MyStaff {
-  final AssetImage? photo;
+  final Blob? photo;
   final String firstName;
   final String lastName;
   final String position;
