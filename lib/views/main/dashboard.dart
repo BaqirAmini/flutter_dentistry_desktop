@@ -45,7 +45,7 @@ class _DashboardState extends State<Dashboard> {
     // Fetch sum of current month expenses
     var expResults = await conn.query(
         'SELECT SUM(total) FROM expense_detail WHERE YEAR(purchase_date) = YEAR(CURDATE()) AND MONTH(purchase_date) = MONTH(CURDATE())');
-    double curMonthExp = expResults.first[0] ?? 0;
+    double curMonthExp = expResults.isNotEmpty ? expResults.first[0] : 0;
     // Firstly, fetch jalali(hijri shamsi) from current date.
     final jalaliDate = Jalali.now();
     final hijriYear = jalaliDate.year;
@@ -53,7 +53,7 @@ class _DashboardState extends State<Dashboard> {
     var taxResults = await conn.query(
         'SELECT total_annual_tax FROM taxes WHERE tax_for_year = ?',
         [hijriYear]);
-    double curYearTax = taxResults.first[0] ?? 0;
+    double curYearTax = taxResults.isNotEmpty ? taxResults.first[0] : 0;
 
     await conn.close();
     setState(() {
@@ -68,7 +68,11 @@ class _DashboardState extends State<Dashboard> {
   void initState() {
     super.initState();
     _fetchAllPatient();
-    _fetchFinance();
+    try {
+      _fetchFinance();
+    } catch (e) {
+      print('Data not loaded $e');
+    }
     _getPieData();
   }
 
@@ -363,7 +367,8 @@ class _DashboardState extends State<Dashboard> {
                                       width: '75',
                                       height: '100',
                                       position: LegendPosition.left,
-                                      textStyle: const TextStyle(fontSize: 10.0),
+                                      textStyle:
+                                          const TextStyle(fontSize: 10.0),
                                     ),
                                     // Enable tooltip
                                     tooltipBehavior: TooltipBehavior(
