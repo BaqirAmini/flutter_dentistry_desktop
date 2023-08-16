@@ -84,8 +84,8 @@ class _PatientDataTableState extends State<PatientDataTable> {
 
   Future<void> _fetchData() async {
     final conn = await onConnToDb();
-    final queryResult =
-        await conn.query('SELECT firstname, lastname, age, sex FROM patients');
+    final queryResult = await conn.query(
+        'SELECT firstname, lastname, age, sex, marital_status, phone FROM patients');
     conn.close();
 
     _data = queryResult.map((row) {
@@ -94,6 +94,8 @@ class _PatientDataTableState extends State<PatientDataTable> {
         lastName: row[1],
         age: row[2].toString(),
         sex: row[3],
+        maritalStatus: row[4],
+        phone: row[5],
         patientDetail: const Icon(Icons.list),
         deletePatient: const Icon(Icons.delete),
       );
@@ -250,7 +252,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
                     ),
                     DataColumn(
                       label: const Text(
-                        "وظیفه",
+                        "جنسیت",
                         style: TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
@@ -266,25 +268,42 @@ class _PatientDataTableState extends State<PatientDataTable> {
                         });
                       },
                     ),
-                    /* DataColumn(
-                  label: const Text(
-                    "خدمات مورد نیاز",
-                    style:
-                        TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-                  ),
-                  onSort: (columnIndex, ascending) {
-                    setState(() {
-                      _sortColumnIndex = columnIndex;
-                      _sortAscending = ascending;
-                      _filteredData
-                          .sort(((a, b) => a.service.compareTo(b.service)));
-                      if (!ascending) {
-                        _filteredData = _filteredData.reversed.toList();
-                      }
-                    });
-                  },
-                ),
- */
+                    DataColumn(
+                      label: const Text(
+                        "حالت تاهل",
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                      onSort: (columnIndex, ascending) {
+                        setState(() {
+                          _sortColumnIndex = columnIndex;
+                          _sortAscending = ascending;
+                          _filteredData
+                              .sort(((a, b) => a.maritalStatus.compareTo(b.maritalStatus)));
+                          if (!ascending) {
+                            _filteredData = _filteredData.reversed.toList();
+                          }
+                        });
+                      },
+                    ),
+                    DataColumn(
+                      label: const Text(
+                        "نمبر تماس",
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                      onSort: (columnIndex, ascending) {
+                        setState(() {
+                          _sortColumnIndex = columnIndex;
+                          _sortAscending = ascending;
+                          _filteredData
+                              .sort(((a, b) => a.phone.compareTo(b.phone)));
+                          if (!ascending) {
+                            _filteredData = _filteredData.reversed.toList();
+                          }
+                        });
+                      },
+                    ),
                     const DataColumn(
                         label: Text("شرح",
                             style: TextStyle(
@@ -327,6 +346,8 @@ class PatientDataSource extends DataTableSource {
       DataCell(Text(data[index].lastName)),
       DataCell(Text(data[index].age)),
       DataCell(Text(data[index].sex)),
+      DataCell(Text(data[index].maritalStatus)),
+      DataCell(Text(data[index].phone)),
       // DataCell(Text(data[index].service)),
       DataCell(
         Builder(builder: (BuildContext context) {
@@ -375,6 +396,8 @@ class PatientData {
   final String lastName;
   final String age;
   final String sex;
+  final String maritalStatus;
+  final String phone;
   // final String service;
   final Icon patientDetail;
   final Icon deletePatient;
@@ -384,7 +407,10 @@ class PatientData {
       required this.lastName,
       required this.age,
       required this.sex,
+      required this.maritalStatus,
+      required this.phone,
       /* this.service, */
       required this.patientDetail,
-      required this.deletePatient});
+      required this.deletePatient,
+      });
 }
