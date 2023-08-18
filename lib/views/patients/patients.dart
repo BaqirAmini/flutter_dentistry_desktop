@@ -3,6 +3,7 @@ import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_detail.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
+import 'patient_info.dart';
 
 void main() {
   return runApp(const Patient());
@@ -85,7 +86,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
   Future<void> _fetchData() async {
     final conn = await onConnToDb();
     final queryResult = await conn.query(
-        'SELECT firstname, lastname, age, sex, marital_status, phone FROM patients');
+        'SELECT firstname, lastname, age, sex, marital_status, phone, pat_ID, DATE_FORMAT(reg_date, "%Y-%m-%d"), blood_group, address FROM patients');
     conn.close();
 
     _data = queryResult.map((row) {
@@ -96,6 +97,10 @@ class _PatientDataTableState extends State<PatientDataTable> {
         sex: row[3],
         maritalStatus: row[4],
         phone: row[5],
+        patID: row[6],
+        regDate: row[7].toString(),
+        bloodGroup: row[8],
+        address: row[9],
         patientDetail: const Icon(Icons.list),
         deletePatient: const Icon(Icons.delete),
       );
@@ -278,8 +283,8 @@ class _PatientDataTableState extends State<PatientDataTable> {
                         setState(() {
                           _sortColumnIndex = columnIndex;
                           _sortAscending = ascending;
-                          _filteredData
-                              .sort(((a, b) => a.maritalStatus.compareTo(b.maritalStatus)));
+                          _filteredData.sort(((a, b) =>
+                              a.maritalStatus.compareTo(b.maritalStatus)));
                           if (!ascending) {
                             _filteredData = _filteredData.reversed.toList();
                           }
@@ -354,6 +359,16 @@ class PatientDataSource extends DataTableSource {
           return IconButton(
             icon: data[index].patientDetail,
             onPressed: (() {
+              PatientInfo.patID = data[index].patID;
+              PatientInfo.firstName = data[index].firstName;
+              PatientInfo.lastName = data[index].lastName;
+              PatientInfo.phone = data[index].phone;
+              PatientInfo.sex = data[index].sex;
+              PatientInfo.age = int.parse(data[index].age);
+              PatientInfo.regDate = data[index].regDate;
+              PatientInfo.bloodGroup = data[index].bloodGroup;
+              PatientInfo.address = data[index].address;
+              PatientInfo.maritalStatus = data[index].maritalStatus;
               Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -398,19 +413,27 @@ class PatientData {
   final String sex;
   final String maritalStatus;
   final String phone;
+  final int patID;
+  final String regDate;
+  final String bloodGroup;
+  final String address;
   // final String service;
   final Icon patientDetail;
   final Icon deletePatient;
 
-  PatientData(
-      {required this.firstName,
-      required this.lastName,
-      required this.age,
-      required this.sex,
-      required this.maritalStatus,
-      required this.phone,
-      /* this.service, */
-      required this.patientDetail,
-      required this.deletePatient,
-      });
+  PatientData({
+    required this.firstName,
+    required this.lastName,
+    required this.age,
+    required this.sex,
+    required this.maritalStatus,
+    required this.phone,
+    required this.patID,
+    required this.regDate,
+    required this.bloodGroup,
+    required this.address,
+    /* this.service, */
+    required this.patientDetail,
+    required this.deletePatient,
+  });
 }
