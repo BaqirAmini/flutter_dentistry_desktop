@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 17, 2023 at 03:33 PM
+-- Generation Time: Aug 18, 2023 at 07:50 PM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -32,7 +32,7 @@ CREATE TABLE `appointments` (
   `cli_ID` int(128) NOT NULL,
   `pat_ID` int(128) NOT NULL,
   `tooth_detail_ID` int(11) DEFAULT NULL,
-  `ser_ID` int(128) NOT NULL,
+  `service_detail_ID` int(128) DEFAULT NULL,
   `installment` int(2) DEFAULT 1,
   `round` int(2) NOT NULL DEFAULT 1,
   `paid_amount` decimal(12,2) NOT NULL,
@@ -46,9 +46,10 @@ CREATE TABLE `appointments` (
 -- Dumping data for table `appointments`
 --
 
-INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `tooth_detail_ID`, `ser_ID`, `installment`, `round`, `paid_amount`, `due_amount`, `meet_date`, `staff_ID`, `note`) VALUES
-(14, 0, 48, 1, 8, 1, 1, '1000.00', '0.00', '2023-07-10', 17, ''),
-(15, 0, 49, 1, 7, 2, 1, '5000.00', '9999.99', '2023-06-19', 17, 'به علت درد و التهابی شدن');
+INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `tooth_detail_ID`, `service_detail_ID`, `installment`, `round`, `paid_amount`, `due_amount`, `meet_date`, `staff_ID`, `note`) VALUES
+(18, 0, 54, 7, 1, 2, 1, '1000.00', '500.00', '2023-08-18', 17, 'دندان کاملا سیاه شده و درد دارد'),
+(19, 0, 55, 64, 5, 1, 1, '1000.00', '0.00', '2023-08-18', 17, 'با ماده اصلی سفید کننده'),
+(20, 0, 56, 54, 9, 3, 1, '1000.00', '2000.00', '2023-08-08', 17, 'دندانها به کلی ازبین رفته');
 
 -- --------------------------------------------------------
 
@@ -153,8 +154,9 @@ CREATE TABLE `patients` (
 --
 
 INSERT INTO `patients` (`pat_ID`, `cli_ID`, `staff_ID`, `firstname`, `lastname`, `sex`, `age`, `marital_status`, `phone`, `reg_date`, `blood_group`, `address`) VALUES
-(48, 0, 17, 'مریم', 'حیدری', 'زن', 25, 'مجرد', '0771023230', '2023-08-17 13:26:36', 'نامشخص', 'کابل، کارته پروان'),
-(49, 0, 17, 'حامد', 'فهیمی', 'مرد', 29, 'متاهل', '0771023231', '2023-08-17 13:30:18', 'A-', 'کابل، حوزه سوم');
+(54, 0, 17, 'زحل', 'رحیمی', 'زن', 20, 'مجرد', '0771023232', '2023-08-18 17:35:42', 'AB-', 'کابل، کارته پروان'),
+(55, 0, 17, 'زهره', 'حکیمی', 'زن', 24, 'متاهل', '0790123234', '2023-08-18 17:38:55', 'O+', ''),
+(56, 0, 17, 'ذبیح', 'ستار', 'مرد', 40, 'متاهل', '0701023232', '2023-08-18 17:43:00', 'نامشخص', 'کابل، دشت برچی');
 
 -- --------------------------------------------------------
 
@@ -165,26 +167,25 @@ INSERT INTO `patients` (`pat_ID`, `cli_ID`, `staff_ID`, `firstname`, `lastname`,
 CREATE TABLE `services` (
   `ser_ID` int(128) NOT NULL,
   `ser_name` varchar(64) NOT NULL,
-  `ser_fee` decimal(10,2) DEFAULT NULL,
-  `pat_ID` int(11) DEFAULT NULL
+  `ser_fee` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `services`
 --
 
-INSERT INTO `services` (`ser_ID`, `ser_name`, `ser_fee`, `pat_ID`) VALUES
-(1, 'پرکاری دندان', '999.99', NULL),
-(2, 'پرکاری', NULL, NULL),
-(3, 'سفید کردن', NULL, NULL),
-(4, 'جرم گیری', NULL, NULL),
-(5, 'ارتودانسی', NULL, NULL),
-(6, 'جراحی ریشه', NULL, NULL),
-(7, 'جراحی لثه', NULL, NULL),
-(8, 'معاینه دهان', NULL, NULL),
-(9, 'پروتیز', NULL, NULL),
-(10, 'کشیدن', NULL, NULL),
-(11, 'پوش کردن', NULL, NULL);
+INSERT INTO `services` (`ser_ID`, `ser_name`, `ser_fee`) VALUES
+(1, 'پرکاری دندان', '999.99'),
+(2, 'پرکاری', NULL),
+(3, 'سفید کردن', NULL),
+(4, 'جرم گیری', NULL),
+(5, 'ارتودانسی', NULL),
+(6, 'جراحی ریشه', NULL),
+(7, 'جراحی لثه', NULL),
+(8, 'معاینه دهان', NULL),
+(9, 'پروتیز', NULL),
+(10, 'کشیدن', NULL),
+(11, 'پوش کردن', NULL);
 
 -- --------------------------------------------------------
 
@@ -216,7 +217,8 @@ INSERT INTO `service_details` (`ser_det_ID`, `ser_id`, `service_specific_value`)
 (11, 11, 'میتل'),
 (12, 11, 'زرگونیم'),
 (13, 11, 'گیگم'),
-(14, 11, 'طلا');
+(14, 11, 'طلا'),
+(15, 8, 'value not required');
 
 -- --------------------------------------------------------
 
@@ -421,7 +423,22 @@ INSERT INTO `tooth_details` (`td_ID`, `tooth_ID`, `tooth`, `tooth_photo`) VALUES
 (46, 6, 'شلوغ(دندان اضافی)', NULL),
 (47, 7, 'عقل دندان', NULL),
 (48, 7, 'دندان پوسیده', NULL),
-(49, 7, 'شلوغ(دندان اضافی)', NULL);
+(49, 7, 'شلوغ(دندان اضافی)', NULL),
+(50, 1, '1', NULL),
+(51, 1, '2', NULL),
+(52, 1, '3', NULL),
+(53, 1, '4', NULL),
+(54, 1, '5', NULL),
+(55, 1, '6', NULL),
+(56, 1, '7', NULL),
+(57, 1, '8', NULL),
+(58, 1, 'tooth not required', NULL),
+(59, 2, 'tooth not required', NULL),
+(60, 3, 'tooth not required', NULL),
+(61, 4, 'tooth not required', NULL),
+(62, 5, 'tooth not required', NULL),
+(63, 6, 'tooth not required', NULL),
+(64, 7, 'tooth not required', NULL);
 
 --
 -- Indexes for dumped tables
@@ -434,7 +451,7 @@ ALTER TABLE `appointments`
   ADD PRIMARY KEY (`apt_ID`),
   ADD KEY `cli_ID_fk` (`cli_ID`),
   ADD KEY `pat_ID_fk` (`pat_ID`),
-  ADD KEY `ser_ID_fk` (`ser_ID`),
+  ADD KEY `ser_ID_fk` (`service_detail_ID`),
   ADD KEY `sdetail_ID_fk` (`staff_ID`),
   ADD KEY `teeth_apt_id_fk` (`tooth_detail_ID`);
 
@@ -529,7 +546,7 @@ ALTER TABLE `tooth_details`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `clinics`
@@ -553,7 +570,7 @@ ALTER TABLE `expense_detail`
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patients`
-  MODIFY `pat_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `pat_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `services`
@@ -565,7 +582,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT for table `service_details`
 --
 ALTER TABLE `service_details`
-  MODIFY `ser_det_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `ser_det_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `staff`
@@ -601,7 +618,7 @@ ALTER TABLE `teeth`
 -- AUTO_INCREMENT for table `tooth_details`
 --
 ALTER TABLE `tooth_details`
-  MODIFY `td_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `td_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- Constraints for dumped tables
@@ -612,7 +629,7 @@ ALTER TABLE `tooth_details`
 --
 ALTER TABLE `appointments`
   ADD CONSTRAINT `pat_apt_id_fk` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `ser_id_fk` FOREIGN KEY (`ser_ID`) REFERENCES `services` (`ser_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `service_detail_id_fk` FOREIGN KEY (`service_detail_ID`) REFERENCES `service_details` (`ser_det_ID`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `staff_apt_id_fk` FOREIGN KEY (`staff_ID`) REFERENCES `staff` (`staff_ID`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `tooth_det_id_fk` FOREIGN KEY (`tooth_detail_ID`) REFERENCES `tooth_details` (`td_ID`) ON DELETE SET NULL ON UPDATE CASCADE;
 
