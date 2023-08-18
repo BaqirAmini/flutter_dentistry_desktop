@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'patients.dart' as patient_ist;
+import 'patient_info.dart';
 
 void main() {
   return runApp(const PatientDetail());
@@ -64,23 +65,23 @@ class _PatientDetailState extends State<PatientDetail> {
                   height: 200.0,
                   child: Row(
                     children: [
-                      const Card(
+                       Card(
                         child: SizedBox(
                           width: 200.0,
                           child: Column(
                             children: [
-                              CircleAvatar(
+                              const CircleAvatar(
                                 radius: 40.0,
                                 backgroundImage:
                                     AssetImage('assets/graphics/patient.png'),
                                 backgroundColor: Colors.transparent,
                               ),
                               Text(
-                                'احمد احمدی',
-                                style: TextStyle(
+                                '${PatientInfo.firstName} ${PatientInfo.lastName}',
+                                style: const TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
                               ),
-                              Text(
+                              const Text(
                                 '0744232325',
                                 style: TextStyle(color: Colors.grey),
                               ),
@@ -101,59 +102,28 @@ class _PatientDetailState extends State<PatientDetail> {
                                   Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0, bottom: 20.0),
-                                    child: const Column(
+                                    child:  Column(
                                       children: [
-                                        Text(
+                                        const Text(
                                           'جنیست',
                                           style: TextStyle(
                                               color: Colors.grey,
                                               fontSize: 12.0),
                                         ),
-                                        Text('مرد'),
+                                        Text('${PatientInfo.sex}'),
                                       ],
                                     ),
                                   ),
                                   Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0, bottom: 20.0),
-                                    child: const Column(
+                                    child:  Column(
                                       children: [
-                                        Text('حالت مدنی',
+                                        const Text('حالت مدنی',
                                             style: TextStyle(
                                                 color: Colors.grey,
                                                 fontSize: 12.0)),
-                                        Text('مجرد'),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 20.0, bottom: 20.0),
-                                    child: const Column(
-                                      children: [
-                                        Text('سن',
-                                            style: TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 12.0)),
-                                        Text('25'),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 20.0, bottom: 20.0),
-                                    child: const Column(
-                                      children: [
-                                        Text('گروپ خون',
-                                            style: TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 12.0)),
-                                        Text('B+'),
+                                        Text('${PatientInfo.maritalStatus}'),
                                       ],
                                     ),
                                   ),
@@ -165,26 +135,57 @@ class _PatientDetailState extends State<PatientDetail> {
                                   Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0, bottom: 20.0),
-                                    child: const Column(
+                                    child:  Column(
                                       children: [
-                                        Text('آدرس',
+                                        const Text('سن',
                                             style: TextStyle(
                                                 color: Colors.grey,
                                                 fontSize: 12.0)),
-                                        Text('کابل، کوته سنگی'),
+                                        Text('${PatientInfo.age} سال'),
                                       ],
                                     ),
                                   ),
                                   Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0, bottom: 20.0),
-                                    child: const Column(
+                                    child:  Column(
                                       children: [
-                                        Text('تاریخ ثبت',
+                                        const Text('گروپ خون',
                                             style: TextStyle(
                                                 color: Colors.grey,
                                                 fontSize: 12.0)),
-                                        Text('2023-03-03'),
+                                        Text('${PatientInfo.bloodGroup}'),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0, bottom: 20.0),
+                                    child:  Column(
+                                      children: [
+                                        const Text('آدرس',
+                                            style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 12.0)),
+                                        Text('${PatientInfo.address}'),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0, bottom: 20.0),
+                                    child:  Column(
+                                      children: [
+                                        const Text('تاریخ ثبت',
+                                            style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 12.0)),
+                                        Text('${PatientInfo.regDate}'),
                                       ],
                                     ),
                                   ),
