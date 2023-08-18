@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, prefer_typing_uninitialized_variables
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,20 +12,35 @@ void main() {
 }
 
 class NewPatient extends StatefulWidget {
-  const NewPatient({Key? key}): super(key: key);
+  const NewPatient({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _NewPatientState createState() => _NewPatientState();
 }
 
 class _NewPatientState extends State<NewPatient> {
-   GlobalKey<ScaffoldMessengerState> _globalKey2 =
+  final GlobalKey<ScaffoldMessengerState> _globalKey2 =
       GlobalKey<ScaffoldMessengerState>();
 
   String maritalStatusDD = 'مجرد';
   var items = ['مجرد', 'متاهل'];
-  String? selectedToothDetail_ID;
+  String? selectedTooth2;
+  var selectedRemovableTooth;
+  String removedTooth = 'عقل دندان';
 
+  /*----------------------- Note #1: In fact the below variables contain service_details.ser_det_ID  ------------------*/
+  // For Filling
+  int selectedFill = 1;
+  // For Bleaching
+  int selectedServiceDetailID = 4;
+// For prothesis
+  int selectedProthis = 8;
+  // For teeth cover
+  int selectedMaterial = 10;
+// For mouth test
+  int mouthTest = 15;
+  /*----------------------- End of Note #1  Do not get confused of variables name (They are ser_det_ID values) ------------------*/
   // ِDeclare variables for gender dropdown
   String genderDropDown = 'مرد';
   var genderItems = ['مرد', 'زن'];
@@ -58,6 +73,7 @@ class _NewPatientState extends State<NewPatient> {
     fetchBleachings();
     fetchProtheses();
     fetchToothCover();
+    fetchRemoveTooth();
   }
 
   Future<void> fetchServices() async {
@@ -602,6 +618,8 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleGum = false;
                                       _isVisibleForRoot = false;
                                       _isVisibleMouth = false;
+                                      // Set the first dropdown value to avoid conflict
+                                      selectedGumType1 = '3';
                                     } else if (selectedSerId == '5') {
                                       _isVisibleForOrtho = true;
                                       _isVisibleForFilling = false;
@@ -624,6 +642,8 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleForCover = false;
                                       _isVisibleForRoot = false;
                                       _isVisibleMouth = false;
+                                      // Set selected tooth '1'
+                                      selectedTooth2 = '1';
                                     } else if (selectedSerId == '6') {
                                       _isVisibleForRoot = true;
                                       _isVisibleForProthesis = false;
@@ -635,6 +655,8 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleForTeethRemove = false;
                                       _isVisibleForCover = false;
                                       _isVisibleMouth = false;
+                                      // Set selected tooth '1'
+                                      selectedTooth2 = '1';
                                     } else if (selectedSerId == '7') {
                                       _isVisibleGum = true;
                                       _isVisibleForProthesis = false;
@@ -646,6 +668,7 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleForTeethRemove = false;
                                       _isVisibleForCover = false;
                                       _isVisibleMouth = false;
+                                      selectedGumType1 = '3';
                                     } else if (selectedSerId == '8') {
                                       _isVisibleMouth = true;
                                       _isVisibleForProthesis = false;
@@ -679,6 +702,8 @@ class _NewPatientState extends State<NewPatient> {
                                       _isVisibleGum = false;
                                       _isVisibleForTeethRemove = false;
                                       _isVisibleMouth = false;
+                                      // Set selected tooth '1'
+                                      selectedTooth2 = '1';
                                     } else {
                                       _isVisibleForProthesis = false;
                                       _isVisibleForOrtho = false;
@@ -734,6 +759,8 @@ class _NewPatientState extends State<NewPatient> {
                                   onChanged: (String? newValue) {
                                     setState(() {
                                       selectedBleachStep = newValue;
+                                      selectedServiceDetailID =
+                                          int.parse(selectedBleachStep!);
                                     });
                                   },
                                 ),
@@ -766,10 +793,14 @@ class _NewPatientState extends State<NewPatient> {
                                 child: DropdownButton(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: selectedTooth,
+                                  value: removeTeeth.any((tooth) =>
+                                          tooth['td_ID'].toString() ==
+                                          selectedTooth)
+                                      ? selectedTooth
+                                      : null,
                                   items: removeTeeth.map((tooth) {
                                     return DropdownMenuItem<String>(
-                                      value: tooth['td_ID'],
+                                      value: tooth['td_ID'].toString(),
                                       alignment: Alignment.centerRight,
                                       child: Text(tooth['tooth']),
                                     );
@@ -777,6 +808,17 @@ class _NewPatientState extends State<NewPatient> {
                                   onChanged: (String? newValue) {
                                     setState(() {
                                       selectedTooth = newValue;
+                                      selectedRemovableTooth =
+                                          removeTeeth.firstWhere(
+                                        (tooth) =>
+                                            tooth['td_ID'].toString() ==
+                                            newValue,
+                                      );
+                                      // Fetch type the teeth which will be removed (پوسیده، عقل دندان..)
+                                      removedTooth =
+                                          selectedRemovableTooth != null
+                                              ? selectedRemovableTooth['tooth']
+                                              : null;
                                     });
                                   },
                                 ),
@@ -881,7 +923,10 @@ class _NewPatientState extends State<NewPatient> {
                                   onChanged: (String? newValue) {
                                     setState(() {
                                       selectedGumType2 = newValue;
+                                      print('Gum: $selectedGumType2');
                                       if (selectedSerId == '10') {
+                                        // Set this value since by changing لثه / فک below it, it should fetch the default selected value.
+                                        removedTooth = 'عقل دندان';
                                         fetchRemoveTooth();
                                       }
                                     });
@@ -928,6 +973,8 @@ class _NewPatientState extends State<NewPatient> {
                                   onChanged: (String? newValue) {
                                     setState(() {
                                       selectedCover = newValue;
+                                      selectedMaterial =
+                                          int.parse(selectedCover!);
                                     });
                                   },
                                 ),
@@ -974,6 +1021,8 @@ class _NewPatientState extends State<NewPatient> {
                                   onChanged: (String? newValue) {
                                     setState(() {
                                       selectedProthesis = newValue;
+                                      selectedProthis =
+                                          int.parse(selectedProthesis!);
                                     });
                                   },
                                 ),
@@ -1022,6 +1071,8 @@ class _NewPatientState extends State<NewPatient> {
                                   onChanged: (String? newValue) {
                                     setState(() {
                                       selectedFilling = newValue!;
+                                      selectedFill =
+                                          int.parse(selectedFilling!);
                                     });
                                   },
                                 ),
@@ -1062,7 +1113,7 @@ class _NewPatientState extends State<NewPatient> {
                                 child: DropdownButton(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: selectedToothDetail_ID,
+                                  value: selectedTooth2,
                                   items: teeth.map((tooth) {
                                     return DropdownMenuItem<String>(
                                       value: tooth['td_ID'],
@@ -1072,7 +1123,8 @@ class _NewPatientState extends State<NewPatient> {
                                   }).toList(),
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      selectedToothDetail_ID = newValue;
+                                      selectedTooth2 = newValue;
+                                      // print('Service: $selectedSerId');
                                     });
                                   },
                                 ),
@@ -1296,7 +1348,7 @@ class _NewPatientState extends State<NewPatient> {
     var bGrop = bloodDropDown;
     var addr = _addrController.text;
     var conn = await onConnToDb();
-
+    int serviceID = int.parse(selectedSerId!);
     // First Check the patient where it already exists
     var queryCheck = await conn
         .query('SELECT pat_ID, phone FROM patients WHERE phone = ?', [phone]);
@@ -1307,16 +1359,89 @@ class _NewPatientState extends State<NewPatient> {
         _currentStep = 0;
       });
     } else {
-      int toothDetID = int.parse(selectedToothDetail_ID!);
-      // Fetch tooth ID based on its primary key from tooth_details.
-      int? toothID;
-      var toothResult = await conn.query(
-          'SELECT tooth_ID FROM tooth_Details WHERE td_ID = ?', [toothDetID]);
-      if (toothResult.isNotEmpty) {
-        var tdRow = toothResult.first;
-        toothID = tdRow['tooth_ID'];
+      int? tDetailID;
+      if (serviceID == 2 ||
+          serviceID == 6 ||
+          serviceID == 9 ||
+          serviceID == 11) {
+        // Query for those services which require tooth numbers (1 - 8)
+
+        // Fetch tooth ID based on its primary key from tooth_details.
+        var toothResult = await conn.query(
+            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+            [selectedTooth2, selectedGumType2]);
+        if (toothResult.isNotEmpty) {
+          var tdRow = toothResult.first;
+          tDetailID = tdRow['td_ID'];
+        }
+      } else if (serviceID == 10) {
+        var removeResult = await conn.query(
+            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+            [removedTooth, selectedGumType2]);
+        if (removeResult.isNotEmpty) {
+          var row = removeResult.first;
+          tDetailID = row['td_ID'];
+        }
+      } else if (serviceID == 3) {
+        var bleachResult = await conn.query(
+            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+            ['tooth not required', selectedGumType2]);
+        if (bleachResult.isNotEmpty) {
+          var row = bleachResult.first;
+          tDetailID = row['td_ID'];
+        }
+      } else if (serviceID == 4) {
+        var scaleResult = await conn.query(
+            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+            ['tooth not required', selectedGumType1]);
+        if (scaleResult.isNotEmpty) {
+          var row = scaleResult.first;
+          tDetailID = row['td_ID'];
+        }
+      } else if (serviceID == 5) {
+        var orthoResult = await conn.query(
+            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+            ['tooth not required', selectedGumType1]);
+        if (orthoResult.isNotEmpty) {
+          var row = orthoResult.first;
+          tDetailID = row['td_ID'];
+        }
+      } else if (serviceID == 7) {
+        var gumResult = await conn.query(
+            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+            ['tooth not required', selectedGumType1]);
+        if (gumResult.isNotEmpty) {
+          var row = gumResult.first;
+          tDetailID = row['td_ID'];
+        }
+      } else {
+        var toothResult = await conn.query(
+            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+            ['tooth not required', selectedGumType2]);
+        if (toothResult.isNotEmpty) {
+          var tdRow = toothResult.first;
+          tDetailID = tdRow['td_ID'];
+        }
       }
 
+// Declare this variable to be assigned ser_det_ID of service_details table
+      int? serviceDID;
+      if (serviceID == 2) {
+        serviceDID = selectedFill;
+      } else if (serviceID == 3) {
+        serviceDID = selectedServiceDetailID;
+      } else if (serviceID == 9) {
+        serviceDID = selectedProthis;
+      } else if (serviceID == 11) {
+        serviceDID = selectedMaterial;
+      } else if (serviceID == 8) {
+        tDetailID = null;
+        serviceDID = 15;
+      } else {
+        serviceDID = 15;
+      }
+
+      // Firstly insert a patient into patients table
       var queryResult = await conn.query(
           'INSERT INTO patients (staff_ID, firstname, lastname, sex, age, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
@@ -1330,10 +1455,9 @@ class _NewPatientState extends State<NewPatient> {
             bGrop,
             addr
           ]);
-
+// Choose a specific patient to fetch his/here ID
       if (queryResult.affectedRows! > 0) {
         String meetDate = _meetController.text;
-        int serviceID = int.parse(selectedSerId!);
         String note = _noteController.text;
         var queryResult1 = await conn.query(
             'SELECT * FROM patients WHERE firstname = ? AND sex = ? AND age = ? AND phone = ?',
@@ -1353,15 +1477,13 @@ class _NewPatientState extends State<NewPatient> {
           dueAmount = totalAmount - recieved;
         }
 
-        print(
-            'patient ID: $patId, total amount: $totalAmount, recieved: $recieved, Due amount: $dueAmount, installment: $installment, Staff: $staffId');
         // Now add appointment of the patient
         var queryResult2 = await conn.query(
-            'INSERT INTO appointments (pat_ID, tooth_detail_ID, ser_ID, installment, round, paid_amount, due_amount, meet_date, staff_ID, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO appointments (pat_ID, tooth_detail_ID, service_detail_ID, installment, round, paid_amount, due_amount, meet_date, staff_ID, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [
               patId,
-              toothDetID,
-              serviceID,
+              tDetailID,
+              serviceDID,
               installment,
               1,
               recieved,
@@ -1377,6 +1499,8 @@ class _NewPatientState extends State<NewPatient> {
           _lNameController.clear();
           _phoneController.clear();
           _addrController.clear();
+          _noteController.clear();
+          _meetController.clear();
           _totalExpController.clear();
           _recievableController.clear();
           setState(() {
@@ -1556,18 +1680,42 @@ class _NewPatientState extends State<NewPatient> {
 
 //  نوعیت کشیدن دندان
   String? selectedTooth;
+
   List<Map<String, dynamic>> removeTeeth = [];
   Future<void> fetchRemoveTooth() async {
+    print('Testing gum: $selectedGumType2');
     var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT td_ID, tooth FROM tooth_details WHERE td_ID >= 35 AND tooth_ID = ?',
-        [selectedGumType2]);
-    setState(() {
-      removeTeeth = results
-          .map((result) => {'td_ID': result[0].toString(), 'tooth': result[1]})
-          .toList();
-    });
-    selectedTooth = removeTeeth.isNotEmpty ? removeTeeth[0]['td_ID'] : null;
+    if (selectedGumType2 != null) {
+      var results = await conn.query(
+          'SELECT td_ID, tooth FROM tooth_details WHERE (td_ID >= 35 AND td_ID <= 49) AND tooth_ID = ?',
+          [selectedGumType2]);
+
+      setState(() {
+        removeTeeth = results
+            .map(
+                (result) => {'td_ID': result[0].toString(), 'tooth': result[1]})
+            .toList();
+        selectedTooth = removeTeeth.isNotEmpty ? removeTeeth[0]['td_ID'] : null;
+      });
+    } else {
+      // Set a default value for selectedTooth using the defaultResult query
+      var defaultResult = await conn.query(
+          'SELECT td_ID, tooth FROM tooth_details WHERE td_ID >= 35 AND td_ID <= 37');
+      if (defaultResult.isNotEmpty) {
+        setState(() {
+          selectedTooth = defaultResult.first['td_ID'].toString();
+          removeTeeth = defaultResult
+              .map((result) =>
+                  {'td_ID': result['td_ID'], 'tooth': result['tooth']})
+              .toList();
+          selectedTooth = removeTeeth.isNotEmpty
+              ? removeTeeth[0]['td_ID'].toString()
+              : null;
+        });
+        // selectedTooth = removeTeeth.isNotEmpty ? removeTeeth[0]['td_ID'] : null;
+      }
+    }
+
     await conn.close();
   }
 
@@ -1681,7 +1829,7 @@ class _NewPatientState extends State<NewPatient> {
     teeth = results
         .map((result) => {'td_ID': result[0].toString(), 'tooth': result[1]})
         .toList();
-    selectedToothDetail_ID = teeth.isNotEmpty ? teeth[0]['td_ID'] : null;
+    selectedTooth2 = teeth.isNotEmpty ? teeth[0]['td_ID'] : null;
     await conn.close();
   }
 
