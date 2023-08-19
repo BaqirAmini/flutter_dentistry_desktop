@@ -51,12 +51,7 @@ class _PatientState extends State<Patient> {
                     message: 'رفتن به داشبورد',
                     child: IconButton(
                       icon: const Icon(Icons.home_outlined),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Dashboard()));
-                      },
+                      onPressed: () => Navigator.pop(context),
                     ),
                   ),
                   title: const Text('افزودن مریض'),
