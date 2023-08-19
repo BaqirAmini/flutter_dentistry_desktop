@@ -31,7 +31,7 @@ class _PatientDetailState extends State<PatientDetail> {
               child: IconButton(
                 icon: const BackButtonIcon(),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const patient_ist.Patient()));
+                  Navigator.pop(context);
                 },
               ),
             ),
