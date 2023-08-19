@@ -9,6 +9,25 @@ void main() {
   return runApp(const Patient());
 }
 
+// Create the global key at the top level of your Dart file
+final GlobalKey<ScaffoldMessengerState> _globalKeyPDelete =
+    GlobalKey<ScaffoldMessengerState>();
+
+// This is shows snackbar when called
+void _onShowSnack(Color backColor, String msg) {
+  _globalKeyPDelete.currentState?.showSnackBar(
+    SnackBar(
+      backgroundColor: backColor,
+      content: SizedBox(
+        height: 20.0,
+        child: Center(
+          child: Text(msg),
+        ),
+      ),
+    ),
+  );
+}
+
 class Patient extends StatefulWidget {
   const Patient({super.key});
 
@@ -21,32 +40,41 @@ class _PatientState extends State<Patient> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Directionality(
-        textDirection: TextDirection.rtl,
+      home: ScaffoldMessenger(
+        key: _globalKeyPDelete,
         child: Scaffold(
-            appBar: AppBar(
-              leading: Tooltip(
-                message: 'رفتن به داشبورد',
-                child: IconButton(
-                  icon: const Icon(Icons.home_outlined),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Dashboard()));
-                  },
+          body: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Scaffold(
+                appBar: AppBar(
+                  leading: Tooltip(
+                    message: 'رفتن به داشبورد',
+                    child: IconButton(
+                      icon: const Icon(Icons.home_outlined),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Dashboard()));
+                      },
+                    ),
+                  ),
+                  title: const Text('افزودن مریض'),
                 ),
-              ),
-              title: const Text('افزودن مریض'),
-            ),
-            body: const PatientDataTable()),
+                body: const PatientDataTable()),
+          ),
+        ),
       ),
     );
   }
 }
 
 // This is to display an alert dialog to delete a patient
-onDeletePatient(BuildContext context) {
+onDeletePatient(BuildContext context, Function onDelete) {
+  int? patientId = PatientInfo.patID;
+  String? fName = PatientInfo.firstName;
+  String? lName = PatientInfo.lastName;
+
   return showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -54,15 +82,31 @@ onDeletePatient(BuildContext context) {
               textDirection: TextDirection.rtl,
               child: Text('حذف مریض'),
             ),
-            content: const Directionality(
+            content: Directionality(
               textDirection: TextDirection.rtl,
-              child: Text('آیا میخواهید این مریض را حذف کنید؟'),
+              child: Text('آیا میخواهید $fName $lName را حذف کنید؟'),
             ),
             actions: [
               TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () =>
+                      Navigator.of(context, rootNavigator: true).pop(),
                   child: const Text('لغو')),
-              TextButton(onPressed: () {}, child: const Text('حذف')),
+              TextButton(
+                  onPressed: () async {
+                    final conn = await onConnToDb();
+                    final results = await conn.query(
+                        'DELETE FROM patients WHERE pat_ID = ?', [patientId]);
+                    if (results.affectedRows! > 0) {
+                      _onShowSnack(Colors.green, 'مریض موفقانه حذف شد.');
+                      onDelete();
+                    } else {
+                      _onShowSnack(Colors.red, 'متاسفم، مریض حذف نشد.');
+                    }
+                    await conn.close();
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context, rootNavigator: true).pop();
+                  },
+                  child: const Text('حذف')),
             ],
           ));
 }
@@ -126,7 +170,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
   @override
   Widget build(BuildContext context) {
     // Create a new instance of the PatientDataSource class and pass it the _filteredData list
-    final dataSource = PatientDataSource(_filteredData);
+    final dataSource = PatientDataSource(_filteredData, _fetchData);
 
     return Scaffold(
         body: Column(
@@ -334,7 +378,8 @@ class _PatientDataTableState extends State<PatientDataTable> {
 
 class PatientDataSource extends DataTableSource {
   List<PatientData> data;
-  PatientDataSource(this.data);
+  Function onDelete;
+  PatientDataSource(this.data, this.onDelete);
 
   void sort(Comparator<PatientData> compare, bool ascending) {
     data.sort(compare);
@@ -385,7 +430,10 @@ class PatientDataSource extends DataTableSource {
             return IconButton(
               icon: data[index].deletePatient,
               onPressed: (() {
-                onDeletePatient(context);
+                PatientInfo.patID = data[index].patID;
+                PatientInfo.firstName = data[index].firstName;
+                PatientInfo.lastName = data[index].lastName;
+                onDeletePatient(context, onDelete);
               }),
               color: Colors.blue,
               iconSize: 20.0,
