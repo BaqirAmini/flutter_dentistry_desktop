@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
@@ -22,6 +24,8 @@ class _LoginState extends State<Login> {
   final _pwdController = TextEditingController();
   final _regExUName = '[a-zA-Z0-9-@]';
 
+  bool _isLoggedIn = false;
+
 // Show/Hide password using eye icons
   bool _isHidden = true;
   void _togglePwdView() {
@@ -32,67 +36,95 @@ class _LoginState extends State<Login> {
 
   Future<void> _onPressLoginButton(BuildContext context) async {
     if (_loginFormKey.currentState!.validate()) {
-      final userName = _userNameController.text;
-      final pwd = _pwdController.text;
-      var conn = await onConnToDb();
-      var results = await conn.query(
-          'SELECT * FROM staff_auth WHERE username = ? AND password = PASSWORD(?)',
-          [userName, pwd]);
+      try {
+        final conn = await onConnToDb();
+        final userName = _userNameController.text;
+        final pwd = _pwdController.text;
+        var results = await conn.query(
+            'SELECT * FROM staff_auth WHERE username = ? AND password = PASSWORD(?)',
+            [userName, pwd]);
+        setState(() {
+          _isLoggedIn = true;
+        });
+        if (results.isNotEmpty) {
+          final row = results.first;
+          final staffID = row["staff_ID"];
+          final role = row["role"];
 
-      if (results.isNotEmpty) {
-        final row = results.first;
-        final staffID = row["staff_ID"];
-        final role = row["role"];
+          var results2 = await conn
+              .query('SELECT * FROM staff WHERE staff_ID = ?', [staffID]);
+          final row2 = results2.first;
+          String firstName = row2["firstname"];
+          String lastName = row2["lastname"];
+          String position = row2["position"];
+          double salary = row2["salary"];
+          String phone = row2["phone"];
+          String tazkira = row2["tazkira_ID"];
+          String addr = row2["address"];
+          // Global variables to be assigned staff info
+          StaffInfo.staffID = staffID;
+          StaffInfo.staffRole = role;
+          StaffInfo.firstName = firstName;
+          StaffInfo.lastName = lastName;
+          StaffInfo.position = position;
+          StaffInfo.salary = salary;
+          StaffInfo.phone = phone;
+          StaffInfo.tazkira = tazkira;
+          StaffInfo.address = addr;
 
-        var results2 = await conn
-            .query('SELECT * FROM staff WHERE staff_ID = ?', [staffID]);
-        final row2 = results2.first;
-        String firstName = row2["firstname"];
-        String lastName = row2["lastname"];
-        String position = row2["position"];
-        double salary = row2["salary"];
-        String phone = row2["phone"];
-        String tazkira = row2["tazkira_ID"];
-        String addr = row2["address"];
-        // Global variables to be assigned staff info
-        StaffInfo.staffID = staffID;
-        StaffInfo.staffRole = role;
-        StaffInfo.firstName = firstName;
-        StaffInfo.lastName = lastName;
-        StaffInfo.position = position;
-        StaffInfo.salary = salary;
-        StaffInfo.phone = phone;
-        StaffInfo.tazkira = tazkira;
-        StaffInfo.address = addr;
-
-        /*  Map<String, String> userData = {
+          /*  Map<String, String> userData = {
           "staffID": staffID.toString(),
           "role": role
         }; */
-        // ignore: use_build_context_synchronously
-        // Navigator.pushNamed(context, '/dashboard', arguments: userData);
-        // ignore: use_build_context_synchronously
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const Dashboard(),
-          ),
-        );
-      } else {
-        // ignore: use_build_context_synchronously
+          // ignore: use_build_context_synchronously
+          // Navigator.pushNamed(context, '/dashboard', arguments: userData);
+          // ignore: use_build_context_synchronously
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const Dashboard(),
+            ),
+          );
+          setState(() {
+            _isLoggedIn = false;
+          });
+        } else {
+          setState(() {
+            _isLoggedIn = false;
+          });
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.redAccent,
+              content: SizedBox(
+                height: 20.0,
+                child: Center(
+                  child:
+                      Text('متاسفم، نام یوزر و یا رمز عبور تان نا معتبر است.'),
+                ),
+              ),
+            ),
+          );
+          _userNameController.clear();
+          _pwdController.clear();
+        }
+      } on SocketException catch (e) {
+        /*  setState(() {
+          _isLoggedIn = true;
+        }); */
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: Colors.redAccent,
             content: SizedBox(
               height: 20.0,
               child: Center(
-                child: Text('متاسفم، نام یوزر و یا رمز عبور تان نا معتبر است.'),
+                child: Text('با معذرت! سیستم شما دچار یک عارضه تخنیکی است.'),
               ),
             ),
           ),
         );
-        _userNameController.clear();
-        _pwdController.clear();
+      } catch (e) {
+        print('Exception is $e');
       }
     }
   }
@@ -287,7 +319,15 @@ class _LoginState extends State<Login> {
                                   onPressed: () {
                                     _onPressLoginButton(context);
                                   },
-                                  child: const Text('ورود به سیستم'),
+                                  child: _isLoggedIn
+                                      ? const SizedBox(
+                                          height: 18.0,
+                                          width: 18.0,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 3.0,
+                                          ),
+                                        )
+                                      : const Text('ورود به سیستم'),
                                 );
                               },
                             ),
