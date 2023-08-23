@@ -452,10 +452,11 @@ class _PatientDetailState extends State<PatientDetail> {
                                   3: FixedColumnWidth(80),
                                   4: FixedColumnWidth(270),
                                   5: FixedColumnWidth(80),
-                                  6: FixedColumnWidth(80),
+                                  6: FixedColumnWidth(100),
                                   7: FixedColumnWidth(80),
                                   8: FixedColumnWidth(80),
                                   9: FixedColumnWidth(80),
+                                  10: FixedColumnWidth(80),
                                 },
                                 children: const [
                                   // add your table rows here
@@ -595,10 +596,11 @@ class _PatientDetailState extends State<PatientDetail> {
                                               3: FixedColumnWidth(80),
                                               4: FixedColumnWidth(270),
                                               5: FixedColumnWidth(80),
-                                              6: FixedColumnWidth(80),
+                                              6: FixedColumnWidth(100),
                                               7: FixedColumnWidth(80),
                                               8: FixedColumnWidth(80),
                                               9: FixedColumnWidth(80),
+                                              10: FixedColumnWidth(80),
                                             },
                                             children: [
                                               for (var apt in appoints!)
