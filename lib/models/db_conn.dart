@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:galileo_mysql/galileo_mysql.dart';
 
 Future<MySqlConnection> onConnToDb() async {
@@ -9,8 +10,11 @@ Future<MySqlConnection> onConnToDb() async {
         password: 'root',
         db: 'dentistry_db'));
     return conn;
+  } on SocketException catch (e) {
+    print('Could not connect to the database. Error: ${e.message}');
+    return Future.error(e);
   } catch (e) {
     print(e);
-    rethrow;
+    return Future.error(e);
   }
 }
