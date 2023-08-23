@@ -48,6 +48,15 @@ class _PatientDetailState extends State<PatientDetail> {
       home: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
+          floatingActionButton: Tooltip(
+            message: 'جلسه جدید',
+            child: FloatingActionButton(
+              onPressed: () {
+                print('FAB is clicked.');
+              },
+              child: const Icon(Icons.add),
+            ),
+          ),
           appBar: AppBar(
             leading: Tooltip(
               message: 'رفتن به صفحه قبلی',
@@ -410,161 +419,157 @@ class _PatientDetailState extends State<PatientDetail> {
                   )),
               Expanded(
                 child: SizedBox(
-                  width: 1250.0,
+                  width: double.infinity,
                   height: 380.0,
                   child: Card(
-                    child: Stack(
+                    child: Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
-                          child: Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8.0),
-                                child: const Text(
-                                  'دفعات مراجعه مریض',
-                                  style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.bold),
-                                ),
+                        Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8.0),
+                              child: const Text(
+                                'دفعات مراجعه مریض',
+                                style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.bold),
                               ),
-                              Container(
-                                width: 1200.0,
-                                padding: const EdgeInsets.all(8.0),
-                                child: Table(
-                                  border: const TableBorder(
-                                      horizontalInside: BorderSide(
-                                          color: Colors.grey,
-                                          style: BorderStyle.solid,
-                                          width: 0.5)),
-                                  columnWidths: const {
-                                    0: FixedColumnWidth(120),
-                                    1: FixedColumnWidth(100),
-                                    2: FixedColumnWidth(80),
-                                    3: FixedColumnWidth(80),
-                                    4: FixedColumnWidth(280),
-                                    5: FixedColumnWidth(80),
-                                    7: FixedColumnWidth(80),
-                                    8: FixedColumnWidth(80),
-                                    9: FixedColumnWidth(80),
-                                    10: FixedColumnWidth(80),
-                                  },
-                                  children: const [
-                                    // add your table rows here
-                                    TableRow(
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Text(
-                                            'سرویس',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                            ),
+                            Container(
+                              width: 1200.0,
+                              padding: const EdgeInsets.all(8.0),
+                              child: Table(
+                                border: const TableBorder(
+                                    horizontalInside: BorderSide(
+                                        color: Colors.grey,
+                                        style: BorderStyle.solid,
+                                        width: 0.5)),
+                                columnWidths: const {
+                                  0: FixedColumnWidth(120),
+                                  1: FixedColumnWidth(100),
+                                  2: FixedColumnWidth(80),
+                                  3: FixedColumnWidth(80),
+                                  4: FixedColumnWidth(270),
+                                  5: FixedColumnWidth(80),
+                                  6: FixedColumnWidth(80),
+                                  7: FixedColumnWidth(80),
+                                  8: FixedColumnWidth(80),
+                                  9: FixedColumnWidth(80),
+                                },
+                                children: const [
+                                  // add your table rows here
+                                  TableRow(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'سرویس',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Text(
-                                            'تاریخ مراجعه',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'تاریخ مراجعه',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Text(
-                                            'فک / بیره',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'فک / بیره',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Text(
-                                            'نوعیت دندان',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'نوعیت دندان',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Text(
-                                            'توضیحات',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'توضیحات',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Text(
-                                            'جلسه / نوبت',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'جلسه / نوبت',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Text(
-                                            'داکتر',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'داکتر',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Text(
-                                            'مراجعه',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'مراجعه',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Text(
-                                            'ویرایش',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'ویرایش',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Text(
-                                            'حذف',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'حذف',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Text(
-                                            'عکس',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'عکس',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                      ],
-                                    ),
-                                    // more rows ...
-                                  ],
-                                ),
+                                      ),
+                                    ],
+                                  ),
+                                  // more rows ...
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         Container(
                           height: 300.0,
-                          margin: const EdgeInsets.only(top: 70.0),
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
@@ -588,12 +593,12 @@ class _PatientDetailState extends State<PatientDetail> {
                                               1: FixedColumnWidth(100),
                                               2: FixedColumnWidth(80),
                                               3: FixedColumnWidth(80),
-                                              4: FixedColumnWidth(280),
+                                              4: FixedColumnWidth(270),
                                               5: FixedColumnWidth(80),
+                                              6: FixedColumnWidth(80),
                                               7: FixedColumnWidth(80),
                                               8: FixedColumnWidth(80),
                                               9: FixedColumnWidth(80),
-                                              10: FixedColumnWidth(80),
                                             },
                                             children: [
                                               for (var apt in appoints!)
@@ -602,39 +607,46 @@ class _PatientDetailState extends State<PatientDetail> {
                                                   children: [
                                                     Padding(
                                                       padding:
-                                                          EdgeInsets.all(8.0),
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Text(apt.service),
                                                     ),
                                                     Padding(
                                                       padding:
-                                                          EdgeInsets.all(8.0),
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Text(apt.meetDate),
                                                     ),
                                                     Padding(
                                                       padding:
-                                                          EdgeInsets.all(8.0),
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Text(apt.gum),
                                                     ),
                                                     Padding(
                                                       padding:
-                                                          EdgeInsets.all(8.0),
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Text(apt.tooth),
                                                     ),
                                                     Padding(
                                                       padding:
-                                                          EdgeInsets.all(8.0),
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child:
                                                           Text(apt.description),
                                                     ),
                                                     Padding(
                                                       padding:
-                                                          EdgeInsets.all(8.0),
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Text(
                                                           apt.round.toString()),
                                                     ),
                                                     Padding(
                                                       padding:
-                                                          EdgeInsets.all(8.0),
+                                                          const EdgeInsets.all(
+                                                              8.0),
                                                       child: Text(
                                                           '${apt.staffFirstName} ${apt.staffLastName}'),
                                                     ),
@@ -728,23 +740,11 @@ class _PatientDetailState extends State<PatientDetail> {
                                           return Text(
                                               'Error: ${snapshot.error}');
                                         } else {
-                                          return CircularProgressIndicator();
+                                          return const CircularProgressIndicator();
                                         }
                                       }),
                                 ),
                               ],
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          top: 8.0,
-                          left: 8.0,
-                          child: Tooltip(
-                            message: 'جلسه جدید',
-                            child: IconButton(
-                              onPressed: () {},
-                              icon: const Icon(Icons.add),
-                              color: Colors.blue,
                             ),
                           ),
                         ),
