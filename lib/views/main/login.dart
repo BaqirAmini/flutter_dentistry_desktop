@@ -43,9 +43,7 @@ class _LoginState extends State<Login> {
         var results = await conn.query(
             'SELECT * FROM staff_auth WHERE username = ? AND password = PASSWORD(?)',
             [userName, pwd]);
-        setState(() {
-          _isLoggedIn = true;
-        });
+
         if (results.isNotEmpty) {
           final row = results.first;
           final staffID = row["staff_ID"];
@@ -107,25 +105,33 @@ class _LoginState extends State<Login> {
           );
           _userNameController.clear();
           _pwdController.clear();
+          setState(() {
+            _isLoggedIn = false;
+          });
         }
       } on SocketException catch (e) {
-        /*  setState(() {
-          _isLoggedIn = true;
-        }); */
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: Colors.redAccent,
             content: SizedBox(
               height: 20.0,
               child: Center(
-                child: Text('با معذرت! سیستم شما دچار یک عارضه تخنیکی است.'),
+                child:
+                    Text('با معذرت! سیستم شما دچار یک عارضه تخنیکی شده است.'),
               ),
             ),
           ),
         );
+        setState(() {
+          _isLoggedIn = false;
+        });
       } catch (e) {
         print('Exception is $e');
       }
+    } else {
+      setState(() {
+        _isLoggedIn = false;
+      });
     }
   }
 
@@ -317,6 +323,9 @@ class _LoginState extends State<Login> {
                                     ),
                                   ),
                                   onPressed: () {
+                                    setState(() {
+                                      _isLoggedIn = true;
+                                    });
                                     _onPressLoginButton(context);
                                   },
                                   child: _isLoggedIn
