@@ -19,6 +19,28 @@ class PatientDetail extends StatefulWidget {
 }
 
 class _PatientDetailState extends State<PatientDetail> {
+  String? selectedSerId;
+  List<Map<String, dynamic>> services = [];
+  Future<void> fetchServices() async {
+    var conn = await onConnToDb();
+    var queryService = await conn
+        .query('SELECT ser_ID, ser_name FROM services WHERE ser_ID > 1');
+    setState(() {
+      services = queryService
+          .map((result) =>
+              {'ser_ID': result[0].toString(), 'ser_name': result[1]})
+          .toList();
+    });
+    selectedSerId = services.isNotEmpty ? services[0]['ser_ID'] : null;
+    await conn.close();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchServices();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -387,7 +409,7 @@ class _PatientDetailState extends State<PatientDetail> {
                     ],
                   )),
               Expanded(
-                child: Container(
+                child: SizedBox(
                   width: 1250.0,
                   height: 380.0,
                   child: Card(
@@ -419,13 +441,14 @@ class _PatientDetailState extends State<PatientDetail> {
                                   columnWidths: const {
                                     0: FixedColumnWidth(120),
                                     1: FixedColumnWidth(100),
-                                    2: FixedColumnWidth(100),
-                                    3: FixedColumnWidth(100),
-                                    4: FixedColumnWidth(300),
-                                    5: FixedColumnWidth(100),
-                                    7: FixedColumnWidth(70),
-                                    8: FixedColumnWidth(70),
-                                    9: FixedColumnWidth(70),
+                                    2: FixedColumnWidth(80),
+                                    3: FixedColumnWidth(80),
+                                    4: FixedColumnWidth(280),
+                                    5: FixedColumnWidth(80),
+                                    7: FixedColumnWidth(80),
+                                    8: FixedColumnWidth(80),
+                                    9: FixedColumnWidth(80),
+                                    10: FixedColumnWidth(80),
                                   },
                                   children: const [
                                     // add your table rows here
@@ -497,6 +520,15 @@ class _PatientDetailState extends State<PatientDetail> {
                                         Padding(
                                           padding: EdgeInsets.all(5.0),
                                           child: Text(
+                                            'مراجعه',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(5.0),
+                                          child: Text(
                                             'ویرایش',
                                             style: TextStyle(
                                                 fontSize: 12.0,
@@ -532,7 +564,7 @@ class _PatientDetailState extends State<PatientDetail> {
                         ),
                         Container(
                           height: 300.0,
-                          margin: EdgeInsets.only(top: 70.0),
+                          margin: const EdgeInsets.only(top: 70.0),
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
@@ -554,13 +586,14 @@ class _PatientDetailState extends State<PatientDetail> {
                                             columnWidths: const {
                                               0: FixedColumnWidth(120),
                                               1: FixedColumnWidth(100),
-                                              2: FixedColumnWidth(100),
-                                              3: FixedColumnWidth(100),
-                                              4: FixedColumnWidth(300),
-                                              5: FixedColumnWidth(100),
+                                              2: FixedColumnWidth(80),
+                                              3: FixedColumnWidth(80),
+                                              4: FixedColumnWidth(280),
+                                              5: FixedColumnWidth(80),
                                               7: FixedColumnWidth(80),
                                               8: FixedColumnWidth(80),
                                               9: FixedColumnWidth(80),
+                                              10: FixedColumnWidth(80),
                                             },
                                             children: [
                                               for (var apt in appoints!)
@@ -585,7 +618,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                                     Padding(
                                                       padding:
                                                           EdgeInsets.all(8.0),
-                                                      child: Text('سوم'),
+                                                      child: Text(apt.tooth),
                                                     ),
                                                     Padding(
                                                       padding:
@@ -599,17 +632,40 @@ class _PatientDetailState extends State<PatientDetail> {
                                                       child: Text(
                                                           apt.round.toString()),
                                                     ),
-                                                    const Padding(
+                                                    Padding(
                                                       padding:
                                                           EdgeInsets.all(8.0),
-                                                      child: Text('حامد کریمی'),
+                                                      child: Text(
+                                                          '${apt.staffFirstName} ${apt.staffLastName}'),
                                                     ),
                                                     Padding(
                                                       padding:
                                                           const EdgeInsets.all(
                                                               8.0),
                                                       child: Builder(builder:
-                                                          (BuildContext context) {
+                                                          (BuildContext
+                                                              context) {
+                                                        return IconButton(
+                                                          onPressed: () {
+                                                            onEditAppointment(
+                                                                context);
+                                                          },
+                                                          icon: const Icon(
+                                                              Icons
+                                                                  .add_to_queue_outlined,
+                                                              color:
+                                                                  Colors.blue,
+                                                              size: 18.0),
+                                                        );
+                                                      }),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Builder(builder:
+                                                          (BuildContext
+                                                              context) {
                                                         return IconButton(
                                                           onPressed: () {
                                                             onEditAppointment(
@@ -617,8 +673,9 @@ class _PatientDetailState extends State<PatientDetail> {
                                                           },
                                                           icon: const Icon(
                                                               Icons.edit,
-                                                              color: Colors.blue,
-                                                              size: 20.0),
+                                                              color:
+                                                                  Colors.blue,
+                                                              size: 18.0),
                                                         );
                                                       }),
                                                     ),
@@ -635,8 +692,9 @@ class _PatientDetailState extends State<PatientDetail> {
                                                           },
                                                           icon: const Icon(
                                                               Icons.delete,
-                                                              color: Colors.blue,
-                                                              size: 20.0),
+                                                              color:
+                                                                  Colors.blue,
+                                                              size: 18.0),
                                                         ),
                                                       ),
                                                     ),
@@ -656,8 +714,9 @@ class _PatientDetailState extends State<PatientDetail> {
                                                           },
                                                           icon: const Icon(
                                                               Icons.image,
-                                                              color: Colors.blue,
-                                                              size: 20.0),
+                                                              color:
+                                                                  Colors.blue,
+                                                              size: 18.0),
                                                         ),
                                                       ),
                                                     ),
@@ -666,7 +725,8 @@ class _PatientDetailState extends State<PatientDetail> {
                                             ],
                                           );
                                         } else if (snapshot.hasError) {
-                                          return Text('Error: ${snapshot.error}');
+                                          return Text(
+                                              'Error: ${snapshot.error}');
                                         } else {
                                           return CircularProgressIndicator();
                                         }
@@ -682,7 +742,10 @@ class _PatientDetailState extends State<PatientDetail> {
                           child: Tooltip(
                             message: 'جلسه جدید',
                             child: IconButton(
-                                onPressed: () {}, icon: const Icon(Icons.add)),
+                              onPressed: () {},
+                              icon: const Icon(Icons.add),
+                              color: Colors.blue,
+                            ),
                           ),
                         ),
                       ],
@@ -1001,21 +1064,6 @@ class _PatientDetailState extends State<PatientDetail> {
 
   // Displays an alert dialog to edit appointments
   onEditAppointment(BuildContext context) {
-    // Services types dropdown variables
-    String serviceDropDown = 'پرکاری دندان';
-    var serviceItems = [
-      'پرکاری دندان',
-      'سفید کردن دندان',
-      'جرم گیری دندان',
-      'ارتودانسی',
-      'جراحی ریشه دندان',
-      'جراحی لثه دندان',
-      'معاینه دهن',
-      'پروتیز دندان',
-      'کشیدن دندان',
-      'پوش کردن دندان'
-    ];
-
     // Declare a variable for payment installment
     String installments = 'تکمیل';
 
@@ -1055,17 +1103,17 @@ class _PatientDetailState extends State<PatientDetail> {
                               child: DropdownButton(
                                 isExpanded: true,
                                 icon: const Icon(Icons.arrow_drop_down),
-                                value: serviceDropDown,
-                                items: serviceItems.map((String serviceItems) {
-                                  return DropdownMenuItem(
-                                    value: serviceItems,
+                                value: selectedSerId,
+                                items: services.map((service) {
+                                  return DropdownMenuItem<String>(
+                                    value: service['ser_ID'],
                                     alignment: Alignment.centerRight,
-                                    child: Text(serviceItems),
+                                    child: Text(service['ser_name']),
                                   );
                                 }).toList(),
                                 onChanged: (String? newValue) {
                                   setState(() {
-                                    serviceDropDown = newValue!;
+                                    selectedSerId = newValue;
                                   });
                                 },
                               ),
@@ -1206,77 +1254,83 @@ class _PatientDetailState extends State<PatientDetail> {
     bool lastField = false;
 
     return showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-              title: const Directionality(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: ((context, setState) {
+          return AlertDialog(
+            title: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text('تغییر مراجعات مریض'),
+            ),
+            content: SizedBox(
+              width: 600.0,
+              child: Directionality(
                 textDirection: TextDirection.rtl,
-                child: Text('تغییر مراجعات مریض'),
-              ),
-              content: SizedBox(
-                width: 600.0,
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Stepper(
-                    controlsBuilder:
-                        (BuildContext context, ControlsDetails controls) {
-                      return Row(
-                        children: <Widget>[
-                          ElevatedButton(
-                            onPressed: controls.onStepContinue,
-                            child: Text(lastField ? 'ثبت کردن' : 'ادامه'),
-                          ),
-                          TextButton(
-                            onPressed: controls.onStepCancel,
-                            child: const Text('بازگشت'),
-                          ),
-                        ],
-                      );
-                    },
-                    steps: stepList(),
-                    currentStep: currentStep,
-                    type: StepperType.horizontal,
-                    onStepCancel: () {
-                      setState(() {
-                        if (currentStep > 0) {
-                          currentStep--;
+                child: Stepper(
+                  controlsBuilder:
+                      (BuildContext context, ControlsDetails controls) {
+                    return Row(
+                      children: <Widget>[
+                        ElevatedButton(
+                          onPressed: controls.onStepContinue,
+                          child: Text(lastField ? 'ثبت کردن' : 'ادامه'),
+                        ),
+                        TextButton(
+                          onPressed:
+                              currentStep == 0 ? null : controls.onStepCancel,
+                          child: const Text('بازگشت'),
+                        ),
+                      ],
+                    );
+                  },
+                  steps: stepList(),
+                  currentStep: currentStep,
+                  type: StepperType.horizontal,
+                  onStepCancel: () {
+                    print('Current Step: $currentStep');
+                    setState(() {
+                      if (currentStep > 0) {
+                        currentStep--;
+                        lastField = false;
+                      }
+                    });
+                  },
+                  // currentStep: currentStep,
+                  onStepContinue: () {
+                    print('Current Step: $currentStep');
+                    setState(() {
+                      if (currentStep < stepList().length - 1) {
+                        currentStep++;
+                        // This condition is to make label of last step differ from others.
+                        if (currentStep == 1) {
+                          lastField = true;
+                        } else {
                           lastField = false;
                         }
-                      });
-                    },
-                    // currentStep: currentStep,
-                    onStepContinue: () {
-                      setState(() {
-                        if (currentStep < stepList().length - 1) {
-                          currentStep++;
-                          // This condition is to make label of last step differ from others.
-                          if (currentStep == 1) {
-                            lastField = true;
-                          } else {
-                            lastField = false;
-                          }
-                        }
-                      });
-                    },
-                  ),
+                      }
+                    });
+                  },
                 ),
               ),
-              actions: [
-                Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                            onPressed: () =>
-                                Navigator.of(context, rootNavigator: true)
-                                    .pop(),
-                            child: const Text('بستن')),
-                        TextButton(
-                            onPressed: () {}, child: const Text('انجام')),
-                      ],
-                    ))
-              ],
-            ));
+            ),
+            actions: [
+              Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () =>
+                              Navigator.of(context, rootNavigator: true).pop(),
+                          child: const Text('بستن')),
+                      TextButton(onPressed: () {}, child: const Text('انجام')),
+                    ],
+                  ))
+            ],
+          );
+        }),
+      ),
+    );
   }
 
   // Declare a method to add ages 1 - 100
@@ -1355,14 +1409,18 @@ class _PatientDetailState extends State<PatientDetail> {
 
     final appoints = results
         .map((row) => Appointment(
+            staffID: row[0],
+            staffFirstName: row[1],
+            staffLastName: row[2],
             aptID: row[3],
+            tooth: row[8],
             service: row[9],
             meetDate: row[4].toString(),
             gum: row[7],
             round: row[5],
             description: row[6].toString(),
-            dentFirstName: row[11],
-            dentLastName: row[12]))
+            patFirstName: row[11],
+            patLastName: row[12]))
         .toList();
     return appoints;
   }
@@ -1370,22 +1428,30 @@ class _PatientDetailState extends State<PatientDetail> {
 
 // Create a data model to set/get appointment details
 class Appointment {
+  final int staffID;
+  final String staffFirstName;
+  final String staffLastName;
   final int aptID;
+  final String tooth;
   final String service;
   final String meetDate;
   final String gum;
   final int round;
   final String description;
-  final String dentFirstName;
-  final String dentLastName;
+  final String patFirstName;
+  final String patLastName;
 
   Appointment(
-      {required this.aptID,
+      {required this.staffID,
+      required this.staffFirstName,
+      required this.staffLastName,
+      required this.aptID,
+      required this.tooth,
       required this.service,
       required this.meetDate,
       required this.gum,
       required this.round,
       required this.description,
-      required this.dentFirstName,
-      required this.dentLastName});
+      required this.patFirstName,
+      required this.patLastName});
 }

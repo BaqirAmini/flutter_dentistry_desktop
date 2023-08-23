@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 18, 2023 at 07:50 PM
+-- Generation Time: Aug 23, 2023 at 03:12 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -49,7 +49,11 @@ CREATE TABLE `appointments` (
 INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `tooth_detail_ID`, `service_detail_ID`, `installment`, `round`, `paid_amount`, `due_amount`, `meet_date`, `staff_ID`, `note`) VALUES
 (18, 0, 54, 7, 1, 2, 1, '1000.00', '500.00', '2023-08-18', 17, 'دندان کاملا سیاه شده و درد دارد'),
 (19, 0, 55, 64, 5, 1, 1, '1000.00', '0.00', '2023-08-18', 17, 'با ماده اصلی سفید کننده'),
-(20, 0, 56, 54, 9, 3, 1, '1000.00', '2000.00', '2023-08-08', 17, 'دندانها به کلی ازبین رفته');
+(21, 0, 54, 4, 11, 1, 1, '1000.00', '0.00', '2023-08-09', 21, 'طلای درجه یک'),
+(22, 0, 54, 36, 15, 1, 1, '500.00', '0.00', '2023-08-14', 27, 'دندان کشیده شود'),
+(23, 0, 54, 4, 1, 2, 1, '2000.00', '1000.00', '2022-08-24', 14, NULL),
+(24, 0, 54, 3, 8, 3, 1, '1500.00', '500.00', '2021-08-24', 26, NULL),
+(25, 0, 54, 2, 10, 1, 1, '500.00', '0.00', '2022-08-10', 21, 'sssssssssssssss');
 
 -- --------------------------------------------------------
 
@@ -155,8 +159,7 @@ CREATE TABLE `patients` (
 
 INSERT INTO `patients` (`pat_ID`, `cli_ID`, `staff_ID`, `firstname`, `lastname`, `sex`, `age`, `marital_status`, `phone`, `reg_date`, `blood_group`, `address`) VALUES
 (54, 0, 17, 'زحل', 'رحیمی', 'زن', 20, 'مجرد', '0771023232', '2023-08-18 17:35:42', 'AB-', 'کابل، کارته پروان'),
-(55, 0, 17, 'زهره', 'حکیمی', 'زن', 24, 'متاهل', '0790123234', '2023-08-18 17:38:55', 'O+', ''),
-(56, 0, 17, 'ذبیح', 'ستار', 'مرد', 40, 'متاهل', '0701023232', '2023-08-18 17:43:00', 'نامشخص', 'کابل، دشت برچی');
+(55, 0, 17, 'زهره', 'حکیمی', 'زن', 24, 'متاهل', '0790123234', '2023-08-18 17:38:55', 'O+', '');
 
 -- --------------------------------------------------------
 
@@ -546,7 +549,7 @@ ALTER TABLE `tooth_details`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `clinics`
