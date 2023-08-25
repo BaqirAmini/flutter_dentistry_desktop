@@ -1576,10 +1576,7 @@ class _NewPatientState extends State<NewPatient> {
                 child: IconButton(
                   icon: const BackButtonIcon(),
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Patient()));
+                    Navigator.pop(context);
                   },
                 ),
               ),
