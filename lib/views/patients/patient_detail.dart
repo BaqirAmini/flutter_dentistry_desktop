@@ -4,6 +4,8 @@ import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'patients.dart' as patient_ist;
 import 'patient_info.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+// ignore: depend_on_referenced_packages
+import 'package:intl/intl.dart' as intl2;
 
 void main() {
   return runApp(const PatientDetail());
@@ -19,6 +21,153 @@ class PatientDetail extends StatefulWidget {
 }
 
 class _PatientDetailState extends State<PatientDetail> {
+  // This is to track current step of stepper
+  int _currentStep = 0;
+  String? selectedTooth2;
+  //  نوعیت کشیدن دندان
+  String? selectedTooth;
+
+  bool _isVisibleForFilling = true;
+  bool _isVisibleForBleaching = false;
+  bool _isVisibleForScaling = false;
+  bool _isVisibleForOrtho = false;
+  bool _isVisibleForProthesis = false;
+  bool _isVisibleForRoot = false;
+  bool _isVisibleGum = false;
+  bool _isVisibleForTeethRemove = false;
+  bool _isVisibleForCover = false;
+  bool _isVisibleMouth = false;
+  bool _isVisibleForPayment = false;
+  // Declare a variable for payment installment
+  String payTypeDropdown = 'تکمیل';
+
+  List<Map<String, dynamic>> removeTeeth = [];
+  Future<void> fetchRemoveTooth() async {
+    print('Testing gum: $selectedGumType2');
+    var conn = await onConnToDb();
+    if (selectedGumType2 != null) {
+      var results = await conn.query(
+          'SELECT td_ID, tooth FROM tooth_details WHERE (td_ID >= 35 AND td_ID <= 49) AND tooth_ID = ?',
+          [selectedGumType2]);
+
+      setState(() {
+        removeTeeth = results
+            .map(
+                (result) => {'td_ID': result[0].toString(), 'tooth': result[1]})
+            .toList();
+        selectedTooth = removeTeeth.isNotEmpty ? removeTeeth[0]['td_ID'] : null;
+      });
+    } else {
+      // Set a default value for selectedTooth using the defaultResult query
+      var defaultResult = await conn.query(
+          'SELECT td_ID, tooth FROM tooth_details WHERE td_ID >= 35 AND td_ID <= 37');
+      if (defaultResult.isNotEmpty) {
+        setState(() {
+          selectedTooth = defaultResult.first['td_ID'].toString();
+          removeTeeth = defaultResult
+              .map((result) =>
+                  {'td_ID': result['td_ID'], 'tooth': result['tooth']})
+              .toList();
+          selectedTooth = removeTeeth.isNotEmpty
+              ? removeTeeth[0]['td_ID'].toString()
+              : null;
+        });
+        // selectedTooth = removeTeeth.isNotEmpty ? removeTeeth[0]['td_ID'] : null;
+      }
+    }
+
+    await conn.close();
+  }
+
+//  سفید کردن دندان
+  String? selectedBleachStep;
+  List<Map<String, dynamic>> teethBleachings = [];
+
+  Future<void> fetchBleachings() async {
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_id = 3');
+    setState(() {
+      teethBleachings = results
+          .map((result) => {
+                'ser_det_ID': result[0].toString(),
+                'service_specific_value': result[1]
+              })
+          .toList();
+    });
+    selectedBleachStep =
+        teethBleachings.isNotEmpty ? teethBleachings[0]['ser_det_ID'] : null;
+    await conn.close();
+  }
+
+  //  پروتز دندان
+  String? selectedProthesis;
+  List<Map<String, dynamic>> protheses = [];
+  Future<void> fetchProtheses() async {
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_id = 9');
+    setState(() {
+      protheses = results
+          .map((result) => {
+                'ser_det_ID': result[0].toString(),
+                'service_specific_value': result[1]
+              })
+          .toList();
+    });
+    selectedProthesis =
+        protheses.isNotEmpty ? protheses[0]['ser_det_ID'] : null;
+    await conn.close();
+  }
+
+  //  پوش کردن دندان
+  String? selectedCover;
+  List<Map<String, dynamic>> coverings = [];
+  Future<void> fetchToothCover() async {
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_id = 11');
+    setState(() {
+      coverings = results
+          .map((result) => {
+                'ser_det_ID': result[0].toString(),
+                'service_specific_value': result[1]
+              })
+          .toList();
+    });
+    selectedCover = coverings.isNotEmpty ? coverings[0]['ser_det_ID'] : null;
+    await conn.close();
+  }
+
+// It is for two forms of stepper
+  final _ptFormKey1 = GlobalKey<FormState>();
+  final _ptFormKey2 = GlobalKey<FormState>();
+
+  final _totalExpController = TextEditingController();
+  final _recievableController = TextEditingController();
+  final _meetController = TextEditingController();
+  final _noteController = TextEditingController();
+  final _dueAmountController = TextEditingController();
+  final _regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
+  final _regExOnlydigits = "[0-9+]";
+  final _regExDecimal = "[0-9.]";
+
+  var selectedRemovableTooth;
+  String removedTooth = 'عقل دندان';
+
+/*----------------------- Note #1: In fact the below variables contain service_details.ser_det_ID  ------------------*/
+  // For Filling
+  int selectedFill = 1;
+  // For Bleaching
+  int selectedServiceDetailID = 4;
+// For prothesis
+  int selectedProthis = 8;
+  // For teeth cover
+  int selectedMaterial = 10;
+// For mouth test
+  int mouthTest = 15;
+  /*----------------------- End of Note #1  Do not get confused of variables name (They are ser_det_ID values) ------------------*/
+
   String? selectedSerId;
   List<Map<String, dynamic>> services = [];
   Future<void> fetchServices() async {
@@ -39,6 +188,14 @@ class _PatientDetailState extends State<PatientDetail> {
   void initState() {
     super.initState();
     fetchServices();
+    onFillTeeth();
+    onChooseGum2();
+    fetchToothNum();
+    chooseGumType1();
+    fetchBleachings();
+    fetchProtheses();
+    fetchToothCover();
+    fetchRemoveTooth();
   }
 
   @override
@@ -52,7 +209,10 @@ class _PatientDetailState extends State<PatientDetail> {
             message: 'جلسه جدید',
             child: FloatingActionButton(
               onPressed: () {
-                print('FAB is clicked.');
+                setState(() {
+                  _currentStep = 0;
+                  onAddNewAppointment(context);
+                });
               },
               child: const Icon(Icons.add),
             ),
@@ -762,6 +922,1088 @@ class _PatientDetailState extends State<PatientDetail> {
     );
   }
 
+  onAddNewAppointment(BuildContext context) {
+    bool reachedLastStep = false;
+    double dueAmount = 0;
+    double paidAmount = _recievableController.text.isNotEmpty
+        ? double.parse(_recievableController.text)
+        : 0;
+    double totalAmount = _totalExpController.text.isNotEmpty
+        ? double.parse(_totalExpController.text)
+        : 0;
+    // Calculate teeth expenses
+    void onCalculateDueAmount(String text) {
+      paidAmount = _recievableController.text.isNotEmpty
+          ? double.parse(_recievableController.text)
+          : 0;
+      totalAmount = _totalExpController.text.isNotEmpty
+          ? double.parse(_totalExpController.text)
+          : 0;
+      dueAmount = totalAmount - paidAmount;
+      _dueAmountController.text =
+          paidAmount >= totalAmount ? '' : '$dueAmount افغانی';
+    }
+
+    return showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: ((context, setState) {
+          List<Step> stepList1() => [
+                Step(
+                  state: _currentStep <= 0
+                      ? StepState.editing
+                      : StepState.complete,
+                  isActive: _currentStep >= 0,
+                  title: const Text('خدمات مورد نیاز مریض'),
+                  content: SizedBox(
+                    child: Center(
+                      child: Form(
+                        key: _ptFormKey1,
+                        child: SizedBox(
+                          width: 500.0,
+                          child: Column(
+                            children: [
+                              const Text(
+                                  'لطفا نوعیت سرویس (خدمات) و خانه های مربوطه آنرا با دقت پر کنید.'),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: TextFormField(
+                                  controller: _meetController,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'لطفا تاریخ مراجعه مریض را انتخاب کنید.';
+                                    }
+                                    return null;
+                                  },
+                                  onTap: () async {
+                                    FocusScope.of(context).requestFocus(
+                                      FocusNode(),
+                                    );
+                                    final DateTime? dateTime =
+                                        await showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime(1900),
+                                            lastDate: DateTime(2100));
+                                    if (dateTime != null) {
+                                      final intl2.DateFormat formatter =
+                                          intl2.DateFormat('yyyy-MM-dd');
+                                      final String formattedDate =
+                                          formatter.format(dateTime);
+                                      _meetController.text = formattedDate;
+                                    }
+                                  },
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp(r'[0-9.]'))
+                                  ],
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'تاریخ اولین مراجعه',
+                                    suffixIcon:
+                                        Icon(Icons.calendar_month_outlined),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                    errorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.red)),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide: BorderSide(
+                                            color: Colors.red, width: 1.5)),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'نوعیت خدمات',
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: SizedBox(
+                                      height: 26.0,
+                                      child: DropdownButton<String>(
+                                        isExpanded: true,
+                                        icon: const Icon(Icons.arrow_drop_down),
+                                        value: selectedSerId,
+                                        items: services.map((service) {
+                                          return DropdownMenuItem<String>(
+                                            value: service['ser_ID'],
+                                            alignment: Alignment.centerRight,
+                                            child: Text(service['ser_name']),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            selectedSerId = newValue;
+                                            if (selectedSerId == '2') {
+                                              _isVisibleForFilling = true;
+                                              _isVisibleForBleaching = false;
+                                              _isVisibleForScaling = false;
+                                              _isVisibleForOrtho = false;
+                                              _isVisibleForProthesis = false;
+                                              _isVisibleForTeethRemove = false;
+                                              _isVisibleForCover = false;
+                                              _isVisibleGum = false;
+                                              _isVisibleForRoot = false;
+                                              _isVisibleMouth = false;
+                                            } else if (selectedSerId == '3') {
+                                              _isVisibleForFilling = false;
+                                              _isVisibleForBleaching = true;
+                                              _isVisibleForProthesis = false;
+                                              _isVisibleForScaling = false;
+                                              _isVisibleForTeethRemove = false;
+                                              _isVisibleForCover = false;
+                                              _isVisibleGum = false;
+                                              _isVisibleForOrtho = false;
+                                              _isVisibleForRoot = false;
+                                              _isVisibleMouth = false;
+                                            } else if (selectedSerId == '4') {
+                                              _isVisibleForScaling = true;
+                                              _isVisibleForFilling = false;
+                                              _isVisibleForBleaching = false;
+                                              _isVisibleForProthesis = false;
+                                              _isVisibleForTeethRemove = false;
+                                              _isVisibleForCover = false;
+                                              _isVisibleForOrtho = false;
+                                              _isVisibleGum = false;
+                                              _isVisibleForRoot = false;
+                                              _isVisibleMouth = false;
+                                              // Set the first dropdown value to avoid conflict
+                                              selectedGumType1 = '3';
+                                            } else if (selectedSerId == '5') {
+                                              _isVisibleForOrtho = true;
+                                              _isVisibleForFilling = false;
+                                              _isVisibleForBleaching = false;
+                                              _isVisibleForScaling = false;
+                                              _isVisibleForProthesis = false;
+                                              _isVisibleGum = false;
+                                              _isVisibleForTeethRemove = false;
+                                              _isVisibleForCover = false;
+                                              _isVisibleForRoot = false;
+                                              _isVisibleMouth = false;
+                                            } else if (selectedSerId == '9') {
+                                              _isVisibleForProthesis = true;
+                                              _isVisibleForOrtho = false;
+                                              _isVisibleForFilling = false;
+                                              _isVisibleForBleaching = false;
+                                              _isVisibleForScaling = false;
+                                              _isVisibleGum = false;
+                                              _isVisibleForTeethRemove = false;
+                                              _isVisibleForCover = false;
+                                              _isVisibleForRoot = false;
+                                              _isVisibleMouth = false;
+                                              // Set selected tooth '1'
+                                              selectedTooth2 = '1';
+                                            } else if (selectedSerId == '6') {
+                                              _isVisibleForRoot = true;
+                                              _isVisibleForProthesis = false;
+                                              _isVisibleForOrtho = false;
+                                              _isVisibleForFilling = false;
+                                              _isVisibleForBleaching = false;
+                                              _isVisibleForScaling = false;
+                                              _isVisibleGum = false;
+                                              _isVisibleForTeethRemove = false;
+                                              _isVisibleForCover = false;
+                                              _isVisibleMouth = false;
+                                              // Set selected tooth '1'
+                                              selectedTooth2 = '1';
+                                            } else if (selectedSerId == '7') {
+                                              _isVisibleGum = true;
+                                              _isVisibleForProthesis = false;
+                                              _isVisibleForOrtho = false;
+                                              _isVisibleForFilling = false;
+                                              _isVisibleForBleaching = false;
+                                              _isVisibleForScaling = false;
+                                              _isVisibleForRoot = false;
+                                              _isVisibleForTeethRemove = false;
+                                              _isVisibleForCover = false;
+                                              _isVisibleMouth = false;
+                                              selectedGumType1 = '3';
+                                            } else if (selectedSerId == '8') {
+                                              _isVisibleMouth = true;
+                                              _isVisibleForProthesis = false;
+                                              _isVisibleForOrtho = false;
+                                              _isVisibleForFilling = false;
+                                              _isVisibleForBleaching = false;
+                                              _isVisibleForScaling = false;
+                                              _isVisibleForRoot = false;
+                                              _isVisibleGum = false;
+                                              _isVisibleForTeethRemove = false;
+                                              _isVisibleForCover = false;
+                                            } else if (selectedSerId == '10') {
+                                              _isVisibleForTeethRemove = true;
+                                              _isVisibleForProthesis = false;
+                                              _isVisibleForOrtho = false;
+                                              _isVisibleForFilling = false;
+                                              _isVisibleForBleaching = false;
+                                              _isVisibleForScaling = false;
+                                              _isVisibleForRoot = false;
+                                              _isVisibleGum = false;
+                                              _isVisibleForCover = false;
+                                              _isVisibleMouth = false;
+                                            } else if (selectedSerId == '11') {
+                                              _isVisibleForCover = true;
+                                              _isVisibleForProthesis = false;
+                                              _isVisibleForOrtho = false;
+                                              _isVisibleForFilling = false;
+                                              _isVisibleForBleaching = false;
+                                              _isVisibleForScaling = false;
+                                              _isVisibleForRoot = false;
+                                              _isVisibleGum = false;
+                                              _isVisibleForTeethRemove = false;
+                                              _isVisibleMouth = false;
+                                              // Set selected tooth '1'
+                                              selectedTooth2 = '1';
+                                            } else {
+                                              _isVisibleForProthesis = false;
+                                              _isVisibleForOrtho = false;
+                                              _isVisibleForFilling = false;
+                                              _isVisibleForBleaching = false;
+                                              _isVisibleForScaling = false;
+                                              _isVisibleForRoot = false;
+                                              _isVisibleMouth = false;
+                                              _isVisibleGum = false;
+                                              _isVisibleForTeethRemove = false;
+                                              _isVisibleForCover = false;
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: _isVisibleForBleaching,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'نوعیت سفید کردن دندانها',
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: SizedBox(
+                                        height: 26.0,
+                                        child: DropdownButton(
+                                          isExpanded: true,
+                                          icon:
+                                              const Icon(Icons.arrow_drop_down),
+                                          value: selectedBleachStep,
+                                          items: teethBleachings.map((step) {
+                                            return DropdownMenuItem<String>(
+                                              value: step['ser_det_ID'],
+                                              alignment: Alignment.centerRight,
+                                              child: Text(step[
+                                                  'service_specific_value']),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              selectedBleachStep = newValue;
+                                              selectedServiceDetailID =
+                                                  int.parse(
+                                                      selectedBleachStep!);
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: _isVisibleForTeethRemove,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'نوعیت دندان',
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: SizedBox(
+                                        height: 26.0,
+                                        child: DropdownButton(
+                                          isExpanded: true,
+                                          icon:
+                                              const Icon(Icons.arrow_drop_down),
+                                          value: removeTeeth.any((tooth) =>
+                                                  tooth['td_ID'].toString() ==
+                                                  selectedTooth)
+                                              ? selectedTooth
+                                              : null,
+                                          items: removeTeeth.map((tooth) {
+                                            return DropdownMenuItem<String>(
+                                              value: tooth['td_ID'].toString(),
+                                              alignment: Alignment.centerRight,
+                                              child: Text(tooth['tooth']),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              selectedTooth = newValue;
+                                              selectedRemovableTooth =
+                                                  removeTeeth.firstWhere(
+                                                (tooth) =>
+                                                    tooth['td_ID'].toString() ==
+                                                    newValue,
+                                              );
+                                              // Fetch type the teeth which will be removed (پوسیده، عقل دندان..)
+                                              removedTooth =
+                                                  selectedRemovableTooth != null
+                                                      ? selectedRemovableTooth[
+                                                          'tooth']
+                                                      : null;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: _isVisibleForScaling
+                                    ? _isVisibleForScaling
+                                    : _isVisibleForOrtho
+                                        ? _isVisibleForOrtho
+                                        : _isVisibleGum
+                                            ? _isVisibleGum
+                                            : false,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'فک / لثه',
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: SizedBox(
+                                        height: 26.0,
+                                        child: DropdownButton(
+                                          isExpanded: true,
+                                          icon:
+                                              const Icon(Icons.arrow_drop_down),
+                                          value: selectedGumType1,
+                                          items: gumsType1.map((gumType1) {
+                                            return DropdownMenuItem<String>(
+                                              value: gumType1['teeth_ID'],
+                                              alignment: Alignment.centerRight,
+                                              child: Text(gumType1['gum']),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              selectedGumType1 = newValue;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: _isVisibleForFilling
+                                    ? _isVisibleForFilling
+                                    : _isVisibleForBleaching
+                                        ? _isVisibleForBleaching
+                                        : _isVisibleForProthesis
+                                            ? _isVisibleForProthesis
+                                            : _isVisibleForRoot
+                                                ? _isVisibleForRoot
+                                                : _isVisibleForTeethRemove
+                                                    ? _isVisibleForTeethRemove
+                                                    : _isVisibleForCover
+                                                        ? _isVisibleForCover
+                                                        : false,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'فک / لثه',
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: SizedBox(
+                                        height: 26.0,
+                                        child: DropdownButton<String>(
+                                          isExpanded: true,
+                                          icon:
+                                              const Icon(Icons.arrow_drop_down),
+                                          value: selectedGumType2,
+                                          items: gums.map((gums) {
+                                            return DropdownMenuItem<String>(
+                                              value: gums['teeth_ID'],
+                                              alignment: Alignment.centerRight,
+                                              child: Text(gums['gum']),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              selectedGumType2 = newValue;
+                                              print('Gum: $selectedGumType2');
+                                              if (selectedSerId == '10') {
+                                                // Set this value since by changing لثه / فک below it, it should fetch the default selected value.
+                                                removedTooth = 'عقل دندان';
+                                                fetchRemoveTooth();
+                                              }
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: _isVisibleForCover,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'نوعیت مواد پوش',
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: SizedBox(
+                                        height: 26.0,
+                                        child: DropdownButton(
+                                          isExpanded: true,
+                                          icon:
+                                              const Icon(Icons.arrow_drop_down),
+                                          value: selectedCover,
+                                          items: coverings.map((covering) {
+                                            return DropdownMenuItem<String>(
+                                              value: covering['ser_det_ID'],
+                                              alignment: Alignment.centerRight,
+                                              child: Text(covering[
+                                                  'service_specific_value']),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              selectedCover = newValue;
+                                              selectedMaterial =
+                                                  int.parse(selectedCover!);
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: _isVisibleForProthesis
+                                    ? _isVisibleForProthesis
+                                    : false,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'نوعیت پروتیز',
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: SizedBox(
+                                        height: 26.0,
+                                        child: DropdownButton(
+                                          isExpanded: true,
+                                          icon:
+                                              const Icon(Icons.arrow_drop_down),
+                                          value: selectedProthesis,
+                                          items: protheses.map((prothesis) {
+                                            return DropdownMenuItem<String>(
+                                              value: prothesis['ser_det_ID'],
+                                              alignment: Alignment.centerRight,
+                                              child: Text(prothesis[
+                                                  'service_specific_value']),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              selectedProthesis = newValue;
+                                              selectedProthis =
+                                                  int.parse(selectedProthesis!);
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                // ignore: unrelated_type_equality_checks
+                                visible: _isVisibleForFilling,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'نوعیت مواد',
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: SizedBox(
+                                        height: 26.0,
+                                        child: DropdownButton<String>(
+                                          isExpanded: true,
+                                          icon:
+                                              const Icon(Icons.arrow_drop_down),
+                                          value: selectedFilling,
+                                          items: teethFillings.map((material) {
+                                            return DropdownMenuItem<String>(
+                                              alignment: Alignment.centerRight,
+                                              value: material['ser_det_ID'],
+                                              child: Directionality(
+                                                textDirection:
+                                                    TextDirection.rtl,
+                                                child: Text(material[
+                                                    'service_specific_value']),
+                                              ),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              selectedFilling = newValue!;
+                                              selectedFill =
+                                                  int.parse(selectedFilling!);
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: _isVisibleForFilling
+                                    ? _isVisibleForFilling
+                                    : _isVisibleForRoot
+                                        ? _isVisibleForRoot
+                                        : _isVisibleForProthesis
+                                            ? _isVisibleForProthesis
+                                            : _isVisibleForCover
+                                                ? _isVisibleForCover
+                                                : false,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'دندان',
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: SizedBox(
+                                        height: 26.0,
+                                        child: DropdownButton(
+                                          isExpanded: true,
+                                          icon:
+                                              const Icon(Icons.arrow_drop_down),
+                                          value: selectedTooth2,
+                                          items: teeth.map((tooth) {
+                                            return DropdownMenuItem<String>(
+                                              value: tooth['td_ID'],
+                                              alignment: Alignment.centerRight,
+                                              child: Text(tooth['tooth']),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              selectedTooth2 = newValue;
+                                              // print('Service: $selectedSerId');
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: true,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: TextFormField(
+                                    controller: _noteController,
+                                    validator: (value) {
+                                      if (value!.isNotEmpty) {
+                                        if (value.length > 40 ||
+                                            value.length < 10) {
+                                          return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                        }
+                                      }
+                                      return null;
+                                    },
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                        RegExp(_regExOnlyAbc),
+                                      ),
+                                    ],
+                                    maxLines: 3,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'توضیحات',
+                                      suffixIcon: Icon(Icons.note_alt_outlined),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.red)),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide: BorderSide(
+                                              color: Colors.red, width: 1.5)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Step(
+                  state: _currentStep <= 1
+                      ? StepState.editing
+                      : StepState.complete,
+                  isActive: _currentStep >= 1,
+                  title: const Text('هزینه ها / فیس'),
+                  content: SizedBox(
+                    child: Center(
+                      child: Form(
+                        key: _ptFormKey2,
+                        child: SizedBox(
+                          width: 500.0,
+                          child: Column(
+                            children: [
+                              const Text(
+                                  'لطفاً هزینه و اقساط را در خانه های ذیل انتخاب نمایید.'),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: TextFormField(
+                                  controller: _totalExpController,
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'مصارف کل نمیتواند خالی باشد.';
+                                    }
+                                    return null;
+                                  },
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(_regExDecimal),
+                                    ),
+                                  ],
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'کل مصارف',
+                                    suffixIcon: Icon(Icons.money_rounded),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                    errorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.red)),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide: BorderSide(
+                                            color: Colors.red, width: 1.5)),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'نوعیت پرداخت',
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: SizedBox(
+                                      height: 26.0,
+                                      child: DropdownButton(
+                                        isExpanded: true,
+                                        icon: const Icon(Icons.arrow_drop_down),
+                                        value: payTypeDropdown,
+                                        items: onPayInstallment()
+                                            .map((String installmentItems) {
+                                          return DropdownMenuItem(
+                                            alignment: Alignment.centerRight,
+                                            value: installmentItems,
+                                            child: Directionality(
+                                              textDirection: TextDirection.rtl,
+                                              child: Text(installmentItems),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            print('Payment: $payTypeDropdown');
+                                            payTypeDropdown = newValue!;
+                                            if (payTypeDropdown != 'تکمیل') {
+                                              _isVisibleForPayment = true;
+                                            } else {
+                                              _isVisibleForPayment = false;
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: _isVisibleForPayment,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: TextFormField(
+                                    controller: _recievableController,
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return 'مبلغ رسید نمی تواند خالی باشد.';
+                                      } else if (paidAmount >= totalAmount) {
+                                        return 'مبلغ رسید باید کمتر از کل مصارف باشد.';
+                                      }
+                                      return null;
+                                    },
+                                    onChanged: onCalculateDueAmount,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'مبلغ رسید',
+                                      suffixIcon: Icon(Icons.money_rounded),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.red)),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide: BorderSide(
+                                              color: Colors.red, width: 1.5)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Visibility(
+                                visible: _isVisibleForPayment,
+                                child: Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: TextFormField(
+                                    controller: _dueAmountController,
+                                    readOnly: true,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'مبلغ باقی',
+                                      suffixIcon: Icon(Icons.money_rounded),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ];
+
+          return AlertDialog(
+            contentPadding: EdgeInsets.zero,
+            title: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Center(child: Text('افزودن مراجعه (جلسه)')),
+            ),
+            content: SizedBox(
+              width: 600.0,
+              child: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Stepper(
+                  controlsBuilder:
+                      (BuildContext context, ControlsDetails controls) {
+                    return Row(
+                      children: <Widget>[
+                        ElevatedButton(
+                          onPressed: controls.onStepContinue,
+                          child: Text(reachedLastStep ? 'ثبت کردن' : 'ادامه'),
+                        ),
+                        TextButton(
+                          onPressed:
+                              _currentStep == 0 ? null : controls.onStepCancel,
+                          child: const Text('بازگشت'),
+                        ),
+                      ],
+                    );
+                  },
+                  steps: stepList1(),
+                  currentStep: _currentStep,
+                  type: StepperType.horizontal,
+                  onStepCancel: () {
+                    print('Current Step: $_currentStep');
+                    setState(() {
+                      if (_currentStep > 0) {
+                        _currentStep--;
+                        reachedLastStep = false;
+                      }
+                    });
+                  },
+                  // currentStep: currentStep,
+                  onStepContinue: () {
+                    setState(() {
+                      if (_currentStep < stepList1().length - 1) {
+                        _currentStep++;
+                        // This condition is to make label of last step differ from others.
+                        if (_currentStep == 1) {
+                          reachedLastStep = true;
+                        } else {
+                          reachedLastStep = false;
+                        }
+                      } else if (_ptFormKey2.currentState!.validate()) {}
+                    });
+                  },
+                ),
+              ),
+            ),
+            actions: [
+              Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () =>
+                              Navigator.of(context, rootNavigator: true).pop(),
+                          child: const Text('بستن')),
+                      TextButton(onPressed: () {}, child: const Text('انجام')),
+                    ],
+                  ))
+            ],
+          );
+        }),
+      ),
+    );
+  }
+
   // Displays an alert dialog to edit patient's details
   onEditPatient(BuildContext context) {
     String dropdownValue = 'مجرد';
@@ -1070,7 +2312,7 @@ class _PatientDetailState extends State<PatientDetail> {
     String installments = 'تکمیل';
 
     int currentStep = 0;
-    List<Step> stepList() => [
+    List<Step> stepList2() => [
           Step(
             state: currentStep <= 0 ? StepState.editing : StepState.complete,
             isActive: currentStep >= 0,
@@ -1285,7 +2527,7 @@ class _PatientDetailState extends State<PatientDetail> {
                       ],
                     );
                   },
-                  steps: stepList(),
+                  steps: stepList2(),
                   currentStep: currentStep,
                   type: StepperType.horizontal,
                   onStepCancel: () {
@@ -1299,9 +2541,9 @@ class _PatientDetailState extends State<PatientDetail> {
                   },
                   // currentStep: currentStep,
                   onStepContinue: () {
-                    print('Current Step: $currentStep');
+                    /*     print('Current Step: $currentStep');
                     setState(() {
-                      if (currentStep < stepList().length - 1) {
+                      if (currentStep < stepList2().length - 1) {
                         currentStep++;
                         // This condition is to make label of last step differ from others.
                         if (currentStep == 1) {
@@ -1310,7 +2552,7 @@ class _PatientDetailState extends State<PatientDetail> {
                           lastField = false;
                         }
                       }
-                    });
+                    }); */
                   },
                 ),
               ),
@@ -1425,6 +2667,70 @@ class _PatientDetailState extends State<PatientDetail> {
             patLastName: row[12]))
         .toList();
     return appoints;
+  }
+
+  //  لثه برای جرم گیری
+  String? selectedGumType1;
+  List<Map<String, dynamic>> gumsType1 = [];
+  Future<void> chooseGumType1() async {
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT teeth_ID, gum from teeth WHERE teeth_ID IN (1, 2, 3) ORDER BY teeth_ID DESC');
+    gumsType1 = results
+        .map((result) => {'teeth_ID': result[0].toString(), 'gum': result[1]})
+        .toList();
+    selectedGumType1 = gumsType1.isNotEmpty ? gumsType1[0]['teeth_ID'] : null;
+    await conn.close();
+  }
+
+//  لثه برای استفاده متعدد
+  String? selectedGumType2;
+  List<Map<String, dynamic>> gums = [];
+
+  Future<void> onChooseGum2() async {
+    var conn = await onConnToDb();
+    var queryResult = await conn.query(
+        'SELECT teeth_ID, gum FROM teeth WHERE teeth_ID IN (4, 5, 6, 7, 1)');
+    gums = queryResult
+        .map((row) => {'teeth_ID': row[0].toString(), 'gum': row[1]})
+        .toList();
+    selectedGumType2 = gums.isNotEmpty ? gums[1]['teeth_ID'] : null;
+    await conn.close();
+  }
+
+//  پرکاری دندان
+  String? selectedFilling;
+  List<Map<String, dynamic>> teethFillings = [];
+
+  Future<void> onFillTeeth() async {
+    var conn = await onConnToDb();
+    var queryFill = await conn.query(
+        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_det_ID >= 1 AND ser_det_ID < 4');
+    teethFillings = queryFill
+        .map((result) => {
+              'ser_det_ID': result[0].toString(),
+              'service_specific_value': result[1]
+            })
+        .toList();
+
+    selectedFilling =
+        teethFillings.isNotEmpty ? teethFillings[0]['ser_det_ID'] : null;
+    await conn.close();
+  }
+
+//  تعداد دندان
+  List<Map<String, dynamic>> teeth = [];
+  Future<void> fetchToothNum() async {
+    String? toothId = selectedGumType2 ?? '4';
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT td_ID, tooth from tooth_details WHERE tooth_ID = ? LIMIT 8',
+        [toothId]);
+    teeth = results
+        .map((result) => {'td_ID': result[0].toString(), 'tooth': result[1]})
+        .toList();
+    selectedTooth2 = teeth.isNotEmpty ? teeth[0]['td_ID'] : null;
+    await conn.close();
   }
 }
 
