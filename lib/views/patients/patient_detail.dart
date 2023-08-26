@@ -49,7 +49,6 @@ class _PatientDetailState extends State<PatientDetail> {
 
   List<Map<String, dynamic>> removeTeeth = [];
   Future<void> fetchRemoveTooth() async {
-    print('Testing gum: $selectedGumType2');
     var conn = await onConnToDb();
     if (selectedGumType2 != null) {
       var results = await conn.query(
@@ -1447,7 +1446,6 @@ class _PatientDetailState extends State<PatientDetail> {
                                           onChanged: (String? newValue) {
                                             setState(() {
                                               selectedGumType2 = newValue;
-                                              print('Gum: $selectedGumType2');
                                               if (selectedSerId == '10') {
                                                 // Set this value since by changing لثه / فک below it, it should fetch the default selected value.
                                                 removedTooth = 'عقل دندان';
@@ -1848,7 +1846,6 @@ class _PatientDetailState extends State<PatientDetail> {
                                         }).toList(),
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            print('Payment: $payTypeDropdown');
                                             payTypeDropdown = newValue!;
                                             if (payTypeDropdown != 'تکمیل') {
                                               _isVisibleForPayment = true;
@@ -2645,9 +2642,7 @@ class _PatientDetailState extends State<PatientDetail> {
                           if (results.affectedRows! > 0) {
                             _onShowSnack(
                                 Colors.green, 'مراجعه موفقانه حذف شد.');
-                                setState(() {
-                                  
-                                });
+                            setState(() {});
                           } else {
                             _onShowSnack(Colors.red, 'مراجعه حذف نشد.');
                           }
@@ -2829,8 +2824,12 @@ class _PatientDetailState extends State<PatientDetail> {
     } else if (serviceID == 8) {
       tDetailID = null;
       serviceDID = 15;
-    } else {
-      serviceDID = 15;
+    } else if (serviceID == 4) {
+      serviceDID = 17;
+    } else if (serviceID == 5) {
+      serviceDID = 18;
+    } else if (serviceID == 7) {
+      serviceDID = 19;
     }
 
     double totalAmount = double.parse(_totalExpController.text);
@@ -2845,6 +2844,7 @@ class _PatientDetailState extends State<PatientDetail> {
       recieved = double.parse(_recievableController.text);
       dueAmount = totalAmount - recieved;
     }
+
 
     // Now add appointment of the patient
     var newAptResults = await conn.query(
