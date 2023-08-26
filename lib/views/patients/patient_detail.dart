@@ -4,6 +4,7 @@ import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'patients.dart' as patient_ist;
 import 'patient_info.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/staff/staff_info.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart' as intl2;
 
@@ -21,6 +22,11 @@ class PatientDetail extends StatefulWidget {
 }
 
 class _PatientDetailState extends State<PatientDetail> {
+  bool reachedLastStep = false;
+  // Global key for displayig snackbar message
+  final GlobalKey<ScaffoldMessengerState> _ptGlobalKey =
+      GlobalKey<ScaffoldMessengerState>();
+
   // This is to track current step of stepper
   int _currentStep = 0;
   String? selectedTooth2;
@@ -202,282 +208,215 @@ class _PatientDetailState extends State<PatientDetail> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          floatingActionButton: Tooltip(
-            message: 'جلسه جدید',
-            child: FloatingActionButton(
-              onPressed: () {
-                setState(() {
-                  _currentStep = 0;
-                  onAddNewAppointment(context);
-                });
-              },
-              child: const Icon(Icons.add),
-            ),
-          ),
-          appBar: AppBar(
-            leading: Tooltip(
-              message: 'رفتن به صفحه قبلی',
-              child: IconButton(
-                icon: const BackButtonIcon(),
+      home: ScaffoldMessenger(
+        key: _ptGlobalKey,
+        child: Directionality(
+          textDirection: TextDirection.rtl,
+          child: Scaffold(
+            floatingActionButton: Tooltip(
+              message: 'جلسه جدید',
+              child: FloatingActionButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  setState(() {
+                    reachedLastStep = false;
+                    _currentStep = 0;
+                    onShowDialogForNewAppointment(context);
+                  });
                 },
+                child: const Icon(Icons.add),
               ),
             ),
-            title: const Text('جزییات مریض'),
-            actions: [
-              Builder(
-                builder: (context) => Tooltip(
-                  message: 'تغییر دادن مریض',
-                  child: IconButton(
-                    onPressed: () {
-                      onEditPatient(context);
-                    },
-                    icon: const Icon(Icons.edit_outlined),
-                  ),
-                ),
-              ),
-              Tooltip(
-                message: 'رفتن به داشبورد',
+            appBar: AppBar(
+              leading: Tooltip(
+                message: 'رفتن به صفحه قبلی',
                 child: IconButton(
-                  icon: const Icon(Icons.home),
+                  icon: const BackButtonIcon(),
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Dashboard()));
+                    Navigator.pop(context);
                   },
                 ),
               ),
-            ],
-          ),
-          body: Column(
-            children: [
-              SizedBox(
-                  height: 200.0,
-                  child: Row(
-                    children: [
-                      Card(
-                        child: SizedBox(
-                          width: 200.0,
-                          child: Column(
-                            children: [
-                              const CircleAvatar(
-                                radius: 40.0,
-                                backgroundImage:
-                                    AssetImage('assets/graphics/patient.png'),
-                                backgroundColor: Colors.transparent,
-                              ),
-                              Text(
-                                '${PatientInfo.firstName} ${PatientInfo.lastName}',
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
-                              const Text(
-                                '0744232325',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Card(
-                        child: SizedBox(
-                          height: 300.0,
-                          width: 400.0,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 20.0, bottom: 20.0),
-                                    child: Column(
-                                      children: [
-                                        const Text(
-                                          'جنیست',
-                                          style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 12.0),
-                                        ),
-                                        Text('${PatientInfo.sex}'),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 20.0, bottom: 20.0),
-                                    child: Column(
-                                      children: [
-                                        const Text('حالت مدنی',
-                                            style: TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 12.0)),
-                                        Text('${PatientInfo.maritalStatus}'),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 20.0, bottom: 20.0),
-                                    child: Column(
-                                      children: [
-                                        const Text('سن',
-                                            style: TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 12.0)),
-                                        Text('${PatientInfo.age} سال'),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 20.0, bottom: 20.0),
-                                    child: Column(
-                                      children: [
-                                        const Text('گروپ خون',
-                                            style: TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 12.0)),
-                                        Text('${PatientInfo.bloodGroup}'),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 20.0, bottom: 20.0),
-                                    child: Column(
-                                      children: [
-                                        const Text('آدرس',
-                                            style: TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 12.0)),
-                                        Text('${PatientInfo.address}'),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.only(
-                                        left: 20.0, bottom: 20.0),
-                                    child: Column(
-                                      children: [
-                                        const Text('تاریخ ثبت',
-                                            style: TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 12.0)),
-                                        Text('${PatientInfo.regDate}'),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: SizedBox(
-                          child: Card(
+              title: const Text('جزییات مریض'),
+              actions: [
+                Builder(
+                  builder: (context) => Tooltip(
+                    message: 'تغییر دادن مریض',
+                    child: IconButton(
+                      onPressed: () {
+                        onEditPatient(context);
+                      },
+                      icon: const Icon(Icons.edit_outlined),
+                    ),
+                  ),
+                ),
+                Tooltip(
+                  message: 'رفتن به داشبورد',
+                  child: IconButton(
+                    icon: const Icon(Icons.home),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Dashboard()));
+                    },
+                  ),
+                ),
+              ],
+            ),
+            body: Column(
+              children: [
+                SizedBox(
+                    height: 200.0,
+                    child: Row(
+                      children: [
+                        Card(
+                          child: SizedBox(
+                            width: 200.0,
                             child: Column(
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: const Text(
-                                    'هزینه ها',
-                                    style: TextStyle(
-                                        color: Colors.blue,
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
+                                const CircleAvatar(
+                                  radius: 40.0,
+                                  backgroundImage:
+                                      AssetImage('assets/graphics/patient.png'),
+                                  backgroundColor: Colors.transparent,
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Table(
-                                    border: const TableBorder(
-                                        horizontalInside: BorderSide(
-                                            color: Colors.grey,
-                                            style: BorderStyle.solid,
-                                            width: 0.5)),
-                                    columnWidths: const {
-                                      0: FixedColumnWidth(120),
-                                      1: FixedColumnWidth(80),
-                                      2: FixedColumnWidth(100),
-                                      3: FixedColumnWidth(100),
-                                      4: FixedColumnWidth(100),
-                                    },
-                                    children: const [
-                                      // add your table rows here
-                                      TableRow(
+                                Text(
+                                  '${PatientInfo.firstName} ${PatientInfo.lastName}',
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const Text(
+                                  '0744232325',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Card(
+                          child: SizedBox(
+                            height: 300.0,
+                            width: 400.0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 20.0, bottom: 20.0),
+                                      child: Column(
                                         children: [
-                                          Padding(
-                                            padding: EdgeInsets.all(5.0),
-                                            child: Text(
-                                              'سرویس',
-                                              style: TextStyle(
-                                                  fontSize: 12.0,
-                                                  color: Colors.grey),
-                                            ),
+                                          const Text(
+                                            'جنیست',
+                                            style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 12.0),
                                           ),
-                                          Padding(
-                                            padding: EdgeInsets.all(5.0),
-                                            child: Text(
-                                              'جلسه',
-                                              style: TextStyle(
-                                                  fontSize: 12.0,
-                                                  color: Colors.grey),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.all(5.0),
-                                            child: Text(
-                                              'مبلغ کل',
-                                              style: TextStyle(
-                                                  fontSize: 12.0,
-                                                  color: Colors.grey),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.all(5.0),
-                                            child: Text(
-                                              'دریافت شده',
-                                              style: TextStyle(
-                                                  fontSize: 12.0,
-                                                  color: Colors.grey),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.all(5.0),
-                                            child: Text(
-                                              'باقی',
-                                              style: TextStyle(
-                                                  fontSize: 12.0,
-                                                  color: Colors.grey),
-                                            ),
-                                          ),
+                                          Text('${PatientInfo.sex}'),
                                         ],
                                       ),
-                                      // more rows ...
-                                    ],
-                                  ),
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 20.0, bottom: 20.0),
+                                      child: Column(
+                                        children: [
+                                          const Text('حالت مدنی',
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12.0)),
+                                          Text('${PatientInfo.maritalStatus}'),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SingleChildScrollView(
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 20.0, bottom: 20.0),
+                                      child: Column(
+                                        children: [
+                                          const Text('سن',
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12.0)),
+                                          Text('${PatientInfo.age} سال'),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 20.0, bottom: 20.0),
+                                      child: Column(
+                                        children: [
+                                          const Text('گروپ خون',
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12.0)),
+                                          Text('${PatientInfo.bloodGroup}'),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 20.0, bottom: 20.0),
+                                      child: Column(
+                                        children: [
+                                          const Text('آدرس',
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12.0)),
+                                          Text('${PatientInfo.address}'),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 20.0, bottom: 20.0),
+                                      child: Column(
+                                        children: [
+                                          const Text('تاریخ ثبت',
+                                              style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12.0)),
+                                          Text('${PatientInfo.regDate}'),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: SizedBox(
+                            child: Card(
+                              child: Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: const Text(
+                                      'هزینه ها',
+                                      style: TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 14.0,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.only(bottom: 8.0),
                                     child: Table(
                                       border: const TableBorder(
                                           horizontalInside: BorderSide(
@@ -496,72 +435,49 @@ class _PatientDetailState extends State<PatientDetail> {
                                         TableRow(
                                           children: [
                                             Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('پرکاری دندان'),
+                                              padding: EdgeInsets.all(5.0),
+                                              child: Text(
+                                                'سرویس',
+                                                style: TextStyle(
+                                                    fontSize: 12.0,
+                                                    color: Colors.grey),
+                                              ),
                                             ),
                                             Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('1'),
+                                              padding: EdgeInsets.all(5.0),
+                                              child: Text(
+                                                'جلسه',
+                                                style: TextStyle(
+                                                    fontSize: 12.0,
+                                                    color: Colors.grey),
+                                              ),
                                             ),
                                             Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('3000 افغانی'),
+                                              padding: EdgeInsets.all(5.0),
+                                              child: Text(
+                                                'مبلغ کل',
+                                                style: TextStyle(
+                                                    fontSize: 12.0,
+                                                    color: Colors.grey),
+                                              ),
                                             ),
                                             Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('2000'),
+                                              padding: EdgeInsets.all(5.0),
+                                              child: Text(
+                                                'دریافت شده',
+                                                style: TextStyle(
+                                                    fontSize: 12.0,
+                                                    color: Colors.grey),
+                                              ),
                                             ),
                                             Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('1000'),
-                                            ),
-                                          ],
-                                        ),
-                                        TableRow(
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('پرکاری دندان'),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('2'),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('3000 افغانی'),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('2000'),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('1000'),
-                                            ),
-                                          ],
-                                        ),
-                                        TableRow(
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('پرکاری دندان'),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('2'),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('3000 افغانی'),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('2000'),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text('1000'),
+                                              padding: EdgeInsets.all(5.0),
+                                              child: Text(
+                                                'باقی',
+                                                style: TextStyle(
+                                                    fontSize: 12.0,
+                                                    color: Colors.grey),
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -569,361 +485,460 @@ class _PatientDetailState extends State<PatientDetail> {
                                       ],
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )),
-              Expanded(
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 380.0,
-                  child: Card(
-                    child: Column(
-                      children: [
-                        Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8.0),
-                              child: const Text(
-                                'دفعات مراجعه مریض',
-                                style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 14.0,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Container(
-                              width: 1200.0,
-                              padding: const EdgeInsets.all(8.0),
-                              child: Table(
-                                border: const TableBorder(
-                                    horizontalInside: BorderSide(
-                                        color: Colors.grey,
-                                        style: BorderStyle.solid,
-                                        width: 0.5)),
-                                columnWidths: const {
-                                  0: FixedColumnWidth(120),
-                                  1: FixedColumnWidth(100),
-                                  2: FixedColumnWidth(80),
-                                  3: FixedColumnWidth(80),
-                                  4: FixedColumnWidth(270),
-                                  5: FixedColumnWidth(80),
-                                  6: FixedColumnWidth(100),
-                                  7: FixedColumnWidth(80),
-                                  8: FixedColumnWidth(80),
-                                  9: FixedColumnWidth(80),
-                                  10: FixedColumnWidth(80),
-                                },
-                                children: const [
-                                  // add your table rows here
-                                  TableRow(
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'سرویس',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
-                                        ),
+                                  Container(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: SingleChildScrollView(
+                                      child: Table(
+                                        border: const TableBorder(
+                                            horizontalInside: BorderSide(
+                                                color: Colors.grey,
+                                                style: BorderStyle.solid,
+                                                width: 0.5)),
+                                        columnWidths: const {
+                                          0: FixedColumnWidth(120),
+                                          1: FixedColumnWidth(80),
+                                          2: FixedColumnWidth(100),
+                                          3: FixedColumnWidth(100),
+                                          4: FixedColumnWidth(100),
+                                        },
+                                        children: const [
+                                          // add your table rows here
+                                          TableRow(
+                                            children: [
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('پرکاری دندان'),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('1'),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('3000 افغانی'),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('2000'),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('1000'),
+                                              ),
+                                            ],
+                                          ),
+                                          TableRow(
+                                            children: [
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('پرکاری دندان'),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('2'),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('3000 افغانی'),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('2000'),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('1000'),
+                                              ),
+                                            ],
+                                          ),
+                                          TableRow(
+                                            children: [
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('پرکاری دندان'),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('2'),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('3000 افغانی'),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('2000'),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Text('1000'),
+                                              ),
+                                            ],
+                                          ),
+                                          // more rows ...
+                                        ],
                                       ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'تاریخ مراجعه',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'فک / بیره',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'نوعیت دندان',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'توضیحات',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'جلسه / نوبت',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'داکتر',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'مراجعه',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'ویرایش',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'حذف',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'عکس',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
-                                  // more rows ...
                                 ],
                               ),
-                            ),
-                          ],
-                        ),
-                        Container(
-                          height: 300.0,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                Container(
-                                  width: 1200.0,
-                                  padding: const EdgeInsets.all(8.0),
-                                  margin: const EdgeInsets.only(top: 8.0),
-                                  child: FutureBuilder(
-                                      future: getAppointment(),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.hasData) {
-                                          final appoints = snapshot.data;
-                                          return Table(
-                                            border: const TableBorder(
-                                                horizontalInside: BorderSide(
-                                                    color: Colors.grey,
-                                                    style: BorderStyle.solid,
-                                                    width: 0.5)),
-                                            columnWidths: const {
-                                              0: FixedColumnWidth(120),
-                                              1: FixedColumnWidth(100),
-                                              2: FixedColumnWidth(80),
-                                              3: FixedColumnWidth(80),
-                                              4: FixedColumnWidth(270),
-                                              5: FixedColumnWidth(80),
-                                              6: FixedColumnWidth(100),
-                                              7: FixedColumnWidth(80),
-                                              8: FixedColumnWidth(80),
-                                              9: FixedColumnWidth(80),
-                                              10: FixedColumnWidth(80),
-                                            },
-                                            children: [
-                                              for (var apt in appoints!)
-                                                // add your table rows here
-                                                TableRow(
-                                                  children: [
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(apt.service),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(apt.meetDate),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(apt.gum),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(apt.tooth),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child:
-                                                          Text(apt.description),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(
-                                                          apt.round.toString()),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Text(
-                                                          '${apt.staffFirstName} ${apt.staffLastName}'),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Builder(builder:
-                                                          (BuildContext
-                                                              context) {
-                                                        return IconButton(
-                                                          onPressed: () {
-                                                            onEditAppointment(
-                                                                context);
-                                                          },
-                                                          icon: const Icon(
-                                                              Icons
-                                                                  .add_to_queue_outlined,
-                                                              color:
-                                                                  Colors.blue,
-                                                              size: 18.0),
-                                                        );
-                                                      }),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Builder(builder:
-                                                          (BuildContext
-                                                              context) {
-                                                        return IconButton(
-                                                          onPressed: () {
-                                                            onEditAppointment(
-                                                                context);
-                                                          },
-                                                          icon: const Icon(
-                                                              Icons.edit,
-                                                              color:
-                                                                  Colors.blue,
-                                                              size: 18.0),
-                                                        );
-                                                      }),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Builder(
-                                                        builder: (context) =>
-                                                            IconButton(
-                                                          onPressed: () {
-                                                            onDeleteAppointment(
-                                                                context);
-                                                          },
-                                                          icon: const Icon(
-                                                              Icons.delete,
-                                                              color:
-                                                                  Colors.blue,
-                                                              size: 18.0),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Builder(
-                                                        builder: (context) =>
-                                                            IconButton(
-                                                          onPressed: () {
-                                                            showDialog(
-                                                              context: context,
-                                                              builder: (context) =>
-                                                                  onShowImage(),
-                                                            );
-                                                          },
-                                                          icon: const Icon(
-                                                              Icons.image,
-                                                              color:
-                                                                  Colors.blue,
-                                                              size: 18.0),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                            ],
-                                          );
-                                        } else if (snapshot.hasError) {
-                                          return Text(
-                                              'Error: ${snapshot.error}');
-                                        } else {
-                                          return const CircularProgressIndicator();
-                                        }
-                                      }),
-                                ),
-                              ],
                             ),
                           ),
                         ),
                       ],
+                    )),
+                Expanded(
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 380.0,
+                    child: Card(
+                      child: Column(
+                        children: [
+                          Column(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8.0),
+                                child: const Text(
+                                  'دفعات مراجعه مریض',
+                                  style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 14.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              Container(
+                                width: 1200.0,
+                                padding: const EdgeInsets.all(8.0),
+                                child: Table(
+                                  border: const TableBorder(
+                                      horizontalInside: BorderSide(
+                                          color: Colors.grey,
+                                          style: BorderStyle.solid,
+                                          width: 0.5)),
+                                  columnWidths: const {
+                                    0: FixedColumnWidth(120),
+                                    1: FixedColumnWidth(100),
+                                    2: FixedColumnWidth(80),
+                                    3: FixedColumnWidth(80),
+                                    4: FixedColumnWidth(270),
+                                    5: FixedColumnWidth(80),
+                                    6: FixedColumnWidth(100),
+                                    7: FixedColumnWidth(80),
+                                    8: FixedColumnWidth(80),
+                                    9: FixedColumnWidth(80),
+                                    10: FixedColumnWidth(80),
+                                  },
+                                  children: const [
+                                    // add your table rows here
+                                    TableRow(
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'سرویس',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'تاریخ مراجعه',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'فک / بیره',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'نوعیت دندان',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'توضیحات',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'جلسه / نوبت',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'داکتر',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'مراجعه',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'ویرایش',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'حذف',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'عکس',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    // more rows ...
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          Container(
+                            height: 300.0,
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  Container(
+                                    width: 1200.0,
+                                    padding: const EdgeInsets.all(8.0),
+                                    margin: const EdgeInsets.only(top: 8.0),
+                                    child: FutureBuilder(
+                                        future: getAppointment(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            final appoints = snapshot.data;
+                                            return Table(
+                                              border: const TableBorder(
+                                                  horizontalInside: BorderSide(
+                                                      color: Colors.grey,
+                                                      style: BorderStyle.solid,
+                                                      width: 0.5)),
+                                              columnWidths: const {
+                                                0: FixedColumnWidth(120),
+                                                1: FixedColumnWidth(100),
+                                                2: FixedColumnWidth(80),
+                                                3: FixedColumnWidth(80),
+                                                4: FixedColumnWidth(270),
+                                                5: FixedColumnWidth(80),
+                                                6: FixedColumnWidth(100),
+                                                7: FixedColumnWidth(80),
+                                                8: FixedColumnWidth(80),
+                                                9: FixedColumnWidth(80),
+                                                10: FixedColumnWidth(80),
+                                              },
+                                              children: [
+                                                for (var apt in appoints!)
+                                                  // add your table rows here
+                                                  TableRow(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child:
+                                                            Text(apt.service),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child:
+                                                            Text(apt.meetDate),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(apt.gum),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(apt.tooth),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                            apt.description),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(apt.round
+                                                            .toString()),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Text(
+                                                            '${apt.staffFirstName} ${apt.staffLastName}'),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Builder(builder:
+                                                            (BuildContext
+                                                                context) {
+                                                          return IconButton(
+                                                            onPressed: () {
+                                                              onEditAppointment(
+                                                                  context);
+                                                            },
+                                                            icon: const Icon(
+                                                                Icons
+                                                                    .add_to_queue_outlined,
+                                                                color:
+                                                                    Colors.blue,
+                                                                size: 18.0),
+                                                          );
+                                                        }),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Builder(builder:
+                                                            (BuildContext
+                                                                context) {
+                                                          return IconButton(
+                                                            onPressed: () {
+                                                              onEditAppointment(
+                                                                  context);
+                                                            },
+                                                            icon: const Icon(
+                                                                Icons.edit,
+                                                                color:
+                                                                    Colors.blue,
+                                                                size: 18.0),
+                                                          );
+                                                        }),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Builder(
+                                                          builder: (context) =>
+                                                              IconButton(
+                                                            onPressed: () {
+                                                              onDeleteAppointment(
+                                                                  context);
+                                                            },
+                                                            icon: const Icon(
+                                                                Icons.delete,
+                                                                color:
+                                                                    Colors.blue,
+                                                                size: 18.0),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Builder(
+                                                          builder: (context) =>
+                                                              IconButton(
+                                                            onPressed: () {
+                                                              showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (context) =>
+                                                                        onShowImage(),
+                                                              );
+                                                            },
+                                                            icon: const Icon(
+                                                                Icons.image,
+                                                                color:
+                                                                    Colors.blue,
+                                                                size: 18.0),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                              ],
+                                            );
+                                          } else if (snapshot.hasError) {
+                                            return Text(
+                                                'Error: ${snapshot.error}');
+                                          } else {
+                                            return const CircularProgressIndicator();
+                                          }
+                                        }),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  onAddNewAppointment(BuildContext context) {
-    bool reachedLastStep = false;
+// This function shows alert dialog for new appointment
+  onShowDialogForNewAppointment(BuildContext context) {
     double dueAmount = 0;
     double paidAmount = _recievableController.text.isNotEmpty
         ? double.parse(_recievableController.text)
@@ -1761,6 +1776,9 @@ class _PatientDetailState extends State<PatientDetail> {
                                       RegExp(_regExDecimal),
                                     ),
                                   ],
+                                  onChanged: payTypeDropdown != 'تکمیل'
+                                      ? onCalculateDueAmount
+                                      : null,
                                   decoration: const InputDecoration(
                                     border: OutlineInputBorder(),
                                     labelText: 'کل مصارف',
@@ -1969,17 +1987,23 @@ class _PatientDetailState extends State<PatientDetail> {
                   },
                   // currentStep: currentStep,
                   onStepContinue: () {
-                    setState(() {
-                      if (_currentStep < stepList1().length - 1) {
-                        _currentStep++;
-                        // This condition is to make label of last step differ from others.
-                        if (_currentStep == 1) {
-                          reachedLastStep = true;
-                        } else {
-                          reachedLastStep = false;
+                    if (_ptFormKey1.currentState!.validate()) {
+                      setState(() {
+                        if (_currentStep < stepList1().length - 1) {
+                          // First ensure that the fields are selected/inserted correctly
+                          onConfirmForm();
+                          // This condition is to make label of last step differ from others.
+                          if (_currentStep == 1) {
+                            reachedLastStep = true;
+                          } else {
+                            reachedLastStep = false;
+                          }
+                        } else if (_ptFormKey2.currentState!.validate()) {
+                          onAddNewAppointment(context);
+                          Navigator.of(context, rootNavigator: true).pop();
                         }
-                      } else if (_ptFormKey2.currentState!.validate()) {}
-                    });
+                      });
+                    }
                   },
                 ),
               ),
@@ -2657,7 +2681,7 @@ class _PatientDetailState extends State<PatientDetail> {
             staffFirstName: row[1],
             staffLastName: row[2],
             aptID: row[3],
-            tooth: row[8],
+            tooth: row[8] == 'tooth not required' ? '' : row[8],
             service: row[9],
             meetDate: row[4].toString(),
             gum: row[7],
@@ -2667,6 +2691,185 @@ class _PatientDetailState extends State<PatientDetail> {
             patLastName: row[12]))
         .toList();
     return appoints;
+  }
+
+// Create an alert dialog to confirm fields are inserted correctly.
+  onConfirmForm() {
+    return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Directionality(
+          textDirection: TextDirection.rtl,
+          child: Text('کسب اطمینان'),
+        ),
+        content: const Directionality(
+          textDirection: TextDirection.rtl,
+          child: Text('آیا کاملاً مطمیین هستید در قسمت خانه پری این صفحه؟'),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+              child: const Text('نگاه مجدد')),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _currentStep++;
+                  reachedLastStep = true;
+                });
+                Navigator.of(context, rootNavigator: true).pop();
+              },
+              child: const Text('بله')),
+        ],
+      ),
+    );
+  }
+
+// Add a new appointment (visit)
+  Future<void> onAddNewAppointment(BuildContext context) async {
+    String? meetDate = _meetController.text.isNotEmpty
+        ? _meetController.text.toString()
+        : null;
+
+    String notes = _noteController.text.toString();
+
+    var conn = await onConnToDb();
+    int serviceID = int.parse(selectedSerId!);
+
+    int? tDetailID;
+    if (serviceID == 2 || serviceID == 6 || serviceID == 9 || serviceID == 11) {
+      // Query for those services which require tooth numbers (1 - 8)
+
+      // Fetch tooth ID based on its primary key from tooth_details.
+      var toothResult = await conn.query(
+          'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+          [selectedTooth2, selectedGumType2]);
+      if (toothResult.isNotEmpty) {
+        var tdRow = toothResult.first;
+        tDetailID = tdRow['td_ID'];
+      }
+    } else if (serviceID == 10) {
+      var removeResult = await conn.query(
+          'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+          [removedTooth, selectedGumType2]);
+      if (removeResult.isNotEmpty) {
+        var row = removeResult.first;
+        tDetailID = row['td_ID'];
+      }
+    } else if (serviceID == 3) {
+      var bleachResult = await conn.query(
+          'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+          ['tooth not required', selectedGumType2]);
+      if (bleachResult.isNotEmpty) {
+        var row = bleachResult.first;
+        tDetailID = row['td_ID'];
+      }
+    } else if (serviceID == 4) {
+      var scaleResult = await conn.query(
+          'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+          ['tooth not required', selectedGumType1]);
+      if (scaleResult.isNotEmpty) {
+        var row = scaleResult.first;
+        tDetailID = row['td_ID'];
+      }
+    } else if (serviceID == 5) {
+      var orthoResult = await conn.query(
+          'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+          ['tooth not required', selectedGumType1]);
+      if (orthoResult.isNotEmpty) {
+        var row = orthoResult.first;
+        tDetailID = row['td_ID'];
+      }
+    } else if (serviceID == 7) {
+      var gumResult = await conn.query(
+          'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+          ['tooth not required', selectedGumType1]);
+      if (gumResult.isNotEmpty) {
+        var row = gumResult.first;
+        tDetailID = row['td_ID'];
+      }
+    } else {
+      var toothResult = await conn.query(
+          'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
+          ['tooth not required', selectedGumType2]);
+      if (toothResult.isNotEmpty) {
+        var tdRow = toothResult.first;
+        tDetailID = tdRow['td_ID'];
+      }
+    }
+
+// Declare this variable to be assigned ser_det_ID of service_details table
+    int? serviceDID;
+    if (serviceID == 2) {
+      serviceDID = selectedFill;
+    } else if (serviceID == 3) {
+      serviceDID = selectedServiceDetailID;
+    } else if (serviceID == 9) {
+      serviceDID = selectedProthis;
+    } else if (serviceID == 11) {
+      serviceDID = selectedMaterial;
+    } else if (serviceID == 8) {
+      tDetailID = null;
+      serviceDID = 15;
+    } else {
+      serviceDID = 15;
+    }
+
+    double totalAmount = double.parse(_totalExpController.text);
+    double recieved = totalAmount;
+    double dueAmount = 0;
+    int installment = payTypeDropdown == 'تکمیل'
+        ? 1
+        : payTypeDropdown == 'دو قسط'
+            ? 2
+            : 3;
+    if (payTypeDropdown != 'تکمیل') {
+      recieved = double.parse(_recievableController.text);
+      dueAmount = totalAmount - recieved;
+    }
+
+    // Now add appointment of the patient
+    var newAptResults = await conn.query(
+        'INSERT INTO appointments (pat_ID, tooth_detail_ID, service_detail_ID, installment, round, paid_amount, due_amount, meet_date, staff_ID, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [
+          PatientInfo.patID,
+          tDetailID,
+          serviceDID,
+          installment,
+          1,
+          recieved,
+          dueAmount,
+          meetDate,
+          StaffInfo.staffID,
+          notes
+        ]);
+
+    if (newAptResults.affectedRows! > 0) {
+      _onShowSnack(Colors.green, 'مراجعه موفقانه افزوده شد.');
+      _noteController.clear();
+      _meetController.clear();
+      _totalExpController.clear();
+      _recievableController.clear();
+      setState(() {
+        _currentStep = 0;
+      });
+    } else {
+      print('Adding appointments faield.');
+    }
+  }
+
+// This is shows snackbar when called
+  void _onShowSnack(Color backColor, String msg) {
+    _ptGlobalKey.currentState?.showSnackBar(
+      SnackBar(
+        backgroundColor: backColor,
+        content: SizedBox(
+          height: 20.0,
+          child: Center(
+            child: Text(msg),
+          ),
+        ),
+      ),
+    );
   }
 
   //  لثه برای جرم گیری
