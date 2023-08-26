@@ -874,7 +874,8 @@ class _PatientDetailState extends State<PatientDetail> {
                                                               IconButton(
                                                             onPressed: () {
                                                               onDeleteAppointment(
-                                                                  context);
+                                                                  context,
+                                                                  apt.aptID);
                                                             },
                                                             icon: const Icon(
                                                                 Icons.delete,
@@ -2618,7 +2619,7 @@ class _PatientDetailState extends State<PatientDetail> {
   }
 
 // This method displays a dialog box while deleting an appointment record
-  onDeleteAppointment(BuildContext context) {
+  onDeleteAppointment(BuildContext context, int appointment_ID) {
     return showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -2631,18 +2632,36 @@ class _PatientDetailState extends State<PatientDetail> {
                 child: Text('آیا میخواهید این ریکارد را حذف کنید؟'),
               ),
               actions: [
-                Row(
-                  children: [
-                    TextButton(
-                        onPressed: () =>
-                            Navigator.of(context, rootNavigator: true).pop(),
-                        child: const Text('لغو')),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text('حذف'),
-                    ),
-                  ],
-                )
+                Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Row(
+                    children: [
+                      TextButton(
+                        onPressed: () async {
+                          final conn = await onConnToDb();
+                          var results = await conn.query(
+                              'DELETE FROM appointments WHERE apt_ID = ?',
+                              [appointment_ID]);
+                          if (results.affectedRows! > 0) {
+                            _onShowSnack(
+                                Colors.green, 'مراجعه موفقانه حذف شد.');
+                                setState(() {
+                                  
+                                });
+                          } else {
+                            _onShowSnack(Colors.red, 'مراجعه حذف نشد.');
+                          }
+                          Navigator.of(context, rootNavigator: true).pop();
+                        },
+                        child: const Text('حذف'),
+                      ),
+                      TextButton(
+                          onPressed: () =>
+                              Navigator.of(context, rootNavigator: true).pop(),
+                          child: const Text('لغو')),
+                    ],
+                  ),
+                ),
               ],
             ));
   }
