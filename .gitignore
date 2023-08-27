@@ -1,0 +1,24 @@
+# ignore build folder
+build/
+
+# ignore flutter folder
+flutter/
+
+# ignore .vscode folder
+.vscode/
+
+# ignore .idea folder
+.idea/
+
+# ignore android folder
+android/
+
+# ignore .dart_tool folder
+.dart_tool/
+
+
+# Ignore files
+.flutter-plugins
+.flutter-plugins-dependencies
+flutter_dentistry.iml
+
