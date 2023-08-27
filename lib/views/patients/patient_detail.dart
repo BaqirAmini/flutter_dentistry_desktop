@@ -832,7 +832,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                                                 context) {
                                                           return IconButton(
                                                             onPressed: () {
-                                                              onEditAppointment(
+                                                              onFollowAppointment(
                                                                   context);
                                                             },
                                                             icon: const Icon(
@@ -2599,6 +2599,158 @@ class _PatientDetailState extends State<PatientDetail> {
     );
   }
 
+// Displays an alert dialog to follow appointments
+  onFollowAppointment(BuildContext context) {
+    // Declare a variable for payment installment
+    String installments = 'تکمیل';
+
+    return showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: ((context, setState) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                title: const Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Text(
+                    'تعقیب جلسات قبلی',
+                    style: TextStyle(color: Colors.blue),
+                  ),
+                ),
+                content: SizedBox(
+                  width: 500.0,
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: SizedBox(
+                      child: Center(
+                        child: SizedBox(
+                            child: Center(
+                          child: SizedBox(
+                            width: 500.0,
+                            child: Column(
+                              children: [
+                                const Text(
+                                    'لطفاً هزینه و اقساط را در خانه های ذیل انتخاب نمایید.'),
+                                Container(
+                                  margin: const EdgeInsets.all(20.0),
+                                  child: const TextField(
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'کل مصارف',
+                                      suffixIcon: Icon(Icons.money_rounded),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.all(20.0),
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'نوعیت پرداخت',
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: SizedBox(
+                                        height: 26.0,
+                                        child: DropdownButton(
+                                          isExpanded: true,
+                                          icon:
+                                              const Icon(Icons.arrow_drop_down),
+                                          value: installments,
+                                          items: onPayInstallment()
+                                              .map((String installmentItems) {
+                                            return DropdownMenuItem(
+                                              alignment: Alignment.centerRight,
+                                              value: installmentItems,
+                                              child: Directionality(
+                                                textDirection:
+                                                    TextDirection.rtl,
+                                                child: Text(installmentItems),
+                                              ),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? newValue) {
+                                            setState(() {
+                                              installments = newValue!;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.all(20.0),
+                                  child: const TextField(
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'مبلغ رسید',
+                                      suffixIcon: Icon(Icons.money_rounded),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )),
+                      ),
+                    ),
+                  ),
+                ),
+                actions: [
+                  Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                              onPressed: () =>
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop(),
+                              child: const Text('بستن')),
+                          TextButton(
+                              onPressed: () {}, child: const Text('انجام')),
+                        ],
+                      ))
+                ],
+              );
+            },
+          );
+        }),
+      ),
+    );
+  }
+
   // Declare a method to add ages 1 - 100
   List<int> getAges() {
     // Declare variables to contain from 1 - 100 for ages
@@ -2844,7 +2996,6 @@ class _PatientDetailState extends State<PatientDetail> {
       recieved = double.parse(_recievableController.text);
       dueAmount = totalAmount - recieved;
     }
-
 
     // Now add appointment of the patient
     var newAptResults = await conn.query(
