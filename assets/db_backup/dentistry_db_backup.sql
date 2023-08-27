@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 23, 2023 at 03:12 AM
+-- Generation Time: Aug 27, 2023 at 02:48 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -47,13 +47,14 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `tooth_detail_ID`, `service_detail_ID`, `installment`, `round`, `paid_amount`, `due_amount`, `meet_date`, `staff_ID`, `note`) VALUES
-(18, 0, 54, 7, 1, 2, 1, '1000.00', '500.00', '2023-08-18', 17, 'دندان کاملا سیاه شده و درد دارد'),
 (19, 0, 55, 64, 5, 1, 1, '1000.00', '0.00', '2023-08-18', 17, 'با ماده اصلی سفید کننده'),
-(21, 0, 54, 4, 11, 1, 1, '1000.00', '0.00', '2023-08-09', 21, 'طلای درجه یک'),
-(22, 0, 54, 36, 15, 1, 1, '500.00', '0.00', '2023-08-14', 27, 'دندان کشیده شود'),
-(23, 0, 54, 4, 1, 2, 1, '2000.00', '1000.00', '2022-08-24', 14, NULL),
-(24, 0, 54, 3, 8, 3, 1, '1500.00', '500.00', '2021-08-24', 26, NULL),
-(25, 0, 54, 2, 10, 1, 1, '500.00', '0.00', '2022-08-10', 21, 'sssssssssssssss');
+(28, 0, 55, 3, 2, 3, 1, '1000.00', '2000.00', '2023-08-22', 17, ''),
+(29, 0, 55, 59, 15, 2, 1, '2000.00', '3000.00', '2023-08-31', 17, 'برای رفع عیوب نیاز به جراحی دارد'),
+(32, 0, 55, 60, 4, 1, 1, '5000.00', '0.00', '2023-08-14', 17, ''),
+(33, 0, 54, 58, 7, 1, 1, '1000.00', '0.00', '2023-08-26', 17, 'هردو لثه سفید گردید'),
+(34, 0, 54, 59, 17, 1, 1, '500.00', '0.00', '2023-08-24', 17, 'فقط لثه ی بالا جرم گیری شد'),
+(35, 0, 54, 60, 18, 2, 1, '1200.00', '1800.00', '2023-08-23', 17, 'فقط فک پایین انجام شد'),
+(36, 0, 54, 58, 19, 3, 1, '3000.00', '7000.00', '2021-07-07', 17, 'هردو لثه نیاز به جراحی دارد');
 
 -- --------------------------------------------------------
 
@@ -221,7 +222,11 @@ INSERT INTO `service_details` (`ser_det_ID`, `ser_id`, `service_specific_value`)
 (12, 11, 'زرگونیم'),
 (13, 11, 'گیگم'),
 (14, 11, 'طلا'),
-(15, 8, 'value not required');
+(15, 8, 'value not required'),
+(16, 3, 'value not required'),
+(17, 4, 'value not required'),
+(18, 5, 'value not required'),
+(19, 7, 'value not required');
 
 -- --------------------------------------------------------
 
@@ -549,7 +554,7 @@ ALTER TABLE `tooth_details`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `clinics`
@@ -585,7 +590,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT for table `service_details`
 --
 ALTER TABLE `service_details`
-  MODIFY `ser_det_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `ser_det_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `staff`
