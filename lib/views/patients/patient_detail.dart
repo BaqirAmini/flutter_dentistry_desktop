@@ -837,7 +837,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                                             },
                                                             icon: const Icon(
                                                                 Icons
-                                                                    .add_to_queue_outlined,
+                                                                    .local_hospital_rounded,
                                                                 color:
                                                                     Colors.blue,
                                                                 size: 18.0),
@@ -2628,98 +2628,272 @@ class _PatientDetailState extends State<PatientDetail> {
                             child: Center(
                           child: SizedBox(
                             width: 500.0,
-                            child: Column(
-                              children: [
-                                const Text(
-                                    'لطفاً هزینه و اقساط را در خانه های ذیل انتخاب نمایید.'),
-                                Container(
-                                  margin: const EdgeInsets.all(20.0),
-                                  child: const TextField(
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'کل مصارف',
-                                      suffixIcon: Icon(Icons.money_rounded),
-                                      enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.grey)),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.blue)),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  const Text(
+                                      'لطفاً هزینه و اقساط را در خانه های ذیل انتخاب نمایید.'),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 20.0,
+                                        top: 10.0,
+                                        bottom: 10.0),
+                                    child: TextFormField(
+                                      controller: _meetController,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'لطفا تاریخ مراجعه مریض را انتخاب کنید.';
+                                        }
+                                        return null;
+                                      },
+                                      onTap: () async {
+                                        FocusScope.of(context).requestFocus(
+                                          FocusNode(),
+                                        );
+                                        final DateTime? dateTime =
+                                            await showDatePicker(
+                                                context: context,
+                                                initialDate: DateTime.now(),
+                                                firstDate: DateTime(1900),
+                                                lastDate: DateTime(2100));
+                                        if (dateTime != null) {
+                                          final intl2.DateFormat formatter =
+                                              intl2.DateFormat('yyyy-MM-dd');
+                                          final String formattedDate =
+                                              formatter.format(dateTime);
+                                          _meetController.text = formattedDate;
+                                        }
+                                      },
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp(r'[0-9.]'))
+                                      ],
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'تاریخ مراجعه',
+                                        suffixIcon:
+                                            Icon(Icons.calendar_month_outlined),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                        errorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.red)),
+                                        focusedErrorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.all(20.0),
-                                  child: InputDecorator(
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'نوعیت پرداخت',
-                                      enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.grey)),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.blue)),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 20.0,
+                                        top: 10.0,
+                                        bottom: 10.0),
+                                    child: const TextField(
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'جلسه / نوبت',
+                                        suffixIcon: Icon(Icons.money_rounded),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                      ),
                                     ),
-                                    child: DropdownButtonHideUnderline(
-                                      child: SizedBox(
-                                        height: 26.0,
-                                        child: DropdownButton(
-                                          isExpanded: true,
-                                          icon:
-                                              const Icon(Icons.arrow_drop_down),
-                                          value: installments,
-                                          items: onPayInstallment()
-                                              .map((String installmentItems) {
-                                            return DropdownMenuItem(
-                                              alignment: Alignment.centerRight,
-                                              value: installmentItems,
-                                              child: Directionality(
-                                                textDirection:
-                                                    TextDirection.rtl,
-                                                child: Text(installmentItems),
-                                              ),
-                                            );
-                                          }).toList(),
-                                          onChanged: (String? newValue) {
-                                            setState(() {
-                                              installments = newValue!;
-                                            });
-                                          },
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 20.0,
+                                        top: 10.0,
+                                        bottom: 10.0),
+                                    child: InputDecorator(
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'فک / لثه',
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                      ),
+                                      child: DropdownButtonHideUnderline(
+                                        child: SizedBox(
+                                          height: 26.0,
+                                          child: DropdownButton(
+                                            isExpanded: true,
+                                            icon: const Icon(
+                                                Icons.arrow_drop_down),
+                                            value: selectedGumType1,
+                                            items: gumsType1.map((gumType1) {
+                                              return DropdownMenuItem<String>(
+                                                value: gumType1['teeth_ID'],
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: Text(gumType1['gum']),
+                                              );
+                                            }).toList(),
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                selectedGumType1 = newValue;
+                                              });
+                                            },
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.all(20.0),
-                                  child: const TextField(
-                                    decoration: InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'مبلغ رسید',
-                                      suffixIcon: Icon(Icons.money_rounded),
-                                      enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.grey)),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.blue)),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 20.0,
+                                        top: 10.0,
+                                        bottom: 10.0),
+                                    child: InputDecorator(
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'فک / لثه',
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                      ),
+                                      child: DropdownButtonHideUnderline(
+                                        child: SizedBox(
+                                          height: 26.0,
+                                          child: DropdownButton<String>(
+                                            isExpanded: true,
+                                            icon: const Icon(
+                                                Icons.arrow_drop_down),
+                                            value: selectedGumType2,
+                                            items: gums.map((gums) {
+                                              return DropdownMenuItem<String>(
+                                                value: gums['teeth_ID'],
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: Text(gums['gum']),
+                                              );
+                                            }).toList(),
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                selectedGumType2 = newValue;
+                                                if (selectedSerId == '10') {
+                                                  // Set this value since by changing لثه / فک below it, it should fetch the default selected value.
+                                                  removedTooth = 'عقل دندان';
+                                                  fetchRemoveTooth();
+                                                }
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 20.0,
+                                        top: 10.0,
+                                        bottom: 10.0),
+                                    child: const TextField(
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'کل هزینه',
+                                        suffixIcon: Icon(Icons.money_rounded),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 20.0,
+                                        top: 10.0,
+                                        bottom: 10.0),
+                                    child: const TextField(
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'باقی',
+                                        suffixIcon: Icon(Icons.money_rounded),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 20.0,
+                                        top: 10.0,
+                                        bottom: 10.0),
+                                    child: const TextField(
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'مبلغ قابل پرداخت',
+                                        suffixIcon: Icon(Icons.money_rounded),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         )),
@@ -2768,7 +2942,7 @@ class _PatientDetailState extends State<PatientDetail> {
   }
 
 // This method displays a dialog box while deleting an appointment record
-  onDeleteAppointment(BuildContext context, int appointment_ID) {
+  onDeleteAppointment(BuildContext context, int appointmentId) {
     return showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -2790,7 +2964,7 @@ class _PatientDetailState extends State<PatientDetail> {
                           final conn = await onConnToDb();
                           var results = await conn.query(
                               'DELETE FROM appointments WHERE apt_ID = ?',
-                              [appointment_ID]);
+                              [appointmentId]);
                           if (results.affectedRows! > 0) {
                             _onShowSnack(
                                 Colors.green, 'مراجعه موفقانه حذف شد.');
