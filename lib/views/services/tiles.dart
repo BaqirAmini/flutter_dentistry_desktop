@@ -1,9 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/models/db_conn.dart';
 
-class ServicesTile extends StatelessWidget {
+class ServicesTile extends StatefulWidget {
   const ServicesTile({super.key});
 
+  @override
+  State<ServicesTile> createState() => _ServicesTileState();
+}
+
+class _ServicesTileState extends State<ServicesTile> {
+
+  // Fetch services from services table
+  Future<List<Service>> getServices() async {
+    final conn = await onConnToDb();
+    final results = await conn.query('SELECT ser_ID, ser_name, ser_fee FROM services');
+    final services = results.map((row) => Service(
+      serviceID: row[0],
+      serviceName: row[1],
+      serviceFee: row[2],
+    )).toList();
+
+    return services;
+  }
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
@@ -16,7 +35,14 @@ class ServicesTile extends StatelessWidget {
             mainAxisSpacing: 10,
             crossAxisCount: 5,
             children: <Widget>[
-              SizedBox(
+             FutureBuilder(
+              future: getServices(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final services = snapshot.data;
+                for (var service in services!) 
+                 // ignore: curly_braces_in_flow_control_structures
+                 return   SizedBox(
                 height: 80.0,
                 width: 80.0,
                 child: Card(
@@ -56,13 +82,14 @@ class ServicesTile extends StatelessWidget {
                                       }),
                                     ),
                                   ),
-                                   PopupMenuItem(
+                                  PopupMenuItem(
                                     child: Directionality(
                                       textDirection: TextDirection.rtl,
                                       child: ListTile(
                                         leading: const Icon(Icons.delete),
                                         title: const Text('حذف کردن'),
-                                        onTap: () => onDeleteDentalService(context),
+                                        onTap: () =>
+                                            onDeleteDentalService(context),
                                       ),
                                     ),
                                   ),
@@ -71,7 +98,14 @@ class ServicesTile extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
+              );
+                } else if (snapshot.hasError) {
+                  return Text(
+                      'Error: ${snapshot.error}');
+                } else {
+                  return const CircularProgressIndicator();
+                }
+                            },),
               SizedBox(
                 height: 80.0,
                 width: 80.0,
@@ -644,26 +678,38 @@ class ServicesTile extends StatelessWidget {
   }
 
 // This dialog is to delete a dental service
-onDeleteDentalService(BuildContext context) {
-  return showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-            title: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text('حذف سرویس'),
-            ),
-            content: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text('آیا میخواهید این سرویس را حذف کنید؟'),
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('لغو')),
-              TextButton(onPressed: () {}, child: const Text('حذف')),
-            ],
-          ));
+  onDeleteDentalService(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: const Directionality(
+                textDirection: TextDirection.rtl,
+                child: Text('حذف سرویس'),
+              ),
+              content: const Directionality(
+                textDirection: TextDirection.rtl,
+                child: Text('آیا میخواهید این سرویس را حذف کنید؟'),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('لغو')),
+                TextButton(onPressed: () {}, child: const Text('حذف')),
+              ],
+            ));
+  }
 }
 
+// Data Model of services
+class Service {
+  final int serviceID;
+  final String serviceName;
+  final double serviceFee;
 
-  }
+  // Calling the constructor
+  Service({
+    required this.serviceID,
+    required this.serviceName,
+    required this.serviceFee
+  })
+}
