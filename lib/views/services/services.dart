@@ -22,7 +22,7 @@ class _ServiceState extends State<Service> {
   @override
   void initState() {
     super.initState();
-    _list = []; 
+    _list = [];
     _searchQuery.addListener(() {
       if (_searchQuery.text.isEmpty) {
         setState(() {
@@ -61,20 +61,15 @@ class _ServiceState extends State<Service> {
         child: Scaffold(
           backgroundColor: const Color.fromARGB(255, 234, 231, 231),
           appBar: AppBar(
-            leading:   Tooltip(
-                message: 'رفتن به داشبورد',
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const Dashboard(),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.home_outlined),
-                ),
+            leading: Tooltip(
+              message: 'رفتن به داشبورد',
+              child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.home_outlined),
               ),
+            ),
             actions: [
               IconButton(
                 icon: Icon(_isSearching ? Icons.close : Icons.search),
@@ -102,7 +97,6 @@ class _ServiceState extends State<Service> {
                 );
               }),
               const SizedBox(width: 20),
-            
             ],
             title: _isSearching
                 ? TextField(
