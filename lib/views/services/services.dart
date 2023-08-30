@@ -22,6 +22,7 @@ class _ServiceState extends State<Service> {
   @override
   void initState() {
     super.initState();
+    _list = []; 
     _searchQuery.addListener(() {
       if (_searchQuery.text.isEmpty) {
         setState(() {

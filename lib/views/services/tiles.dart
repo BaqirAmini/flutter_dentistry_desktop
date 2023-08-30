@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ServicesTile extends StatefulWidget {
   const ServicesTile({super.key});
@@ -38,18 +39,24 @@ class _ServicesTileState extends State<ServicesTile> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final services = snapshot.data;
-                return Row(
-                  children: <Widget>[
-                    for (var service in services!)
-                      SizedBox(
+                return SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    crossAxisCount: 5,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      final service = services![index];
+                      return SizedBox(
                         height: 80.0,
                         width: 80.0,
                         child: Card(
                           child: Stack(
                             children: [
                               Center(
-                                child: onSetTileContent(Icons.light_mode,
-                                    service.serviceName, 1000),
+                                child: onSetTileContent(
+                                    service.serviceName, service.serviceFee),
                               ),
                               Positioned(
                                 top: 8.0,
@@ -102,455 +109,19 @@ class _ServicesTileState extends State<ServicesTile> {
                             ],
                           ),
                         ),
-                      ),
-                    /* SizedBox(
-                    height: 80.0,
-                    width: 80.0,
-                    child: Card(
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: onSetTileContent(
-                                Icons.light_mode, 'معاینه دهن', 1000),
-                          ),
-                          Positioned(
-                            top: 8.0,
-                            left: 8.0,
-                            child: PopupMenuButton(
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry>[
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.list),
-                                            title: Text('جزییات'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.edit),
-                                            title: Text('تغییر دادن'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.delete),
-                                            title: Text('حذف کردن'),
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                          ),
-                        ],
-                      ),
-                    ),
+                      );
+                    },
+                    childCount: services!.length,
                   ),
-                  SizedBox(
-                    height: 80.0,
-                    width: 80.0,
-                    child: Card(
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: onSetTileContent(
-                                Icons.light_mode, 'معاینه دهن', 1000),
-                          ),
-                          Positioned(
-                            top: 8.0,
-                            left: 8.0,
-                            child: PopupMenuButton(
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry>[
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.list),
-                                            title: Text('جزییات'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.edit),
-                                            title: Text('تغییر دادن'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.delete),
-                                            title: Text('حذف کردن'),
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 80.0,
-                    width: 80.0,
-                    child: Card(
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: onSetTileContent(
-                                Icons.light_mode, 'معاینه دهن', 1000),
-                          ),
-                          Positioned(
-                            top: 8.0,
-                            left: 8.0,
-                            child: PopupMenuButton(
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry>[
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.list),
-                                            title: Text('جزییات'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.edit),
-                                            title: Text('تغییر دادن'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.delete),
-                                            title: Text('حذف کردن'),
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 80.0,
-                    width: 80.0,
-                    child: Card(
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: onSetTileContent(
-                                Icons.light_mode, 'معاینه دهن', 1000),
-                          ),
-                          Positioned(
-                            top: 8.0,
-                            left: 8.0,
-                            child: PopupMenuButton(
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry>[
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.list),
-                                            title: Text('جزییات'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.edit),
-                                            title: Text('تغییر دادن'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.delete),
-                                            title: Text('حذف کردن'),
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 80.0,
-                    width: 80.0,
-                    child: Card(
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: onSetTileContent(
-                                Icons.light_mode, 'معاینه دهن', 1000),
-                          ),
-                          Positioned(
-                            top: 8.0,
-                            left: 8.0,
-                            child: PopupMenuButton(
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry>[
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.list),
-                                            title: Text('جزییات'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.edit),
-                                            title: Text('تغییر دادن'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.delete),
-                                            title: Text('حذف کردن'),
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 80.0,
-                    width: 80.0,
-                    child: Card(
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: onSetTileContent(
-                                Icons.light_mode, 'معاینه دهن', 1000),
-                          ),
-                          Positioned(
-                            top: 8.0,
-                            left: 8.0,
-                            child: PopupMenuButton(
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry>[
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.list),
-                                            title: Text('جزییات'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.edit),
-                                            title: Text('تغییر دادن'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.delete),
-                                            title: Text('حذف کردن'),
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 80.0,
-                    width: 80.0,
-                    child: Card(
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: onSetTileContent(
-                                Icons.light_mode, 'معاینه دهن', 1000),
-                          ),
-                          Positioned(
-                            top: 8.0,
-                            left: 8.0,
-                            child: PopupMenuButton(
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry>[
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.list),
-                                            title: Text('جزییات'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.edit),
-                                            title: Text('تغییر دادن'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.delete),
-                                            title: Text('حذف کردن'),
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 80.0,
-                    width: 80.0,
-                    child: Card(
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: onSetTileContent(
-                                Icons.light_mode, 'معاینه دهن', 1000),
-                          ),
-                          Positioned(
-                            top: 8.0,
-                            left: 8.0,
-                            child: PopupMenuButton(
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry>[
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.list),
-                                            title: Text('جزییات'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.edit),
-                                            title: Text('تغییر دادن'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.delete),
-                                            title: Text('حذف کردن'),
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 80.0,
-                    width: 80.0,
-                    child: Card(
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: onSetTileContent(
-                                Icons.light_mode, 'معاینه دهن', 1000),
-                          ),
-                          Positioned(
-                            top: 8.0,
-                            left: 8.0,
-                            child: PopupMenuButton(
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry>[
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.list),
-                                            title: Text('جزییات'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.edit),
-                                            title: Text('تغییر دادن'),
-                                          ),
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        child: Directionality(
-                                          textDirection: TextDirection.rtl,
-                                          child: ListTile(
-                                            leading: Icon(Icons.delete),
-                                            title: Text('حذف کردن'),
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                 */
-                  ],
                 );
               } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
+                return SliverToBoxAdapter(
+                  child: Text('Error: ${snapshot.error}'),
+                );
               } else {
-                return const CircularProgressIndicator();
+                return const SliverToBoxAdapter(
+                  child: CircularProgressIndicator(),
+                );
               }
             },
           ),
@@ -560,16 +131,18 @@ class _ServicesTileState extends State<ServicesTile> {
   }
 
 // Set icon and text as contents of any tile.
-  onSetTileContent(IconData myIcon, String myText, int price) {
+  onSetTileContent(String myText, double price) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const CircleAvatar(
           radius: 25.0,
           backgroundColor: Colors.blue,
-          child: Icon(Icons.light_mode, color: Colors.white),
+          child: Icon(FontAwesomeIcons.tooth, color: Colors.white),
         ),
-        // SizedBox(height: 10.0,),
+        const SizedBox(
+          height: 10.0,
+        ),
         Text(
           myText,
           style: const TextStyle(fontSize: 22.0),
