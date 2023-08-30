@@ -3,6 +3,25 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+// Create the global key at the top level of your Dart file
+final GlobalKey<ScaffoldMessengerState> _globalKeyForService =
+    GlobalKey<ScaffoldMessengerState>();
+
+// This is shows snackbar when called
+void _onShowSnack(Color backColor, String msg) {
+  _globalKeyForService.currentState?.showSnackBar(
+    SnackBar(
+      backgroundColor: backColor,
+      content: SizedBox(
+        height: 20.0,
+        child: Center(
+          child: Text(msg),
+        ),
+      ),
+    ),
+  );
+}
+
 class ServicesTile extends StatefulWidget {
   const ServicesTile({super.key});
 
@@ -29,104 +48,119 @@ class _ServicesTileState extends State<ServicesTile> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      primary: false,
-      slivers: <Widget>[
-        SliverPadding(
-          padding: const EdgeInsets.all(20),
-          sliver: FutureBuilder(
-            future: getServices(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final services = snapshot.data;
-                return SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    crossAxisCount: 5,
-                  ),
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      final service = services![index];
-                      return SizedBox(
-                        height: 80.0,
-                        width: 80.0,
-                        child: Card(
-                          child: Stack(
-                            children: [
-                              Center(
-                                child: onSetTileContent(
-                                    service.serviceName, service.serviceFee),
-                              ),
-                              Positioned(
-                                top: 8.0,
-                                left: 8.0,
-                                child: PopupMenuButton(
-                                    itemBuilder: (BuildContext context) =>
-                                        <PopupMenuEntry>[
-                                          const PopupMenuItem(
-                                            child: Directionality(
-                                              textDirection: TextDirection.rtl,
-                                              child: ListTile(
-                                                leading: Icon(Icons.list),
-                                                title: Text('جزییات'),
+    return ScaffoldMessenger(
+      key: _globalKeyForService,
+      child: Scaffold(
+        body: CustomScrollView(
+          primary: false,
+          slivers: <Widget>[
+            SliverPadding(
+              padding: const EdgeInsets.all(20),
+              sliver: FutureBuilder(
+                future: getServices(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final services = snapshot.data;
+                    return SliverGrid(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        crossAxisCount: 5,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (BuildContext context, int index) {
+                          final service = services![index];
+                          return SizedBox(
+                            height: 80.0,
+                            width: 80.0,
+                            child: Card(
+                              child: Stack(
+                                children: [
+                                  Center(
+                                    child: onSetTileContent(service.serviceName,
+                                        service.serviceFee),
+                                  ),
+                                  Positioned(
+                                    top: 8.0,
+                                    left: 8.0,
+                                    child: PopupMenuButton(
+                                        itemBuilder: (BuildContext context) =>
+                                            <PopupMenuEntry>[
+                                              const PopupMenuItem(
+                                                child: Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: ListTile(
+                                                    leading: Icon(Icons.list),
+                                                    title: Text('جزییات'),
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                          PopupMenuItem(
-                                            child: Directionality(
-                                              textDirection: TextDirection.rtl,
-                                              child: Builder(builder:
-                                                  (BuildContext context) {
-                                                return ListTile(
-                                                  leading:
-                                                      const Icon(Icons.edit),
-                                                  title:
-                                                      const Text('تغییر دادن'),
-                                                  onTap: () {
-                                                    onEditDentalService(
-                                                        context);
-                                                  },
-                                                );
-                                              }),
-                                            ),
-                                          ),
-                                          PopupMenuItem(
-                                            child: Directionality(
-                                              textDirection: TextDirection.rtl,
-                                              child: ListTile(
-                                                leading:
-                                                    const Icon(Icons.delete),
-                                                title: const Text('حذف کردن'),
-                                                onTap: () =>
-                                                    onDeleteDentalService(
-                                                        context),
+                                              PopupMenuItem(
+                                                child: Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: Builder(builder:
+                                                      (BuildContext context) {
+                                                    return ListTile(
+                                                      leading: const Icon(
+                                                          Icons.edit),
+                                                      title: const Text(
+                                                          'تغییر دادن'),
+                                                      onTap: () {
+                                                        onEditDentalService(
+                                                            context,
+                                                            service.serviceID,
+                                                            service.serviceName,
+                                                            service.serviceFee);
+                                                        Navigator.pop(context);
+                                                      },
+                                                    );
+                                                  }),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                        ]),
+                                              PopupMenuItem(
+                                                child: Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: ListTile(
+                                                      leading: const Icon(
+                                                          Icons.delete),
+                                                      title: const Text(
+                                                          'حذف کردن'),
+                                                      onTap: () {
+                                                        onDeleteDentalService(
+                                                            context);
+                                                        Navigator.pop(context);
+                                                      }),
+                                                ),
+                                              ),
+                                            ]),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                    childCount: services!.length,
-                  ),
-                );
-              } else if (snapshot.hasError) {
-                return SliverToBoxAdapter(
-                  child: Text('Error: ${snapshot.error}'),
-                );
-              } else {
-                return const SliverToBoxAdapter(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            },
-          ),
+                            ),
+                          );
+                        },
+                        childCount: services!.length,
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return SliverToBoxAdapter(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  } else {
+                    return const SliverToBoxAdapter(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -160,12 +194,17 @@ class _ServicesTileState extends State<ServicesTile> {
   }
 
   // This dialog edits a Service
-  onEditDentalService(BuildContext context) {
+  onEditDentalService(BuildContext context, int serviceId, String serviceName,
+      double serviceFee) {
 // The global for the form
     final formKey = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
     final nameController = TextEditingController();
     final feeController = TextEditingController();
+
+    nameController.text = serviceName;
+    feeController.text = serviceFee.toString();
+    const regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
 
     return showDialog(
       context: context,
@@ -188,9 +227,21 @@ class _ServicesTileState extends State<ServicesTile> {
                 child: Column(
                   children: [
                     Container(
-                      margin: const EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.all(15.0),
                       child: TextFormField(
                         controller: nameController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'نام سرویس الزامی میباشد.';
+                          } else if (value.length < 5 || value.length > 10) {
+                            return 'نام سرویس باید 5 الی 10 حرف شد.';
+                          }
+                        },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(regExOnlyAbc),
+                          ),
+                        ],
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'نام سرویس (خدمات)',
@@ -203,11 +254,20 @@ class _ServicesTileState extends State<ServicesTile> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(50.0)),
                               borderSide: BorderSide(color: Colors.blue)),
+                          errorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.red)),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 1.5)),
                         ),
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.all(20.0),
+                      margin: const EdgeInsets.all(15.0),
                       child: TextFormField(
                         controller: feeController,
                         inputFormatters: [
@@ -225,6 +285,15 @@ class _ServicesTileState extends State<ServicesTile> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(50.0)),
                               borderSide: BorderSide(color: Colors.blue)),
+                          errorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.red)),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 1.5)),
                         ),
                       ),
                     ),
@@ -243,7 +312,28 @@ class _ServicesTileState extends State<ServicesTile> {
                       onPressed: () => Navigator.pop(context),
                       child: const Text('لغو')),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      if (formKey.currentState!.validate()) {
+                        String serName = nameController.text;
+                        double serFee = feeController.text.isNotEmpty
+                            ? double.parse(feeController.text)
+                            : 0;
+                        final conn = await onConnToDb();
+                        final results = await conn.query(
+                            'UPDATE services SET ser_name = ?, ser_fee = ? WHERE ser_ID = ?',
+                            [serName, serFee, serviceId]);
+                        if (results.affectedRows! > 0) {
+                          _onShowSnack(
+                              Colors.green, 'سرویس موفقانه تغییر کرد.');
+                          setState(() {});
+                        } else {
+                          _onShowSnack(Colors.red,
+                              'شما هیچ تغییراتی به این سرویس نیاوردید.');
+                        }
+                        Navigator.of(context, rootNavigator: true).pop();
+                        await conn.close();
+                      }
+                    },
                     child: const Text(' تغییر دادن'),
                   ),
                 ],
@@ -270,7 +360,7 @@ class _ServicesTileState extends State<ServicesTile> {
               ),
               actions: [
                 TextButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
                     child: const Text('لغو')),
                 TextButton(onPressed: () {}, child: const Text('حذف')),
               ],
