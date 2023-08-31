@@ -120,7 +120,7 @@ class _ServicesTileState extends State<ServicesTile> {
                                                   }),
                                                 ),
                                               ),
-                                              PopupMenuItem(
+                                              /*   PopupMenuItem(
                                                 child: Directionality(
                                                   textDirection:
                                                       TextDirection.rtl,
@@ -135,7 +135,7 @@ class _ServicesTileState extends State<ServicesTile> {
                                                         Navigator.pop(context);
                                                       }),
                                                 ),
-                                              ),
+                                              ), */
                                             ]),
                                   ),
                                 ],
@@ -233,8 +233,8 @@ class _ServicesTileState extends State<ServicesTile> {
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'نام سرویس الزامی میباشد.';
-                          } else if (value.length < 5 || value.length > 10) {
-                            return 'نام سرویس باید 5 الی 10 حرف شد.';
+                          } else if (value.length < 5 || value.length > 15) {
+                            return 'نام سرویس باید 5 الی 15 حرف شد.';
                           }
                         },
                         inputFormatters: [
@@ -330,6 +330,7 @@ class _ServicesTileState extends State<ServicesTile> {
                           _onShowSnack(Colors.red,
                               'شما هیچ تغییراتی به این سرویس نیاوردید.');
                         }
+                        // ignore: use_build_context_synchronously
                         Navigator.of(context, rootNavigator: true).pop();
                         await conn.close();
                       }
@@ -346,7 +347,7 @@ class _ServicesTileState extends State<ServicesTile> {
   }
 
 // This dialog is to delete a dental service
-  onDeleteDentalService(BuildContext context) {
+  /* onDeleteDentalService(BuildContext context) {
     return showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -366,6 +367,7 @@ class _ServicesTileState extends State<ServicesTile> {
               ],
             ));
   }
+ */
 }
 
 // Data Model of services
