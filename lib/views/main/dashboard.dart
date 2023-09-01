@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
@@ -22,44 +24,61 @@ class _DashboardState extends State<Dashboard> {
   int _todaysPatients = 0;
 // This function fetch patients' records
   Future<void> _fetchAllPatient() async {
-    final conn = await onConnToDb();
-    // Fetch all patients
-    var allPatResults = await conn.query('SELECT COUNT(*) FROM patients');
-    int allPatients = allPatResults.first[0];
+    try {
+      final conn = await onConnToDb();
+      // Fetch all patients
+      var allPatResults = await conn.query('SELECT COUNT(*) FROM patients');
+      int allPatients = allPatResults.first[0];
 
-    // Fetch the patients who are added today
-    var todayResult = await conn.query(
-        'SELECT COUNT(*) FROM patients WHERE DATE(reg_date) = CURDATE()');
-    int todayPat = todayResult.first[0];
-    await conn.close();
-    setState(() {
-      _allPatients = allPatients;
-      _todaysPatients = todayPat;
-    });
+      // Fetch the patients who are added today
+      var todayResult = await conn.query(
+          'SELECT COUNT(*) FROM patients WHERE DATE(reg_date) = CURDATE()');
+      int todayPat = todayResult.first[0];
+      await conn.close();
+      setState(() {
+        _allPatients = allPatients;
+        _todaysPatients = todayPat;
+      });
+    } on SocketException catch (e) {
+      print('Error in dashboard: $e');
+    } catch (e) {
+      print('Error in dashboard: $e');
+    }
   }
 
   double _currentMonthExp = 0;
   double _curYearTax = 0;
   Future<void> _fetchFinance() async {
-    final conn = await onConnToDb();
-    // Fetch sum of current month expenses
-    var expResults = await conn.query(
-        'SELECT SUM(total) FROM expense_detail WHERE YEAR(purchase_date) = YEAR(CURDATE()) AND MONTH(purchase_date) = MONTH(CURDATE())');
-    double curMonthExp = expResults.isNotEmpty ? expResults.first[0] : 0;
-    // Firstly, fetch jalali(hijri shamsi) from current date.
-    final jalaliDate = Jalali.now();
-    final hijriYear = jalaliDate.year;
-    // Query taxes of current hijri year
-    var taxResults = await conn.query(
-        'SELECT total_annual_tax FROM taxes WHERE tax_for_year = ?',
-        [hijriYear]);
-    double curYearTax = taxResults.isNotEmpty ? taxResults.first[0] : 0;
+    try {
+      final conn = await onConnToDb();
+      // Fetch sum of current month expenses
+      var expResults = await conn.query(
+          'SELECT SUM(total) FROM expense_detail WHERE YEAR(purchase_date) = YEAR(CURDATE()) AND MONTH(purchase_date) = MONTH(CURDATE())');
+      double curMonthExp =
+          (expResults.isNotEmpty && expResults.first[0] != null)
+              ? expResults.first[0]
+              : 0;
+      // Firstly, fetch jalali(hijri shamsi) from current date.
+      final jalaliDate = Jalali.now();
+      final hijriYear = jalaliDate.year;
+      // Query taxes of current hijri year
+      var taxResults = await conn.query(
+          'SELECT total_annual_tax FROM taxes WHERE tax_for_year = ?',
+          [hijriYear]);
+      double curYearTax = (taxResults.isNotEmpty && taxResults.first[0] != null)
+          ? taxResults.first[0]
+          : 0;
 
-    await conn.close();
-    setState(() {
-      _currentMonthExp = curMonthExp;
-      _curYearTax = curYearTax;
-    });
+      await conn.close();
+      setState(() {
+        _currentMonthExp = curMonthExp;
+        _curYearTax = curYearTax;
+      });
+    } on SocketException catch (e) {
+      print('Error in dashboard: $e');
+    } catch (e) {
+      print('Error in dashboard: $e');
+    }
   }
 
   bool _isPieDataInitialized = false;
@@ -90,22 +109,28 @@ class _DashboardState extends State<Dashboard> {
 // Fetch the expenses of last three months into pie char
   Future<void> _getPieData() async {
     final conn = await onConnToDb();
-    // Execute the query
-    final results = await conn.query(
-        "SELECT A.exp_name, DATE_FORMAT(B.purchase_date, '%M'), SUM(B.total) FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID WHERE B.purchase_date >= CURDATE() - INTERVAL 3 MONTH GROUP BY A.exp_name");
+    try {
+      // Execute the query
+      final results = await conn.query(
+          "SELECT A.exp_name, DATE_FORMAT(B.purchase_date, '%M'), SUM(B.total) FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID WHERE B.purchase_date >= CURDATE() - INTERVAL 3 MONTH GROUP BY A.exp_name");
 
-    // Close the connection
-    await conn.close();
+      // Close the connection
+      await conn.close();
 
-    // Map the results to a list of _PieData objects
-    pieData = results
-        .map((row) =>
-            _PieData(row[0].toString(), row[2] as double, row[1].toString()))
-        .toList();
+      // Map the results to a list of _PieData objects
+      pieData = results
+          .map((row) =>
+              _PieData(row[0].toString(), row[2] as double, row[1].toString()))
+          .toList();
 
-    // Set _isPieDataInitialized to true
-    _isPieDataInitialized = true;
-    setState(() {});
+      // Set _isPieDataInitialized to true
+      _isPieDataInitialized = true;
+      setState(() {});
+    } on SocketException catch (e) {
+      print('Error in dashboard: $e');
+    } catch (e) {
+      print('Error in dashboard: $e');
+    }
   }
 
 /*   List<_PieData> pieData = [
