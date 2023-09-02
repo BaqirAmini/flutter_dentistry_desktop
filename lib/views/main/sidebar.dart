@@ -1,25 +1,72 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/views/finance/expenses/expenses.dart';
 import 'package:flutter_dentistry/views/services/services.dart';
 import 'package:flutter_dentistry/views/settings/settings.dart';
 import 'package:flutter_dentistry/views/staff/staff.dart';
 import 'package:flutter_dentistry/views/finance/taxes/taxes.dart';
+import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'login.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 
-class Sidebar extends StatelessWidget {
-  const Sidebar({super.key});
+class Sidebar extends StatefulWidget {
+  Sidebar({super.key});
+
+  @override
+  State<Sidebar> createState() => _SidebarState();
+}
+
+class _SidebarState extends State<Sidebar> {
+// Convert image of BLOB type to binary first.
+  Uint8List? uint8list = StaffInfo.userPhoto != null
+      ? Uint8List.fromList(StaffInfo.userPhoto!.toBytes())
+      : null;
+
+  late ImageProvider _image;
+  @override
+  void initState() {
+    super.initState();
+    _image = (uint8list != null)
+        ? MemoryImage(uint8list!)
+        : const AssetImage('assets/graphics/user_profile2.jpg')
+            as ImageProvider;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Clear image caching since Flutter by default does.
+    imageCache.clear();
+    imageCache.clearLiveImages();
+    setState(() {
+      _image = (uint8list != null)
+          ? MemoryImage(uint8list!)
+          : const AssetImage('assets/graphics/user_profile2.jpg')
+              as ImageProvider;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         children: [
-          const UserAccountsDrawerHeader(
-            accountName: Text('احمد احمدی'),
-            accountEmail: Text('ahmad.ahmadi@gmail.com'),
-            currentAccountPicture: CircleAvatar(
-              backgroundImage: AssetImage('assets/graphics/patient.png'),
+          UserAccountsDrawerHeader(
+            accountName: Text('${StaffInfo.firstName} ${StaffInfo.lastName}'),
+            accountEmail: Text('${StaffInfo.position}'),
+            currentAccountPicture: InkWell(
+              child: CircleAvatar(
+                backgroundImage: _image,
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Settings(),
+                  ),
+                );
+              },
             ),
           ),
           ListTile(
