@@ -15,6 +15,7 @@ import 'package:csv/csv.dart';
 FilePickerResult? filePickerResult;
 File? pickedFile;
 
+bool _isLoadingPhoto = false;
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKeyForProfile =
     GlobalKey<ScaffoldMessengerState>();
@@ -169,6 +170,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
 
 // This method is to update profile picture of the user
   void onUpdatePhoto() async {
+    setState(() {
+      _isLoadingPhoto = true;
+    });
+
     final result = await FilePicker.platform.pickFiles(
         allowMultiple: true,
         type: FileType.custom,
@@ -187,6 +192,9 @@ class _SettingsMenuState extends State<SettingsMenu> {
             ),
           ),
         );
+        setState(() {
+          _isLoadingPhoto = false;
+        });
         return;
       }
       // final photo = MySQL.escapeBuffer(bytes);
@@ -213,13 +221,20 @@ class _SettingsMenuState extends State<SettingsMenu> {
             ),
           );
         }
+        setState(() {
+          _isLoadingPhoto = false;
+        });
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('هیچ عکسی را انتخاب نکردید.'),
+          backgroundColor: Colors.red,
+          content: Center(child: Text('هیچ عکسی را انتخاب نکردید.')),
         ),
       );
+      setState(() {
+        _isLoadingPhoto = false;
+      });
     }
   }
 }
@@ -522,10 +537,18 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                             message: 'تغییر عکس پروفایل',
                             child: IconButton(
                               onPressed: onUpdatePhoto,
-                              icon: const Icon(
-                                Icons.edit,
-                                size: 14.0,
-                              ),
+                              icon: _isLoadingPhoto
+                                  ? const SizedBox(
+                                      height: 18.0,
+                                      width: 18.0,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 3.0,
+                                      ),
+                                    )
+                                  : const Icon(
+                                      Icons.edit,
+                                      size: 14.0,
+                                    ),
                             ),
                           ),
                         ),
