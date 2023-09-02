@@ -1,3 +1,5 @@
+import 'package:galileo_mysql/src/blob.dart';
+
 class StaffInfo {
   static int? staffID;
   static String? staffRole;
@@ -9,4 +11,5 @@ class StaffInfo {
   static String? tazkira;
   static String? address;
   static Function? onUpdateProfile;
+  static Blob? userPhoto;
 }
