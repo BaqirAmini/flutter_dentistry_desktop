@@ -18,6 +18,38 @@ class Sidebar extends StatefulWidget {
 }
 
 class _SidebarState extends State<Sidebar> {
+  // Sign out from system
+  void onLogOut(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: const Directionality(
+          textDirection: TextDirection.rtl,
+          child: Text('آیا میخواهید از سیستم خارج شوید؟'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            child: const Text('لغو'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Login(),
+                ),
+              );
+
+              Navigator.of(context, rootNavigator: true).pop();
+            },
+            child: const Text('خروج'),
+          ),
+        ],
+      ),
+    );
+  }
+
 // Convert image of BLOB type to binary first.
   Uint8List? uint8list = StaffInfo.userPhoto != null
       ? Uint8List.fromList(StaffInfo.userPhoto!.toBytes())
@@ -27,6 +59,9 @@ class _SidebarState extends State<Sidebar> {
   @override
   void initState() {
     super.initState();
+    // Clear image caching since Flutter by default does.
+    imageCache.clear();
+    imageCache.clearLiveImages();
     _image = (uint8list != null)
         ? MemoryImage(uint8list!)
         : const AssetImage('assets/graphics/user_profile2.jpg')
@@ -73,6 +108,7 @@ class _SidebarState extends State<Sidebar> {
             leading: const Icon(Icons.dashboard),
             title: const Text('داشبورد'),
             onTap: () {
+              Navigator.pop(context);
               print('This menu clicked.');
             },
           ),
@@ -80,6 +116,7 @@ class _SidebarState extends State<Sidebar> {
             leading: const Icon(Icons.people_outline),
             title: const Text('مریض ها'),
             onTap: () {
+              Navigator.pop(context);
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const Patient()));
             },
@@ -88,6 +125,7 @@ class _SidebarState extends State<Sidebar> {
             leading: const Icon(Icons.people),
             title: const Text('کارمندان'),
             onTap: () {
+              Navigator.pop(context);
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const Staff()));
             },
@@ -96,6 +134,7 @@ class _SidebarState extends State<Sidebar> {
             leading: const Icon(Icons.medical_services),
             title: const Text('خدمات'),
             onTap: () {
+              Navigator.pop(context);
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -108,6 +147,7 @@ class _SidebarState extends State<Sidebar> {
             leading: const Icon(Icons.payments_outlined),
             title: const Text('مصارف'),
             onTap: () {
+              Navigator.pop(context);
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -120,6 +160,7 @@ class _SidebarState extends State<Sidebar> {
             leading: const Icon(Icons.money_off_csred_outlined),
             title: const Text('مالیات'),
             onTap: () {
+              Navigator.pop(context);
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -132,6 +173,7 @@ class _SidebarState extends State<Sidebar> {
             leading: const Icon(Icons.settings),
             title: const Text('تنظیمات'),
             onTap: () {
+              Navigator.pop(context);
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -142,37 +184,9 @@ class _SidebarState extends State<Sidebar> {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.exit_to_app),
-            title: const Text('خروج'),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  content: const Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: Text('آیا میخواهید از سیستم خارج شوید؟'),
-                  ),
-                  actions: [
-                    TextButton(
-                        onPressed: () =>
-                            Navigator.of(context, rootNavigator: true).pop(),
-                        child: const Text('لغو')),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const Login(),
-                            ),
-                          );
-                          Navigator.of(context, rootNavigator: true).pop();
-                        },
-                        child: const Text('خروج')),
-                  ],
-                ),
-              );
-            },
-          ),
+              leading: const Icon(Icons.exit_to_app),
+              title: const Text('خروج'),
+              onTap: () => onLogOut(context)),
         ],
       ),
     );
