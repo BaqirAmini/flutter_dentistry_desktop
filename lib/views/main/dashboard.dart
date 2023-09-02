@@ -171,7 +171,7 @@ class _DashboardState extends State<Dashboard> {
               },
             ),
           ),
-          drawer: const Sidebar(),
+          drawer:  Sidebar(),
           body: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
