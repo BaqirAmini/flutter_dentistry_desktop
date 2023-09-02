@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
+import 'package:galileo_mysql/galileo_mysql.dart';
 
 void main() {
   runApp(const Login());
@@ -59,6 +60,7 @@ class _LoginState extends State<Login> {
           String phone = row2["phone"];
           String tazkira = row2["tazkira_ID"];
           String addr = row2["address"];
+          final userPhoto = row2['photo'] != null ? row2['photo'] as Blob : null;
           // Global variables to be assigned staff info
           StaffInfo.staffID = staffID;
           StaffInfo.staffRole = role;
@@ -69,6 +71,7 @@ class _LoginState extends State<Login> {
           StaffInfo.phone = phone;
           StaffInfo.tazkira = tazkira;
           StaffInfo.address = addr;
+          StaffInfo.userPhoto = userPhoto;
 
           /*  Map<String, String> userData = {
           "staffID": staffID.toString(),
