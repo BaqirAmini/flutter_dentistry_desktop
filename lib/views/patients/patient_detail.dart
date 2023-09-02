@@ -401,6 +401,7 @@ class _PatientDetailState extends State<PatientDetail> {
                         ),
                         Expanded(
                           child: SizedBox(
+                            height: 200,
                             child: Card(
                               child: Column(
                                 children: [
@@ -485,96 +486,124 @@ class _PatientDetailState extends State<PatientDetail> {
                                     ),
                                   ),
                                   Container(
-                                    padding: const EdgeInsets.all(8.0),
+                                    height: 100,
                                     child: SingleChildScrollView(
-                                      child: Table(
-                                        border: const TableBorder(
-                                            horizontalInside: BorderSide(
-                                                color: Colors.grey,
-                                                style: BorderStyle.solid,
-                                                width: 0.5)),
-                                        columnWidths: const {
-                                          0: FixedColumnWidth(120),
-                                          1: FixedColumnWidth(80),
-                                          2: FixedColumnWidth(100),
-                                          3: FixedColumnWidth(100),
-                                          4: FixedColumnWidth(100),
-                                        },
-                                        children: const [
-                                          // add your table rows here
-                                          TableRow(
-                                            children: [
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('پرکاری دندان'),
+                                      child: Column(
+                                        children: [
+                                          Table(
+                                            border: const TableBorder(
+                                                horizontalInside: BorderSide(
+                                                    color: Colors.grey,
+                                                    style: BorderStyle.solid,
+                                                    width: 0.5)),
+                                            columnWidths: const {
+                                              0: FixedColumnWidth(120),
+                                              1: FixedColumnWidth(80),
+                                              2: FixedColumnWidth(100),
+                                              3: FixedColumnWidth(100),
+                                              4: FixedColumnWidth(100),
+                                            },
+                                            children: const [
+                                              // add your table rows here
+                                              TableRow(
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('پرکاری دندان'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('1'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('3000 افغانی'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('2000'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('1000'),
+                                                  ),
+                                                ],
                                               ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('1'),
+                                              TableRow(
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('پرکاری دندان'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('2'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('3000 افغانی'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('2000'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('1000'),
+                                                  ),
+                                                ],
                                               ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('3000 افغانی'),
+                                              TableRow(
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('پرکاری دندان'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('2'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('3000 افغانی'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('2000'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('1000'),
+                                                  ),
+                                                ],
                                               ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('2000'),
+                                              TableRow(
+                                                children: [
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('پرکاری دندان'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('2'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('3000 افغانی'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('2000'),
+                                                  ),
+                                                  Padding(
+                                                    padding: EdgeInsets.all(8.0),
+                                                    child: Text('1000'),
+                                                  ),
+                                                ],
                                               ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('1000'),
-                                              ),
+                                              // more rows ...
                                             ],
                                           ),
-                                          TableRow(
-                                            children: [
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('پرکاری دندان'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('2'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('3000 افغانی'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('2000'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('1000'),
-                                              ),
-                                            ],
-                                          ),
-                                          TableRow(
-                                            children: [
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('پرکاری دندان'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('2'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('3000 افغانی'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('2000'),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Text('1000'),
-                                              ),
-                                            ],
-                                          ),
-                                          // more rows ...
                                         ],
                                       ),
                                     ),
