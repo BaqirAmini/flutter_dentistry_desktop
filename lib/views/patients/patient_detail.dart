@@ -270,13 +270,14 @@ class _PatientDetailState extends State<PatientDetail> {
                       children: [
                         Card(
                           child: SizedBox(
-                            width: 200.0,
+                            width: 180.0,
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const CircleAvatar(
                                   radius: 40.0,
-                                  backgroundImage:
-                                      AssetImage('assets/graphics/patient.png'),
+                                  backgroundImage: AssetImage(
+                                      'assets/graphics/user_profile2.jpg'),
                                   backgroundColor: Colors.transparent,
                                 ),
                                 Text(
@@ -285,9 +286,9 @@ class _PatientDetailState extends State<PatientDetail> {
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold),
                                 ),
-                                const Text(
-                                  '0744232325',
-                                  style: TextStyle(color: Colors.grey),
+                                Text(
+                                  '${PatientInfo.phone}',
+                                  style: const TextStyle(color: Colors.grey),
                                 ),
                               ],
                             ),
@@ -296,7 +297,7 @@ class _PatientDetailState extends State<PatientDetail> {
                         Card(
                           child: SizedBox(
                             height: 300.0,
-                            width: 400.0,
+                            width: 300.0,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -309,7 +310,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                       child: Column(
                                         children: [
                                           const Text(
-                                            'جنیست',
+                                            'جنسیت',
                                             style: TextStyle(
                                                 color: Colors.grey,
                                                 fontSize: 12.0),
@@ -425,11 +426,12 @@ class _PatientDetailState extends State<PatientDetail> {
                                               width: 0.5)),
                                       columnWidths: const {
                                         0: FixedColumnWidth(120),
-                                        1: FixedColumnWidth(80),
-                                        2: FixedColumnWidth(100),
-                                        3: FixedColumnWidth(100),
-                                        4: FixedColumnWidth(100),
-                                        5: FixedColumnWidth(100),
+                                        1: FixedColumnWidth(50),
+                                        2: FixedColumnWidth(50),
+                                        3: FixedColumnWidth(120),
+                                        4: FixedColumnWidth(120),
+                                        5: FixedColumnWidth(120),
+                                        6: FixedColumnWidth(100),
                                       },
                                       children: const [
                                         // add your table rows here
@@ -448,6 +450,15 @@ class _PatientDetailState extends State<PatientDetail> {
                                               padding: EdgeInsets.all(5.0),
                                               child: Text(
                                                 'جلسه',
+                                                style: TextStyle(
+                                                    fontSize: 12.0,
+                                                    color: Colors.grey),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.all(5.0),
+                                              child: Text(
+                                                'قسط',
                                                 style: TextStyle(
                                                     fontSize: 12.0,
                                                     color: Colors.grey),
@@ -500,68 +511,110 @@ class _PatientDetailState extends State<PatientDetail> {
                                     child: SingleChildScrollView(
                                       child: Column(
                                         children: [
-                                          Table(
-                                            border: const TableBorder(
-                                                horizontalInside: BorderSide(
-                                                    color: Colors.grey,
-                                                    style: BorderStyle.solid,
-                                                    width: 0.5)),
-                                            columnWidths: const {
-                                              0: FixedColumnWidth(120),
-                                              1: FixedColumnWidth(80),
-                                              2: FixedColumnWidth(100),
-                                              3: FixedColumnWidth(100),
-                                              4: FixedColumnWidth(100),
-                                              5: FixedColumnWidth(100),
-                                            },
-                                            children: [
-                                              // add your table rows here
-                                              TableRow(
-                                                children: [
-                                                  const Padding(
-                                                    padding:
-                                                        EdgeInsets.all(8.0),
-                                                    child: Text('پرکاری دندان'),
-                                                  ),
-                                                  const Padding(
-                                                    padding:
-                                                        EdgeInsets.all(8.0),
-                                                    child: Text('1'),
-                                                  ),
-                                                  const Padding(
-                                                    padding:
-                                                        EdgeInsets.all(8.0),
-                                                    child: Text('3000 افغانی'),
-                                                  ),
-                                                  const Padding(
-                                                    padding:
-                                                        EdgeInsets.all(8.0),
-                                                    child: Text('2000'),
-                                                  ),
-                                                  const Padding(
-                                                    padding:
-                                                        EdgeInsets.all(8.0),
-                                                    child: Text('1000'),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: Builder(builder:
-                                                        (BuildContext context) {
-                                                      return IconButton(
-                                                        onPressed: () {},
-                                                        icon: const Icon(
-                                                            Icons
-                                                                .local_hospital_rounded,
-                                                            color: Colors.blue,
-                                                            size: 18.0),
-                                                      );
-                                                    }),
-                                                  ),
-                                                ],
-                                              ),
-                                               TableRow(
+                                          FutureBuilder(
+                                            future: getAppointment(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                final apptCosts = snapshot.data;
+                                                return Table(
+                                                  border: const TableBorder(
+                                                      horizontalInside:
+                                                          BorderSide(
+                                                              color:
+                                                                  Colors.grey,
+                                                              style: BorderStyle
+                                                                  .solid,
+                                                              width: 0.5)),
+                                                  columnWidths: const {
+                                                    0: FixedColumnWidth(120),
+                                                    1: FixedColumnWidth(50),
+                                                    2: FixedColumnWidth(50),
+                                                    3: FixedColumnWidth(120),
+                                                    4: FixedColumnWidth(120),
+                                                    5: FixedColumnWidth(120),
+                                                    6: FixedColumnWidth(100),
+                                                  },
+                                                  children: [
+                                                    // add your table rows here
+                                                    for (var cost in apptCosts!)
+                                                      if (cost.dueAmount > 0)
+                                                        TableRow(
+                                                          children: [
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Text(
+                                                                  cost.service),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Text(
+                                                                  '${cost.round}'),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Text(
+                                                                  '${cost.installment} / ${cost.round}'),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Text(
+                                                                ('${cost.paidAmount + cost.dueAmount} افغانی'),
+                                                              ),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Text(
+                                                                  '${cost.paidAmount} افغانی'),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Container(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(
+                                                                            2.0),
+                                                                color: Colors
+                                                                    .yellow,
+                                                                child: Text(
+                                                                  '${cost.dueAmount} افغانی',
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .zero,
+                                                              child: Builder(builder:
+                                                                  (BuildContext
+                                                                      context) {
+                                                                return IconButton(
+                                                                  onPressed:
+                                                                      () {},
+                                                                  icon: const Icon(
+                                                                      Icons
+                                                                          .payment_outlined,
+                                                                      color: Colors
+                                                                          .blue,
+                                                                      size:
+                                                                          18.0),
+                                                                );
+                                                              }),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                    /*    TableRow(
                                                 children: [
                                                   const Padding(
                                                     padding:
@@ -589,9 +642,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                                     child: Text('1000'),
                                                   ),
                                                   Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
+                                                    padding: EdgeInsets.zero,
                                                     child: Builder(builder:
                                                         (BuildContext context) {
                                                       return IconButton(
@@ -606,7 +657,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                                   ),
                                                 ],
                                               ),
-                                               TableRow(
+                                              TableRow(
                                                 children: [
                                                   const Padding(
                                                     padding:
@@ -651,7 +702,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                                   ),
                                                 ],
                                               ),
-                                               TableRow(
+                                              TableRow(
                                                 children: [
                                                   const Padding(
                                                     padding:
@@ -696,9 +747,17 @@ class _PatientDetailState extends State<PatientDetail> {
                                                   ),
                                                 ],
                                               ),
-                                              // more rows ...
-                                            ],
-                                          ),
+ */ // more rows ...
+                                                  ],
+                                                );
+                                              } else if (snapshot.hasError) {
+                                                return Text(
+                                                    'Error with costs: ${snapshot.error}');
+                                              } else {
+                                                return const CircularProgressIndicator();
+                                              }
+                                            },
+                                          )
                                         ],
                                       ),
                                     ),
@@ -3130,7 +3189,7 @@ class _PatientDetailState extends State<PatientDetail> {
   Future<List<Appointment>> getAppointment() async {
     final conn = await onConnToDb();
     final results = await conn.query(
-        '''SELECT G.staff_ID, G.firstname, G.lastname, B.apt_ID, DATE_FORMAT(B.meet_date, "%Y-%m-%d"), B.round, B.note, D.gum, C.tooth, F.ser_name, F.ser_name, A.firstname, A.lastname FROM patients A
+        '''SELECT G.staff_ID, G.firstname, G.lastname, B.apt_ID, DATE_FORMAT(B.meet_date, "%Y-%m-%d"), B.round, B.note, D.gum, C.tooth, F.ser_name, F.ser_name, A.firstname, A.lastname, B.paid_amount, B.due_amount, B.installment FROM patients A
            INNER JOIN appointments B ON A.pat_ID = B.pat_ID 
            INNER JOIN tooth_details C ON B.tooth_detail_ID = C.td_ID 
            INNER JOIN teeth D ON C.tooth_ID = D.teeth_ID  
@@ -3152,7 +3211,10 @@ class _PatientDetailState extends State<PatientDetail> {
             round: row[5],
             description: row[6].toString(),
             patFirstName: row[11],
-            patLastName: row[12]))
+            patLastName: row[12],
+            paidAmount: row[13],
+            dueAmount: row[14],
+            installment: row[15]))
         .toList();
     return appoints;
   }
@@ -3419,6 +3481,9 @@ class Appointment {
   final String description;
   final String patFirstName;
   final String patLastName;
+  final double paidAmount;
+  final double dueAmount;
+  final int installment;
 
   Appointment(
       {required this.staffID,
@@ -3432,5 +3497,8 @@ class Appointment {
       required this.round,
       required this.description,
       required this.patFirstName,
-      required this.patLastName});
+      required this.patLastName,
+      required this.paidAmount,
+      required this.dueAmount,
+      required this.installment});
 }

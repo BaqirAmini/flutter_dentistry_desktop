@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/services/tiles.dart';
 
 void main() => runApp(const Service());
