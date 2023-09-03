@@ -429,6 +429,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                         2: FixedColumnWidth(100),
                                         3: FixedColumnWidth(100),
                                         4: FixedColumnWidth(100),
+                                        5: FixedColumnWidth(100),
                                       },
                                       children: const [
                                         // add your table rows here
@@ -479,6 +480,15 @@ class _PatientDetailState extends State<PatientDetail> {
                                                     color: Colors.grey),
                                               ),
                                             ),
+                                            Padding(
+                                              padding: EdgeInsets.all(5.0),
+                                              child: Text(
+                                                'تصفیه',
+                                                style: TextStyle(
+                                                    fontSize: 12.0,
+                                                    color: Colors.grey),
+                                              ),
+                                            ),
                                           ],
                                         ),
                                         // more rows ...
@@ -502,102 +512,187 @@ class _PatientDetailState extends State<PatientDetail> {
                                               2: FixedColumnWidth(100),
                                               3: FixedColumnWidth(100),
                                               4: FixedColumnWidth(100),
+                                              5: FixedColumnWidth(100),
                                             },
-                                            children: const [
+                                            children: [
                                               // add your table rows here
                                               TableRow(
                                                 children: [
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('پرکاری دندان'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('1'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('3000 افغانی'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('2000'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('1000'),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Builder(builder:
+                                                        (BuildContext context) {
+                                                      return IconButton(
+                                                        onPressed: () {},
+                                                        icon: const Icon(
+                                                            Icons
+                                                                .local_hospital_rounded,
+                                                            color: Colors.blue,
+                                                            size: 18.0),
+                                                      );
+                                                    }),
                                                   ),
                                                 ],
                                               ),
-                                              TableRow(
+                                               TableRow(
                                                 children: [
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('پرکاری دندان'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('2'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('3000 افغانی'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('2000'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('1000'),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Builder(builder:
+                                                        (BuildContext context) {
+                                                      return IconButton(
+                                                        onPressed: () {},
+                                                        icon: const Icon(
+                                                            Icons
+                                                                .payment_outlined,
+                                                            color: Colors.blue,
+                                                            size: 18.0),
+                                                      );
+                                                    }),
                                                   ),
                                                 ],
                                               ),
-                                              TableRow(
+                                               TableRow(
                                                 children: [
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('پرکاری دندان'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('2'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('3000 افغانی'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('2000'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('1000'),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Builder(builder:
+                                                        (BuildContext context) {
+                                                      return IconButton(
+                                                        onPressed: () {},
+                                                        icon: const Icon(
+                                                            Icons
+                                                                .local_hospital_rounded,
+                                                            color: Colors.blue,
+                                                            size: 18.0),
+                                                      );
+                                                    }),
                                                   ),
                                                 ],
                                               ),
-                                              TableRow(
+                                               TableRow(
                                                 children: [
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('پرکاری دندان'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('2'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('3000 افغانی'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('2000'),
                                                   ),
-                                                  Padding(
-                                                    padding: EdgeInsets.all(8.0),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
                                                     child: Text('1000'),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Builder(builder:
+                                                        (BuildContext context) {
+                                                      return IconButton(
+                                                        onPressed: () {},
+                                                        icon: const Icon(
+                                                            Icons
+                                                                .local_hospital_rounded,
+                                                            color: Colors.blue,
+                                                            size: 18.0),
+                                                      );
+                                                    }),
                                                   ),
                                                 ],
                                               ),
