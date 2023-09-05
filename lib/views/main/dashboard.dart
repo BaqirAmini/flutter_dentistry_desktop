@@ -93,24 +93,32 @@ class _DashboardState extends State<Dashboard> {
       print('Data not loaded $e');
     }
     _getPieData();
+    _getLastSixMonthPatient();
   }
 
   PageController page = PageController();
+  List<_PatientsData> patientData = [];
 
   Future<void> _getLastSixMonthPatient() async {
     final conn = await onConnToDb();
-    final results = await conn.query('SELECT COUNT(*) FROM patients WHERE (reg_date >= CURDATE() - INTERVAL 6 MONTH) GROUP BY MONTH(reg_date)');
+    final results = await conn.query(
+        'SELECT MONTHNAME(reg_date), COUNT(*) FROM patients WHERE (reg_date >= CURDATE() - INTERVAL 6 MONTH) GROUP BY MONTH(reg_date)');
+
+    for (var row in results) {
+      patientData.add(_PatientsData(row[0].toString(), double.parse(row[1].toString())));
+    }
+
     await conn.close();
   }
 
-  List<_SalesData> data = [
-    _SalesData('Jan', 10),
-    _SalesData('Feb', 20),
-    _SalesData('Mar', 20),
-    _SalesData('Apr', 50),
-    _SalesData('May', 40),
-    _SalesData('Jun', 35)
-  ];
+/*   List<_PatientsData> data = [
+    _PatientsData('Jan', 10),
+    _PatientsData('Feb', 20),
+    _PatientsData('Mar', 20),
+    _PatientsData('Apr', 50),
+    _PatientsData('May', 40),
+    _PatientsData('Jun', 35)
+  ]; */
 
   late List<_PieData> pieData;
 // Fetch the expenses of last three months into pie char
@@ -363,14 +371,17 @@ class _DashboardState extends State<Dashboard> {
                                     legend: Legend(isVisible: true),
                                     // Enable tooltip
                                     tooltipBehavior:
-                                        TooltipBehavior(enable: true),
-                                    series: <ChartSeries<_SalesData, String>>[
-                                      LineSeries<_SalesData, String>(
-                                          dataSource: data,
-                                          xValueMapper: (_SalesData sales, _) =>
-                                              sales.year,
-                                          yValueMapper: (_SalesData sales, _) =>
-                                              sales.sales,
+                                        TooltipBehavior(enable: true, format: 'point.y نفر : point.x',),
+                                    series: <ChartSeries<_PatientsData,
+                                        String>>[
+                                      LineSeries<_PatientsData, String>(
+                                          dataSource: patientData,
+                                          xValueMapper:
+                                              (_PatientsData patients, _) =>
+                                                  patients.month,
+                                          yValueMapper:
+                                              (_PatientsData patients, _) =>
+                                                  patients.numberOfPatient,
                                           name: 'بیماران',
                                           // Enable data label
                                           dataLabelSettings:
@@ -440,11 +451,11 @@ class _DashboardState extends State<Dashboard> {
   }
 }
 
-class _SalesData {
-  _SalesData(this.year, this.sales);
+class _PatientsData {
+  _PatientsData(this.month, this.numberOfPatient);
 
-  final String year;
-  final double sales;
+  final String month;
+  final double numberOfPatient;
 }
 
 class _PieData {
