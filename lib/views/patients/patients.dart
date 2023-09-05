@@ -131,15 +131,15 @@ class _PatientDataTableState extends State<PatientDataTable> {
     _data = queryResult.map((row) {
       return PatientData(
         firstName: row[0],
-        lastName: row[1],
+        lastName: row[1] ?? '',
         age: row[2].toString(),
         sex: row[3],
         maritalStatus: row[4],
         phone: row[5],
         patID: row[6],
         regDate: row[7].toString(),
-        bloodGroup: row[8],
-        address: row[9],
+        bloodGroup: row[8] ?? '',
+        address: row[9] ?? '',
         patientDetail: const Icon(Icons.list),
         deletePatient: const Icon(Icons.delete),
       );
