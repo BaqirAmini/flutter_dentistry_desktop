@@ -96,6 +96,13 @@ class _DashboardState extends State<Dashboard> {
   }
 
   PageController page = PageController();
+
+  Future<void> _getLastSixMonthPatient() async {
+    final conn = await onConnToDb();
+    final results = await conn.query('SELECT COUNT(*) FROM patients WHERE (reg_date >= CURDATE() - INTERVAL 6 MONTH) GROUP BY MONTH(reg_date)');
+    await conn.close();
+  }
+
   List<_SalesData> data = [
     _SalesData('Jan', 10),
     _SalesData('Feb', 20),
@@ -171,7 +178,7 @@ class _DashboardState extends State<Dashboard> {
               },
             ),
           ),
-          drawer:  Sidebar(),
+          drawer: Sidebar(),
           body: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
