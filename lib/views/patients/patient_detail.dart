@@ -599,16 +599,22 @@ class _PatientDetailState extends State<PatientDetail> {
                                                               child: Builder(builder:
                                                                   (BuildContext
                                                                       context) {
-                                                                return IconButton(
-                                                                  onPressed:
-                                                                      () {},
-                                                                  icon: const Icon(
-                                                                      Icons
-                                                                          .payment_outlined,
-                                                                      color: Colors
-                                                                          .blue,
-                                                                      size:
-                                                                          18.0),
+                                                                return Container(
+                                                                  alignment:
+                                                                      Alignment
+                                                                          .centerRight,
+                                                                  child:
+                                                                      IconButton(
+                                                                    onPressed:
+                                                                        () {},
+                                                                    icon: const Icon(
+                                                                        Icons
+                                                                            .payment_outlined,
+                                                                        color: Colors
+                                                                            .blue,
+                                                                        size:
+                                                                            18.0),
+                                                                  ),
                                                                 );
                                                               }),
                                                             ),
@@ -788,232 +794,225 @@ class _PatientDetailState extends State<PatientDetail> {
                                       fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              Container(
-                                width: 1200.0,
-                                padding: const EdgeInsets.all(8.0),
-                                child: Table(
-                                  border: const TableBorder(
-                                      horizontalInside: BorderSide(
-                                          color: Colors.grey,
-                                          style: BorderStyle.solid,
-                                          width: 0.5)),
-                                  columnWidths: const {
-                                    0: FixedColumnWidth(120),
-                                    1: FixedColumnWidth(100),
-                                    2: FixedColumnWidth(80),
-                                    3: FixedColumnWidth(80),
-                                    4: FixedColumnWidth(270),
-                                    5: FixedColumnWidth(80),
-                                    6: FixedColumnWidth(100),
-                                    7: FixedColumnWidth(80),
-                                    8: FixedColumnWidth(80),
-                                    9: FixedColumnWidth(80),
-                                    10: FixedColumnWidth(80),
-                                  },
-                                  children: const [
-                                    // add your table rows here
-                                    TableRow(
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'سرویس',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                              Table(
+                                border: const TableBorder(
+                                    horizontalInside: BorderSide(
+                                        color: Colors.grey,
+                                        style: BorderStyle.solid,
+                                        width: 0.5)),
+                                columnWidths: const {
+                                  0: FixedColumnWidth(120),
+                                  1: FixedColumnWidth(100),
+                                  2: FixedColumnWidth(80),
+                                  3: FixedColumnWidth(80),
+                                  4: FixedColumnWidth(270),
+                                  5: FixedColumnWidth(80),
+                                  6: FixedColumnWidth(100),
+                                  7: FixedColumnWidth(80),
+                                  8: FixedColumnWidth(80),
+                                  9: FixedColumnWidth(80),
+                                  10: FixedColumnWidth(80),
+                                },
+                                children: const [
+                                  // add your table rows here
+                                  TableRow(
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'سرویس',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'تاریخ مراجعه',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'تاریخ مراجعه',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'فک / بیره',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'فک / بیره',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'نوعیت دندان',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'نوعیت دندان',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'توضیحات',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'توضیحات',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'جلسه / نوبت',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'جلسه / نوبت',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'داکتر',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'داکتر',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'مراجعه',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'مراجعه',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'ویرایش',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'ویرایش',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'حذف',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'حذف',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Text(
-                                            'عکس',
-                                            style: TextStyle(
-                                                fontSize: 12.0,
-                                                color: Colors.grey),
-                                          ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          'عکس',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.grey),
                                         ),
-                                      ],
-                                    ),
-                                    // more rows ...
-                                  ],
-                                ),
+                                      ),
+                                    ],
+                                  ),
+                                  // more rows ...
+                                ],
                               ),
                             ],
                           ),
-                          Container(
+                          SizedBox(
                             height: 300.0,
                             child: SingleChildScrollView(
                               child: Column(
                                 children: [
-                                  Container(
-                                    width: 1200.0,
-                                    padding: const EdgeInsets.all(8.0),
-                                    margin: const EdgeInsets.only(top: 8.0),
-                                    child: FutureBuilder(
-                                        future: getAppointment(),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.hasData) {
-                                            final appoints = snapshot.data;
-                                            return Table(
-                                              border: const TableBorder(
-                                                  horizontalInside: BorderSide(
-                                                      color: Colors.grey,
-                                                      style: BorderStyle.solid,
-                                                      width: 0.5)),
-                                              columnWidths: const {
-                                                0: FixedColumnWidth(120),
-                                                1: FixedColumnWidth(100),
-                                                2: FixedColumnWidth(80),
-                                                3: FixedColumnWidth(80),
-                                                4: FixedColumnWidth(270),
-                                                5: FixedColumnWidth(80),
-                                                6: FixedColumnWidth(100),
-                                                7: FixedColumnWidth(80),
-                                                8: FixedColumnWidth(80),
-                                                9: FixedColumnWidth(80),
-                                                10: FixedColumnWidth(80),
-                                              },
-                                              children: [
-                                                for (var apt in appoints!)
-                                                  // add your table rows here
-                                                  TableRow(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child:
-                                                            Text(apt.service),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child:
-                                                            Text(apt.meetDate),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Text(apt.gum),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Text(apt.tooth),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Text(
-                                                            apt.description),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Text(apt.round
-                                                            .toString()),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Text(
-                                                            '${apt.staffFirstName} ${apt.staffLastName}'),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Builder(builder:
-                                                            (BuildContext
-                                                                context) {
-                                                          return IconButton(
+                                  FutureBuilder(
+                                      future: getAppointment(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          final appoints = snapshot.data;
+                                          return Table(
+                                            border: const TableBorder(
+                                                horizontalInside: BorderSide(
+                                                    color: Colors.grey,
+                                                    style: BorderStyle.solid,
+                                                    width: 0.5)),
+                                            columnWidths: const {
+                                              0: FixedColumnWidth(120),
+                                              1: FixedColumnWidth(100),
+                                              2: FixedColumnWidth(80),
+                                              3: FixedColumnWidth(80),
+                                              4: FixedColumnWidth(270),
+                                              5: FixedColumnWidth(80),
+                                              6: FixedColumnWidth(100),
+                                              7: FixedColumnWidth(80),
+                                              8: FixedColumnWidth(80),
+                                              9: FixedColumnWidth(80),
+                                              10: FixedColumnWidth(80),
+                                            },
+                                            children: [
+                                              for (var apt in appoints!)
+                                                // add your table rows here
+                                                TableRow(
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Text(apt.service),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Text(apt.meetDate),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Text(apt.gum),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Text(apt.tooth),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child:
+                                                          Text(apt.description),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Text(
+                                                          apt.round.toString()),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Text(
+                                                          '${apt.staffFirstName} ${apt.staffLastName}'),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Builder(builder:
+                                                          (BuildContext
+                                                              context) {
+                                                        return Container(
+                                                          alignment: Alignment
+                                                              .centerRight,
+                                                          child: IconButton(
                                                             onPressed: () {
                                                               onFollowAppointment(
                                                                   context);
@@ -1024,17 +1023,21 @@ class _PatientDetailState extends State<PatientDetail> {
                                                                 color:
                                                                     Colors.blue,
                                                                 size: 18.0),
-                                                          );
-                                                        }),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Builder(builder:
-                                                            (BuildContext
-                                                                context) {
-                                                          return IconButton(
+                                                          ),
+                                                        );
+                                                      }),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Builder(builder:
+                                                          (BuildContext
+                                                              context) {
+                                                        return Container(
+                                                          alignment: Alignment
+                                                              .centerRight,
+                                                          child: IconButton(
                                                             onPressed: () {
                                                               onEditAppointment(
                                                                   context);
@@ -1044,16 +1047,20 @@ class _PatientDetailState extends State<PatientDetail> {
                                                                 color:
                                                                     Colors.blue,
                                                                 size: 18.0),
-                                                          );
-                                                        }),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Builder(
-                                                          builder: (context) =>
-                                                              IconButton(
+                                                          ),
+                                                        );
+                                                      }),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Builder(
+                                                        builder: (context) =>
+                                                            Container(
+                                                          alignment: Alignment
+                                                              .centerRight,
+                                                          child: IconButton(
                                                             onPressed: () {
                                                               onDeleteAppointment(
                                                                   context,
@@ -1067,42 +1074,48 @@ class _PatientDetailState extends State<PatientDetail> {
                                                           ),
                                                         ),
                                                       ),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Builder(
-                                                          builder: (context) =>
-                                                              IconButton(
-                                                            onPressed: () {
-                                                              showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (context) =>
-                                                                        onShowImage(),
-                                                              );
-                                                            },
-                                                            icon: const Icon(
-                                                                Icons.image,
-                                                                color:
-                                                                    Colors.blue,
-                                                                size: 18.0),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Builder(
+                                                        builder: (context) =>
+                                                            Center(
+                                                          child: Container(
+                                                            alignment: Alignment
+                                                                .centerRight,
+                                                            child: IconButton(
+                                                              onPressed: () {
+                                                                showDialog(
+                                                                  context:
+                                                                      context,
+                                                                  builder:
+                                                                      (context) =>
+                                                                          onShowImage(),
+                                                                );
+                                                              },
+                                                              icon: const Icon(
+                                                                  Icons.image,
+                                                                  color: Colors
+                                                                      .blue,
+                                                                  size: 18.0),
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
-                                                    ],
-                                                  ),
-                                              ],
-                                            );
-                                          } else if (snapshot.hasError) {
-                                            return Text(
-                                                'Error: ${snapshot.error}');
-                                          } else {
-                                            return const CircularProgressIndicator();
-                                          }
-                                        }),
-                                  ),
+                                                    ),
+                                                  ],
+                                                ),
+                                            ],
+                                          );
+                                        } else if (snapshot.hasError) {
+                                          return Text(
+                                              'Error: ${snapshot.error}');
+                                        } else {
+                                          return const CircularProgressIndicator();
+                                        }
+                                      }),
                                 ],
                               ),
                             ),
