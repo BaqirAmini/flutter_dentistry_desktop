@@ -82,6 +82,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   bool _isPieDataInitialized = false;
+  bool _isPatientDataInitialized = false;
 
   @override
   void initState() {
@@ -105,10 +106,14 @@ class _DashboardState extends State<Dashboard> {
         'SELECT MONTHNAME(reg_date), COUNT(*) FROM patients WHERE (reg_date >= CURDATE() - INTERVAL 6 MONTH) GROUP BY MONTH(reg_date)');
 
     for (var row in results) {
-      patientData.add(_PatientsData(row[0].toString(), double.parse(row[1].toString())));
+      patientData.add(
+          _PatientsData(row[0].toString(), double.parse(row[1].toString())));
     }
 
     await conn.close();
+    setState(() {
+      _isPatientDataInitialized = true;
+    });
   }
 
 /*   List<_PatientsData> data = [
@@ -361,33 +366,43 @@ class _DashboardState extends State<Dashboard> {
                             height: 350,
                             width: 800.0,
                             child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                SfCartesianChart(
-                                    primaryXAxis: CategoryAxis(),
-                                    // Chart title
-                                    title: ChartTitle(
-                                        text: 'مراجعه بیماران در شش ماه گذشته'),
-                                    // Enable legend
-                                    legend: Legend(isVisible: true),
-                                    // Enable tooltip
-                                    tooltipBehavior:
-                                        TooltipBehavior(enable: true, format: 'point.y نفر : point.x',),
-                                    series: <ChartSeries<_PatientsData,
-                                        String>>[
-                                      LineSeries<_PatientsData, String>(
-                                          dataSource: patientData,
-                                          xValueMapper:
-                                              (_PatientsData patients, _) =>
-                                                  patients.month,
-                                          yValueMapper:
-                                              (_PatientsData patients, _) =>
-                                                  patients.numberOfPatient,
-                                          name: 'بیماران',
-                                          // Enable data label
-                                          dataLabelSettings:
-                                              const DataLabelSettings(
-                                                  isVisible: true))
-                                    ]),
+                                if (!_isPatientDataInitialized)
+                                  const CircularProgressIndicator()
+                                else
+                                  SfCartesianChart(
+                                      primaryXAxis: CategoryAxis(),
+                                      // Chart title
+                                      title: ChartTitle(
+                                          text:
+                                              'مراجعه مریض ها در شش ماه گذشته'),
+                                      // Enable legend
+                                      legend: Legend(isVisible: true),
+                                      // Enable tooltip
+                                      tooltipBehavior: TooltipBehavior(
+                                        enable: true,
+                                        format: 'point.y نفر : point.x',
+                                      ),
+                                      series: <ChartSeries<_PatientsData,
+                                          String>>[
+                                        LineSeries<_PatientsData, String>(
+                                            animationDuration:
+                                                CircularProgressIndicator
+                                                    .strokeAlignCenter,
+                                            dataSource: patientData,
+                                            xValueMapper:
+                                                (_PatientsData patients, _) =>
+                                                    patients.month,
+                                            yValueMapper:
+                                                (_PatientsData patients, _) =>
+                                                    patients.numberOfPatient,
+                                            name: 'مریض ها',
+                                            // Enable data label
+                                            dataLabelSettings:
+                                                const DataLabelSettings(
+                                                    isVisible: true))
+                                      ]),
                               ],
                             ),
                           ),
