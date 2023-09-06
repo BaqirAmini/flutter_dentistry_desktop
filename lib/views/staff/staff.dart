@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
-import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/staff/new_staff.dart';
 import 'package:galileo_mysql/galileo_mysql.dart';
+import 'staff_info.dart';
 
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKey3 =
@@ -170,15 +170,16 @@ class _MyDataTableState extends State<MyDataTable> {
                 onPressed: () {},
                 icon: const Icon(Icons.print),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const NewStaff()));
-                },
-                child: const Text('افزودن کارمند جدید'),
-              ),
+              if (StaffInfo.staffRole == 'مدیر سیستم')
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const NewStaff()));
+                  },
+                  child: const Text('افزودن کارمند جدید'),
+                ),
             ],
           ),
         ),
@@ -333,13 +334,15 @@ class _MyDataTableState extends State<MyDataTable> {
                         });
                       },
                     ),
-                    const DataColumn(
-                      label: Text(
-                        "اقدامات",
-                        style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                    // This condition only allows 'system admin' to edit/delete... the staff
+                    if (StaffInfo.staffRole == 'مدیر سیستم')
+                      const DataColumn(
+                        label: Text(
+                          "اقدامات",
+                          style: TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.bold),
+                        ),
                       ),
-                    ),
                   ],
                   rowsPerPage:
                       _filteredData.length < 8 ? _filteredData.length : 8,
@@ -384,109 +387,121 @@ class MyData extends DataTableSource {
       DataCell(Text(data[index].phone)),
       DataCell(Text(data[index].tazkira)),
       DataCell(Text(data[index].address)),
-      DataCell(
-        PopupMenuButton(
-          padding: EdgeInsets.zero,
-          icon: const Icon(
-            Icons.more_horiz,
-            color: Colors.blue,
-          ),
-          tooltip: 'نمایش مینو',
-          itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-            PopupMenuItem(
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: ListTile(
-                  leading: const Icon(
-                    Icons.list,
-                    size: 20.0,
+      // This condition only allows 'system admin' to edit/delete... the staff
+      if (StaffInfo.staffRole == 'مدیر سیستم')
+        DataCell(
+          PopupMenuButton(
+            padding: EdgeInsets.zero,
+            icon: const Icon(
+              Icons.more_horiz,
+              color: Colors.blue,
+            ),
+            tooltip: 'نمایش مینو',
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              PopupMenuItem(
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.list,
+                      size: 20.0,
+                    ),
+                    title: const Text(
+                      'جزییات',
+                      style: TextStyle(fontSize: 15.0),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
                   ),
-                  title: const Text(
-                    'جزییات',
-                    style: TextStyle(fontSize: 15.0),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
                 ),
               ),
-            ),
-            PopupMenuItem(
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: Builder(builder: (BuildContext context) {
-                  return ListTile(
-                    leading: const Icon(
-                      Icons.lock_person_outlined,
-                      size: 20.0,
-                    ),
-                    title: const Text(
-                      'حساب کاربری',
-                      style: TextStyle(fontSize: 15.0),
-                    ),
-                    onTap: () async {
-                      int staffId = data[index].staffID;
-                      Navigator.pop(context);
-                      var conn = await onConnToDb();
-                      var results = await conn.query(
-                          'SELECT username, password, role FROM staff_auth WHERE staff_ID = ?',
-                          [staffId]);
+              PopupMenuItem(
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Builder(builder: (BuildContext context) {
+                    return ListTile(
+                      leading: const Icon(
+                        Icons.lock_person_outlined,
+                        size: 20.0,
+                      ),
+                      title: const Text(
+                        'حساب کاربری',
+                        style: TextStyle(fontSize: 15.0),
+                      ),
+                      onTap: () async {
+                        int staffId = data[index].staffID;
+                        Navigator.pop(context);
+                        var conn = await onConnToDb();
+                        var results = await conn.query(
+                            'SELECT username, password, role FROM staff_auth WHERE staff_ID = ?',
+                            [staffId]);
 
-                      if (results.isNotEmpty) {
-                        final row = results.first;
-                        final userName = row['username'];
-                        final role = row['role'];
-                        // ignore: use_build_context_synchronously
-                        onUpdateUserAccount(context, staffId, userName, role);
-                      } else {
-                        // ignore: use_build_context_synchronously
-                        onCreateUserAccount(context, staffId);
-                      }
-                    },
-                  );
-                }),
+                        if (results.isNotEmpty) {
+                          final row = results.first;
+                          final userName = row['username'];
+                          final role = row['role'];
+                          // ignore: use_build_context_synchronously
+                          onUpdateUserAccount(context, staffId, userName, role);
+                        } else {
+                          // ignore: use_build_context_synchronously
+                          onCreateUserAccount(context, staffId);
+                        }
+                      },
+                    );
+                  }),
+                ),
               ),
-            ),
-            PopupMenuItem(
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: Builder(builder: (BuildContext context) {
-                  return ListTile(
-                    leading: const Icon(
-                      Icons.edit,
-                      size: 20.0,
-                    ),
-                    title: const Text(
-                      'تغییر دادن',
-                      style: TextStyle(fontSize: 15.0),
-                    ),
-                    onTap: () async {
-                      int staffId = data[index].staffID;
-                      final conn = await onConnToDb();
-                      final results = await conn.query(
-                          'SELECT * FROM staff WHERE staff_ID = ?', [staffId]);
-                      final staffRow = results.first;
-                      String firstName = staffRow['firstname'];
-                      String lastName = staffRow['lastname'];
-                      String position = staffRow['position'];
-                      double salary = staffRow['salary'];
-                      String phone = staffRow['phone'];
-                      String tazkira = staffRow['tazkira_ID'];
-                      String address = staffRow['address'];
-                      // ignore: use_build_context_synchronously
-                      Navigator.pop(context);
-                      // ignore: use_build_context_synchronously
-                      onEditStaff(context, staffId, firstName, lastName,
-                          position, salary, phone, tazkira, address, onUpdate);
-                    },
-                  );
-                }),
+              PopupMenuItem(
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Builder(builder: (BuildContext context) {
+                    return ListTile(
+                      leading: const Icon(
+                        Icons.edit,
+                        size: 20.0,
+                      ),
+                      title: const Text(
+                        'تغییر دادن',
+                        style: TextStyle(fontSize: 15.0),
+                      ),
+                      onTap: () async {
+                        int staffId = data[index].staffID;
+                        final conn = await onConnToDb();
+                        final results = await conn.query(
+                            'SELECT * FROM staff WHERE staff_ID = ?',
+                            [staffId]);
+                        final staffRow = results.first;
+                        String firstName = staffRow['firstname'];
+                        String lastName = staffRow['lastname'];
+                        String position = staffRow['position'];
+                        double salary = staffRow['salary'];
+                        String phone = staffRow['phone'];
+                        String tazkira = staffRow['tazkira_ID'];
+                        String address = staffRow['address'];
+                        // ignore: use_build_context_synchronously
+                        Navigator.pop(context);
+                        // ignore: use_build_context_synchronously
+                        onEditStaff(
+                            context,
+                            staffId,
+                            firstName,
+                            lastName,
+                            position,
+                            salary,
+                            phone,
+                            tazkira,
+                            address,
+                            onUpdate);
+                      },
+                    );
+                  }),
+                ),
               ),
-            ),
-            PopupMenuItem(
-              child: Directionality(
-                textDirection: TextDirection.rtl,
-                child: ListTile(
+              PopupMenuItem(
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: ListTile(
                     leading: const Icon(
                       Icons.delete,
                       size: 20.0,
@@ -508,13 +523,14 @@ class MyData extends DataTableSource {
                       // ignore: use_build_context_synchronously
                       onDeleteStaff(
                           context, staffID, firstName, lastName, onDelete);
-                    }),
+                    },
+                  ),
+                ),
               ),
-            ),
-          ],
-          onSelected: null,
+            ],
+            onSelected: null,
+          ),
         ),
-      ),
     ]);
   }
 
