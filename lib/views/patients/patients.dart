@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_detail.dart';
-import 'package:flutter_dentistry/views/main/dashboard.dart';
+import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'patient_info.dart';
 
 void main() {
@@ -54,7 +54,7 @@ class _PatientState extends State<Patient> {
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
-                  title: const Text('افزودن مریض'),
+                  title: const Text('مریض ها'),
                 ),
                 body: const PatientDataTable()),
           ),
@@ -213,15 +213,17 @@ class _PatientDataTableState extends State<PatientDataTable> {
                 onPressed: () {},
                 icon: const Icon(Icons.print),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const NewPatient()));
-                },
-                child: const Text('افزودن مریض جدید'),
-              ),
+              // Set access role to only allow 'system admin' to make such changes
+              if (StaffInfo.staffRole == 'مدیر سیستم')
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const NewPatient()));
+                  },
+                  child: const Text('افزودن مریض جدید'),
+                ),
             ],
           ),
         ),
@@ -349,15 +351,20 @@ class _PatientDataTableState extends State<PatientDataTable> {
                       },
                     ),
                     const DataColumn(
-                        label: Text("شرح",
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold))),
-                    const DataColumn(
+                      label: Text(
+                        "شرح",
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    // Set access role to only allow 'system admin' to make such changes
+                    if (StaffInfo.staffRole == 'مدیر سیستم')
+                      const DataColumn(
                         label: Text("حذف",
                             style: TextStyle(
                                 color: Colors.blue,
-                                fontWeight: FontWeight.bold))),
+                                fontWeight: FontWeight.bold)),
+                      ),
                   ],
                   source: dataSource,
                   rowsPerPage:
@@ -419,23 +426,25 @@ class PatientDataSource extends DataTableSource {
           );
         }),
       ),
-      DataCell(
-        Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: data[index].deletePatient,
-              onPressed: (() {
-                PatientInfo.patID = data[index].patID;
-                PatientInfo.firstName = data[index].firstName;
-                PatientInfo.lastName = data[index].lastName;
-                onDeletePatient(context, onDelete);
-              }),
-              color: Colors.blue,
-              iconSize: 20.0,
-            );
-          },
+      // Set access role to only allow 'system admin' to make such changes
+      if (StaffInfo.staffRole == 'مدیر سیستم')
+        DataCell(
+          Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: data[index].deletePatient,
+                onPressed: (() {
+                  PatientInfo.patID = data[index].patID;
+                  PatientInfo.firstName = data[index].firstName;
+                  PatientInfo.lastName = data[index].lastName;
+                  onDeletePatient(context, onDelete);
+                }),
+                color: Colors.blue,
+                iconSize: 20.0,
+              );
+            },
+          ),
         ),
-      ),
     ]);
   }
 
