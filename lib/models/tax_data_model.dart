@@ -903,7 +903,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                         _sortColumnIndex = columnIndex;
                         _sortAscending = ascending;
                         _filteredData
-                            .sort((a, b) => a.taxTin.compareTo(b.taxTin));
+                            .sort((a, b) => a.taxOfYear.compareTo(b.taxOfYear));
                         if (!ascending) {
                           _filteredData = _filteredData.reversed.toList();
                         }
@@ -921,7 +921,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                         _sortColumnIndex = columnIndex;
                         _sortAscending = ascending;
                         _filteredData
-                            .sort((a, b) => a.taxTin.compareTo(b.taxTin));
+                            .sort((a, b) => a.annualIncom.compareTo(b.annualIncom));
                         if (!ascending) {
                           _filteredData = _filteredData.reversed.toList();
                         }
@@ -957,7 +957,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                         _sortColumnIndex = columnIndex;
                         _sortAscending = ascending;
                         _filteredData.sort(
-                            ((a, b) => a.taxOfYear.compareTo(b.taxOfYear)));
+                            ((a, b) => a.annualTaxes.compareTo(b.annualTaxes)));
                         if (!ascending) {
                           _filteredData = _filteredData.reversed.toList();
                         }
@@ -975,7 +975,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                         _sortColumnIndex = columnIndex;
                         _sortAscending = ascending;
                         _filteredData.sort(
-                            ((a, b) => a.taxOfYear.compareTo(b.taxOfYear)));
+                            ((a, b) => a.deliveredTax.compareTo(b.deliveredTax)));
                         if (!ascending) {
                           _filteredData = _filteredData.reversed.toList();
                         }
@@ -993,7 +993,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                         _sortColumnIndex = columnIndex;
                         _sortAscending = ascending;
                         _filteredData.sort(
-                            ((a, b) => a.taxOfYear.compareTo(b.taxOfYear)));
+                            ((a, b) => a.deliverDate.compareTo(b.deliverDate)));
                         if (!ascending) {
                           _filteredData = _filteredData.reversed.toList();
                         }
