@@ -212,9 +212,10 @@ class _PatientDetailState extends State<PatientDetail> {
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
-            floatingActionButton: Tooltip(
-              message: 'جلسه جدید',
+            floatingActionButton: Visibility(
+              visible: StaffInfo.staffRole == 'مدیر سیستم' ? true : false,
               child: FloatingActionButton(
+                tooltip: 'جلسه جدید',
                 onPressed: () {
                   setState(() {
                     reachedLastStep = false;
@@ -433,11 +434,11 @@ class _PatientDetailState extends State<PatientDetail> {
                                         5: FixedColumnWidth(120),
                                         6: FixedColumnWidth(100),
                                       },
-                                      children: const [
+                                      children: [
                                         // add your table rows here
                                         TableRow(
                                           children: [
-                                            Padding(
+                                            const Padding(
                                               padding: EdgeInsets.all(5.0),
                                               child: Text(
                                                 'سرویس',
@@ -446,7 +447,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                                     color: Colors.grey),
                                               ),
                                             ),
-                                            Padding(
+                                            const Padding(
                                               padding: EdgeInsets.all(5.0),
                                               child: Text(
                                                 'جلسه',
@@ -455,7 +456,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                                     color: Colors.grey),
                                               ),
                                             ),
-                                            Padding(
+                                            const Padding(
                                               padding: EdgeInsets.all(5.0),
                                               child: Text(
                                                 'قسط',
@@ -464,7 +465,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                                     color: Colors.grey),
                                               ),
                                             ),
-                                            Padding(
+                                            const Padding(
                                               padding: EdgeInsets.all(5.0),
                                               child: Text(
                                                 'مبلغ کل',
@@ -473,7 +474,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                                     color: Colors.grey),
                                               ),
                                             ),
-                                            Padding(
+                                            const Padding(
                                               padding: EdgeInsets.all(5.0),
                                               child: Text(
                                                 'دریافت شده',
@@ -482,7 +483,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                                     color: Colors.grey),
                                               ),
                                             ),
-                                            Padding(
+                                            const Padding(
                                               padding: EdgeInsets.all(5.0),
                                               child: Text(
                                                 'باقی',
@@ -491,15 +492,18 @@ class _PatientDetailState extends State<PatientDetail> {
                                                     color: Colors.grey),
                                               ),
                                             ),
-                                            Padding(
-                                              padding: EdgeInsets.all(5.0),
-                                              child: Text(
-                                                'تصفیه',
-                                                style: TextStyle(
-                                                    fontSize: 12.0,
-                                                    color: Colors.grey),
+                                            // Set access role to only 'system admin' can access these optoins.
+                                            if (StaffInfo.staffRole ==
+                                                'مدیر سیستم')
+                                              const Padding(
+                                                padding: EdgeInsets.all(5.0),
+                                                child: Text(
+                                                  'تصفیه',
+                                                  style: TextStyle(
+                                                      fontSize: 12.0,
+                                                      color: Colors.grey),
+                                                ),
                                               ),
-                                            ),
                                           ],
                                         ),
                                         // more rows ...
@@ -582,9 +586,9 @@ class _PatientDetailState extends State<PatientDetail> {
                                                                       .all(8.0),
                                                               child: Container(
                                                                 padding:
-                                                                    EdgeInsets
+                                                                    const EdgeInsets
                                                                         .all(
-                                                                            2.0),
+                                                                        2.0),
                                                                 color: Colors
                                                                     .yellow,
                                                                 child: Text(
@@ -592,32 +596,36 @@ class _PatientDetailState extends State<PatientDetail> {
                                                                 ),
                                                               ),
                                                             ),
-                                                            Padding(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .zero,
-                                                              child: Builder(builder:
-                                                                  (BuildContext
-                                                                      context) {
-                                                                return Container(
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .centerRight,
-                                                                  child:
-                                                                      IconButton(
-                                                                    onPressed:
-                                                                        () {},
-                                                                    icon: const Icon(
-                                                                        Icons
-                                                                            .payment_outlined,
-                                                                        color: Colors
-                                                                            .blue,
-                                                                        size:
-                                                                            18.0),
-                                                                  ),
-                                                                );
-                                                              }),
-                                                            ),
+                                                            // Set access role to only 'system admin' can access these optoins.
+                                                            if (StaffInfo
+                                                                    .staffRole ==
+                                                                'مدیر سیستم')
+                                                              Padding(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .zero,
+                                                                child: Builder(builder:
+                                                                    (BuildContext
+                                                                        context) {
+                                                                  return Container(
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .centerRight,
+                                                                    child:
+                                                                        IconButton(
+                                                                      onPressed:
+                                                                          () {},
+                                                                      icon: const Icon(
+                                                                          Icons
+                                                                              .payment_outlined,
+                                                                          color: Colors
+                                                                              .blue,
+                                                                          size:
+                                                                              18.0),
+                                                                    ),
+                                                                  );
+                                                                }),
+                                                              ),
                                                           ],
                                                         ),
                                                     /*    TableRow(
@@ -813,11 +821,11 @@ class _PatientDetailState extends State<PatientDetail> {
                                   9: FixedColumnWidth(80),
                                   10: FixedColumnWidth(80),
                                 },
-                                children: const [
+                                children: [
                                   // add your table rows here
                                   TableRow(
                                     children: [
-                                      Padding(
+                                      const Padding(
                                         padding: EdgeInsets.all(8.0),
                                         child: Text(
                                           'سرویس',
@@ -826,7 +834,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                               color: Colors.grey),
                                         ),
                                       ),
-                                      Padding(
+                                      const Padding(
                                         padding: EdgeInsets.all(8.0),
                                         child: Text(
                                           'تاریخ مراجعه',
@@ -835,7 +843,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                               color: Colors.grey),
                                         ),
                                       ),
-                                      Padding(
+                                      const Padding(
                                         padding: EdgeInsets.all(8.0),
                                         child: Text(
                                           'فک / بیره',
@@ -844,7 +852,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                               color: Colors.grey),
                                         ),
                                       ),
-                                      Padding(
+                                      const Padding(
                                         padding: EdgeInsets.all(8.0),
                                         child: Text(
                                           'نوعیت دندان',
@@ -853,7 +861,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                               color: Colors.grey),
                                         ),
                                       ),
-                                      Padding(
+                                      const Padding(
                                         padding: EdgeInsets.all(8.0),
                                         child: Text(
                                           'توضیحات',
@@ -862,7 +870,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                               color: Colors.grey),
                                         ),
                                       ),
-                                      Padding(
+                                      const Padding(
                                         padding: EdgeInsets.all(8.0),
                                         child: Text(
                                           'جلسه / نوبت',
@@ -871,7 +879,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                               color: Colors.grey),
                                         ),
                                       ),
-                                      Padding(
+                                      const Padding(
                                         padding: EdgeInsets.all(8.0),
                                         child: Text(
                                           'داکتر',
@@ -880,34 +888,40 @@ class _PatientDetailState extends State<PatientDetail> {
                                               color: Colors.grey),
                                         ),
                                       ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'مراجعه',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
+                                      // Set access role to only 'system admin' can access these optoins.
+                                      if (StaffInfo.staffRole == 'مدیر سیستم')
+                                        const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'مراجعه',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
                                         ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'ویرایش',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
+                                      // Set access role to only 'system admin' can access these optoins.
+                                      if (StaffInfo.staffRole == 'مدیر سیستم')
+                                        const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'ویرایش',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
                                         ),
-                                      ),
-                                      Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'حذف',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.grey),
+                                      // Set access role to only 'system admin' can access these optoins.
+                                      if (StaffInfo.staffRole == 'مدیر سیستم')
+                                        const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            'حذف',
+                                            style: TextStyle(
+                                                fontSize: 12.0,
+                                                color: Colors.grey),
+                                          ),
                                         ),
-                                      ),
-                                      Padding(
+                                      const Padding(
                                         padding: EdgeInsets.all(8.0),
                                         child: Text(
                                           'عکس',
@@ -1002,79 +1016,88 @@ class _PatientDetailState extends State<PatientDetail> {
                                                       child: Text(
                                                           '${apt.staffFirstName} ${apt.staffLastName}'),
                                                     ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Builder(builder:
-                                                          (BuildContext
-                                                              context) {
-                                                        return Container(
-                                                          alignment: Alignment
-                                                              .centerRight,
-                                                          child: IconButton(
-                                                            onPressed: () {
-                                                              onFollowAppointment(
-                                                                  context);
-                                                            },
-                                                            icon: const Icon(
-                                                                Icons
-                                                                    .local_hospital_rounded,
-                                                                color:
-                                                                    Colors.blue,
-                                                                size: 18.0),
-                                                          ),
-                                                        );
-                                                      }),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Builder(builder:
-                                                          (BuildContext
-                                                              context) {
-                                                        return Container(
-                                                          alignment: Alignment
-                                                              .centerRight,
-                                                          child: IconButton(
-                                                            onPressed: () {
-                                                              onEditAppointment(
-                                                                  context);
-                                                            },
-                                                            icon: const Icon(
-                                                                Icons.edit,
-                                                                color:
-                                                                    Colors.blue,
-                                                                size: 18.0),
-                                                          ),
-                                                        );
-                                                      }),
-                                                    ),
-                                                    Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: Builder(
-                                                        builder: (context) =>
-                                                            Container(
-                                                          alignment: Alignment
-                                                              .centerRight,
-                                                          child: IconButton(
-                                                            onPressed: () {
-                                                              onDeleteAppointment(
-                                                                  context,
-                                                                  apt.aptID);
-                                                            },
-                                                            icon: const Icon(
-                                                                Icons.delete,
-                                                                color:
-                                                                    Colors.blue,
-                                                                size: 18.0),
+                                                    // Set access role to only 'system admin' can access these optoins.
+                                                    if (StaffInfo.staffRole ==
+                                                        'مدیر سیستم')
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Builder(builder:
+                                                            (BuildContext
+                                                                context) {
+                                                          return Container(
+                                                            alignment: Alignment
+                                                                .centerRight,
+                                                            child: IconButton(
+                                                              onPressed: () {
+                                                                onFollowAppointment(
+                                                                    context);
+                                                              },
+                                                              icon: const Icon(
+                                                                  Icons
+                                                                      .local_hospital_rounded,
+                                                                  color: Colors
+                                                                      .blue,
+                                                                  size: 18.0),
+                                                            ),
+                                                          );
+                                                        }),
+                                                      ),
+                                                    // Set access role to only 'system admin' can access these optoins.
+                                                    if (StaffInfo.staffRole ==
+                                                        'مدیر سیستم')
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Builder(builder:
+                                                            (BuildContext
+                                                                context) {
+                                                          return Container(
+                                                            alignment: Alignment
+                                                                .centerRight,
+                                                            child: IconButton(
+                                                              onPressed: () {
+                                                                onEditAppointment(
+                                                                    context);
+                                                              },
+                                                              icon: const Icon(
+                                                                  Icons.edit,
+                                                                  color: Colors
+                                                                      .blue,
+                                                                  size: 18.0),
+                                                            ),
+                                                          );
+                                                        }),
+                                                      ),
+                                                    // Set access role to only 'system admin' can access these optoins.
+                                                    if (StaffInfo.staffRole ==
+                                                        'مدیر سیستم')
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Builder(
+                                                          builder: (context) =>
+                                                              Container(
+                                                            alignment: Alignment
+                                                                .centerRight,
+                                                            child: IconButton(
+                                                              onPressed: () {
+                                                                onDeleteAppointment(
+                                                                    context,
+                                                                    apt.aptID);
+                                                              },
+                                                              icon: const Icon(
+                                                                  Icons.delete,
+                                                                  color: Colors
+                                                                      .blue,
+                                                                  size: 18.0),
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
-                                                    ),
                                                     Padding(
                                                       padding:
                                                           const EdgeInsets.all(
