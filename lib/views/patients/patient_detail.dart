@@ -3214,7 +3214,7 @@ class _PatientDetailState extends State<PatientDetail> {
         height: 300.0,
         decoration: const BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('assets/graphics/login_img2.png'),
+              image: AssetImage('assets/graphics/tooth_sample.jpeg'),
               fit: BoxFit.cover),
         ),
       ),
