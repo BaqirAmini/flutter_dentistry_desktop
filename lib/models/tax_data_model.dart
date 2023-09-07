@@ -803,7 +803,7 @@ class TaxDataTableState extends State<TaxDataTable> {
     // Assign fetchStaff to static function and immediatly call it here since when onEditTax() is called the staff dropdown is initially blank.
     TaxInfo.onFetchStaff = fetchStaff;
     TaxInfo.onFetchStaff!();
-    final dataSource = MyDataSource(_filteredData, _fetchData);
+    final dataSource = MyDataSource(_filteredData, _fetchData, _fetchData);
     return ScaffoldMessenger(
       key: _globalKeyForTaxes,
       child: Scaffold(
@@ -1020,7 +1020,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                 ],
                 source: dataSource,
                 rowsPerPage:
-                    _filteredData.length < 5 ? _filteredData.length : 5,
+                    _filteredData.length < 8 ? _filteredData.length : 8,
               )
           ],
         ),
@@ -1032,7 +1032,8 @@ class TaxDataTableState extends State<TaxDataTable> {
 class MyDataSource extends DataTableSource {
   List<Tax> data;
   Function onUpdate;
-  MyDataSource(this.data, this.onUpdate);
+  Function onDelete;
+  MyDataSource(this.data, this.onUpdate, this.onDelete);
   void sort(Comparator<Tax> compare, bool ascending) {
     data.sort(compare);
     if (!ascending) {
@@ -1121,7 +1122,9 @@ class MyDataSource extends DataTableSource {
             return IconButton(
               icon: data[index].deleteTax,
               onPressed: (() {
-                onDeleteTax(context);
+                TaxInfo.taxID = data[index].taxID;
+                TaxInfo.taxOfYear = data[index].taxOfYear;
+                onDeleteTax(context, onDelete);
               }),
               color: Colors.blue,
               iconSize: 20.0,
@@ -1143,7 +1146,7 @@ class MyDataSource extends DataTableSource {
 }
 
 // This is to display an alert dialog to delete taxes
-onDeleteTax(BuildContext context) {
+onDeleteTax(BuildContext context, Function onDelete) {
   return showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -1157,9 +1160,25 @@ onDeleteTax(BuildContext context) {
             ),
             actions: [
               TextButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () =>
+                      Navigator.of(context, rootNavigator: true).pop(),
                   child: const Text('لغو')),
-              TextButton(onPressed: () {}, child: const Text('حذف')),
+              TextButton(
+                  onPressed: () async {
+                    final conn = await onConnToDb();
+                    final results = await conn.query(
+                        'DELETE FROM taxes WHERE tax_ID = ?', [TaxInfo.taxID]);
+                    if (results.affectedRows! > 0) {
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context, rootNavigator: true).pop();
+                      _onShowSnack(Colors.green,
+                          'مالیات سال ${TaxInfo.taxOfYear} ه.ش موفقانه حذف شد.');
+                      // Refresh the screen
+                      onDelete();
+                    }
+                    await conn.close();
+                  },
+                  child: const Text('حذف')),
             ],
           ));
 }
@@ -2105,7 +2124,7 @@ onPayDueTaxes(BuildContext context) {
                             if (dueResults.affectedRows! > 0) {
                               _onShowSnack(
                                   Colors.green, 'بقیه مالیات نیز تصفیه شد.');
-                                  TaxInfo.onUpdateDueTax!();
+                              TaxInfo.onUpdateDueTax!();
                             } else {
                               _onShowSnack(Colors.green,
                                   'متاسفم، تصفیه مالیات ناکام شد.');
