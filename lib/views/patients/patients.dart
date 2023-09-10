@@ -74,37 +74,73 @@ onCreatePrescription(BuildContext context) async {
                             String drLastName = row['lastname'];
                             String drPhone = row['phone'];
                             /* --------------------/. Fetch staff firstname & lastname ---------------- */
-
+                            const imageProvider = AssetImage(
+                              'assets/graphics/login_img1.png',
+                            );
+                            final image =
+                                await flutterImageProvider(imageProvider);
                             final pdf = pw.Document();
+                            final fontData = await rootBundle
+                                .load('assets/fonts/per_sans_font.ttf');
+                            final ttf = pw.Font.ttf(fontData);
+
                             pdf.addPage(pw.Page(
-                                pageFormat: PdfPageFormat.a4,
-                                build: (pw.Context context) {
-                                  return pw.Column(children: [
-                                    pw.Header(
-                                        level: 0,
-                                        child: pw.Row(
-                                            mainAxisAlignment: pw
-                                                .MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              pw.Text(
-                                                  doctorController.text
-                                                      .toString(),
-                                                  textScaleFactor: 2),
-                                              pw.Text('QUALIFICATION HOSPITAL')
-                                            ])),
-                                    pw.Paragraph(
-                                        text:
-                                            'Patient Name: Certification: 12558-20'),
-                                    pw.Paragraph(text: 'Address:'),
-                                    pw.Paragraph(text: 'Date:'),
-                                    pw.Paragraph(text: 'Diagnosis:'),
-                                    pw.Header(level: 1, text: 'Rx'),
-                                    pw.Paragraph(text: '55')
-                                  ]);
-                                }));
-                            Printing.layoutPdf(
-                                onLayout: (PdfPageFormat format) async =>
-                                    pdf.save());
+                              pageFormat: PdfPageFormat.a4,
+                              build: (pw.Context context) {
+                                return pw.Column(children: [
+                                  pw.Header(
+                                    level: 0,
+                                    child: pw.Row(
+                                        mainAxisAlignment:
+                                            pw.MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          pw.Image(
+                                            image,
+                                            width: 80,
+                                            height: 80,
+                                          ),
+                                          pw.Text('Dr. $drFirstName $drLastName',
+                                              textScaleFactor: 2),
+                                        ]),
+                                  ),
+                                  pw.Paragraph(
+                                      text:
+                                          'Patient Name: Certification: 12558-20'),
+                                  pw.Paragraph(text: 'Address:'),
+                                  pw.Paragraph(text: 'Date:'),
+                                  pw.Paragraph(text: 'Diagnosis:'),
+                                  pw.Header(level: 1, text: 'Px'),
+                                  ...medicines
+                                      .map((medicine) => pw.Align(
+                                            alignment: pw.Alignment.centerLeft,
+                                            child: pw.Paragraph(
+                                              text:
+                                                  '${medicine['type']}  ${medicine['nameController'].text}  ${medicine['piece']}  ${medicine['dose']} ${medicine['descController'].text}',
+                                              style: pw.TextStyle(font: ttf),
+                                            ),
+                                          ))
+                                      .toList(),
+                                  pw.Spacer(),
+                                  pw.Row(
+                                      mainAxisAlignment:
+                                          pw.MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        pw.Text('Phone: $drPhone'),
+                                        pw.Text('Email: darman.clinic@gmail.com'),
+                                      ]),
+                                ]);
+                              },
+                            ));
+
+                            // Save the PDF
+                            final bytes = await pdf.save();
+                            const fileName = 'YourFileName.pdf';
+                            await Printing.sharePdf(
+                                bytes: bytes, filename: fileName);
+                          /*   // Print the PDF
+                            await Printing.layoutPdf(
+                              onLayout: (PdfPageFormat format) async => bytes,
+                            ); */
                           }
                         },
                         child: const Text('ایجاد نسخه'),
