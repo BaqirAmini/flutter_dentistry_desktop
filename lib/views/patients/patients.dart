@@ -9,14 +9,18 @@ import 'patient_info.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:intl/intl.dart' as intl;
 
 void main() {
   return runApp(const Patient());
 }
 
 // Assign default selected staff
-String? selectedStaffId;
+String? defaultSelectedStaff;
 List<Map<String, dynamic>> staffList = [];
+
+int? staffID;
+int? patientID;
 
 // Assign default selected staff
 String? defaultSelectedPatient;
@@ -68,12 +72,27 @@ onCreatePrescription(BuildContext context) async {
                             final conn = await onConnToDb();
                             final results = await conn.query(
                                 'SELECT * FROM staff WHERE staff_ID = ?',
-                                [selectedStaffId]);
+                                [staffID]);
                             var row = results.first;
                             String drFirstName = row['firstname'];
-                            String drLastName = row['lastname'];
+                            String drLastName = row['lastname'] ?? '';
                             String drPhone = row['phone'];
                             /* --------------------/. Fetch staff firstname & lastname ---------------- */
+                            /* -------------------- Fetch patient info ---------------- */
+                            final pResults = await conn.query(
+                                'SELECT * FROM patients WHERE pat_ID = ?',
+                                [defaultSelectedPatient]);
+                            var pRow = pResults.first;
+                            String pFirstName = pRow['firstname'];
+                            String pLastName = pRow['lastname'] ?? '';
+                            String pSex = pRow['sex'];
+                            String pAge = pRow['age'].toString();
+                            /* --------------------/. Fetch patient info ---------------- */
+                            // Current date
+                            DateTime now = DateTime.now();
+                            String formattedDate =
+                                intl.DateFormat('yyyy-MM-dd').format(now);
+
                             const imageProvider = AssetImage(
                               'assets/graphics/login_img1.png',
                             );
@@ -99,24 +118,100 @@ onCreatePrescription(BuildContext context) async {
                                             width: 80,
                                             height: 80,
                                           ),
-                                          pw.Text('Dr. $drFirstName $drLastName',
-                                              textScaleFactor: 2),
+                                          pw.Directionality(
+                                            textDirection: pw.TextDirection
+                                                .rtl, // Change this to TextDirection.ltr for left-to-right text
+                                            child: pw.Text(
+                                              'Dr. $drFirstName $drLastName',
+                                              style: pw.TextStyle(font: ttf),
+                                            ),
+                                          ),
                                         ]),
                                   ),
-                                  pw.Paragraph(
-                                      text:
-                                          'Patient Name: Certification: 12558-20'),
-                                  pw.Paragraph(text: 'Address:'),
-                                  pw.Paragraph(text: 'Date:'),
-                                  pw.Paragraph(text: 'Diagnosis:'),
+                                  pw.Row(
+                                    mainAxisAlignment:
+                                        pw.MainAxisAlignment.spaceBetween,
+                                    children: <pw.Widget>[
+                                      pw.Directionality(
+                                          textDirection: pw.TextDirection
+                                              .rtl, // Change this to TextDirection.ltr for left-to-right text
+                                          child: pw.Column(
+                                            children: [
+                                              pw.Align(
+                                                alignment:
+                                                    pw.Alignment.centerLeft,
+                                                child: pw.Text(
+                                                  'Patient Name: $pFirstName $pLastName',
+                                                  style:
+                                                      pw.TextStyle(font: ttf),
+                                                ),
+                                              ),
+                                              pw.Align(
+                                                alignment:
+                                                    pw.Alignment.centerLeft,
+                                                child: pw.Text(
+                                                  'Age: $pAge',
+                                                  style:
+                                                      pw.TextStyle(font: ttf),
+                                                ),
+                                              ),
+                                              pw.Align(
+                                                alignment:
+                                                    pw.Alignment.centerLeft,
+                                                child: pw.Text(
+                                                  'Sex: $pSex',
+                                                  style:
+                                                      pw.TextStyle(font: ttf),
+                                                ),
+                                              ),
+                                            ],
+                                          )),
+                                      pw.Paragraph(
+                                          text: 'Date: $formattedDate'),
+                                    ],
+                                  ),
                                   pw.Header(level: 1, text: 'Px'),
                                   ...medicines
-                                      .map((medicine) => pw.Align(
-                                            alignment: pw.Alignment.centerLeft,
-                                            child: pw.Paragraph(
-                                              text:
-                                                  '${medicine['type']}  ${medicine['nameController'].text}  ${medicine['piece']}  ${medicine['dose']} ${medicine['descController'].text}',
-                                              style: pw.TextStyle(font: ttf),
+                                      .map((medicine) => pw.Padding(
+                                            padding: const pw.EdgeInsets.only(
+                                                bottom: 10,
+                                                left:
+                                                    15.0), // Adjust the value as needed
+                                            child: pw.Align(
+                                              alignment:
+                                                  pw.Alignment.centerLeft,
+                                              child: pw.Table(
+                                                defaultColumnWidth: const pw
+                                                    .FlexColumnWidth(
+                                                    1), // Make each column the same width
+                                                children: [
+                                                  pw.TableRow(
+                                                    children: [
+                                                      pw.Text(
+                                                          '${medicine['type']}',
+                                                          style: pw.TextStyle(
+                                                              font: ttf)),
+                                                      pw.Text(
+                                                          '${medicine['nameController'].text}',
+                                                          style: pw.TextStyle(
+                                                              font: ttf)),
+                                                      pw.Text(
+                                                          '${medicine['piece']}',
+                                                          style: pw.TextStyle(
+                                                              font: ttf)),
+                                                      pw.Text(
+                                                          '${medicine['dose']}',
+                                                          style: pw.TextStyle(
+                                                              font: ttf)),
+                                                      pw.Text(
+                                                          '${medicine['descController'].text ?? ''}',
+                                                          style: pw.TextStyle(
+                                                              font:
+                                                                  ttf)), // Use an empty string if the description is null
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ))
                                       .toList(),
@@ -126,7 +221,8 @@ onCreatePrescription(BuildContext context) async {
                                           pw.MainAxisAlignment.spaceBetween,
                                       children: [
                                         pw.Text('Phone: $drPhone'),
-                                        pw.Text('Email: darman.clinic@gmail.com'),
+                                        pw.Text(
+                                            'Email: darman.clinic@gmail.com'),
                                       ]),
                                 ]);
                               },
@@ -134,10 +230,10 @@ onCreatePrescription(BuildContext context) async {
 
                             // Save the PDF
                             final bytes = await pdf.save();
-                            const fileName = 'YourFileName.pdf';
+                            final fileName = '$pFirstName.pdf';
                             await Printing.sharePdf(
                                 bytes: bytes, filename: fileName);
-                          /*   // Print the PDF
+                            /*   // Print the PDF
                             await Printing.layoutPdf(
                               onLayout: (PdfPageFormat format) async => bytes,
                             ); */
@@ -193,7 +289,7 @@ onCreatePrescription(BuildContext context) async {
                                   child: DropdownButton(
                                     isExpanded: true,
                                     icon: const Icon(Icons.arrow_drop_down),
-                                    value: selectedStaffId,
+                                    value: defaultSelectedStaff,
                                     items: staffList.map((staff) {
                                       return DropdownMenuItem<String>(
                                         value: staff['staff_ID'],
@@ -205,7 +301,8 @@ onCreatePrescription(BuildContext context) async {
                                     }).toList(),
                                     onChanged: (String? newValue) {
                                       setState(() {
-                                        selectedStaffId = newValue;
+                                        defaultSelectedStaff = newValue;
+                                        staffID = int.parse(newValue!);
                                       });
                                     },
                                   ),
@@ -259,6 +356,7 @@ onCreatePrescription(BuildContext context) async {
                                     onChanged: (String? newValue) {
                                       setState(() {
                                         defaultSelectedPatient = newValue;
+                                        patientID = int.parse(newValue!);
                                       });
                                     },
                                   ),
@@ -580,6 +678,15 @@ onCreatePrescription(BuildContext context) async {
   );
 }
 
+bool containsPersian(String input) {
+  final persianRegex = RegExp(r'[\u0600-\u06FF]');
+  return persianRegex.hasMatch(input);
+}
+
+String reverseString(String input) {
+  return input.split('').reversed.join('');
+}
+
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKeyPDelete =
     GlobalKey<ScaffoldMessengerState>();
@@ -613,16 +720,17 @@ class _PatientState extends State<Patient> {
     var conn = await onConnToDb();
     var results =
         await conn.query('SELECT staff_ID, firstname, lastname FROM staff');
-    selectedStaffId = staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
-    setState(() {
-      staffList = results
-          .map((result) => {
-                'staff_ID': result[0].toString(),
-                'firstname': result[1],
-                'lastname': result[2]
-              })
-          .toList();
-    });
+    defaultSelectedStaff =
+        staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
+    // setState(() {
+    staffList = results
+        .map((result) => {
+              'staff_ID': result[0].toString(),
+              'firstname': result[1],
+              'lastname': result[2]
+            })
+        .toList();
+    // });
     await conn.close();
   }
 
@@ -634,16 +742,25 @@ class _PatientState extends State<Patient> {
         await conn.query('SELECT pat_ID, firstname, lastname FROM patients');
     defaultSelectedPatient =
         patientsList.isNotEmpty ? patientsList[0]['pat_ID'] : null;
-    setState(() {
-      patientsList = results
-          .map((result) => {
-                'pat_ID': result[0].toString(),
-                'firstname': result[1],
-                'lastname': result[2]
-              })
-          .toList();
-    });
+    // setState(() {
+    patientsList = results
+        .map((result) => {
+              'pat_ID': result[0].toString(),
+              'firstname': result[1],
+              'lastname': result[2]
+            })
+        .toList();
+    // });
     await conn.close();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // Call the function to list staff in the dropdown.
+    fetchStaff();
+    fetchPatients();
   }
 
   @override
