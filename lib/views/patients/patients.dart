@@ -72,7 +72,7 @@ onCreatePrescription(BuildContext context) async {
                             final conn = await onConnToDb();
                             final results = await conn.query(
                                 'SELECT * FROM staff WHERE staff_ID = ?',
-                                [staffID]);
+                                [defaultSelectedStaff]);
                             var row = results.first;
                             String drFirstName = row['firstname'];
                             String drLastName = row['lastname'] ?? '';
@@ -94,9 +94,9 @@ onCreatePrescription(BuildContext context) async {
                                 intl.DateFormat('yyyy-MM-dd').format(now);
 
                             const imageProvider = AssetImage(
-                              'assets/graphics/login_img1.png',
+                              'assets/graphics/logo1.png',
                             );
-                            final image =
+                            final dentalLogo =
                                 await flutterImageProvider(imageProvider);
                             final pdf = pw.Document();
                             final fontData = await rootBundle
@@ -111,20 +111,52 @@ onCreatePrescription(BuildContext context) async {
                                     level: 0,
                                     child: pw.Row(
                                         mainAxisAlignment:
-                                            pw.MainAxisAlignment.spaceBetween,
+                                            pw.MainAxisAlignment.center,
                                         children: [
                                           pw.Image(
-                                            image,
-                                            width: 80,
-                                            height: 80,
+                                            dentalLogo,
+                                            width: 100.0,
+                                            height: 100.0,
                                           ),
                                           pw.Directionality(
-                                            textDirection: pw.TextDirection
-                                                .rtl, // Change this to TextDirection.ltr for left-to-right text
-                                            child: pw.Text(
-                                              'Dr. $drFirstName $drLastName',
-                                              style: pw.TextStyle(font: ttf),
-                                            ),
+                                            textDirection: pw.TextDirection.rtl,
+                                            child: pw.Column(children: [
+                                              pw.Text(
+                                                'کلینیک تخصصی دندان درمان',
+                                                style: pw.TextStyle(
+                                                  fontSize: 20,
+                                                  font: ttf,
+                                                  fontWeight:
+                                                      pw.FontWeight.bold,
+                                                  color: const PdfColor(
+                                                      51 / 255,
+                                                      153 / 255,
+                                                      255 / 255),
+                                                ),
+                                              ),
+                                              pw.Text(
+                                                'آدرس: دشت برچی، قلعه ناظر، مقابل پسته خانه',
+                                                style: pw.TextStyle(
+                                                  fontSize: 12,
+                                                  font: ttf,
+                                                  color: const PdfColor(
+                                                      51 / 255,
+                                                      153 / 255,
+                                                      255 / 255),
+                                                ),
+                                              ),
+                                              pw.Text(
+                                                'داکتر $drFirstName $drLastName',
+                                                style: pw.TextStyle(
+                                                  font: ttf,
+                                                  fontSize: 12,
+                                                  color: const PdfColor(
+                                                      51 / 255,
+                                                      153 / 255,
+                                                      255 / 255),
+                                                ),
+                                              ),
+                                            ]),
                                           ),
                                         ]),
                                   ),
@@ -133,57 +165,65 @@ onCreatePrescription(BuildContext context) async {
                                         pw.MainAxisAlignment.spaceBetween,
                                     children: <pw.Widget>[
                                       pw.Directionality(
-                                          textDirection: pw.TextDirection
-                                              .rtl, // Change this to TextDirection.ltr for left-to-right text
-                                          child: pw.Column(
-                                            children: [
-                                              pw.Align(
-                                                alignment:
-                                                    pw.Alignment.centerLeft,
-                                                child: pw.Text(
-                                                  'Patient Name: $pFirstName $pLastName',
-                                                  style:
-                                                      pw.TextStyle(font: ttf),
-                                                ),
-                                              ),
-                                              pw.Align(
-                                                alignment:
-                                                    pw.Alignment.centerLeft,
-                                                child: pw.Text(
-                                                  'Age: $pAge',
-                                                  style:
-                                                      pw.TextStyle(font: ttf),
-                                                ),
-                                              ),
-                                              pw.Align(
-                                                alignment:
-                                                    pw.Alignment.centerLeft,
-                                                child: pw.Text(
-                                                  'Sex: $pSex',
-                                                  style:
-                                                      pw.TextStyle(font: ttf),
-                                                ),
-                                              ),
-                                            ],
-                                          )),
-                                      pw.Paragraph(
-                                          text: 'Date: $formattedDate'),
+                                          child: pw.Text(
+                                            'تاریخ: $formattedDate',
+                                            style: pw.TextStyle(font: ttf),
+                                          ),
+                                          textDirection: pw.TextDirection.rtl),
+                                      pw.Directionality(
+                                          child: pw.Align(
+                                            alignment: pw.Alignment.centerLeft,
+                                            child: pw.Text(
+                                              'سن: $pAge',
+                                              style: pw.TextStyle(font: ttf),
+                                            ),
+                                          ),
+                                          textDirection: pw.TextDirection.rtl),
+                                      pw.Directionality(
+                                          child: pw.Align(
+                                            alignment: pw.Alignment.centerLeft,
+                                            child: pw.Text(
+                                              'جنسیت: $pSex',
+                                              style: pw.TextStyle(font: ttf),
+                                            ),
+                                          ),
+                                          textDirection: pw.TextDirection.rtl),
+                                      pw.Directionality(
+                                          child: pw.Align(
+                                            alignment: pw.Alignment.centerRight,
+                                            child: pw.Text(
+                                              'نام مریض: $pFirstName $pLastName',
+                                              style: pw.TextStyle(font: ttf),
+                                            ),
+                                          ),
+                                          textDirection: pw.TextDirection.rtl),
+                                      /*  pw.Paragraph(
+                                          text: 'تاریخ: $formattedDate'), */
                                     ],
                                   ),
                                   pw.Header(level: 1, text: 'Px'),
                                   ...medicines
                                       .map((medicine) => pw.Padding(
                                             padding: const pw.EdgeInsets.only(
-                                                bottom: 10,
+                                                top: 10,
                                                 left:
                                                     15.0), // Adjust the value as needed
                                             child: pw.Align(
                                               alignment:
                                                   pw.Alignment.centerLeft,
                                               child: pw.Table(
-                                                defaultColumnWidth: const pw
-                                                    .FlexColumnWidth(
-                                                    1), // Make each column the same width
+                                                columnWidths: {
+                                                  0: const pw.FixedColumnWidth(
+                                                      80),
+                                                  1: const pw.FixedColumnWidth(
+                                                      150),
+                                                  2: const pw.FixedColumnWidth(
+                                                      80),
+                                                  3: const pw.FixedColumnWidth(
+                                                      80),
+                                                  4: const pw.FixedColumnWidth(
+                                                      180),
+                                                }, // Make each column the same width
                                                 children: [
                                                   pw.TableRow(
                                                     children: [
@@ -203,11 +243,16 @@ onCreatePrescription(BuildContext context) async {
                                                           '${medicine['dose']}',
                                                           style: pw.TextStyle(
                                                               font: ttf)),
-                                                      pw.Text(
+                                                      pw.Directionality(
+                                                        textDirection: pw
+                                                            .TextDirection.rtl,
+                                                        child: pw.Text(
                                                           '${medicine['descController'].text ?? ''}',
                                                           style: pw.TextStyle(
-                                                              font:
-                                                                  ttf)), // Use an empty string if the description is null
+                                                              font: ttf),
+                                                        ),
+                                                      ), // Use an empty string if the description is null
+                                                      pw.SizedBox(width: 2.0)
                                                     ],
                                                   ),
                                                 ],
@@ -216,6 +261,12 @@ onCreatePrescription(BuildContext context) async {
                                           ))
                                       .toList(),
                                   pw.Spacer(),
+                                  pw.Text('Signature:'),
+                                  pw.SizedBox(height: 20.0),
+                                  pw.Divider(
+                                    height: 10,
+                                    thickness: 1.0,
+                                  ),
                                   pw.Row(
                                       mainAxisAlignment:
                                           pw.MainAxisAlignment.spaceBetween,
@@ -255,31 +306,27 @@ onCreatePrescription(BuildContext context) async {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 200.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
+                            width: 150.0,
+                            margin: const EdgeInsets.all(15.0),
                             child: InputDecorator(
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'انتخاب داکتر',
                                 enabledBorder: OutlineInputBorder(
                                     borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
+                                        BorderRadius.all(Radius.circular(15.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
                                 focusedBorder: OutlineInputBorder(
                                     borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
+                                        BorderRadius.all(Radius.circular(15.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
                                 errorBorder: OutlineInputBorder(
                                     borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
+                                        BorderRadius.all(Radius.circular(15.0)),
                                     borderSide: BorderSide(color: Colors.red)),
                                 focusedErrorBorder: OutlineInputBorder(
                                     borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
+                                        BorderRadius.all(Radius.circular(15.0)),
                                     borderSide: BorderSide(
                                         color: Colors.red, width: 1.5)),
                               ),
@@ -290,6 +337,8 @@ onCreatePrescription(BuildContext context) async {
                                     isExpanded: true,
                                     icon: const Icon(Icons.arrow_drop_down),
                                     value: defaultSelectedStaff,
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.black),
                                     items: staffList.map((staff) {
                                       return DropdownMenuItem<String>(
                                         value: staff['staff_ID'],
@@ -310,32 +359,52 @@ onCreatePrescription(BuildContext context) async {
                               ),
                             ),
                           ),
+                          Tooltip(
+                            message: 'مریض جدید',
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                               
+                                });
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: Colors.blue, width: 2.0),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Icon(
+                                    Icons.person_add_alt,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                           Container(
-                            width: 200.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
+                            margin: const EdgeInsets.all(15.0),
+                            width: 150.0,
                             child: InputDecorator(
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'انتخاب مریض',
                                 enabledBorder: OutlineInputBorder(
                                     borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
+                                        BorderRadius.all(Radius.circular(15.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
                                 focusedBorder: OutlineInputBorder(
                                     borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
+                                        BorderRadius.all(Radius.circular(15.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
                                 errorBorder: OutlineInputBorder(
                                     borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
+                                        BorderRadius.all(Radius.circular(15.0)),
                                     borderSide: BorderSide(color: Colors.red)),
                                 focusedErrorBorder: OutlineInputBorder(
                                     borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
+                                        BorderRadius.all(Radius.circular(15.0)),
                                     borderSide: BorderSide(
                                         color: Colors.red, width: 1.5)),
                               ),
@@ -346,6 +415,8 @@ onCreatePrescription(BuildContext context) async {
                                     isExpanded: true,
                                     icon: const Icon(Icons.arrow_drop_down),
                                     value: defaultSelectedPatient,
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.black),
                                     items: patientsList.map((patient) {
                                       return DropdownMenuItem<String>(
                                         value: patient['pat_ID'],
@@ -483,6 +554,9 @@ onCreatePrescription(BuildContext context) async {
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return 'نام دارو الزامی میباشد.';
+                                    } else if (value.length < 5 ||
+                                        value.length > 30) {
+                                      return 'نام دارو باید حداقل 5 و حداکثر 30 حرف باشد.';
                                     }
                                   },
                                   inputFormatters: [
@@ -578,8 +652,8 @@ onCreatePrescription(BuildContext context) async {
                                   validator: (value) {
                                     if (value!.isNotEmpty) {
                                       if (value.length > 40 ||
-                                          value.length < 10) {
-                                        return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                          value.length < 5) {
+                                        return 'توضیحات باید حداقل 5 و حداکثر 40 حرف باشد.';
                                       }
                                     }
                                     return null;
