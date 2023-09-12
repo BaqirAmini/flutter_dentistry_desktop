@@ -312,10 +312,11 @@ onCreatePrescription(BuildContext context) async {
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'انتخاب داکتر',
+                              labelStyle: TextStyle(color: Colors.blueAccent),
                                 enabledBorder: OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
+                                    borderSide: BorderSide(color: Colors.blueAccent)),
                                 focusedBorder: OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15.0)),
@@ -332,13 +333,14 @@ onCreatePrescription(BuildContext context) async {
                               ),
                               child: DropdownButtonHideUnderline(
                                 child: Container(
-                                  height: 26.0,
+                                  height: 18.0,
+                                  padding: EdgeInsets.zero,
                                   child: DropdownButton(
                                     isExpanded: true,
                                     icon: const Icon(Icons.arrow_drop_down),
                                     value: defaultSelectedStaff,
-                                    style: TextStyle(
-                                        fontSize: 14, color: Colors.black),
+                                    style: const TextStyle(
+                                        fontSize: 12, color: Colors.black),
                                     items: staffList.map((staff) {
                                       return DropdownMenuItem<String>(
                                         value: staff['staff_ID'],
@@ -390,10 +392,11 @@ onCreatePrescription(BuildContext context) async {
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'انتخاب مریض',
+                                labelStyle: TextStyle(color: Colors.blueAccent),
                                 enabledBorder: OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
+                                    borderSide: BorderSide(color: Colors.blueAccent)),
                                 focusedBorder: OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15.0)),
@@ -410,13 +413,13 @@ onCreatePrescription(BuildContext context) async {
                               ),
                               child: DropdownButtonHideUnderline(
                                 child: Container(
-                                  height: 26.0,
+                                  height: 18.0,
                                   child: DropdownButton(
                                     isExpanded: true,
                                     icon: const Icon(Icons.arrow_drop_down),
                                     value: defaultSelectedPatient,
-                                    style: TextStyle(
-                                        fontSize: 14, color: Colors.black),
+                                    style: const TextStyle(
+                                        fontSize: 12, color: Colors.black),
                                     items: patientsList.map((patient) {
                                       return DropdownMenuItem<String>(
                                         value: patient['pat_ID'],
