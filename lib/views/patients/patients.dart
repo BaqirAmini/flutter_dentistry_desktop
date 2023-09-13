@@ -32,15 +32,22 @@ onCreatePrescription(BuildContext context) async {
     {
       'type': 'Syrup',
       'piece': '150mg',
+      'qty': '1',
       'dose': '1 x 1',
       'nameController': TextEditingController(),
       'descController': TextEditingController()
     }
   ];
   const regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
+
+  // Set 1 - 100 for medicine quantity
+  List<String> medicineQty = [];
+  for (int i = 1; i <= 100; i++) {
+    medicineQty.add('$i');
+  }
+
 // Key for Form widget
   final formKeyPresc = GlobalKey<FormState>();
-  final doctorController = TextEditingController();
   // ignore: use_build_context_synchronously
   return showDialog(
     context: context,
@@ -222,6 +229,8 @@ onCreatePrescription(BuildContext context) async {
                                                   3: const pw.FixedColumnWidth(
                                                       80),
                                                   4: const pw.FixedColumnWidth(
+                                                      80),
+                                                  5: const pw.FixedColumnWidth(
                                                       180),
                                                 }, // Make each column the same width
                                                 children: [
@@ -241,6 +250,10 @@ onCreatePrescription(BuildContext context) async {
                                                               font: ttf)),
                                                       pw.Text(
                                                           '${medicine['dose']}',
+                                                          style: pw.TextStyle(
+                                                              font: ttf)),
+                                                      pw.Text(
+                                                          'N = ${medicine['qty']}',
                                                           style: pw.TextStyle(
                                                               font: ttf)),
                                                       pw.Directionality(
@@ -312,11 +325,12 @@ onCreatePrescription(BuildContext context) async {
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'انتخاب داکتر',
-                              labelStyle: TextStyle(color: Colors.blueAccent),
+                                labelStyle: TextStyle(color: Colors.blueAccent),
                                 enabledBorder: OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15.0)),
-                                    borderSide: BorderSide(color: Colors.blueAccent)),
+                                    borderSide:
+                                        BorderSide(color: Colors.blueAccent)),
                                 focusedBorder: OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15.0)),
@@ -365,9 +379,7 @@ onCreatePrescription(BuildContext context) async {
                             message: 'مریض جدید',
                             child: InkWell(
                               onTap: () {
-                                setState(() {
-                               
-                                });
+                                setState(() {});
                               },
                               child: Container(
                                 decoration: BoxDecoration(
@@ -396,7 +408,8 @@ onCreatePrescription(BuildContext context) async {
                                 enabledBorder: OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15.0)),
-                                    borderSide: BorderSide(color: Colors.blueAccent)),
+                                    borderSide:
+                                        BorderSide(color: Colors.blueAccent)),
                                 focusedBorder: OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15.0)),
@@ -482,7 +495,7 @@ onCreatePrescription(BuildContext context) async {
                                         items: <String>[
                                           'Syrup',
                                           'Tablet',
-                                          'Mouth Liquid'
+                                          'Mouthwash'
                                         ].map<DropdownMenuItem<String>>(
                                             (String value) {
                                           return DropdownMenuItem<String>(
@@ -492,6 +505,55 @@ onCreatePrescription(BuildContext context) async {
                                         }).toList(),
                                       ),
                                     ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: TextFormField(
+                                  controller: medicine['nameController'],
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'نام دارو الزامی میباشد.';
+                                    } else if (value.length > 20 ||
+                                        value.length < 5) {
+                                      return 'نام دارو باید حداقل 5 و حداکثر 20 حرف باشد.';
+                                    }
+                                    return null;
+                                  },
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(regExOnlyAbc),
+                                    ),
+                                  ],
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Medicine Name',
+                                    suffixIcon: Icon(Icons.note_alt_outlined),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                    errorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.red)),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide: BorderSide(
+                                            color: Colors.red, width: 1.5)),
                                   ),
                                 ),
                               ),
@@ -552,47 +614,44 @@ onCreatePrescription(BuildContext context) async {
                                     right: 20.0,
                                     top: 10.0,
                                     bottom: 10.0),
-                                child: TextFormField(
-                                  controller: medicine['nameController'],
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'نام دارو الزامی میباشد.';
-                                    } else if (value.length < 5 ||
-                                        value.length > 30) {
-                                      return 'نام دارو باید حداقل 5 و حداکثر 30 حرف باشد.';
-                                    }
-                                  },
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                      RegExp(regExOnlyAbc),
-                                    ),
-                                  ],
+                                child: InputDecorator(
                                   decoration: const InputDecoration(
                                     border: OutlineInputBorder(),
+                                    labelText: 'Quantity',
                                     enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.grey)),
                                     focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                    errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5)),
-                                    labelText: 'Medicine Name',
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue),
+                                    ),
                                   ),
-                                  onChanged: (medicineController) =>
-                                      medicine['name'] = medicineController,
+                                  child: DropdownButtonHideUnderline(
+                                    child: SizedBox(
+                                      height: 26.0,
+                                      child: DropdownButton<String>(
+                                        isExpanded: true,
+                                        value: medicine['qty'],
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            medicine['qty'] = newValue;
+                                          });
+                                        },
+                                        items: medicineQty
+                                            .map<DropdownMenuItem<String>>(
+                                                (String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                               Container(
@@ -654,9 +713,9 @@ onCreatePrescription(BuildContext context) async {
                                   controller: medicine['descController'],
                                   validator: (value) {
                                     if (value!.isNotEmpty) {
-                                      if (value.length > 40 ||
+                                      if (value.length > 25 ||
                                           value.length < 5) {
-                                        return 'توضیحات باید حداقل 5 و حداکثر 40 حرف باشد.';
+                                        return 'توضیحات باید حداقل 5 و حداکثر 25 حرف باشد.';
                                       }
                                     }
                                     return null;
@@ -721,6 +780,7 @@ onCreatePrescription(BuildContext context) async {
                               medicines.add({
                                 'type': 'Syrup',
                                 'piece': '150mg',
+                                'qty': '1',
                                 'dose': '1 x 1',
                                 'nameController': TextEditingController(),
                                 'descController': TextEditingController()
