@@ -45,9 +45,23 @@ onCreatePrescription(BuildContext context) async {
   for (int i = 1; i <= 100; i++) {
     medicineQty.add('$i');
   }
+  // Set 1 - 100 for new patient ages
+  int defaultSelectedAge = 1;
+  List<int> newPatAges = [];
+  for (int i = 1; i <= 100; i++) {
+    newPatAges.add(i);
+  }
+  // Set sex for new patient
+  String defaultSelectedSex = 'مرد';
+  List<String> newPatSex = ['مرد', 'زن'];
+
+  bool isChecked = false;
+
+  final patientNameController = TextEditingController();
 
 // Key for Form widget
   final formKeyPresc = GlobalKey<FormState>();
+  final formKeyPrescNewPatient = GlobalKey<FormState>();
   // ignore: use_build_context_synchronously
   return showDialog(
     context: context,
@@ -180,28 +194,49 @@ onCreatePrescription(BuildContext context) async {
                                       pw.Directionality(
                                           child: pw.Align(
                                             alignment: pw.Alignment.centerLeft,
-                                            child: pw.Text(
-                                              'سن: $pAge',
-                                              style: pw.TextStyle(font: ttf),
-                                            ),
+                                            child: isChecked
+                                                ? pw.Text(
+                                                    'سن: $defaultSelectedAge',
+                                                    style:
+                                                        pw.TextStyle(font: ttf),
+                                                  )
+                                                : pw.Text(
+                                                    'سن: $pAge',
+                                                    style:
+                                                        pw.TextStyle(font: ttf),
+                                                  ),
                                           ),
                                           textDirection: pw.TextDirection.rtl),
                                       pw.Directionality(
                                           child: pw.Align(
                                             alignment: pw.Alignment.centerLeft,
-                                            child: pw.Text(
-                                              'جنسیت: $pSex',
-                                              style: pw.TextStyle(font: ttf),
-                                            ),
+                                            child: isChecked
+                                                ? pw.Text(
+                                                    'جنسیت: $defaultSelectedSex',
+                                                    style:
+                                                        pw.TextStyle(font: ttf),
+                                                  )
+                                                : pw.Text(
+                                                    'جنسیت: $pSex',
+                                                    style:
+                                                        pw.TextStyle(font: ttf),
+                                                  ),
                                           ),
                                           textDirection: pw.TextDirection.rtl),
                                       pw.Directionality(
                                           child: pw.Align(
                                             alignment: pw.Alignment.centerRight,
-                                            child: pw.Text(
-                                              'نام مریض: $pFirstName $pLastName',
-                                              style: pw.TextStyle(font: ttf),
-                                            ),
+                                            child: !isChecked
+                                                ? pw.Text(
+                                                    'نام مریض: $pFirstName $pLastName',
+                                                    style:
+                                                        pw.TextStyle(font: ttf),
+                                                  )
+                                                : pw.Text(
+                                                    'نام مریض: ${patientNameController.text}',
+                                                    style:
+                                                        pw.TextStyle(font: ttf),
+                                                  ),
                                           ),
                                           textDirection: pw.TextDirection.rtl),
                                       /*  pw.Paragraph(
@@ -221,7 +256,7 @@ onCreatePrescription(BuildContext context) async {
                                               child: pw.Table(
                                                 columnWidths: {
                                                   0: const pw.FixedColumnWidth(
-                                                      80),
+                                                      100),
                                                   1: const pw.FixedColumnWidth(
                                                       150),
                                                   2: const pw.FixedColumnWidth(
@@ -375,82 +410,421 @@ onCreatePrescription(BuildContext context) async {
                               ),
                             ),
                           ),
-                          Tooltip(
-                            message: 'مریض جدید',
-                            child: InkWell(
-                              onTap: () {
-                                setState(() {});
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                      color: Colors.blue, width: 2.0),
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Icon(
-                                    Icons.person_add_alt,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
                           Container(
-                            margin: const EdgeInsets.all(15.0),
-                            width: 150.0,
-                            child: InputDecorator(
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'انتخاب مریض',
-                                labelStyle: TextStyle(color: Colors.blueAccent),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(15.0)),
-                                    borderSide:
-                                        BorderSide(color: Colors.blueAccent)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(15.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(15.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(15.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: Container(
-                                  height: 18.0,
-                                  child: DropdownButton(
-                                    isExpanded: true,
-                                    icon: const Icon(Icons.arrow_drop_down),
-                                    value: defaultSelectedPatient,
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.black),
-                                    items: patientsList.map((patient) {
-                                      return DropdownMenuItem<String>(
-                                        value: patient['pat_ID'],
-                                        alignment: Alignment.centerRight,
-                                        child: Text(patient['firstname']),
-                                      );
-                                    }).toList(),
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        defaultSelectedPatient = newValue;
-                                        patientID = int.parse(newValue!);
-                                      });
-                                    },
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(15)),
+                              shape: BoxShape.rectangle,
+                              border:
+                                  Border.all(color: Colors.grey, width: 1.0),
+                            ),
+                            width: 120,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: ListTile(
+                                    leading: Checkbox(
+                                      value: isChecked,
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          isChecked = value!;
+                                        });
+                                      },
+                                    ),
+                                    title: const DefaultTextStyle(
+                                      style: TextStyle(
+                                          fontSize: 12.0, color: Colors.black),
+                                      child: Text('مریض جدید'),
+                                    ),
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (!isChecked)
+                            Container(
+                              margin: const EdgeInsets.all(15.0),
+                              width: 150.0,
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'انتخاب مریض',
+                                  labelStyle:
+                                      TextStyle(color: Colors.blueAccent),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blueAccent)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: Container(
+                                    height: 18.0,
+                                    child: DropdownButton(
+                                      isExpanded: true,
+                                      icon: const Icon(Icons.arrow_drop_down),
+                                      value: defaultSelectedPatient,
+                                      style: const TextStyle(
+                                          fontSize: 12, color: Colors.black),
+                                      items: patientsList.map((patient) {
+                                        return DropdownMenuItem<String>(
+                                          value: patient['pat_ID'],
+                                          alignment: Alignment.centerRight,
+                                          child: Text(patient['firstname']),
+                                        );
+                                      }).toList(),
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          defaultSelectedPatient = newValue;
+                                          patientID = int.parse(newValue!);
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
+                          if (isChecked)
+                            Container(
+                              margin: const EdgeInsets.all(15.0),
+                              width: 150.0,
+                              height: 50,
+                              child: Builder(
+                                builder: (context) {
+                                  return OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                      ),
+                                      side: const BorderSide(
+                                        color: Colors.blue,
+                                      ),
+                                    ),
+                                    onPressed: () async {
+                                      return showDialog(
+                                        context: context,
+                                        builder: ((context) {
+                                          return StatefulBuilder(
+                                            builder: ((context, setState) {
+                                              return AlertDialog(
+                                                title: const Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: Text(
+                                                    'ثبت مریض جدید',
+                                                    style: TextStyle(
+                                                        color: Colors.blue),
+                                                  ),
+                                                ),
+                                                content: Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: Form(
+                                                    key: formKeyPrescNewPatient,
+                                                    child: SizedBox(
+                                                      width: 500.0,
+                                                      child:
+                                                          SingleChildScrollView(
+                                                        reverse: false,
+                                                        child: Column(
+                                                          children: [
+                                                            Container(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .all(
+                                                                      10.0),
+                                                              child:
+                                                                  TextFormField(
+                                                                controller:
+                                                                    patientNameController,
+                                                                validator:
+                                                                    (value) {
+                                                                  if (value!
+                                                                      .isEmpty) {
+                                                                    return 'نام مریض الزامی میباشد.';
+                                                                  } else if (value
+                                                                              .length <
+                                                                          3 ||
+                                                                      value.length >
+                                                                          15) {
+                                                                    return 'نام مریض باید حداقل 3 و حداکثر 15 حرف باشد.';
+                                                                  }
+                                                                },
+                                                                inputFormatters: [
+                                                                  FilteringTextInputFormatter
+                                                                      .allow(
+                                                                    RegExp(
+                                                                        regExOnlyAbc),
+                                                                  ),
+                                                                ],
+                                                                decoration:
+                                                                    const InputDecoration(
+                                                                  border:
+                                                                      OutlineInputBorder(),
+                                                                  labelText:
+                                                                      'نام',
+                                                                  suffixIcon:
+                                                                      Icon(Icons
+                                                                          .numbers_outlined),
+                                                                  enabledBorder: OutlineInputBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.all(Radius.circular(
+                                                                              50.0)),
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                              color: Colors.grey)),
+                                                                  focusedBorder: OutlineInputBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.all(Radius.circular(
+                                                                              50.0)),
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                              color: Colors.blue)),
+                                                                  errorBorder: OutlineInputBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.all(Radius.circular(
+                                                                              30.0)),
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                              color: Colors.red)),
+                                                                  focusedErrorBorder: OutlineInputBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.all(Radius.circular(
+                                                                              30.0)),
+                                                                      borderSide: BorderSide(
+                                                                          color: Colors
+                                                                              .red,
+                                                                          width:
+                                                                              1.5)),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Container(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .all(
+                                                                      10.0),
+                                                              child:
+                                                                  InputDecorator(
+                                                                decoration:
+                                                                    const InputDecoration(
+                                                                  border:
+                                                                      OutlineInputBorder(),
+                                                                  labelText:
+                                                                      'جنسیت',
+                                                                  enabledBorder: OutlineInputBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.all(Radius.circular(
+                                                                              50.0)),
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                              color: Colors.grey)),
+                                                                  focusedBorder:
+                                                                      OutlineInputBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius.all(
+                                                                            Radius.circular(50.0)),
+                                                                    borderSide:
+                                                                        BorderSide(
+                                                                            color:
+                                                                                Colors.blue),
+                                                                  ),
+                                                                ),
+                                                                child:
+                                                                    DropdownButtonHideUnderline(
+                                                                  child:
+                                                                      SizedBox(
+                                                                    height:
+                                                                        26.0,
+                                                                    child:
+                                                                        DropdownButton(
+                                                                      isExpanded:
+                                                                          true,
+                                                                      icon: const Icon(
+                                                                          Icons
+                                                                              .arrow_drop_down),
+                                                                      value:
+                                                                          defaultSelectedSex,
+                                                                      items: newPatSex.map(
+                                                                          (String
+                                                                              sexItems) {
+                                                                        return DropdownMenuItem(
+                                                                          alignment:
+                                                                              Alignment.centerRight,
+                                                                          value:
+                                                                              sexItems,
+                                                                          child:
+                                                                              Directionality(
+                                                                            textDirection:
+                                                                                TextDirection.rtl,
+                                                                            child:
+                                                                                Text(sexItems),
+                                                                          ),
+                                                                        );
+                                                                      }).toList(),
+                                                                      onChanged:
+                                                                          (String?
+                                                                              newValue) {
+                                                                        setState(
+                                                                            () {
+                                                                          defaultSelectedSex =
+                                                                              newValue!;
+                                                                        });
+                                                                      },
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            Container(
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .all(
+                                                                      10.0),
+                                                              child:
+                                                                  InputDecorator(
+                                                                decoration:
+                                                                    const InputDecoration(
+                                                                  border:
+                                                                      OutlineInputBorder(),
+                                                                  labelText:
+                                                                      'سن',
+                                                                  enabledBorder: OutlineInputBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.all(Radius.circular(
+                                                                              50.0)),
+                                                                      borderSide:
+                                                                          BorderSide(
+                                                                              color: Colors.grey)),
+                                                                  focusedBorder:
+                                                                      OutlineInputBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius.all(
+                                                                            Radius.circular(50.0)),
+                                                                    borderSide:
+                                                                        BorderSide(
+                                                                            color:
+                                                                                Colors.blue),
+                                                                  ),
+                                                                ),
+                                                                child:
+                                                                    DropdownButtonHideUnderline(
+                                                                  child:
+                                                                      SizedBox(
+                                                                    height:
+                                                                        26.0,
+                                                                    child:
+                                                                        DropdownButton(
+                                                                      isExpanded:
+                                                                          true,
+                                                                      icon: const Icon(
+                                                                          Icons
+                                                                              .arrow_drop_down),
+                                                                      value:
+                                                                          defaultSelectedAge,
+                                                                      items: newPatAges
+                                                                          .map((int
+                                                                              ageItems) {
+                                                                        return DropdownMenuItem(
+                                                                          alignment:
+                                                                              Alignment.centerRight,
+                                                                          value:
+                                                                              ageItems,
+                                                                          child:
+                                                                              Directionality(
+                                                                            textDirection:
+                                                                                TextDirection.rtl,
+                                                                            child:
+                                                                                Text('$ageItems سال '),
+                                                                          ),
+                                                                        );
+                                                                      }).toList(),
+                                                                      onChanged:
+                                                                          (int?
+                                                                              newValue) {
+                                                                        setState(
+                                                                            () {
+                                                                          defaultSelectedAge =
+                                                                              newValue!;
+                                                                        });
+                                                                      },
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                actions: [
+                                                  Directionality(
+                                                    textDirection:
+                                                        TextDirection.rtl,
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.end,
+                                                      children: [
+                                                        ElevatedButton(
+                                                          onPressed: () {
+                                                            if (formKeyPrescNewPatient
+                                                                .currentState!
+                                                                .validate()) {
+                                                              // ignore: use_build_context_synchronously
+                                                              Navigator.of(
+                                                                      context,
+                                                                      rootNavigator:
+                                                                          true)
+                                                                  .pop();
+                                                            }
+                                                          },
+                                                          child:
+                                                              const Text('ثبت'),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () =>
+                                                              Navigator.of(
+                                                                      context,
+                                                                      rootNavigator:
+                                                                          true)
+                                                                  .pop(),
+                                                          child:
+                                                              const Text('لغو'),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            }),
+                                          );
+                                        }),
+                                      );
+                                    },
+                                    child: const Icon(Icons.person_add_alt),
+                                  );
+                                },
+                              ),
+                            ),
                         ],
                       ),
                       ...medicines.map((medicine) {
