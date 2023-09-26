@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -6,6 +8,7 @@ import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:galileo_mysql/galileo_mysql.dart';
+import 'package:another_flushbar/flushbar.dart';
 
 void main() {
   runApp(const Login());
@@ -60,7 +63,8 @@ class _LoginState extends State<Login> {
           String phone = row2["phone"];
           String tazkira = row2["tazkira_ID"];
           String addr = row2["address"];
-          final userPhoto = row2['photo'] != null ? row2['photo'] as Blob : null;
+          final userPhoto =
+              row2['photo'] != null ? row2['photo'] as Blob : null;
           // Global variables to be assigned staff info
           StaffInfo.staffID = staffID;
           StaffInfo.staffRole = role;
@@ -93,19 +97,22 @@ class _LoginState extends State<Login> {
           setState(() {
             _isLoggedIn = false;
           });
-          // ignore: use_build_context_synchronously
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.redAccent,
-              content: SizedBox(
-                height: 20.0,
-                child: Center(
-                  child:
-                      Text('متاسفم، نام یوزر و یا رمز عبور تان نا معتبر است.'),
-                ),
+          // ignore: avoid_single_cascade_in_expression_statements
+          Flushbar(
+            backgroundColor: Colors.redAccent,
+            flushbarStyle: FlushbarStyle.GROUNDED,
+            flushbarPosition: FlushbarPosition.TOP,
+            messageText: const Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text(
+                "متاسفم، نام یوزر و یا رمز عبور تان نا معتبر است.",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white),
               ),
             ),
-          );
+            duration: const Duration(seconds: 3),
+          )..show(context);
+
           _userNameController.clear();
           _pwdController.clear();
           setState(() {
@@ -113,18 +120,21 @@ class _LoginState extends State<Login> {
           });
         }
       } on SocketException catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Colors.redAccent,
-            content: SizedBox(
-              height: 20.0,
-              child: Center(
-                child:
-                    Text('با معذرت! سیستم شما دچار یک عارضه تخنیکی شده است.'),
-              ),
+        // ignore: avoid_single_cascade_in_expression_statements
+        Flushbar(
+          backgroundColor: Colors.redAccent,
+          flushbarStyle: FlushbarStyle.GROUNDED,
+          flushbarPosition: FlushbarPosition.TOP,
+          messageText: const Directionality(
+            textDirection: TextDirection.rtl,
+            child: Text(
+              "دیتابیس یافت نشد، لطفا با یک شخص مسلکی تماس بگیرید.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white),
             ),
           ),
-        );
+          duration: const Duration(seconds: 3),
+        )..show(context);
         setState(() {
           _isLoggedIn = false;
         });
