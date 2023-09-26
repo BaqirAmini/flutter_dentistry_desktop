@@ -48,6 +48,7 @@ dependencies:
   font_awesome_flutter: ^10.5.0
   pdf: ^3.10.4
   printing: ^5.11.0
+  win_toast: ^0.3.0
 
 dev_dependencies:
   flutter_test:

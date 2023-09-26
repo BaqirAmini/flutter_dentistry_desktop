@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/global_config.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_detail.dart';
@@ -10,6 +11,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:win_toast/win_toast.dart';
 
 void main() {
   return runApp(const Patient());
@@ -26,7 +28,7 @@ int? patientID;
 String? defaultSelectedPatient;
 List<Map<String, dynamic>> patientsList = [];
 // This dialog creates prescription
-onCreatePrescription(BuildContext context) async {
+onCreatePrescription(BuildContext context) {
   // This list will contain medicine types
   List<Map<String, dynamic>> medicines = [
     {
@@ -789,12 +791,47 @@ onCreatePrescription(BuildContext context) async {
                                                             if (formKeyPrescNewPatient
                                                                 .currentState!
                                                                 .validate()) {
-                                                              // ignore: use_build_context_synchronously
-                                                              Navigator.of(
-                                                                      context,
-                                                                      rootNavigator:
-                                                                          true)
-                                                                  .pop();
+                                                              showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (BuildContext
+                                                                        context) {
+                                                                  Future.delayed(
+                                                                      const Duration(
+                                                                          seconds:
+                                                                              2),
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop(); // This will pop the 'toast' dialog
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop(); // This will pop the original dialog
+                                                                  });
+                                                                  return Dialog(
+                                                                    child:
+                                                                        Container(
+                                                                      color: Colors
+                                                                          .green,
+                                                                      padding: const EdgeInsets
+                                                                          .all(
+                                                                          8.0),
+                                                                      child:
+                                                                          Directionality(
+                                                                        textDirection:
+                                                                            TextDirection.rtl,
+                                                                        child:
+                                                                            Text(
+                                                                          '${patientNameController.text} در نسخه ایجاد شد.',
+                                                                          style:
+                                                                              const TextStyle(color: Colors.white),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                },
+                                                              );
                                                             }
                                                           },
                                                           child:
