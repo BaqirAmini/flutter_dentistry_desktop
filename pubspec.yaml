@@ -49,6 +49,7 @@ dependencies:
   pdf: ^3.10.4
   printing: ^5.11.0
   win_toast: ^0.3.0
+  another_flushbar: ^1.12.30
 
 dev_dependencies:
   flutter_test:
