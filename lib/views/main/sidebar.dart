@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/views/finance/expenses/expenses.dart';
+import 'package:flutter_dentistry/views/patients/xrays.dart';
 import 'package:flutter_dentistry/views/services/services.dart';
 import 'package:flutter_dentistry/views/settings/settings.dart';
 import 'package:flutter_dentistry/views/staff/staff.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_dentistry/views/finance/taxes/taxes.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'login.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Sidebar extends StatefulWidget {
   Sidebar({super.key});
@@ -119,6 +121,15 @@ class _SidebarState extends State<Sidebar> {
               Navigator.pop(context);
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const Patient()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(FontAwesomeIcons.xRay),
+            title: const Text('اکسری (X-Ray)'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const XRayUploadScreen()));
             },
           ),
           ListTile(
