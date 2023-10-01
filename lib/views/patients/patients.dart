@@ -105,11 +105,14 @@ onCreatePrescription(BuildContext context) {
                             final pResults = await conn.query(
                                 'SELECT * FROM patients WHERE pat_ID = ?',
                                 [defaultSelectedPatient]);
-                            var pRow = pResults.first;
-                            String pFirstName = pRow['firstname'];
-                            String pLastName = pRow['lastname'] ?? '';
-                            String pSex = pRow['sex'];
-                            String pAge = pRow['age'].toString();
+                            var pRow =
+                                pResults.isNotEmpty ? pResults.first : null;
+                            String pFirstName = pRow?['firstname'] ?? '';
+                            String pLastName = pRow?['lastname'] ?? '';
+                            String pSex = pRow?['sex'] ?? '';
+                            String? pAge = pRow != null && pRow['age'] != null
+                                ? pRow['age'].toString()
+                                : '';
                             /* --------------------/. Fetch patient info ---------------- */
                             // Current date
                             DateTime now = DateTime.now();
@@ -331,7 +334,11 @@ onCreatePrescription(BuildContext context) {
 
                             // Save the PDF
                             final bytes = await pdf.save();
-                            final fileName = '$pFirstName.pdf';
+                            final fileName = isChecked
+                                ? '${patientNameController.text}.pdf'
+                                : pFirstName.isNotEmpty
+                                    ? '$pFirstName.pdf'
+                                    : 'prescription.pdf';
                             await Printing.sharePdf(
                                 bytes: bytes, filename: fileName);
                             /*   // Print the PDF
