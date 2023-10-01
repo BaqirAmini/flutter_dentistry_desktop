@@ -57,7 +57,7 @@ onCreatePrescription(BuildContext context) {
   String defaultSelectedSex = 'مرد';
   List<String> newPatSex = ['مرد', 'زن'];
 
-  bool isChecked = false;
+bool isPatientSelected = false;
 
   final patientNameController = TextEditingController();
 
@@ -199,7 +199,7 @@ onCreatePrescription(BuildContext context) {
                                       pw.Directionality(
                                           child: pw.Align(
                                             alignment: pw.Alignment.centerLeft,
-                                            child: isChecked
+                                            child: pFirstName.isEmpty
                                                 ? pw.Text(
                                                     'سن: $defaultSelectedAge',
                                                     style:
@@ -215,7 +215,7 @@ onCreatePrescription(BuildContext context) {
                                       pw.Directionality(
                                           child: pw.Align(
                                             alignment: pw.Alignment.centerLeft,
-                                            child: isChecked
+                                            child: pFirstName.isEmpty
                                                 ? pw.Text(
                                                     'جنسیت: $defaultSelectedSex',
                                                     style:
@@ -231,7 +231,7 @@ onCreatePrescription(BuildContext context) {
                                       pw.Directionality(
                                           child: pw.Align(
                                             alignment: pw.Alignment.centerRight,
-                                            child: !isChecked
+                                            child: pFirstName.isNotEmpty
                                                 ? pw.Text(
                                                     'نام مریض: $pFirstName $pLastName',
                                                     style:
@@ -334,11 +334,12 @@ onCreatePrescription(BuildContext context) {
 
                             // Save the PDF
                             final bytes = await pdf.save();
-                            final fileName = isChecked
-                                ? '${patientNameController.text}.pdf'
-                                : pFirstName.isNotEmpty
-                                    ? '$pFirstName.pdf'
-                                    : 'prescription.pdf';
+                            final fileName =
+                                patientNameController.text.isNotEmpty
+                                    ? '${patientNameController.text}.pdf'
+                                    : pFirstName.isNotEmpty
+                                        ? '$pFirstName.pdf'
+                                        : 'prescription.pdf';
                             await Printing.sharePdf(
                                 bytes: bytes, filename: fileName);
                             /*   // Print the PDF
@@ -419,456 +420,357 @@ onCreatePrescription(BuildContext context) {
                               ),
                             ),
                           ),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(15)),
-                              shape: BoxShape.rectangle,
-                              border:
-                                  Border.all(color: Colors.grey, width: 1.0),
-                            ),
-                            width: 120,
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: ListTile(
-                                    leading: Checkbox(
-                                      value: isChecked,
-                                      onChanged: (bool? value) {
-                                        setState(() {
-                                          isChecked = value!;
-                                        });
-                                      },
-                                    ),
-                                    title: const DefaultTextStyle(
-                                      style: TextStyle(
-                                          fontSize: 12.0, color: Colors.black),
-                                      child: Text('مریض جدید'),
-                                    ),
-                                    contentPadding: EdgeInsets.zero,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          if (!isChecked)
-                            Container(
-                              margin: const EdgeInsets.all(15.0),
-                              width: 150.0,
-                              child: InputDecorator(
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'انتخاب مریض',
-                                  labelStyle:
-                                      TextStyle(color: Colors.blueAccent),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blueAccent)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue)),
-                                  errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide: BorderSide(
-                                          color: Colors.red, width: 1.5)),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: Container(
-                                    height: 18.0,
-                                    child: DropdownButton(
-                                      isExpanded: true,
-                                      icon: const Icon(Icons.arrow_drop_down),
-                                      value: defaultSelectedPatient,
-                                      style: const TextStyle(
-                                          fontSize: 12, color: Colors.black),
-                                      items: patientsList.map((patient) {
-                                        return DropdownMenuItem<String>(
-                                          value: patient['pat_ID'],
-                                          alignment: Alignment.centerRight,
-                                          child: Text(patient['firstname']),
-                                        );
-                                      }).toList(),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          defaultSelectedPatient = newValue;
-                                          patientID = int.parse(newValue!);
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          if (isChecked)
-                            Container(
-                              margin: const EdgeInsets.all(15.0),
-                              width: 150.0,
-                              height: 50,
-                              child: Builder(
-                                builder: (context) {
-                                  return OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                      ),
-                                      side: const BorderSide(
-                                        color: Colors.blue,
-                                      ),
-                                    ),
-                                    onPressed: () async {
-                                      return showDialog(
-                                        context: context,
-                                        builder: ((context) {
-                                          return StatefulBuilder(
-                                            builder: ((context, setState) {
-                                              return AlertDialog(
-                                                title: const Directionality(
-                                                  textDirection:
-                                                      TextDirection.rtl,
-                                                  child: Text(
-                                                    'ثبت مریض جدید',
-                                                    style: TextStyle(
-                                                        color: Colors.blue),
-                                                  ),
-                                                ),
-                                                content: Directionality(
-                                                  textDirection:
-                                                      TextDirection.rtl,
-                                                  child: Form(
-                                                    key: formKeyPrescNewPatient,
-                                                    child: SizedBox(
-                                                      width: 500.0,
-                                                      child:
-                                                          SingleChildScrollView(
-                                                        reverse: false,
-                                                        child: Column(
-                                                          children: [
-                                                            Container(
-                                                              margin:
-                                                                  const EdgeInsets
-                                                                      .all(
-                                                                      10.0),
-                                                              child:
-                                                                  TextFormField(
-                                                                controller:
-                                                                    patientNameController,
-                                                                validator:
-                                                                    (value) {
-                                                                  if (value!
-                                                                      .isEmpty) {
-                                                                    return 'نام مریض الزامی میباشد.';
-                                                                  } else if (value
-                                                                              .length <
-                                                                          3 ||
-                                                                      value.length >
-                                                                          15) {
-                                                                    return 'نام مریض باید حداقل 3 و حداکثر 15 حرف باشد.';
-                                                                  }
-                                                                },
-                                                                inputFormatters: [
-                                                                  FilteringTextInputFormatter
-                                                                      .allow(
-                                                                    RegExp(
-                                                                        regExOnlyAbc),
-                                                                  ),
-                                                                ],
-                                                                decoration:
-                                                                    const InputDecoration(
-                                                                  border:
-                                                                      OutlineInputBorder(),
-                                                                  labelText:
-                                                                      'نام',
-                                                                  suffixIcon:
-                                                                      Icon(Icons
-                                                                          .numbers_outlined),
-                                                                  enabledBorder: OutlineInputBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.all(Radius.circular(
-                                                                              50.0)),
-                                                                      borderSide:
-                                                                          BorderSide(
-                                                                              color: Colors.grey)),
-                                                                  focusedBorder: OutlineInputBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.all(Radius.circular(
-                                                                              50.0)),
-                                                                      borderSide:
-                                                                          BorderSide(
-                                                                              color: Colors.blue)),
-                                                                  errorBorder: OutlineInputBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.all(Radius.circular(
-                                                                              30.0)),
-                                                                      borderSide:
-                                                                          BorderSide(
-                                                                              color: Colors.red)),
-                                                                  focusedErrorBorder: OutlineInputBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.all(Radius.circular(
-                                                                              30.0)),
-                                                                      borderSide: BorderSide(
-                                                                          color: Colors
-                                                                              .red,
-                                                                          width:
-                                                                              1.5)),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            Container(
-                                                              margin:
-                                                                  const EdgeInsets
-                                                                      .all(
-                                                                      10.0),
-                                                              child:
-                                                                  InputDecorator(
-                                                                decoration:
-                                                                    const InputDecoration(
-                                                                  border:
-                                                                      OutlineInputBorder(),
-                                                                  labelText:
-                                                                      'جنسیت',
-                                                                  enabledBorder: OutlineInputBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.all(Radius.circular(
-                                                                              50.0)),
-                                                                      borderSide:
-                                                                          BorderSide(
-                                                                              color: Colors.grey)),
-                                                                  focusedBorder:
-                                                                      OutlineInputBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.all(
-                                                                            Radius.circular(50.0)),
-                                                                    borderSide:
-                                                                        BorderSide(
-                                                                            color:
-                                                                                Colors.blue),
-                                                                  ),
-                                                                ),
-                                                                child:
-                                                                    DropdownButtonHideUnderline(
-                                                                  child:
-                                                                      SizedBox(
-                                                                    height:
-                                                                        26.0,
-                                                                    child:
-                                                                        DropdownButton(
-                                                                      isExpanded:
-                                                                          true,
-                                                                      icon: const Icon(
-                                                                          Icons
-                                                                              .arrow_drop_down),
-                                                                      value:
-                                                                          defaultSelectedSex,
-                                                                      items: newPatSex.map(
-                                                                          (String
-                                                                              sexItems) {
-                                                                        return DropdownMenuItem(
-                                                                          alignment:
-                                                                              Alignment.centerRight,
-                                                                          value:
-                                                                              sexItems,
-                                                                          child:
-                                                                              Directionality(
-                                                                            textDirection:
-                                                                                TextDirection.rtl,
-                                                                            child:
-                                                                                Text(sexItems),
-                                                                          ),
-                                                                        );
-                                                                      }).toList(),
-                                                                      onChanged:
-                                                                          (String?
-                                                                              newValue) {
-                                                                        setState(
-                                                                            () {
-                                                                          defaultSelectedSex =
-                                                                              newValue!;
-                                                                        });
-                                                                      },
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            Container(
-                                                              margin:
-                                                                  const EdgeInsets
-                                                                      .all(
-                                                                      10.0),
-                                                              child:
-                                                                  InputDecorator(
-                                                                decoration:
-                                                                    const InputDecoration(
-                                                                  border:
-                                                                      OutlineInputBorder(),
-                                                                  labelText:
-                                                                      'سن',
-                                                                  enabledBorder: OutlineInputBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.all(Radius.circular(
-                                                                              50.0)),
-                                                                      borderSide:
-                                                                          BorderSide(
-                                                                              color: Colors.grey)),
-                                                                  focusedBorder:
-                                                                      OutlineInputBorder(
-                                                                    borderRadius:
-                                                                        BorderRadius.all(
-                                                                            Radius.circular(50.0)),
-                                                                    borderSide:
-                                                                        BorderSide(
-                                                                            color:
-                                                                                Colors.blue),
-                                                                  ),
-                                                                ),
-                                                                child:
-                                                                    DropdownButtonHideUnderline(
-                                                                  child:
-                                                                      SizedBox(
-                                                                    height:
-                                                                        26.0,
-                                                                    child:
-                                                                        DropdownButton(
-                                                                      isExpanded:
-                                                                          true,
-                                                                      icon: const Icon(
-                                                                          Icons
-                                                                              .arrow_drop_down),
-                                                                      value:
-                                                                          defaultSelectedAge,
-                                                                      items: newPatAges
-                                                                          .map((int
-                                                                              ageItems) {
-                                                                        return DropdownMenuItem(
-                                                                          alignment:
-                                                                              Alignment.centerRight,
-                                                                          value:
-                                                                              ageItems,
-                                                                          child:
-                                                                              Directionality(
-                                                                            textDirection:
-                                                                                TextDirection.rtl,
-                                                                            child:
-                                                                                Text('$ageItems سال '),
-                                                                          ),
-                                                                        );
-                                                                      }).toList(),
-                                                                      onChanged:
-                                                                          (int?
-                                                                              newValue) {
-                                                                        setState(
-                                                                            () {
-                                                                          defaultSelectedAge =
-                                                                              newValue!;
-                                                                        });
-                                                                      },
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
+                          Tooltip(
+                            message: 'مریض جدید',
+                            child: Container(
+                              width: 120,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      margin: const EdgeInsets.all(15.0),
+                                      width: 150.0,
+                                      height: 50,
+                                      child: Builder(
+                                        builder: (context) {
+                                          return OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(15.0),
+                                              ),
+                                              side: const BorderSide(
+                                                color: Colors.blue,
+                                              ),
+                                            ),
+                                            onPressed: () async {
+                                              return showDialog(
+                                                context: context,
+                                                builder: ((context) {
+                                                  return StatefulBuilder(
+                                                    builder:
+                                                        ((context, setState) {
+                                                      return AlertDialog(
+                                                        title:
+                                                            const Directionality(
+                                                          textDirection:
+                                                              TextDirection.rtl,
+                                                          child: Text(
+                                                            'ثبت مریض جدید',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .blue),
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                                actions: [
-                                                  Directionality(
-                                                    textDirection:
-                                                        TextDirection.rtl,
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment.end,
-                                                      children: [
-                                                        ElevatedButton(
-                                                          onPressed: () {
-                                                            if (formKeyPrescNewPatient
-                                                                .currentState!
-                                                                .validate()) {
-                                                              showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (BuildContext
-                                                                        context) {
-                                                                  Future.delayed(
-                                                                      const Duration(
-                                                                          seconds:
-                                                                              2),
-                                                                      () {
-                                                                    Navigator.of(
-                                                                            context)
-                                                                        .pop(); // This will pop the 'toast' dialog
-                                                                    Navigator.of(
-                                                                            context)
-                                                                        .pop(); // This will pop the original dialog
-                                                                  });
-                                                                  return Dialog(
-                                                                    child:
-                                                                        Container(
-                                                                      color: Colors
-                                                                          .green,
-                                                                      padding: const EdgeInsets
+                                                        content: Directionality(
+                                                          textDirection:
+                                                              TextDirection.rtl,
+                                                          child: Form(
+                                                            key:
+                                                                formKeyPrescNewPatient,
+                                                            child: SizedBox(
+                                                              width: 500.0,
+                                                              child:
+                                                                  SingleChildScrollView(
+                                                                reverse: false,
+                                                                child: Column(
+                                                                  children: [
+                                                                    Container(
+                                                                      margin: const EdgeInsets
                                                                           .all(
-                                                                          8.0),
+                                                                          10.0),
                                                                       child:
-                                                                          Directionality(
-                                                                        textDirection:
-                                                                            TextDirection.rtl,
-                                                                        child:
-                                                                            Text(
-                                                                          '${patientNameController.text} در نسخه ایجاد شد.',
-                                                                          style:
-                                                                              const TextStyle(color: Colors.white),
+                                                                          TextFormField(
+                                                                        controller:
+                                                                            patientNameController,
+                                                                        validator:
+                                                                            (value) {
+                                                                          if (value!
+                                                                              .isEmpty) {
+                                                                            return 'نام مریض الزامی میباشد.';
+                                                                          } else if (value.length < 3 ||
+                                                                              value.length > 15) {
+                                                                            return 'نام مریض باید حداقل 3 و حداکثر 15 حرف باشد.';
+                                                                          }
+                                                                        },
+                                                                        inputFormatters: [
+                                                                          FilteringTextInputFormatter
+                                                                              .allow(
+                                                                            RegExp(regExOnlyAbc),
+                                                                          ),
+                                                                        ],
+                                                                        decoration:
+                                                                            const InputDecoration(
+                                                                          border:
+                                                                              OutlineInputBorder(),
+                                                                          labelText:
+                                                                              'نام',
+                                                                          suffixIcon:
+                                                                              Icon(Icons.numbers_outlined),
+                                                                          enabledBorder: OutlineInputBorder(
+                                                                              borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                                                                              borderSide: BorderSide(color: Colors.grey)),
+                                                                          focusedBorder: OutlineInputBorder(
+                                                                              borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                                                                              borderSide: BorderSide(color: Colors.blue)),
+                                                                          errorBorder: OutlineInputBorder(
+                                                                              borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                                                                              borderSide: BorderSide(color: Colors.red)),
+                                                                          focusedErrorBorder: OutlineInputBorder(
+                                                                              borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                                                                              borderSide: BorderSide(color: Colors.red, width: 1.5)),
                                                                         ),
                                                                       ),
                                                                     ),
-                                                                  );
-                                                                },
-                                                              );
-                                                            }
-                                                          },
-                                                          child:
-                                                              const Text('ثبت'),
+                                                                    Container(
+                                                                      margin: const EdgeInsets
+                                                                          .all(
+                                                                          10.0),
+                                                                      child:
+                                                                          InputDecorator(
+                                                                        decoration:
+                                                                            const InputDecoration(
+                                                                          border:
+                                                                              OutlineInputBorder(),
+                                                                          labelText:
+                                                                              'جنسیت',
+                                                                          enabledBorder: OutlineInputBorder(
+                                                                              borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                                                                              borderSide: BorderSide(color: Colors.grey)),
+                                                                          focusedBorder:
+                                                                              OutlineInputBorder(
+                                                                            borderRadius:
+                                                                                BorderRadius.all(Radius.circular(50.0)),
+                                                                            borderSide:
+                                                                                BorderSide(color: Colors.blue),
+                                                                          ),
+                                                                        ),
+                                                                        child:
+                                                                            DropdownButtonHideUnderline(
+                                                                          child:
+                                                                              SizedBox(
+                                                                            height:
+                                                                                26.0,
+                                                                            child:
+                                                                                DropdownButton(
+                                                                              isExpanded: true,
+                                                                              icon: const Icon(Icons.arrow_drop_down),
+                                                                              value: defaultSelectedSex,
+                                                                              items: newPatSex.map((String sexItems) {
+                                                                                return DropdownMenuItem(
+                                                                                  alignment: Alignment.centerRight,
+                                                                                  value: sexItems,
+                                                                                  child: Directionality(
+                                                                                    textDirection: TextDirection.rtl,
+                                                                                    child: Text(sexItems),
+                                                                                  ),
+                                                                                );
+                                                                              }).toList(),
+                                                                              onChanged: (String? newValue) {
+                                                                                setState(() {
+                                                                                  defaultSelectedSex = newValue!;
+                                                                                });
+                                                                              },
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    Container(
+                                                                      margin: const EdgeInsets
+                                                                          .all(
+                                                                          10.0),
+                                                                      child:
+                                                                          InputDecorator(
+                                                                        decoration:
+                                                                            const InputDecoration(
+                                                                          border:
+                                                                              OutlineInputBorder(),
+                                                                          labelText:
+                                                                              'سن',
+                                                                          enabledBorder: OutlineInputBorder(
+                                                                              borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                                                                              borderSide: BorderSide(color: Colors.grey)),
+                                                                          focusedBorder:
+                                                                              OutlineInputBorder(
+                                                                            borderRadius:
+                                                                                BorderRadius.all(Radius.circular(50.0)),
+                                                                            borderSide:
+                                                                                BorderSide(color: Colors.blue),
+                                                                          ),
+                                                                        ),
+                                                                        child:
+                                                                            DropdownButtonHideUnderline(
+                                                                          child:
+                                                                              SizedBox(
+                                                                            height:
+                                                                                26.0,
+                                                                            child:
+                                                                                DropdownButton(
+                                                                              isExpanded: true,
+                                                                              icon: const Icon(Icons.arrow_drop_down),
+                                                                              value: defaultSelectedAge,
+                                                                              items: newPatAges.map((int ageItems) {
+                                                                                return DropdownMenuItem(
+                                                                                  alignment: Alignment.centerRight,
+                                                                                  value: ageItems,
+                                                                                  child: Directionality(
+                                                                                    textDirection: TextDirection.rtl,
+                                                                                    child: Text('$ageItems سال '),
+                                                                                  ),
+                                                                                );
+                                                                              }).toList(),
+                                                                              onChanged: (int? newValue) {
+                                                                                setState(() {
+                                                                                  defaultSelectedAge = newValue!;
+                                                                                });
+                                                                              },
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
                                                         ),
-                                                        TextButton(
-                                                          onPressed: () =>
-                                                              Navigator.of(
-                                                                      context,
-                                                                      rootNavigator:
-                                                                          true)
-                                                                  .pop(),
-                                                          child:
-                                                              const Text('لغو'),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
+                                                        actions: [
+                                                          Directionality(
+                                                            textDirection:
+                                                                TextDirection
+                                                                    .rtl,
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .end,
+                                                              children: [
+                                                                ElevatedButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    if (formKeyPrescNewPatient
+                                                                        .currentState!
+                                                                        .validate()) {
+                                                                      showDialog(
+                                                                        context:
+                                                                            context,
+                                                                        builder:
+                                                                            (BuildContext
+                                                                                context) {
+                                                                          Future.delayed(
+                                                                              const Duration(seconds: 2),
+                                                                              () {
+                                                                            Navigator.of(context).pop(); // This will pop the 'toast' dialog
+                                                                            Navigator.of(context).pop(); // This will pop the original dialog
+                                                                          });
+                                                                          return Dialog(
+                                                                            child:
+                                                                                Container(
+                                                                              color: Colors.green,
+                                                                              padding: const EdgeInsets.all(8.0),
+                                                                              child: Directionality(
+                                                                                textDirection: TextDirection.rtl,
+                                                                                child: Text(
+                                                                                  '${patientNameController.text} در نسخه ایجاد شد.',
+                                                                                  style: const TextStyle(color: Colors.white),
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          );
+                                                                        },
+                                                                      );
+                                                                    }
+                                                                  },
+                                                                  child:
+                                                                      const Text(
+                                                                          'ثبت'),
+                                                                ),
+                                                                TextButton(
+                                                                  onPressed: () => Navigator.of(
+                                                                          context,
+                                                                          rootNavigator:
+                                                                              true)
+                                                                      .pop(),
+                                                                  child:
+                                                                      const Text(
+                                                                          'لغو'),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    }),
+                                                  );
+                                                }),
                                               );
-                                            }),
+                                            },
+                                            child: const Icon(
+                                                Icons.person_add_alt),
                                           );
-                                        }),
-                                      );
-                                    },
-                                    child: const Icon(Icons.person_add_alt),
-                                  );
-                                },
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.all(15.0),
+                            width: 150.0,
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'انتخاب مریض',
+                                labelStyle: TextStyle(color: Colors.blueAccent),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide:
+                                        BorderSide(color: Colors.blueAccent)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: Container(
+                                  height: 18.0,
+                                  child: DropdownButton(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: defaultSelectedPatient,
+                                    style: const TextStyle(
+                                        fontSize: 12, color: Colors.black),
+                                    items: patientsList.map((patient) {
+                                      return DropdownMenuItem<String>(
+                                        value: patient['pat_ID'],
+                                        alignment: Alignment.centerRight,
+                                        child: Text(patient['firstname']),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        defaultSelectedPatient = newValue;
+                                        patientID = int.parse(newValue!);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       ...medicines.map((medicine) {
