@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_config.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
-import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_detail.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
@@ -1239,13 +1238,7 @@ class _PatientState extends State<Patient> {
                     message: 'رفتن به داشبورد',
                     child: IconButton(
                       icon: const Icon(Icons.home_outlined),
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Dashboard()),
-                        );
-                      },
+                      onPressed: () => Navigator.pop(context),
                     ),
                   ),
                   title: const Text('مریض ها'),
@@ -1422,9 +1415,12 @@ class _PatientDataTableState extends State<PatientDataTable> {
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const NewPatient()));
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const NewPatient()))
+                        .then((_) {
+                      _fetchData();
+                    });
                   },
                   child: const Text('افزودن مریض جدید'),
                 ),
