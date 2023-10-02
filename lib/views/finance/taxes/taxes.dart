@@ -18,7 +18,7 @@ class TaxList extends StatelessWidget {
             leading: Tooltip(
               message: 'رفتن به داشبورد',
               child: IconButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Dashboard())),
                 icon: const Icon(Icons.home_outlined),
               ),
             ),
