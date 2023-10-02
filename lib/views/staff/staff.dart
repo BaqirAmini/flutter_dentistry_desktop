@@ -176,7 +176,9 @@ class _MyDataTableState extends State<MyDataTable> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const NewStaff()));
+                            builder: (context) => const NewStaff())).then((_) {
+                      _fetchData();
+                    });
                   },
                   child: const Text('افزودن کارمند جدید'),
                 ),
