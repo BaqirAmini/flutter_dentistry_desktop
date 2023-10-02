@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/models/expense_data_model.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart' as intl;
-import '../../main/dashboard.dart';
 import '/views/finance/expenses/expense_info.dart';
 
 // Create the global key at the top level of your Dart file
@@ -79,7 +79,7 @@ class _ExpenseListState extends State<ExpenseList> {
               leading: Tooltip(
                 message: 'رفتن به داشبورد',
                 child: IconButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Dashboard())),
                   icon: const Icon(Icons.home_outlined),
                 ),
               ),
