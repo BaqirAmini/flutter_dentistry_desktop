@@ -184,6 +184,7 @@ class _DashboardState extends State<Dashboard> {
                 return IconButton(
                   onPressed: () {
                     Scaffold.of(context).openDrawer();
+                    setState(() {});
                   },
                   tooltip: "باز کردن مینوی راست",
                   icon: const Icon(Icons.menu),

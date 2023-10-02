@@ -57,6 +57,15 @@ class _SidebarState extends State<Sidebar> {
       ? Uint8List.fromList(StaffInfo.userPhoto!.toBytes())
       : null;
 
+// Use this function to update user profile photo
+  onUpdatePhoto() {
+    _image = (uint8list != null)
+        ? MemoryImage(uint8list!)
+        : const AssetImage('assets/graphics/user_profile2.jpg')
+            as ImageProvider;
+    return _image;
+  }
+
   late ImageProvider _image;
   @override
   void initState() {
@@ -64,10 +73,7 @@ class _SidebarState extends State<Sidebar> {
     // Clear image caching since Flutter by default does.
     imageCache.clear();
     imageCache.clearLiveImages();
-    _image = (uint8list != null)
-        ? MemoryImage(uint8list!)
-        : const AssetImage('assets/graphics/user_profile2.jpg')
-            as ImageProvider;
+    onUpdatePhoto();
   }
 
   @override
@@ -77,10 +83,7 @@ class _SidebarState extends State<Sidebar> {
     imageCache.clear();
     imageCache.clearLiveImages();
     setState(() {
-      _image = (uint8list != null)
-          ? MemoryImage(uint8list!)
-          : const AssetImage('assets/graphics/user_profile2.jpg')
-              as ImageProvider;
+      onUpdatePhoto();
     });
   }
 
@@ -102,7 +105,9 @@ class _SidebarState extends State<Sidebar> {
                   MaterialPageRoute(
                     builder: (context) => const Settings(),
                   ),
-                );
+                ).then((_) {
+                  onUpdatePhoto();
+                });
               },
             ),
           ),
@@ -128,8 +133,10 @@ class _SidebarState extends State<Sidebar> {
             title: const Text('اکسری (X-Ray)'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const XRayUploadScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const XRayUploadScreen()));
             },
           ),
           ListTile(
