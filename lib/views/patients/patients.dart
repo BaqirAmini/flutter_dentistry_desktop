@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_config.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_detail.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
@@ -57,7 +58,7 @@ onCreatePrescription(BuildContext context) {
   String defaultSelectedSex = 'مرد';
   List<String> newPatSex = ['مرد', 'زن'];
 
-bool isPatientSelected = false;
+  bool isPatientSelected = false;
 
   final patientNameController = TextEditingController();
 
@@ -1238,7 +1239,13 @@ class _PatientState extends State<Patient> {
                     message: 'رفتن به داشبورد',
                     child: IconButton(
                       icon: const Icon(Icons.home_outlined),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Dashboard()),
+                        );
+                      },
                     ),
                   ),
                   title: const Text('مریض ها'),
