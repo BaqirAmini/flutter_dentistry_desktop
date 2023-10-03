@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
-import 'package:galileo_mysql/src/single_connection.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter_dentistry/views/main/sidebar.dart';
 import 'package:shamsi_date/shamsi_date.dart';
@@ -202,7 +201,8 @@ class _DashboardState extends State<Dashboard> {
               ),
               Column(
                 children: [
-                  Expanded(
+                  Container(
+                    margin: const EdgeInsets.only(top: 50.0),
                     child: Row(
                       children: [
                         Card(
@@ -359,7 +359,7 @@ class _DashboardState extends State<Dashboard> {
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.only(top: 10.0),
+                    margin: const EdgeInsets.only(top: 30.0),
                     child: Row(
                       children: [
                         Card(
