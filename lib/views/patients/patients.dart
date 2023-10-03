@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_config.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_detail.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
@@ -1238,7 +1241,7 @@ class _PatientState extends State<Patient> {
                     message: 'رفتن به داشبورد',
                     child: IconButton(
                       icon: const Icon(Icons.home_outlined),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Dashboard())),
                     ),
                   ),
                   title: const Text('مریض ها'),
@@ -1275,20 +1278,31 @@ onDeletePatient(BuildContext context, Function onDelete) {
                   child: const Text('لغو')),
               TextButton(
                   onPressed: () async {
-                    final conn = await onConnToDb();
-                    final results = await conn.query(
-                        'DELETE FROM patients WHERE pat_ID = ?', [patientId]);
-                    if (results.affectedRows! > 0) {
-                      _onShowSnack(Colors.green, 'مریض موفقانه حذف شد.');
-                      onDelete();
-                    } else {
-                      _onShowSnack(Colors.red, 'متاسفم، مریض حذف نشد.');
+                    try {
+                      final conn = await onConnToDb();
+                      final results = await conn.query(
+                          'DELETE FROM patients WHERE pat_ID = ?', [patientId]);
+                      if (results.affectedRows! > 0) {
+                        _onShowSnack(Colors.green, 'مریض موفقانه حذف شد.');
+                        onDelete();
+                      } else {
+                        _onShowSnack(Colors.red, 'متاسفم، مریض حذف نشد.');
+                      }
+                      await conn.close();
+                    } catch (e) {
+                      if (e is SocketException) {
+                        // Handle the exception here
+                        print('Failed to connect to the database: $e');
+                      } else {
+                        // Rethrow any other exception
+                        rethrow;
+                      }
+                    } finally {
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context, rootNavigator: true).pop();
                     }
-                    await conn.close();
-                    // ignore: use_build_context_synchronously
-                    Navigator.of(context, rootNavigator: true).pop();
                   },
-                  child: const Text('حذف')),
+                  child: const Text('حذف'))
             ],
           ));
 }
