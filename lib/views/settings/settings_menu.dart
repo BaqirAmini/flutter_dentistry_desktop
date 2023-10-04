@@ -10,7 +10,7 @@ import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:galileo_mysql/galileo_mysql.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart' as INTL;
-import 'package:csv/csv.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 
 FilePickerResult? filePickerResult;
 File? pickedFile;
@@ -949,8 +949,9 @@ onChangeLang() {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'انتخاب زبان',
+                  Text(
+                    translations[selectedLanguage]?['chooseLanguage'] ??
+                        'Choose Language',
                     style: TextStyle(fontSize: 20.0, color: Colors.black),
                   ),
                   SizedBox(
