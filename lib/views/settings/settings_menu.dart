@@ -249,6 +249,8 @@ Widget onShowSettingsItem(int index, [void Function()? onUpdatePhoto]) {
     return onBackUpData();
   } else if (index == 4) {
     return onRestoreData();
+  } else if (index == 6) {
+    return onChangeLang();
   } else {
     return const SizedBox.shrink();
   }
@@ -929,6 +931,165 @@ onBackUpData() {
             ],
           ),
         ),
+      );
+    },
+  );
+}
+
+// This function is to change system languages
+onChangeLang() {
+  String? selectedLanguage = 'English'; // Default selected language
+
+  return StatefulBuilder(
+    builder: (context, setState) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return Card(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'انتخاب زبان',
+                    style: TextStyle(fontSize: 20.0, color: Colors.black),
+                  ),
+                  SizedBox(
+                    height: 50.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            selectedLanguage = 'English';
+                          });
+                        },
+                        child: Card(
+                          elevation: 1.0,
+                          color: selectedLanguage == 'English'
+                              ? Colors.grey[300]
+                              : Colors.white, // change color when selected
+                          child: Container(
+                            height: 60.0, // adjust as needed
+                            width: 120.0, // adjust as needed
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Container(
+                                  width: 80.0, // adjust as needed
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      Image.asset(
+                                        'assets/flags/English.png',
+                                        width: 30.0,
+                                        height: 30.0,
+                                      ),
+                                      Text('Enlish'),
+                                    ],
+                                  ),
+                                ),
+                                if (selectedLanguage == 'English')
+                                  const Icon(Icons.check_circle,
+                                      color: Colors.blue),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            selectedLanguage = 'دری';
+                          });
+                        },
+                        child: Card(
+                          elevation: 1.0,
+                          color: selectedLanguage == 'دری'
+                              ? Colors.grey[300]
+                              : Colors.white, // change color when selected
+                          child: Container(
+                            height: 60.0, // adjust as needed
+                            width: 120.0, // adjust as needed
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Container(
+                                  width: 80.0, // adjust as needed
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      Image.asset(
+                                        'assets/flags/Dari.png',
+                                        width: 30.0,
+                                        height: 30.0,
+                                      ),
+                                      Text('دری'),
+                                    ],
+                                  ),
+                                ),
+                                if (selectedLanguage == 'دری')
+                                  const Icon(Icons.check_circle,
+                                      color: Colors.blue),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            selectedLanguage = 'پښتو';
+                          });
+                        },
+                        child: Card(
+                          elevation: 1.0,
+                          color: selectedLanguage == 'پښتو'
+                              ? Colors.grey[300]
+                              : Colors.white, // change color when selected
+                          child: Container(
+                            height: 60.0, // adjust as needed
+                            width: 120.0, // adjust as needed
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Container(
+                                  width: 80.0, // adjust as needed
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      Image.asset(
+                                        'assets/flags/Pashto.png',
+                                        width: 30.0,
+                                        height: 30.0,
+                                      ),
+                                      Text('پښتو'),
+                                    ],
+                                  ),
+                                ),
+                                if (selectedLanguage == 'پښتو')
+                                  const Icon(Icons.check_circle,
+                                      color: Colors.blue),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // Add more languages here
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       );
     },
   );
