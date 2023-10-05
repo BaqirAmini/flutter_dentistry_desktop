@@ -1,14 +1,21 @@
 import 'dart:io';
-
+import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter_dentistry/views/main/sidebar.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 
 void main() {
-  return runApp(const Dashboard());
+  return runApp(
+    ChangeNotifierProvider(
+      create: (context) => LanguageProvider(),
+      child: const Dashboard(),
+    ),
+  );
 }
 
 class Dashboard extends StatefulWidget {
@@ -167,303 +174,328 @@ class _DashboardState extends State<Dashboard> {
     final staffId = userData["staffID"];
     final staffRole = userData["role"]; */
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text(
-              'کلینیک دندان درمان',
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-            leading: Builder(
-              builder: (BuildContext context) {
-                return IconButton(
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
-                    setState(() {});
-                  },
-                  tooltip: "باز کردن مینوی راست",
-                  icon: const Icon(Icons.menu),
-                );
-              },
-            ),
-          ),
-          drawer: Sidebar(),
-          body: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 150),
-              ),
-              Column(
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 50.0),
-                    child: Row(
-                      children: [
-                        Card(
-                          color: Colors.blue,
-                          child: SizedBox(
-                            height: 120,
-                            width: 270.0,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor: Colors.blue[400],
-                                  child: const Icon(
-                                      Icons.supervised_user_circle,
-                                      color: Colors.white),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(
-                                      left: 0.0,
-                                      top: 0.0,
-                                      right: 15.0,
-                                      bottom: 0.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Text('مریض های امروز',
-                                          style: TextStyle(
-                                              fontSize: 16.0,
-                                              color: Colors.white)),
-                                      Text('$_todaysPatients نفر',
-                                          style: const TextStyle(
-                                              fontSize: 16.0,
-                                              color: Colors.white)),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Card(
-                          color: Colors.orange,
-                          child: SizedBox(
-                            height: 120,
-                            width: 270.0,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor: Colors.orange[400],
-                                  child: const Icon(Icons.attach_money_rounded,
-                                      color: Colors.white),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(
-                                      left: 0.0,
-                                      top: 0.0,
-                                      right: 15.0,
-                                      bottom: 0.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Text('مصارف ماه جاری',
-                                          style: TextStyle(
-                                              fontSize: 16.0,
-                                              color: Colors.white)),
-                                      Text('$_currentMonthExp افغانی',
-                                          style: const TextStyle(
-                                              fontSize: 16.0,
-                                              color: Colors.white)),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Card(
-                          color: Colors.green,
-                          child: SizedBox(
-                            height: 120,
-                            width: 270.0,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor: Colors.green[400],
-                                  child: const Icon(
-                                      Icons.money_off_csred_outlined,
-                                      color: Colors.white),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(
-                                      left: 0.0,
-                                      top: 0.0,
-                                      right: 15.0,
-                                      bottom: 0.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Text('مالیات امسال',
-                                          style: TextStyle(
-                                              fontSize: 16.0,
-                                              color: Colors.white)),
-                                      Text('$_curYearTax افغانی',
-                                          style: const TextStyle(
-                                              fontSize: 16.0,
-                                              color: Colors.white)),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Card(
-                          color: Colors.brown,
-                          child: SizedBox(
-                            height: 120,
-                            width: 270.0,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircleAvatar(
-                                  backgroundColor: Colors.brown[400],
-                                  child: const Icon(Icons.people_outline,
-                                      color: Colors.white),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(
-                                      left: 0.0,
-                                      top: 0.0,
-                                      right: 15.0,
-                                      bottom: 0.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Text('همه مریض ها',
-                                          style: TextStyle(
-                                              fontSize: 16.0,
-                                              color: Colors.white)),
-                                      Text('$_allPatients نفر',
-                                          style: const TextStyle(
-                                              fontSize: 16.0,
-                                              color: Colors.white)),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 30.0),
-                    child: Row(
-                      children: [
-                        Card(
-                          child: SizedBox(
-                            height: 350,
-                            width: 800.0,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                if (!_isPatientDataInitialized)
-                                  const CircularProgressIndicator()
-                                else
-                                  SfCartesianChart(
-                                      primaryXAxis: CategoryAxis(),
-                                      // Chart title
-                                      title: ChartTitle(
-                                          text:
-                                              'مراجعه مریض ها در شش ماه گذشته'),
-                                      // Enable legend
-                                      legend: Legend(isVisible: true),
-                                      // Enable tooltip
-                                      tooltipBehavior: TooltipBehavior(
-                                        enable: true,
-                                        format: 'point.y نفر : point.x',
-                                      ),
-                                      series: <ChartSeries<_PatientsData,
-                                          String>>[
-                                        LineSeries<_PatientsData, String>(
-                                            animationDuration:
-                                                CircularProgressIndicator
-                                                    .strokeAlignCenter,
-                                            dataSource: patientData,
-                                            xValueMapper:
-                                                (_PatientsData patients, _) =>
-                                                    patients.month,
-                                            yValueMapper:
-                                                (_PatientsData patients, _) =>
-                                                    patients.numberOfPatient,
-                                            name: 'مریض ها',
-                                            // Enable data label
-                                            dataLabelSettings:
-                                                const DataLabelSettings(
-                                                    isVisible: true))
-                                      ]),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Card(
-                          child: SizedBox(
-                            height: 350.0,
-                            width: 300.0,
-                            child: Column(
-                              children: [
-                                if (!_isPieDataInitialized)
-                                  const CircularProgressIndicator()
-                                else
-                                  SfCircularChart(
-                                    title:
-                                        ChartTitle(text: 'مصارف سه ماه اخیر'),
-                                    // Enable legend
-                                    legend: Legend(
-                                      isVisible: true,
-                                      width: '75',
-                                      height: '100',
-                                      position: LegendPosition.left,
-                                      textStyle:
-                                          const TextStyle(fontSize: 10.0),
-                                    ),
-                                    // Enable tooltip
-                                    tooltipBehavior: TooltipBehavior(
-                                      enable: true,
-                                      format: 'point.y افغانی : point.x',
-                                    ),
-                                    series: <PieSeries<_PieData, String>>[
-                                      PieSeries<_PieData, String>(
-                                          explode: true,
-                                          explodeIndex: 0,
-                                          dataSource: pieData,
-                                          xValueMapper: (_PieData data, _) =>
-                                              data.xData,
-                                          yValueMapper: (_PieData data, _) =>
-                                              data.yData,
-                                          dataLabelMapper: (_PieData data, _) =>
-                                              data.text,
-                                          dataLabelSettings:
-                                              const DataLabelSettings(
-                                                  isVisible: true)),
-                                    ],
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+    return ChangeNotifierProvider(
+        create: (_) => LanguageProvider(),
+        builder: (context, child) {
+          final languageProvider = Provider.of<LanguageProvider>(context);
+          final isEnglish = languageProvider.selectedLanguage == 'English';
+          return MaterialApp(
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate
             ],
-          ),
-        ),
-      ),
-    );
+            supportedLocales: const [
+              Locale('en', ''), // English, no country code
+              Locale('fa', ''), // Dari, no country code
+              Locale('ps', ''), // Pashto, no country code
+            ],
+            debugShowCheckedModeBanner: false,
+            home: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: Scaffold(
+                appBar: AppBar(
+                  title: const Text(
+                    'کلینیک دندان درمان',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                  leading: Builder(
+                    builder: (BuildContext context) {
+                      return IconButton(
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                          setState(() {});
+                        },
+                        tooltip: "باز کردن مینوی راست",
+                        icon: const Icon(Icons.menu),
+                      );
+                    },
+                  ),
+                ),
+                drawer: Sidebar(),
+                body: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 150),
+                    ),
+                    Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 50.0),
+                          child: Row(
+                            children: [
+                              Card(
+                                color: Colors.blue,
+                                child: SizedBox(
+                                  height: 120,
+                                  width: 270.0,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: Colors.blue[400],
+                                        child: const Icon(
+                                            Icons.supervised_user_circle,
+                                            color: Colors.white),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.only(
+                                            left: 0.0,
+                                            top: 0.0,
+                                            right: 15.0,
+                                            bottom: 0.0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const Text('مریض های امروز',
+                                                style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.white)),
+                                            Text('$_todaysPatients نفر',
+                                                style: const TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.white)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Card(
+                                color: Colors.orange,
+                                child: SizedBox(
+                                  height: 120,
+                                  width: 270.0,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: Colors.orange[400],
+                                        child: const Icon(
+                                            Icons.attach_money_rounded,
+                                            color: Colors.white),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.only(
+                                            left: 0.0,
+                                            top: 0.0,
+                                            right: 15.0,
+                                            bottom: 0.0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const Text('مصارف ماه جاری',
+                                                style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.white)),
+                                            Text('$_currentMonthExp افغانی',
+                                                style: const TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.white)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Card(
+                                color: Colors.green,
+                                child: SizedBox(
+                                  height: 120,
+                                  width: 270.0,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: Colors.green[400],
+                                        child: const Icon(
+                                            Icons.money_off_csred_outlined,
+                                            color: Colors.white),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.only(
+                                            left: 0.0,
+                                            top: 0.0,
+                                            right: 15.0,
+                                            bottom: 0.0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const Text('مالیات امسال',
+                                                style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.white)),
+                                            Text('$_curYearTax افغانی',
+                                                style: const TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.white)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Card(
+                                color: Colors.brown,
+                                child: SizedBox(
+                                  height: 120,
+                                  width: 270.0,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: Colors.brown[400],
+                                        child: const Icon(Icons.people_outline,
+                                            color: Colors.white),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.only(
+                                            left: 0.0,
+                                            top: 0.0,
+                                            right: 15.0,
+                                            bottom: 0.0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            const Text('همه مریض ها',
+                                                style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.white)),
+                                            Text('$_allPatients نفر',
+                                                style: const TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.white)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 30.0),
+                          child: Row(
+                            children: [
+                              Card(
+                                child: SizedBox(
+                                  height: 350,
+                                  width: 800.0,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      if (!_isPatientDataInitialized)
+                                        const CircularProgressIndicator()
+                                      else
+                                        SfCartesianChart(
+                                            primaryXAxis: CategoryAxis(),
+                                            // Chart title
+                                            title: ChartTitle(
+                                                text:
+                                                    'مراجعه مریض ها در شش ماه گذشته'),
+                                            // Enable legend
+                                            legend: Legend(isVisible: true),
+                                            // Enable tooltip
+                                            tooltipBehavior: TooltipBehavior(
+                                              enable: true,
+                                              format: 'point.y نفر : point.x',
+                                            ),
+                                            series: <ChartSeries<_PatientsData,
+                                                String>>[
+                                              LineSeries<_PatientsData, String>(
+                                                  animationDuration:
+                                                      CircularProgressIndicator
+                                                          .strokeAlignCenter,
+                                                  dataSource: patientData,
+                                                  xValueMapper:
+                                                      (_PatientsData patients,
+                                                              _) =>
+                                                          patients.month,
+                                                  yValueMapper: (_PatientsData
+                                                              patients,
+                                                          _) =>
+                                                      patients.numberOfPatient,
+                                                  name: 'مریض ها',
+                                                  // Enable data label
+                                                  dataLabelSettings:
+                                                      const DataLabelSettings(
+                                                          isVisible: true))
+                                            ]),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Card(
+                                child: SizedBox(
+                                  height: 350.0,
+                                  width: 300.0,
+                                  child: Column(
+                                    children: [
+                                      if (!_isPieDataInitialized)
+                                        const CircularProgressIndicator()
+                                      else
+                                        SfCircularChart(
+                                          title: ChartTitle(
+                                              text: 'مصارف سه ماه اخیر'),
+                                          // Enable legend
+                                          legend: Legend(
+                                            isVisible: true,
+                                            width: '75',
+                                            height: '100',
+                                            position: LegendPosition.left,
+                                            textStyle:
+                                                const TextStyle(fontSize: 10.0),
+                                          ),
+                                          // Enable tooltip
+                                          tooltipBehavior: TooltipBehavior(
+                                            enable: true,
+                                            format: 'point.y افغانی : point.x',
+                                          ),
+                                          series: <PieSeries<_PieData, String>>[
+                                            PieSeries<_PieData, String>(
+                                                explode: true,
+                                                explodeIndex: 0,
+                                                dataSource: pieData,
+                                                xValueMapper:
+                                                    (_PieData data, _) =>
+                                                        data.xData,
+                                                yValueMapper:
+                                                    (_PieData data, _) =>
+                                                        data.yData,
+                                                dataLabelMapper:
+                                                    (_PieData data, _) =>
+                                                        data.text,
+                                                dataLabelSettings:
+                                                    const DataLabelSettings(
+                                                        isVisible: true)),
+                                          ],
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
   }
 }
 
