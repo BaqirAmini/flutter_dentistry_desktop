@@ -11,6 +11,8 @@ import 'package:galileo_mysql/galileo_mysql.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart' as INTL;
 import 'package:flutter_dentistry/config/translations.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:provider/provider.dart';
 
 FilePickerResult? filePickerResult;
 File? pickedFile;
@@ -962,6 +964,7 @@ onChangeLang() {
                     children: <Widget>[
                       InkWell(
                         onTap: () {
+                          Provider.of<LanguageProvider>(context, listen: false).selectedLanguage = 'English';
                           setState(() {
                             selectedLanguage = 'English';
                           });
@@ -1003,6 +1006,7 @@ onChangeLang() {
 
                       InkWell(
                         onTap: () {
+                          Provider.of<LanguageProvider>(context, listen: false).selectedLanguage = 'fa';
                           setState(() {
                             selectedLanguage = 'دری';
                           });
@@ -1044,6 +1048,7 @@ onChangeLang() {
 
                       InkWell(
                         onTap: () {
+                          Provider.of<LanguageProvider>(context, listen: false).selectedLanguage = 'ps';
                           setState(() {
                             selectedLanguage = 'پښتو';
                           });
