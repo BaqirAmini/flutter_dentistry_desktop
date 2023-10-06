@@ -13,6 +13,7 @@ import 'package:intl/intl.dart' as INTL;
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 FilePickerResult? filePickerResult;
 File? pickedFile;
@@ -938,165 +939,199 @@ onBackUpData() {
   );
 }
 
+// Fetch the selected language from shared preference.
+Future<String> getSelectedLanguage() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('selectedLanguage') ?? 'English';
+}
+
 // This function is to change system languages
-onChangeLang() {
-  String? selectedLanguage = 'English'; // Default selected language
+Widget onChangeLang() {
+  // Set the language into a
+  // String? selectedLanguage = await getSelectedLanguage();
 
-  return StatefulBuilder(
-    builder: (context, setState) {
-      return StatefulBuilder(
-        builder: (context, setState) {
-          return Card(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    translations[selectedLanguage]?['chooseLanguage'] ??
-                        'Choose Language',
-                    style: TextStyle(fontSize: 20.0, color: Colors.black),
-                  ),
-                  SizedBox(
-                    height: 50.0,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      InkWell(
-                        onTap: () {
-                          Provider.of<LanguageProvider>(context, listen: false).selectedLanguage = 'English';
-                          setState(() {
-                            selectedLanguage = 'English';
-                          });
-                        },
-                        child: Card(
-                          elevation: 1.0,
-                          color: selectedLanguage == 'English'
-                              ? Colors.grey[300]
-                              : Colors.white, // change color when selected
-                          child: Container(
-                            height: 60.0, // adjust as needed
-                            width: 120.0, // adjust as needed
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Container(
-                                  width: 80.0, // adjust as needed
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: <Widget>[
-                                      Image.asset(
-                                        'assets/flags/English.png',
-                                        width: 30.0,
-                                        height: 30.0,
-                                      ),
-                                      Text('Enlish'),
-                                    ],
+  return FutureBuilder(
+    future: getSelectedLanguage(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const CircularProgressIndicator();
+      } else {
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          String? selectedLanguage = snapshot.data;
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return StatefulBuilder(
+                builder: (context, setState) {
+                  return Card(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            translations[selectedLanguage]?['chooseLanguage'] ??
+                                'Choose Language',
+                            style:
+                                const TextStyle(fontSize: 20.0, color: Colors.black),
+                          ),
+                          const SizedBox(
+                            height: 50.0,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              InkWell(
+                                onTap: () {
+                                  Provider.of<LanguageProvider>(context,
+                                          listen: false)
+                                      .selectedLanguage = 'English';
+                                  setState(() {
+                                    selectedLanguage = 'English';
+                                  });
+                                },
+                                child: Card(
+                                  elevation: 1.0,
+                                  color: selectedLanguage == 'English'
+                                      ? Colors.grey[300]
+                                      : Colors
+                                          .white, // change color when selected
+                                  child: SizedBox(
+                                    height: 60.0, // adjust as needed
+                                    width: 120.0, // adjust as needed
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: <Widget>[
+                                        SizedBox(
+                                          width: 80.0, // adjust as needed
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: <Widget>[
+                                              Image.asset(
+                                                'assets/flags/English.png',
+                                                width: 30.0,
+                                                height: 30.0,
+                                              ),
+                                              const Text('Enlish'),
+                                            ],
+                                          ),
+                                        ),
+                                        if (selectedLanguage == 'English')
+                                          const Icon(Icons.check_circle,
+                                              color: Colors.blue),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                if (selectedLanguage == 'English')
-                                  const Icon(Icons.check_circle,
-                                      color: Colors.blue),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                              ),
 
-                      InkWell(
-                        onTap: () {
-                          Provider.of<LanguageProvider>(context, listen: false).selectedLanguage = 'fa';
-                          setState(() {
-                            selectedLanguage = 'دری';
-                          });
-                        },
-                        child: Card(
-                          elevation: 1.0,
-                          color: selectedLanguage == 'دری'
-                              ? Colors.grey[300]
-                              : Colors.white, // change color when selected
-                          child: Container(
-                            height: 60.0, // adjust as needed
-                            width: 120.0, // adjust as needed
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Container(
-                                  width: 80.0, // adjust as needed
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: <Widget>[
-                                      Image.asset(
-                                        'assets/flags/Dari.png',
-                                        width: 30.0,
-                                        height: 30.0,
-                                      ),
-                                      Text('دری'),
-                                    ],
+                              InkWell(
+                                onTap: () {
+                                  Provider.of<LanguageProvider>(context,
+                                          listen: false)
+                                      .selectedLanguage = 'دری';
+                                  setState(() {
+                                    selectedLanguage = 'دری';
+                                  });
+                                },
+                                child: Card(
+                                  elevation: 1.0,
+                                  color: selectedLanguage == 'دری'
+                                      ? Colors.grey[300]
+                                      : Colors
+                                          .white, // change color when selected
+                                  child: SizedBox(
+                                    height: 60.0, // adjust as needed
+                                    width: 120.0, // adjust as needed
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: <Widget>[
+                                        SizedBox(
+                                          width: 80.0, // adjust as needed
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: <Widget>[
+                                              Image.asset(
+                                                'assets/flags/Dari.png',
+                                                width: 30.0,
+                                                height: 30.0,
+                                              ),
+                                              const Text('دری'),
+                                            ],
+                                          ),
+                                        ),
+                                        if (selectedLanguage == 'دری')
+                                          const Icon(Icons.check_circle,
+                                              color: Colors.blue),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                if (selectedLanguage == 'دری')
-                                  const Icon(Icons.check_circle,
-                                      color: Colors.blue),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                              ),
 
-                      InkWell(
-                        onTap: () {
-                          Provider.of<LanguageProvider>(context, listen: false).selectedLanguage = 'ps';
-                          setState(() {
-                            selectedLanguage = 'پښتو';
-                          });
-                        },
-                        child: Card(
-                          elevation: 1.0,
-                          color: selectedLanguage == 'پښتو'
-                              ? Colors.grey[300]
-                              : Colors.white, // change color when selected
-                          child: Container(
-                            height: 60.0, // adjust as needed
-                            width: 120.0, // adjust as needed
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                Container(
-                                  width: 80.0, // adjust as needed
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: <Widget>[
-                                      Image.asset(
-                                        'assets/flags/Pashto.png',
-                                        width: 30.0,
-                                        height: 30.0,
-                                      ),
-                                      Text('پښتو'),
-                                    ],
+                              InkWell(
+                                onTap: () {
+                                  Provider.of<LanguageProvider>(context,
+                                          listen: false)
+                                      .selectedLanguage = 'پښتو';
+                                  setState(() {
+                                    selectedLanguage = 'پښتو';
+                                  });
+                                },
+                                child: Card(
+                                  elevation: 1.0,
+                                  color: selectedLanguage == 'پښتو'
+                                      ? Colors.grey[300]
+                                      : Colors
+                                          .white, // change color when selected
+                                  child: SizedBox(
+                                    height: 60.0, // adjust as needed
+                                    width: 120.0, // adjust as needed
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: <Widget>[
+                                        SizedBox(
+                                          width: 80.0, // adjust as needed
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: <Widget>[
+                                              Image.asset(
+                                                'assets/flags/Pashto.png',
+                                                width: 30.0,
+                                                height: 30.0,
+                                              ),
+                                              const Text('پښتو'),
+                                            ],
+                                          ),
+                                        ),
+                                        if (selectedLanguage == 'پښتو')
+                                          const Icon(Icons.check_circle,
+                                              color: Colors.blue),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                if (selectedLanguage == 'پښتو')
-                                  const Icon(Icons.check_circle,
-                                      color: Colors.blue),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                              ),
 
-                      // Add more languages here
-                    ],
-                  ),
-                ],
-              ),
-            ),
+                              // Add more languages here
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
           );
-        },
-      );
+        }
+      }
     },
   );
 }
