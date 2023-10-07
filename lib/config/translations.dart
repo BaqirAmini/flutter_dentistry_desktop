@@ -1,13 +1,23 @@
 final Map<String, Map<String, String>> translations = {
   'English': {
     'chooseLanguage': 'Choose Language',
+    /*----- LOGIN PAGE  -----*/
+    'TopLabel': 'Welcome!',
+    'UserName': 'User Name',
+    'Password': 'Password',
+    'LoginButton': 'Login',
+    'BlankUsernameMsg': 'Username cannot be empty.',
+    'BlankPwdMsg': 'Password cannot be empty.',
+    'ForgotPwd': 'Forgot Password?',
+    'InvalidUP': 'Sorry, invalid User Name or Password!',
+    /*-----/. LOGIN PAGE  -----*/
     /*----- DASHBOARD -----*/
     'TodayPatient': 'Today\'s Patients',
-    'CurrentMonthExpenses': 'Current Month Expenses',
-    'CurrentYearTaxes': 'Current Year Taxes',
+    'CurrentMonthExpenses': 'Current month expenses',
+    'CurrentYearTaxes': 'This year\'s tax',
     'AllPatients': 'All Patients',
-    'LastThreeMonthExpenses': 'Last Three Months Expenses',
-    'LastSixMonthPatients': 'Patients come in the last six months',
+    'LastThreeMonthExpenses': 'Expenses of the last three months',
+    'LastSixMonthPatients': 'Visits of patients in the last six months',
     /*-----/. DASHBOARD -----*/
     /*----- SIDEBAR -----*/
     'Dashboard': 'Dashboard',
@@ -19,11 +29,25 @@ final Map<String, Map<String, String>> translations = {
     'Settings': 'Settings',
     'Logout': 'Log out',
     /*-----/.SIDEBAR  -----*/
+    /*----- UNITS -----*/
+    'People': 'person',
+    'Afn': 'AFN',
+    /*-----/. UNITS -----*/
     // Add other English translations here
   },
   'دری': {
     'chooseLanguage': 'انتخاب زبان',
-     /*----- DASHBOARD -----*/
+    /*----- LOGIN PAGE  -----*/
+    'TopLabel': 'خوش آمدید!',
+    'UserName': 'نام یوزر',
+    'Password': 'رمز عبور',
+    'LoginButton': 'ورود',
+    'BlankUsernameMsg': 'نام یوزر نمی تواند خالی باشد.',
+    'BlankPwdMsg': 'رمز عبور نمی تواند خالی باشد.',
+     'ForgotPwd': 'رمز فراموش تان گریده؟',
+    'InvalidUP': 'متأسفم، نام یوزر یا رمز نا معتبر است!',
+    /*-----/. LOGIN PAGE  -----*/
+    /*----- DASHBOARD -----*/
     'TodayPatient': 'مریض های امروز',
     'CurrentMonthExpenses': 'مصارف ماه جاری',
     'CurrentYearTaxes': 'مالیات امسال',
@@ -41,11 +65,25 @@ final Map<String, Map<String, String>> translations = {
     'Settings': 'تنظیمات',
     'Logout': 'خروج',
     /*-----/. SIDEBAR -----*/
+    /*----- UNITS -----*/
+    'People': 'نفر',
+    'Afn': 'افغانی',
+    /*-----/. UNITS -----*/
     // Add other Dari translations here
   },
   'پښتو': {
     'chooseLanguage': 'د ژبې انتخاب',
-     /*----- DASHBOARD -----*/
+    /*----- LOGIN PAGE  -----*/
+    'TopLabel': 'ښه راغلاست!',
+    'UserName': 'د کارن نیم',
+    'Password': 'پټنوم',
+    'LoginButton': 'ننوتل',
+    'BlankUsernameMsg': 'د کارن نوم خالي نشي.',
+    'BlankPwdMsg': 'پټنوم خالي نشي.',
+    'ForgotPwd': 'خپل پټنوم درڅخه هیر دی؟',
+    'InvalidUP': 'بخښنه غواړئ، ناسم کارن نوم یا پټنوم!',
+    /*-----/. LOGIN PAGE  -----*/
+    /*----- DASHBOARD -----*/
     'TodayPatient': 'د نن ورځې ناروغان',
     'CurrentMonthExpenses': 'د روانې میاشتې لګښتونه',
     'CurrentYearTaxes': 'د سږ کال مالیه',
@@ -63,6 +101,10 @@ final Map<String, Map<String, String>> translations = {
     'Settings': 'ترتیبات',
     'Logout': 'وتل',
     /*-----/. SIDEBAR -----*/
+    /*----- UNITS -----*/
+    'People': 'کسان',
+    'Afn': 'افغانۍ',
+    /*-----/. UNITS -----*/
     // Add other Dari translations here
   },
   // Add other languages here

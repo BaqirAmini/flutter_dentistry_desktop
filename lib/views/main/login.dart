@@ -1,17 +1,24 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:io';
-
+import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:galileo_mysql/galileo_mysql.dart';
 import 'package:another_flushbar/flushbar.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const Login());
+  return runApp(
+    ChangeNotifierProvider(
+      create: (context) => LanguageProvider(),
+      child: const Login(),
+    ),
+  );
 }
 
 class Login extends StatefulWidget {
@@ -29,6 +36,8 @@ class _LoginState extends State<Login> {
   final _regExUName = '[a-zA-Z0-9-@]';
 
   bool _isLoggedIn = false;
+  var isEnglish;
+  var selectedLanguage;
 
 // Show/Hide password using eye icons
   bool _isHidden = true;
@@ -102,12 +111,12 @@ class _LoginState extends State<Login> {
             backgroundColor: Colors.redAccent,
             flushbarStyle: FlushbarStyle.GROUNDED,
             flushbarPosition: FlushbarPosition.TOP,
-            messageText: const Directionality(
-              textDirection: TextDirection.rtl,
+            messageText: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: Text(
-                "متاسفم، نام یوزر و یا رمز عبور تان نا معتبر است.",
+                translations[selectedLanguage]?['InvalidUP'] ?? ''.toString(),
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
               ),
             ),
             duration: const Duration(seconds: 3),
@@ -125,9 +134,9 @@ class _LoginState extends State<Login> {
           backgroundColor: Colors.redAccent,
           flushbarStyle: FlushbarStyle.GROUNDED,
           flushbarPosition: FlushbarPosition.TOP,
-          messageText: const Directionality(
-            textDirection: TextDirection.rtl,
-            child: Text(
+          messageText: Directionality(
+            textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+            child: const Text(
               "دیتابیس یافت نشد، لطفا با یک شخص مسلکی تماس بگیرید.",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white),
@@ -162,11 +171,16 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
+
     return MaterialApp(
       // routes: {'/dashboard': (context) => const Dashboard()},
       debugShowCheckedModeBanner: false,
       home: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
         child: Scaffold(
           body: Center(
             child: Card(
@@ -186,9 +200,10 @@ class _LoginState extends State<Login> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text(
-                            'خوش آمدید!',
-                            style: TextStyle(fontSize: 40.0),
+                          Text(
+                            (translations[selectedLanguage]?['TopLabel'] ?? '')
+                                .toString(),
+                            style: const TextStyle(fontSize: 40.0),
                           ),
                           Container(
                             margin: const EdgeInsets.only(
@@ -210,7 +225,10 @@ class _LoginState extends State<Login> {
                                 },
                                 validator: (value) {
                                   if (value!.isEmpty) {
-                                    return 'نام یوزر نمی تواند خالی باشد.';
+                                    return (translations[selectedLanguage]
+                                                ?['BlankUsernameMsg'] ??
+                                            '')
+                                        .toString();
                                   }
                                   return null;
                                 },
@@ -219,26 +237,29 @@ class _LoginState extends State<Login> {
                                     RegExp(_regExUName),
                                   ),
                                 ],
-                                decoration: const InputDecoration(
-                                  contentPadding: EdgeInsets.all(15.0),
-                                  border: OutlineInputBorder(),
-                                  labelText: 'نام یوزر (نام کاربری)',
-                                  enabledBorder: OutlineInputBorder(
+                                decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.all(15.0),
+                                  border: const OutlineInputBorder(),
+                                  labelText: (translations[selectedLanguage]
+                                              ?['UserName'] ??
+                                          '')
+                                      .toString(),
+                                  enabledBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
+                                  focusedBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.blue)),
-                                  errorBorder: OutlineInputBorder(
+                                  errorBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: OutlineInputBorder(
+                                  focusedErrorBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide: BorderSide(
@@ -266,7 +287,10 @@ class _LoginState extends State<Login> {
                                   },
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return 'رمز عبور نمی تواند خالی باشد.';
+                                      return (translations[selectedLanguage]
+                                                  ?['BlankPwdMsg'] ??
+                                              '')
+                                          .toString();
                                     }
                                     return null;
                                   },
@@ -277,18 +301,35 @@ class _LoginState extends State<Login> {
                                   obscureText: _isHidden,
                                   decoration: InputDecoration(
                                     contentPadding: const EdgeInsets.all(15.0),
-                                    prefix: InkWell(
-                                      onTap: _togglePwdView,
-                                      child: Icon(
-                                        _isHidden
-                                            ? Icons.visibility_off
-                                            : Icons.visibility,
-                                        color: Colors.blue,
-                                        size: 18.0,
-                                      ),
-                                    ),
+                                    prefix: !isEnglish
+                                        ? InkWell(
+                                            onTap: _togglePwdView,
+                                            child: Icon(
+                                              _isHidden
+                                                  ? Icons.visibility_off
+                                                  : Icons.visibility,
+                                              color: Colors.blue,
+                                              size: 18.0,
+                                            ),
+                                          )
+                                        : null,
+                                    suffix: isEnglish
+                                        ? InkWell(
+                                            onTap: _togglePwdView,
+                                            child: Icon(
+                                              _isHidden
+                                                  ? Icons.visibility_off
+                                                  : Icons.visibility,
+                                              color: Colors.blue,
+                                              size: 18.0,
+                                            ),
+                                          )
+                                        : null,
                                     border: const OutlineInputBorder(),
-                                    labelText: 'رمز عبور',
+                                    labelText: (translations[selectedLanguage]
+                                                ?['Password'] ??
+                                            '')
+                                        .toString(),
                                     enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
@@ -349,7 +390,12 @@ class _LoginState extends State<Login> {
                                             strokeWidth: 3.0,
                                           ),
                                         )
-                                      : const Text('ورود به سیستم'),
+                                      : Text(
+                                          (translations[selectedLanguage]
+                                                      ?['LoginButton'] ??
+                                                  '')
+                                              .toString(),
+                                        ),
                                 );
                               },
                             ),
@@ -359,7 +405,7 @@ class _LoginState extends State<Login> {
                             style: TextButton.styleFrom(
                               foregroundColor: Colors.grey,
                             ),
-                            child: const Text('رمز فراموش تان شده؟'),
+                            child: Text(translations[selectedLanguage]?['ForgotPwd'] ?? ''.toString(),),
                           ),
                         ],
                       ),

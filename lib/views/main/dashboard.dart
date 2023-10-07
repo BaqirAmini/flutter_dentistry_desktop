@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_sidemenu/easy_sidemenu.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -11,10 +12,7 @@ import 'package:shamsi_date/shamsi_date.dart';
 
 void main() {
   return runApp(
-    ChangeNotifierProvider(
-      create: (context) => LanguageProvider(),
-      child: const Dashboard(),
-    ),
+    const Dashboard(),
   );
 }
 
@@ -250,11 +248,17 @@ class _DashboardState extends State<Dashboard> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            const Text('مریض های امروز',
-                                                style: TextStyle(
+                                            Text(
+                                                (translations[languageProvider
+                                                                .selectedLanguage]
+                                                            ?['TodayPatient'] ??
+                                                        '')
+                                                    .toString(),
+                                                style: const TextStyle(
                                                     fontSize: 16.0,
                                                     color: Colors.white)),
-                                            Text('$_todaysPatients نفر',
+                                            Text(
+                                                '$_todaysPatients ${(translations[languageProvider.selectedLanguage]?['People'] ?? '').toString()}',
                                                 style: const TextStyle(
                                                     fontSize: 16.0,
                                                     color: Colors.white)),
@@ -289,11 +293,18 @@ class _DashboardState extends State<Dashboard> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            const Text('مصارف ماه جاری',
+                                            Text(
+                                                (translations[languageProvider
+                                                                .selectedLanguage]
+                                                            ?[
+                                                            'CurrentMonthExpenses'] ??
+                                                        '')
+                                                    .toString(),
                                                 style: TextStyle(
                                                     fontSize: 16.0,
                                                     color: Colors.white)),
-                                            Text('$_currentMonthExp افغانی',
+                                            Text(
+                                                '$_currentMonthExp ${(translations[languageProvider.selectedLanguage]?['Afn'] ?? '').toString()}',
                                                 style: const TextStyle(
                                                     fontSize: 16.0,
                                                     color: Colors.white)),
@@ -328,11 +339,18 @@ class _DashboardState extends State<Dashboard> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            const Text('مالیات امسال',
+                                            Text(
+                                                (translations[languageProvider
+                                                                .selectedLanguage]
+                                                            ?[
+                                                            'CurrentYearTaxes'] ??
+                                                        '')
+                                                    .toString(),
                                                 style: TextStyle(
                                                     fontSize: 16.0,
                                                     color: Colors.white)),
-                                            Text('$_curYearTax افغانی',
+                                            Text(
+                                                '$_curYearTax ${(translations[languageProvider.selectedLanguage]?['Afn'] ?? '').toString()}',
                                                 style: const TextStyle(
                                                     fontSize: 16.0,
                                                     color: Colors.white)),
@@ -366,11 +384,17 @@ class _DashboardState extends State<Dashboard> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            const Text('همه مریض ها',
+                                            Text(
+                                                (translations[languageProvider
+                                                                .selectedLanguage]
+                                                            ?['AllPatients'] ??
+                                                        '')
+                                                    .toString(),
                                                 style: TextStyle(
                                                     fontSize: 16.0,
                                                     color: Colors.white)),
-                                            Text('$_allPatients نفر',
+                                            Text(
+                                                '$_allPatients ${(translations[languageProvider.selectedLanguage]?['People'] ?? '').toString()}',
                                                 style: const TextStyle(
                                                     fontSize: 16.0,
                                                     color: Colors.white)),
@@ -402,14 +426,19 @@ class _DashboardState extends State<Dashboard> {
                                             primaryXAxis: CategoryAxis(),
                                             // Chart title
                                             title: ChartTitle(
-                                                text:
-                                                    'مراجعه مریض ها در شش ماه گذشته'),
+                                                text: (translations[languageProvider
+                                                                .selectedLanguage]
+                                                            ?[
+                                                            'LastSixMonthPatients'] ??
+                                                        '')
+                                                    .toString()),
                                             // Enable legend
                                             legend: Legend(isVisible: true),
                                             // Enable tooltip
                                             tooltipBehavior: TooltipBehavior(
                                               enable: true,
-                                              format: 'point.y نفر : point.x',
+                                              format:
+                                                  'point.y ${(translations[languageProvider.selectedLanguage]?['People'] ?? '').toString()} : point.x',
                                             ),
                                             series: <ChartSeries<_PatientsData,
                                                 String>>[
@@ -426,7 +455,11 @@ class _DashboardState extends State<Dashboard> {
                                                               patients,
                                                           _) =>
                                                       patients.numberOfPatient,
-                                                  name: 'مریض ها',
+                                                  name: (translations[languageProvider
+                                                                  .selectedLanguage]
+                                                              ?['Patients'] ??
+                                                          '')
+                                                      .toString(),
                                                   // Enable data label
                                                   dataLabelSettings:
                                                       const DataLabelSettings(
@@ -447,7 +480,12 @@ class _DashboardState extends State<Dashboard> {
                                       else
                                         SfCircularChart(
                                           title: ChartTitle(
-                                              text: 'مصارف سه ماه اخیر'),
+                                              text: (translations[languageProvider
+                                                              .selectedLanguage]
+                                                          ?[
+                                                          'LastThreeMonthExpenses'] ??
+                                                      '')
+                                                  .toString()),
                                           // Enable legend
                                           legend: Legend(
                                             isVisible: true,
@@ -460,7 +498,8 @@ class _DashboardState extends State<Dashboard> {
                                           // Enable tooltip
                                           tooltipBehavior: TooltipBehavior(
                                             enable: true,
-                                            format: 'point.y افغانی : point.x',
+                                            format:
+                                                'point.y ${(translations[languageProvider.selectedLanguage]?['Afn'] ?? '').toString()} : point.x',
                                           ),
                                           series: <PieSeries<_PieData, String>>[
                                             PieSeries<_PieData, String>(

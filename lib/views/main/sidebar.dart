@@ -12,7 +12,6 @@ import 'login.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_dentistry/config/translations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 
 class Sidebar extends StatefulWidget {
