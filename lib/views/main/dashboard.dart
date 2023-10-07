@@ -240,7 +240,7 @@ class _DashboardState extends State<Dashboard> {
                                       ),
                                       Container(
                                         margin: const EdgeInsets.only(
-                                            left: 0.0,
+                                            left: 15.0,
                                             top: 0.0,
                                             right: 15.0,
                                             bottom: 0.0),
@@ -285,7 +285,7 @@ class _DashboardState extends State<Dashboard> {
                                       ),
                                       Container(
                                         margin: const EdgeInsets.only(
-                                            left: 0.0,
+                                            left: 15.0,
                                             top: 0.0,
                                             right: 15.0,
                                             bottom: 0.0),
@@ -331,7 +331,7 @@ class _DashboardState extends State<Dashboard> {
                                       ),
                                       Container(
                                         margin: const EdgeInsets.only(
-                                            left: 0.0,
+                                            left: 15.0,
                                             top: 0.0,
                                             right: 15.0,
                                             bottom: 0.0),
@@ -376,7 +376,7 @@ class _DashboardState extends State<Dashboard> {
                                       ),
                                       Container(
                                         margin: const EdgeInsets.only(
-                                            left: 0.0,
+                                            left: 15.0,
                                             top: 0.0,
                                             right: 15.0,
                                             bottom: 0.0),
