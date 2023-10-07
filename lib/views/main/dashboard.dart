@@ -204,7 +204,7 @@ class _DashboardState extends State<Dashboard> {
                           Scaffold.of(context).openDrawer();
                           setState(() {});
                         },
-                        tooltip: "باز کردن مینوی راست",
+                        tooltip: translations[languageProvider.selectedLanguage]?["OpenDrawerMsg"] ?? '',
                         icon: const Icon(Icons.menu),
                       );
                     },

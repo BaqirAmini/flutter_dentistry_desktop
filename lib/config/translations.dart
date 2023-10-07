@@ -18,6 +18,7 @@ final Map<String, Map<String, String>> translations = {
     'AllPatients': 'All Patients',
     'LastThreeMonthExpenses': 'Expenses of the last three months',
     'LastSixMonthPatients': 'Visits of patients in the last six months',
+    'OpenDrawerMsg': 'Open left Menu',
     /*-----/. DASHBOARD -----*/
     /*----- SIDEBAR -----*/
     'Dashboard': 'Dashboard',
@@ -54,6 +55,7 @@ final Map<String, Map<String, String>> translations = {
     'AllPatients': 'همه مریض ها',
     'LastThreeMonthExpenses': 'مصارف سه ماه اخیر',
     'LastSixMonthPatients': 'مراجعه مریض ها در شش ماه اخیر',
+    'OpenDrawerMsg': 'باز کردن مینو راست',
     /*-----/. DASHBOARD -----*/
     /*----- SIDEBAR -----*/
     'Dashboard': 'داشبورد',
@@ -90,6 +92,7 @@ final Map<String, Map<String, String>> translations = {
     'AllPatients': 'ټول ناروغان',
     'LastThreeMonthExpenses': 'د تیرو دریو میاشتو لګښتونه',
     'LastSixMonthPatients': 'په تیرو شپږو میاشتو کې د ناروغانو لیدنه',
+    'OpenDrawerMsg': 'سم مینو خلاص کړی',
     /*-----/. DASHBOARD -----*/
     /*----- SIDEBAR -----*/
     'Dashboard': 'ډشبورډ',
