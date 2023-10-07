@@ -22,19 +22,25 @@ class Sidebar extends StatefulWidget {
 }
 
 class _SidebarState extends State<Sidebar> {
+  // ignore: prefer_typing_uninitialized_variables
+  var selectedLanguage;
+  // ignore: prefer_typing_uninitialized_variables
+  var isEnglish;
   // Sign out from system
   void onLogOut(BuildContext context) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        content: const Directionality(
-          textDirection: TextDirection.rtl,
-          child: Text('آیا میخواهید از سیستم خارج شوید؟'),
+        content: Directionality(
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+          child: Text(
+              translations[selectedLanguage]?['ConfirmMsg'] ?? ''.toString()),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-            child: const Text('لغو'),
+            child: Text(
+                translations[selectedLanguage]?['CancelBtn'] ?? ''.toString()),
           ),
           TextButton(
             onPressed: () {
@@ -47,7 +53,8 @@ class _SidebarState extends State<Sidebar> {
 
               Navigator.of(context, rootNavigator: true).pop();
             },
-            child: const Text('خروج'),
+            child: Text(
+                translations[selectedLanguage]?['ConfirmBtn'] ?? ''.toString()),
           ),
         ],
       ),
@@ -93,7 +100,8 @@ class _SidebarState extends State<Sidebar> {
   Widget build(BuildContext context) {
     // Fetch translations keys based on the selected language.
     var languageProvider = Provider.of<LanguageProvider>(context);
-    var selectedLanguage = languageProvider.selectedLanguage;
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
 
     return Drawer(
       child: ListView(

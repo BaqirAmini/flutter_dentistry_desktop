@@ -34,6 +34,11 @@ final Map<String, Map<String, String>> translations = {
     'People': 'person',
     'Afn': 'AFN',
     /*-----/. UNITS -----*/
+    /*----- LOGOUT POPUP -----*/
+    'ConfirmMsg': 'Are you sure you want to exit?',
+    'ConfirmBtn': 'Log Out',
+    'CancelBtn': 'Cancel',
+    /*----- /. LOGOUT POPUP -----*/
     // Add other English translations here
   },
   'دری': {
@@ -71,6 +76,11 @@ final Map<String, Map<String, String>> translations = {
     'People': 'نفر',
     'Afn': 'افغانی',
     /*-----/. UNITS -----*/
+     /*----- LOGOUT POPUP -----*/
+    'ConfirmMsg': 'آیا میخواهید از سیستم خارج شوید؟',
+    'ConfirmBtn': 'خروج',
+    'CancelBtn': 'لغو',
+    /*----- /. LOGOUT POPUP -----*/
     // Add other Dari translations here
   },
   'پښتو': {
@@ -108,6 +118,9 @@ final Map<String, Map<String, String>> translations = {
     'People': 'کسان',
     'Afn': 'افغانۍ',
     /*-----/. UNITS -----*/
+     'ConfirmMsg': 'ایا تاسو غواړئ له سیستم څخه وتلئ؟',
+    'ConfirmBtn': 'وتون',
+    'CancelBtn': 'لغوه کول',
     // Add other Dari translations here
   },
   // Add other languages here
