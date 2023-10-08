@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_config.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_detail.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
+import 'package:provider/provider.dart';
 import '../finance/taxes/tax_info.dart';
 import 'patient_info.dart';
 import 'package:pdf/pdf.dart';
@@ -15,6 +17,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:win_toast/win_toast.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 
 void main() {
   return runApp(const Patient());
@@ -26,6 +29,11 @@ List<Map<String, dynamic>> staffList = [];
 
 int? staffID;
 int? patientID;
+
+// ignore: prefer_typing_uninitialized_variables
+var selectedLanguage;
+// ignore: prefer_typing_uninitialized_variables
+var isEnglish;
 
 // Assign default selected staff
 String? defaultSelectedPatient;
@@ -74,16 +82,17 @@ onCreatePrescription(BuildContext context) {
       return StatefulBuilder(
         builder: (BuildContext context, setState) {
           return AlertDialog(
-            title: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text(
+            title: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: const Text(
                 'تجویز نسخه برای مریض',
                 style: TextStyle(color: Colors.blue),
               ),
             ),
             actions: [
               Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -564,7 +573,7 @@ onCreatePrescription(BuildContext context) {
                                                                                   alignment: Alignment.centerRight,
                                                                                   value: sexItems,
                                                                                   child: Directionality(
-                                                                                    textDirection: TextDirection.rtl,
+                                                                                    textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
                                                                                     child: Text(sexItems),
                                                                                   ),
                                                                                 );
@@ -618,7 +627,7 @@ onCreatePrescription(BuildContext context) {
                                                                                   alignment: Alignment.centerRight,
                                                                                   value: ageItems,
                                                                                   child: Directionality(
-                                                                                    textDirection: TextDirection.rtl,
+                                                                                    textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
                                                                                     child: Text('$ageItems سال '),
                                                                                   ),
                                                                                 );
@@ -673,7 +682,7 @@ onCreatePrescription(BuildContext context) {
                                                                               color: Colors.green,
                                                                               padding: const EdgeInsets.all(8.0),
                                                                               child: Directionality(
-                                                                                textDirection: TextDirection.rtl,
+                                                                                textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
                                                                                 child: Text(
                                                                                   '${patientNameController.text} در نسخه ایجاد شد.',
                                                                                   style: const TextStyle(color: Colors.white),
@@ -1225,6 +1234,10 @@ class _PatientState extends State<Patient> {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
     // Call the function to list staff in the dropdown.
     fetchStaff();
     fetchPatients();
@@ -1234,17 +1247,21 @@ class _PatientState extends State<Patient> {
         key: _globalKeyPDelete,
         child: Scaffold(
           body: Directionality(
-            textDirection: TextDirection.rtl,
+            textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
             child: Scaffold(
                 appBar: AppBar(
                   leading: Tooltip(
                     message: 'رفتن به داشبورد',
                     child: IconButton(
                       icon: const Icon(Icons.home_outlined),
-                      onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Dashboard())),
+                      onPressed: () => Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Dashboard())),
                     ),
                   ),
-                  title: const Text('مریض ها'),
+                  title: Text(
+                      translations[selectedLanguage]?['AllPatients'] ?? ''),
                 ),
                 body: const PatientDataTable()),
           ),
@@ -1261,50 +1278,66 @@ onDeletePatient(BuildContext context, Function onDelete) {
   String? lName = PatientInfo.lastName;
 
   return showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-            title: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text('حذف مریض'),
-            ),
-            content: Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text('آیا میخواهید $fName $lName را حذف کنید؟'),
-            ),
-            actions: [
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Directionality(
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+        child:
+            Text(translations[selectedLanguage]?['DeletePatientTitle'] ?? ''),
+      ),
+      content: Directionality(
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+        child: Text(translations[selectedLanguage]?['ConfirmDelete'] ?? ''),
+      ),
+      actions: [
+        SizedBox(
+          width: double.infinity,
+          child: Row(
+            mainAxisAlignment:
+                !isEnglish ? MainAxisAlignment.start : MainAxisAlignment.end,
+            children: [
               TextButton(
-                  onPressed: () =>
-                      Navigator.of(context, rootNavigator: true).pop(),
-                  child: const Text('لغو')),
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
+                child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
+              ),
               TextButton(
-                  onPressed: () async {
-                    try {
-                      final conn = await onConnToDb();
-                      final results = await conn.query(
-                          'DELETE FROM patients WHERE pat_ID = ?', [patientId]);
-                      if (results.affectedRows! > 0) {
-                        _onShowSnack(Colors.green, 'مریض موفقانه حذف شد.');
-                        onDelete();
-                      } else {
-                        _onShowSnack(Colors.red, 'متاسفم، مریض حذف نشد.');
-                      }
-                      await conn.close();
-                    } catch (e) {
-                      if (e is SocketException) {
-                        // Handle the exception here
-                        print('Failed to connect to the database: $e');
-                      } else {
-                        // Rethrow any other exception
-                        rethrow;
-                      }
-                    } finally {
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context, rootNavigator: true).pop();
+                onPressed: () async {
+                  try {
+                    final conn = await onConnToDb();
+                    final results = await conn.query(
+                        'DELETE FROM patients WHERE pat_ID = ?', [patientId]);
+                    if (results.affectedRows! > 0) {
+                      _onShowSnack(
+                          Colors.green,
+                          translations[selectedLanguage]?['DeleteSuccess'] ??
+                              '');
+                      onDelete();
+                    } else {
+                      _onShowSnack(Colors.red, 'متاسفم، مریض حذف نشد.');
                     }
-                  },
-                  child: const Text('حذف'))
+                    await conn.close();
+                  } catch (e) {
+                    if (e is SocketException) {
+                      // Handle the exception here
+                      print('Failed to connect to the database: $e');
+                    } else {
+                      // Rethrow any other exception
+                      rethrow;
+                    }
+                  } finally {
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context, rootNavigator: true).pop();
+                  }
+                },
+                child: Text(translations[selectedLanguage]?['Delete'] ?? ''),
+              ),
             ],
-          ));
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 // Data table widget is here
@@ -1382,7 +1415,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
                   controller: _searchController,
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
-                    labelText: 'جستجو...',
+                    labelText: translations[selectedLanguage]?['Search'] ?? '',
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
                       onPressed: () {
@@ -1422,7 +1455,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
                 onPressed: () async {
                   onCreatePrescription(context);
                 },
-                child: const Text('تجویز نسخه'),
+                child: Text(translations[selectedLanguage]?['GenPresc'] ?? ''),
               ),
               // Set access role to only allow 'system admin' to make such changes
               if (StaffInfo.staffRole == 'مدیر سیستم')
@@ -1436,7 +1469,8 @@ class _PatientDataTableState extends State<PatientDataTable> {
                       _fetchData();
                     });
                   },
-                  child: const Text('افزودن مریض جدید'),
+                  child: Text(
+                      translations[selectedLanguage]?['AddNewPatient'] ?? ''),
                 ),
             ],
           ),
@@ -1454,12 +1488,13 @@ class _PatientDataTableState extends State<PatientDataTable> {
                 PaginatedDataTable(
                   sortAscending: _sortAscending,
                   sortColumnIndex: _sortColumnIndex,
-                  header: const Text("همه مریض ها |"),
+                  header: Text(
+                      '${translations[selectedLanguage]?['AllPatients'] ?? ''} | '),
                   columns: [
                     DataColumn(
-                      label: const Text(
-                        "اسم",
-                        style: TextStyle(
+                      label: Text(
+                        translations[selectedLanguage]?['FName'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       onSort: (columnIndex, ascending) {
@@ -1475,9 +1510,9 @@ class _PatientDataTableState extends State<PatientDataTable> {
                       },
                     ),
                     DataColumn(
-                      label: const Text(
-                        "تخلص",
-                        style: TextStyle(
+                      label: Text(
+                        translations[selectedLanguage]?['LName'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       onSort: (columnIndex, ascending) {
@@ -1493,9 +1528,9 @@ class _PatientDataTableState extends State<PatientDataTable> {
                       },
                     ),
                     DataColumn(
-                      label: const Text(
-                        "سن",
-                        style: TextStyle(
+                      label: Text(
+                        translations[selectedLanguage]?['Age'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       onSort: (columnIndex, ascending) {
@@ -1511,9 +1546,9 @@ class _PatientDataTableState extends State<PatientDataTable> {
                       },
                     ),
                     DataColumn(
-                      label: const Text(
-                        "جنسیت",
-                        style: TextStyle(
+                      label: Text(
+                        translations[selectedLanguage]?['Sex'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       onSort: (columnIndex, ascending) {
@@ -1529,9 +1564,9 @@ class _PatientDataTableState extends State<PatientDataTable> {
                       },
                     ),
                     DataColumn(
-                      label: const Text(
-                        "حالت تاهل",
-                        style: TextStyle(
+                      label: Text(
+                        translations[selectedLanguage]?['Marital'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       onSort: (columnIndex, ascending) {
@@ -1547,9 +1582,9 @@ class _PatientDataTableState extends State<PatientDataTable> {
                       },
                     ),
                     DataColumn(
-                      label: const Text(
-                        "نمبر تماس",
-                        style: TextStyle(
+                      label: Text(
+                        translations[selectedLanguage]?['Phone'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       onSort: (columnIndex, ascending) {
@@ -1564,18 +1599,19 @@ class _PatientDataTableState extends State<PatientDataTable> {
                         });
                       },
                     ),
-                    const DataColumn(
+                    DataColumn(
                       label: Text(
-                        "شرح",
-                        style: TextStyle(
+                        translations[selectedLanguage]?['Details'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                     ),
                     // Set access role to only allow 'system admin' to make such changes
                     if (StaffInfo.staffRole == 'مدیر سیستم')
-                      const DataColumn(
-                        label: Text("حذف",
-                            style: TextStyle(
+                      DataColumn(
+                        label: Text(
+                            translations[selectedLanguage]?['Delete'] ?? '',
+                            style: const TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold)),
                       ),

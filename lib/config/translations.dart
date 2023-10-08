@@ -39,6 +39,24 @@ final Map<String, Map<String, String>> translations = {
     'ConfirmBtn': 'Log Out',
     'CancelBtn': 'Cancel',
     /*----- /. LOGOUT POPUP -----*/
+    /*----- PATIENTS -----*/
+    'Search': 'Search...',
+    'GenPresc': 'Prescription',
+    'AddNewPatient': 'Add new patient',
+    'DeletePatientTitle': 'Delete Patient',
+    'ConfirmDelete': 'Are you sure you want to delete this patient?',
+    'DeleteSuccess': 'The patient deleted.',
+    /*-----/. PATIENTS -----*/
+     /*----- SHARED VALUES -----*/
+    'FName': 'First Name',
+    'LName': 'Last Name',
+    'Age': 'Age',
+    'Sex': 'Sex',
+    'Marital': 'Marital Status',
+    'Phone': 'Phone',
+    'Details': 'Details',
+    'Delete': 'Delete',
+    /*-----/. SHARED VALUES -----*/
     // Add other English translations here
   },
   'دری': {
@@ -50,7 +68,7 @@ final Map<String, Map<String, String>> translations = {
     'LoginButton': 'ورود',
     'BlankUsernameMsg': 'نام یوزر نمی تواند خالی باشد.',
     'BlankPwdMsg': 'رمز عبور نمی تواند خالی باشد.',
-     'ForgotPwd': 'رمز فراموش تان گریده؟',
+    'ForgotPwd': 'رمز فراموش تان گریده؟',
     'InvalidUP': 'متأسفم، نام یوزر یا رمز نا معتبر است!',
     /*-----/. LOGIN PAGE  -----*/
     /*----- DASHBOARD -----*/
@@ -76,11 +94,29 @@ final Map<String, Map<String, String>> translations = {
     'People': 'نفر',
     'Afn': 'افغانی',
     /*-----/. UNITS -----*/
-     /*----- LOGOUT POPUP -----*/
+    /*----- LOGOUT POPUP -----*/
     'ConfirmMsg': 'آیا میخواهید از سیستم خارج شوید؟',
     'ConfirmBtn': 'خروج',
     'CancelBtn': 'لغو',
     /*----- /. LOGOUT POPUP -----*/
+    /*----- PATIENTS -----*/
+    'Search': 'جستجو...',
+    'GenPresc': 'تجویز نسخه',
+    'AddNewPatient': 'افزودن مریض جدید',
+    'DeletePatientTitle': 'حذف مریض',
+    'ConfirmDelete': 'آیا میخواهید این مریض را حذف کنید؟',
+    'DeleteSuccess': 'مریض حذف شد.',
+    /*-----/. PATIENTS -----*/
+    /*----- SHARED VALUES -----*/
+    'FName': 'اسم',
+    'LName': 'تخلص',
+    'Age': 'سن',
+    'Sex': 'جنسیت',
+    'Marital': 'حالت تاهل',
+    'Phone': 'تماس',
+    'Details': 'شرح',
+    'Delete': 'حذف',
+    /*-----/. SHARED VALUES -----*/
     // Add other Dari translations here
   },
   'پښتو': {
@@ -118,9 +154,29 @@ final Map<String, Map<String, String>> translations = {
     'People': 'کسان',
     'Afn': 'افغانۍ',
     /*-----/. UNITS -----*/
-     'ConfirmMsg': 'ایا تاسو غواړئ له سیستم څخه وتلئ؟',
+    /*----- LOGOUT POPUP -----*/
+    'ConfirmMsg': 'ایا تاسو غواړئ له سیستم څخه وتلئ؟',
     'ConfirmBtn': 'وتون',
     'CancelBtn': 'لغوه کول',
+    /*---- /. LOGOUT POPUP -----*/
+    /*----- PATIENTS -----*/
+    'Search': 'لټون...',
+    'GenPresc': 'نسخه ورکول',
+    'AddNewPatient': 'نوی ناروغ اضافه کړئ',
+    'DeletePatientTitle': 'ناروغ لرې کړئ',
+    'ConfirmDelete': 'ایا تاسو غواړئ دا ناروغ حذف کړئ؟',
+    'DeleteSuccess': 'ناروغ لرې شو.',
+    /*-----/. PATIENTS -----*/
+     /*----- SHARED VALUES -----*/
+    'FName': 'نوم',
+    'LName': 'تخلص',
+    'Age': 'عمر',
+    'Sex': 'جندر',
+    'Marital': 'مدني حالت',
+    'Phone': 'اړیکه',
+    'Details': 'تفصیل',
+    'Delete': 'ړنګول',
+    /*-----/. SHARED VALUES -----*/
     // Add other Dari translations here
   },
   // Add other languages here
