@@ -2,14 +2,21 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:intl/intl.dart' as intl2;
+import 'package:provider/provider.dart';
 
 void main() {
   return runApp(const NewPatient());
 }
+
+// Set global variables which are needed later.
+var selectedLanguage;
+var isEnglish;
 
 class NewPatient extends StatefulWidget {
   const NewPatient({Key? key}) : super(key: key);
@@ -140,7 +147,8 @@ class _NewPatientState extends State<NewPatient> {
         Step(
           state: _currentStep <= 0 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 0,
-          title: const Text('معلومات شخصی مریض'),
+          title:
+              Text(translations[selectedLanguage]?['َPatientPersInfo'] ?? ''),
           content: Center(
             child: SizedBox(
               width: 500.0,
@@ -148,8 +156,7 @@ class _NewPatientState extends State<NewPatient> {
                 key: _formKey1,
                 child: Column(
                   children: [
-                    const Text(
-                        'لطفا معلومات شخصی مریض را با دقت در خانه های ذیل وارد کنید.'),
+                     Text(translations[selectedLanguage]?['Step1Msg'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold),),
                     Container(
                       margin: const EdgeInsets.only(
                           left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
@@ -265,7 +272,9 @@ class _NewPatientState extends State<NewPatient> {
                                   alignment: Alignment.centerRight,
                                   value: ageItems,
                                   child: Directionality(
-                                    textDirection: TextDirection.rtl,
+                                    textDirection: isEnglish
+                                        ? TextDirection.ltr
+                                        : TextDirection.rtl,
                                     child: Text('$ageItems سال '),
                                   ),
                                 );
@@ -486,7 +495,7 @@ class _NewPatientState extends State<NewPatient> {
         Step(
           state: _currentStep <= 1 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 1,
-          title: const Text('خدمات مورد نیاز مریض'),
+          title: Text(translations[selectedLanguage]?['َDentalService'] ?? ''),
           content: SizedBox(
             child: Center(
               child: Form(
@@ -1062,7 +1071,9 @@ class _NewPatientState extends State<NewPatient> {
                                       alignment: Alignment.centerRight,
                                       value: material['ser_det_ID'],
                                       child: Directionality(
-                                        textDirection: TextDirection.rtl,
+                                        textDirection: isEnglish
+                                            ? TextDirection.ltr
+                                            : TextDirection.rtl,
                                         child: Text(
                                             material['service_specific_value']),
                                       ),
@@ -1189,7 +1200,7 @@ class _NewPatientState extends State<NewPatient> {
         Step(
           state: _currentStep <= 1 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 1,
-          title: const Text('هزینه ها / فیس'),
+          title: Text(translations[selectedLanguage]?['َServiceFee'] ?? ''),
           content: SizedBox(
             child: Center(
               child: Form(
@@ -1269,7 +1280,9 @@ class _NewPatientState extends State<NewPatient> {
                                     alignment: Alignment.centerRight,
                                     value: installmentItems,
                                     child: Directionality(
-                                      textDirection: TextDirection.rtl,
+                                      textDirection: isEnglish
+                                          ? TextDirection.ltr
+                                          : TextDirection.rtl,
                                       child: Text(installmentItems),
                                     ),
                                   );
@@ -1535,14 +1548,16 @@ class _NewPatientState extends State<NewPatient> {
     return showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-              title: const Directionality(
-                textDirection: TextDirection.rtl,
-                child: Text('کسب اطمینان'),
+              title: Directionality(
+                textDirection:
+                    isEnglish ? TextDirection.ltr : TextDirection.rtl,
+                child: const Text('کسب اطمینان'),
               ),
-              content: const Directionality(
-                textDirection: TextDirection.rtl,
-                child:
-                    Text('آیا کاملاً مطمیین هستید در قسمت خانه پری این صفحه؟'),
+              content: Directionality(
+                textDirection:
+                    isEnglish ? TextDirection.ltr : TextDirection.rtl,
+                child: const Text(
+                    'آیا کاملاً مطمیین هستید در قسمت خانه پری این صفحه؟'),
               ),
               actions: [
                 TextButton(
@@ -1563,12 +1578,17 @@ class _NewPatientState extends State<NewPatient> {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: ScaffoldMessenger(
         key: _globalKey2,
         child: Directionality(
-          textDirection: TextDirection.rtl,
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
           child: Scaffold(
             appBar: AppBar(
               leading: Tooltip(
@@ -1580,7 +1600,7 @@ class _NewPatientState extends State<NewPatient> {
                   },
                 ),
               ),
-              title: const Text('افزودن مریض'),
+              title: Text(translations[selectedLanguage]?['PatientReg'] ?? ''),
             ),
             body: Stepper(
               steps: stepList(),
@@ -1618,7 +1638,7 @@ class _NewPatientState extends State<NewPatient> {
                     TextButton(
                       onPressed:
                           _currentStep == 0 ? null : details.onStepCancel,
-                      child: const Text('قبلی'),
+                      child: Text(translations[selectedLanguage]?['PrevBtn'] ?? ''),
                     ),
                     ElevatedButton(
                       style: OutlinedButton.styleFrom(
@@ -1631,8 +1651,8 @@ class _NewPatientState extends State<NewPatient> {
                       ),
                       onPressed: details.onStepContinue,
                       child: Text(_currentStep == stepList().length - 1
-                          ? 'ثبت کردن'
-                          : 'ادامه'),
+                          ? (translations[selectedLanguage]?['AddBtn'] ?? '')
+                          : translations[selectedLanguage]?['NextBtn'] ?? ''),
                     ),
                   ],
                 );

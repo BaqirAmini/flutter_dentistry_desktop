@@ -1283,7 +1283,7 @@ onDeletePatient(BuildContext context, Function onDelete) {
       title: Directionality(
         textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
         child:
-            Text(translations[selectedLanguage]?['DeletePatientTitle'] ?? ''),
+            Text('${translations[selectedLanguage]?['DeletePatientTitle'] ?? ''} $fName $lName'),
       ),
       content: Directionality(
         textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
