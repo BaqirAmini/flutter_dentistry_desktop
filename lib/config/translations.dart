@@ -110,7 +110,6 @@ final Map<String, Map<String, String>> translations = {
     /*----- PATIENTS -----*/
     'Search': 'جستجو...',
     'GenPresc': 'تجویز نسخه',
-    'AddNewPatient': 'افزودن مریض جدید',
     'DeletePatientTitle': 'حذف',
     'ConfirmDelete': 'آیا میخواهید این مریض را حذف کنید؟',
     'DeleteSuccess': 'مریض حذف شد.',

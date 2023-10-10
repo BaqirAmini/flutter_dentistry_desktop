@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:io';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +9,7 @@ import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:galileo_mysql/galileo_mysql.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   return runApp(
@@ -29,6 +28,12 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  // Set dropdown items for languages
+  var langList = [
+    'English',
+    'دری',
+    'پښتو',
+  ];
 // The global for the form
   final _loginFormKey = GlobalKey<FormState>();
   final _userNameController = TextEditingController();
@@ -191,230 +196,294 @@ class _LoginState extends State<Login> {
               child: SizedBox(
                 width: 700.0,
                 height: 500.0,
-                child: Row(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Form(
-                      key: _loginFormKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            (translations[selectedLanguage]?['TopLabel'] ?? '')
-                                .toString(),
-                            style: const TextStyle(fontSize: 40.0),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 20.0,
-                                bottom: 10.0),
-                            width: 330.0,
-                            child: Builder(builder: (context) {
-                              return TextFormField(
-                                focusNode: _userNameFocus,
-                                textDirection: TextDirection.ltr,
-                                controller: _userNameController,
-                                onFieldSubmitted: (value) {
-                                  _userNameFocus.unfocus();
-                                  FocusScope.of(context)
-                                      .requestFocus(_passwordFocus);
-                                  _onPressLoginButton(context);
-                                },
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return (translations[selectedLanguage]
-                                                ?['BlankUsernameMsg'] ??
-                                            '')
-                                        .toString();
-                                  }
-                                  return null;
-                                },
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.allow(
-                                    RegExp(_regExUName),
-                                  ),
-                                ],
-                                decoration: InputDecoration(
-                                  contentPadding: const EdgeInsets.all(15.0),
-                                  border: const OutlineInputBorder(),
-                                  labelText: (translations[selectedLanguage]
-                                              ?['UserName'] ??
-                                          '')
-                                      .toString(),
-                                  enabledBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey)),
-                                  focusedBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue)),
-                                  errorBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide: BorderSide(
-                                          color: Colors.red, width: 1.5)),
-                                ),
-                              );
-                            }),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            width: 330.0,
-                            child: Builder(
-                              builder: (context) {
-                                return TextFormField(
-                                  focusNode: _passwordFocus,
-                                  textDirection: TextDirection.ltr,
-                                  controller: _pwdController,
-                                  onFieldSubmitted: (value) {
-                                    _passwordFocus.unfocus();
-                                    _onPressLoginButton(context);
-                                  },
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return (translations[selectedLanguage]
-                                                  ?['BlankPwdMsg'] ??
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Form(
+                          key: _loginFormKey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                (translations[selectedLanguage]?['TopLabel'] ??
+                                        '')
+                                    .toString(),
+                                style: const TextStyle(fontSize: 40.0),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 20.0,
+                                    bottom: 10.0),
+                                width: 330.0,
+                                child: Builder(builder: (context) {
+                                  return TextFormField(
+                                    focusNode: _userNameFocus,
+                                    textDirection: TextDirection.ltr,
+                                    controller: _userNameController,
+                                    onFieldSubmitted: (value) {
+                                      _userNameFocus.unfocus();
+                                      FocusScope.of(context)
+                                          .requestFocus(_passwordFocus);
+                                      _onPressLoginButton(context);
+                                    },
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return (translations[selectedLanguage]
+                                                    ?['BlankUsernameMsg'] ??
+                                                '')
+                                            .toString();
+                                      }
+                                      return null;
+                                    },
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                        RegExp(_regExUName),
+                                      ),
+                                    ],
+                                    decoration: InputDecoration(
+                                      contentPadding:
+                                          const EdgeInsets.all(15.0),
+                                      border: const OutlineInputBorder(),
+                                      labelText: (translations[selectedLanguage]
+                                                  ?['UserName'] ??
                                               '')
-                                          .toString();
-                                    }
-                                    return null;
-                                  },
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(_regExUName)),
-                                  ],
-                                  obscureText: _isHidden,
-                                  decoration: InputDecoration(
-                                    contentPadding: const EdgeInsets.all(15.0),
-                                    prefix: !isEnglish
-                                        ? InkWell(
-                                            onTap: _togglePwdView,
-                                            child: Icon(
-                                              _isHidden
-                                                  ? Icons.visibility_off
-                                                  : Icons.visibility,
-                                              color: Colors.blue,
-                                              size: 18.0,
-                                            ),
-                                          )
-                                        : null,
-                                    suffix: isEnglish
-                                        ? InkWell(
-                                            onTap: _togglePwdView,
-                                            child: Icon(
-                                              _isHidden
-                                                  ? Icons.visibility_off
-                                                  : Icons.visibility,
-                                              color: Colors.blue,
-                                              size: 18.0,
-                                            ),
-                                          )
-                                        : null,
-                                    border: const OutlineInputBorder(),
-                                    labelText: (translations[selectedLanguage]
-                                                ?['Password'] ??
-                                            '')
-                                        .toString(),
-                                    enabledBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                    errorBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.red)),
-                                    focusedErrorBorder:
-                                        const OutlineInputBorder(
+                                          .toString(),
+                                      enabledBorder: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                      errorBorder: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.red)),
+                                      focusedErrorBorder:
+                                          const OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(50.0)),
+                                              borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 1.5)),
+                                    ),
+                                  );
+                                }),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                width: 330.0,
+                                child: Builder(
+                                  builder: (context) {
+                                    return TextFormField(
+                                      focusNode: _passwordFocus,
+                                      textDirection: TextDirection.ltr,
+                                      controller: _pwdController,
+                                      onFieldSubmitted: (value) {
+                                        _passwordFocus.unfocus();
+                                        _onPressLoginButton(context);
+                                      },
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return (translations[selectedLanguage]
+                                                      ?['BlankPwdMsg'] ??
+                                                  '')
+                                              .toString();
+                                        }
+                                        return null;
+                                      },
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp(_regExUName)),
+                                      ],
+                                      obscureText: _isHidden,
+                                      decoration: InputDecoration(
+                                        contentPadding:
+                                            const EdgeInsets.all(15.0),
+                                        prefix: !isEnglish
+                                            ? InkWell(
+                                                onTap: _togglePwdView,
+                                                child: Icon(
+                                                  _isHidden
+                                                      ? Icons.visibility_off
+                                                      : Icons.visibility,
+                                                  color: Colors.blue,
+                                                  size: 18.0,
+                                                ),
+                                              )
+                                            : null,
+                                        suffix: isEnglish
+                                            ? InkWell(
+                                                onTap: _togglePwdView,
+                                                child: Icon(
+                                                  _isHidden
+                                                      ? Icons.visibility_off
+                                                      : Icons.visibility,
+                                                  color: Colors.blue,
+                                                  size: 18.0,
+                                                ),
+                                              )
+                                            : null,
+                                        border: const OutlineInputBorder(),
+                                        labelText:
+                                            (translations[selectedLanguage]
+                                                        ?['Password'] ??
+                                                    '')
+                                                .toString(),
+                                        enabledBorder: const OutlineInputBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(50.0)),
-                                            borderSide: BorderSide(
-                                                color: Colors.red, width: 1.5)),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 5.0),
-                            width: 300.0,
-                            height: 35.0,
-                            child: Builder(
-                              builder: (context) {
-                                return OutlinedButton(
-                                  focusNode: _btnLoginFocus,
-                                  style: OutlinedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                    ),
-                                    side: const BorderSide(
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _isLoggedIn = true;
-                                    });
-                                    _onPressLoginButton(context);
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                        errorBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.red)),
+                                        focusedErrorBorder:
+                                            const OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(50.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.red,
+                                                    width: 1.5)),
+                                      ),
+                                    );
                                   },
-                                  child: _isLoggedIn
-                                      ? const SizedBox(
-                                          height: 18.0,
-                                          width: 18.0,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 3.0,
-                                          ),
-                                        )
-                                      : Text(
-                                          (translations[selectedLanguage]
-                                                      ?['LoginButton'] ??
-                                                  '')
-                                              .toString(),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 5.0),
+                                width: 300.0,
+                                height: 35.0,
+                                child: Builder(
+                                  builder: (context) {
+                                    return OutlinedButton(
+                                      focusNode: _btnLoginFocus,
+                                      style: OutlinedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20.0),
                                         ),
-                                );
-                              },
-                            ),
+                                        side: const BorderSide(
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _isLoggedIn = true;
+                                        });
+                                        _onPressLoginButton(context);
+                                      },
+                                      child: _isLoggedIn
+                                          ? const SizedBox(
+                                              height: 18.0,
+                                              width: 18.0,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 3.0,
+                                              ),
+                                            )
+                                          : Text(
+                                              (translations[selectedLanguage]
+                                                          ?['LoginButton'] ??
+                                                      '')
+                                                  .toString(),
+                                            ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {},
+                                style: TextButton.styleFrom(
+                                  foregroundColor: Colors.grey,
+                                ),
+                                child: Text(
+                                  translations[selectedLanguage]
+                                          ?['ForgotPwd'] ??
+                                      ''.toString(),
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.only(top: 30.0),
+                                width: 80.0, // reduced width
+                                height: 50.0, // reduced height
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    border: UnderlineInputBorder(),
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: SizedBox(
+                                      height: 20.0, // reduced height
+                                      child: DropdownButton(
+                                        isExpanded: true,
+                                        icon: const Icon(Icons.arrow_drop_down),
+                                        value: selectedLanguage.toString(),
+                                        style: const TextStyle(
+                                            fontSize: 12.0,
+                                            color: Colors
+                                                .black), // reduced font size
+                                        items: langList.map((String langItems) {
+                                          return DropdownMenuItem(
+                                            value: langItems,
+                                            alignment: Alignment.centerRight,
+                                            child: Text(langItems),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) async {
+                                          setState(() {
+                                            Provider.of<LanguageProvider>(
+                                                    context,
+                                                    listen: false)
+                                                .selectedLanguage = newValue!;
+                                            selectedLanguage = newValue;
+                                          });
+                                          // Save the selected language into SharedPreferences
+                                          SharedPreferences prefs =
+                                              await SharedPreferences
+                                                  .getInstance();
+                                          await prefs.setString(
+                                              'selectedLanguage', newValue!);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
-                          TextButton(
-                            onPressed: () {},
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.grey,
-                            ),
-                            child: Text(translations[selectedLanguage]?['ForgotPwd'] ?? ''.toString(),),
-                          ),
-                        ],
-                      ),
+                        ),
+                        const Image(
+                          image: AssetImage('assets/graphics/login_img1.png'),
+                          width: 300,
+                          height: 300,
+                        )
+                      ],
                     ),
-                    const Image(
-                      image: AssetImage('assets/graphics/login_img1.png'),
-                      width: 300,
-                      height: 300,
-                    )
                   ],
                 ),
               ),
