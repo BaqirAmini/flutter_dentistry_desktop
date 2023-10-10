@@ -429,47 +429,46 @@ class _LoginState extends State<Login> {
                                 ),
                               ),
                               Container(
+                                // padding: const EdgeInsets.only(right: 7.0, left: 7.0),
                                 margin: const EdgeInsets.only(top: 30.0),
                                 width: 80.0, // reduced width
-                                height: 50.0, // reduced height
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: UnderlineInputBorder(),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 20.0, // reduced height
-                                      child: DropdownButton(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: selectedLanguage.toString(),
-                                        style: const TextStyle(
-                                            fontSize: 12.0,
-                                            color: Colors
-                                                .black), // reduced font size
-                                        items: langList.map((String langItems) {
-                                          return DropdownMenuItem(
-                                            value: langItems,
-                                            alignment: Alignment.centerRight,
-                                            child: Text(langItems),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) async {
-                                          setState(() {
-                                            Provider.of<LanguageProvider>(
-                                                    context,
-                                                    listen: false)
-                                                .selectedLanguage = newValue!;
-                                            selectedLanguage = newValue;
-                                          });
-                                          // Save the selected language into SharedPreferences
-                                          SharedPreferences prefs =
-                                              await SharedPreferences
-                                                  .getInstance();
-                                          await prefs.setString(
-                                              'selectedLanguage', newValue!);
-                                        },
-                                      ),
+                                height: 30.0, // reduced height
+                                decoration: const BoxDecoration(
+                                  border: Border(
+                                      bottom: BorderSide(color: Colors.grey)),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: SizedBox(
+                                    height: 20.0, // reduced height
+                                    child: DropdownButton(
+                                      isExpanded: true,
+                                      icon: const Icon(Icons.arrow_drop_down),
+                                      value: selectedLanguage.toString(),
+                                      style: const TextStyle(
+                                          fontSize: 12.0,
+                                          color: Colors
+                                              .black), // reduced font size
+                                      items: langList.map((String langItems) {
+                                        return DropdownMenuItem(
+                                          value: langItems,
+                                          alignment: Alignment.centerRight,
+                                          child: Text(langItems),
+                                        );
+                                      }).toList(),
+                                      onChanged: (String? newValue) async {
+                                        setState(() {
+                                          Provider.of<LanguageProvider>(context,
+                                                  listen: false)
+                                              .selectedLanguage = newValue!;
+                                          selectedLanguage = newValue;
+                                        });
+                                        // Save the selected language into SharedPreferences
+                                        SharedPreferences prefs =
+                                            await SharedPreferences
+                                                .getInstance();
+                                        await prefs.setString(
+                                            'selectedLanguage', newValue!);
+                                      },
                                     ),
                                   ),
                                 ),
