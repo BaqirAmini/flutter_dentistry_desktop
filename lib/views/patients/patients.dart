@@ -10,13 +10,11 @@ import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_detail.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:provider/provider.dart';
-import '../finance/taxes/tax_info.dart';
 import 'patient_info.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:win_toast/win_toast.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 
 void main() {
