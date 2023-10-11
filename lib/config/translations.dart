@@ -53,7 +53,7 @@ final Map<String, Map<String, String>> translations = {
     'Step1Msg': 'Please insert patient\'s info carefully in the boxes below.',
     'NextBtn': 'Next',
     'PrevBtn': 'Previous',
-    'AddBtn': 'Add',
+    'AddBtn': 'Register',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'All Staff',
@@ -66,6 +66,18 @@ final Map<String, Map<String, String>> translations = {
     'AddNewStaff': 'Add new staff',
     'StaffDetail': 'Details',
     'StaffUA': 'User Account',
+    'StaffReg': 'New Staff Registration',
+    'StaffRegMsg': 'Please insert staff\'s info carefully in the boxes below.',
+    'FNRequired': 'First Name is required.',
+    'FNLength': 'First Name must be between 3 and 10 characters.',
+    'LNLength': 'Last Name must be between 3 and 10 characters.',
+    'PhoneRequired': 'Phone is required.',
+    'ValidPhone': 'Invalid phone number.',
+    'Phone10': 'Phone must be 10 digits.',
+    'Phone12': 'Phone must be 12 digits including country code.',
+    'ValidSalary': 'Salary must be between 1000 AFN and 100,000 AFN.',
+    'ValidTazkira': 'Tazkira NO must be have format xxxx-xxxx-xxxxx.',
+    'StaffRegSuccess': 'The staff registered successfully.',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'First Name',
@@ -77,6 +89,8 @@ final Map<String, Map<String, String>> translations = {
     'Details': 'Details',
     'Delete': 'Delete',
     'GoToDashboard': 'Go To Dashboard',
+    'RegBtn': 'Register',
+    'GoBack': 'Go to previous page',
     /*-----/. SHARED VALUES -----*/
     // Add other English translations here
   },
@@ -146,6 +160,19 @@ final Map<String, Map<String, String>> translations = {
     'AddNewStaff': 'افزودن کارمند جدید',
     'StaffDetail': 'جزییات',
     'StaffUA': 'حساب کاربری',
+    'StaffReg': 'ثبت کارمندان جدید',
+    'StaffRegMsg':
+        'لطفاً معلومات کارمند جدید را با دقت در خانه هالی ذیل درج نمایید.',
+    'FNRequired': 'نام الزامی است.',
+    'FNLength': 'نام باید بین 3 و 10 حرف باشد.',
+    'LNLength': 'تخلص باید بین 3 و 10 حرف باشد.',
+    'PhoneRequired': 'نمبر تماس الزامی است.',
+    'Phone10': 'نمبر تماس باید 10 رقم باشد.',
+    'Phone12': 'نمبر تماس همراه با کود کشور باید 12 رقم باشد.',
+    'ValidPhone': 'نمبر تماس نا معتبر است.',
+    'ValidSalary': 'مقدار معاش باید بین 1000 افغانی و 100,000 افغانی باشد.',
+    'ValidTazkira': 'نمبر تذکره باید دارای فورمت xxxx-xxxx-xxxxx باشد.',
+    'StaffRegSuccess': 'کارمند موفقانه ثبت گردید.',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'اسم',
@@ -157,6 +184,8 @@ final Map<String, Map<String, String>> translations = {
     'Details': 'شرح',
     'Delete': 'حذف',
     'GoToDashboard': 'رفتن به داشبورد',
+    'RegBtn': 'ثبت کردن',
+    'GoBack': 'رفتن به صفحه قبل',
     /*-----/. SHARED VALUES -----*/
     // Add other Dari translations here
   },
@@ -184,7 +213,7 @@ final Map<String, Map<String, String>> translations = {
     /*----- SIDEBAR -----*/
     'Dashboard': 'ډشبورډ',
     'Patients': 'ناروغان',
-    'Staff': 'کارمندان',
+    'Staff': 'کارکوونکي',
     'Services': 'خدمتونه',
     'Expenses': 'لګښتونه',
     'Taxes': 'مالیات',
@@ -221,13 +250,26 @@ final Map<String, Map<String, String>> translations = {
     'AllStaff': 'ټول کارکوونکي',
     'Photo': 'انځور',
     'Salary': 'د معاش اندازه',
-    'Tazkira': 'د پیژندپاڼې شمیره',
+    'Tazkira': 'تذکره نمبر',
     'Position': 'موقف',
     'Address': 'پته',
     'Actions': 'کړنې',
-    'AddNewStaff': 'افزودن کارمند جدید',
+    'AddNewStaff': 'نوي کارکوونکي اضافه کړئ',
     'StaffDetail': 'جزییات',
     'StaffUA': 'حساب کاربری',
+    'StaffReg': 'د نویو کارکوونکو ثبتول',
+    'StaffRegMsg':
+        'مهرباني وکړئ په لاندې برخو کې د نوي کارمند معلومات په احتیاط سره دننه کړئ.',
+    'FNRequired': 'نوم اړین دی.',
+    'FNLength': 'نوم باید د 3 او 10 حروفو ترمنځ وي.',
+    'LNLength': 'تخلص باید د 3 او 10 حروفو ترمنځ وي.',
+    'PhoneRequired': 'د تماس شمیره اړینه ده.',
+    'Phone10': 'د اړیکې شمیره باید 10 عدده وي.',
+    'Phone12': 'د اړیکو شمیره د هیواد کوډ سره باید 12 عدده وي.',
+    'ValidPhone': 'د تماس شمیره ناسمه ده.',
+    'ValidSalary': 'د معاش اندازه باید د 1000 څخه تر 100000 پورې وي.',
+    'ValidTazkira': 'تذکره نمبر باید د xxxx-xxxx-xxxx بڼه ولري.',
+    'StaffRegSuccess': 'کارمند په بریالیتوب سره ثبت شو.',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'نوم',
@@ -235,10 +277,12 @@ final Map<String, Map<String, String>> translations = {
     'Age': 'عمر',
     'Sex': 'جندر',
     'Marital': 'مدني حالت',
-    'Phone': 'اړیکه',
+    'Phone': 'د تماس شمېره',
     'Details': 'تفصیل',
     'Delete': 'ړنګول',
     'GoToDashboard': 'ډشبورډ ته لاړ شئ',
+    'RegBtn': 'راجستر',
+    'GoBack': 'پخوانۍ پاڼې ته لاړ شئ',
     /*-----/. SHARED VALUES -----*/
     // Add other Dari translations here
   },

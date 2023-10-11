@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dentistry/views/staff/staff.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
+import 'package:provider/provider.dart';
 import 'registeration.dart';
 
 void main() {
@@ -11,15 +13,20 @@ class NewStaff extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    var selectedLanguage = languageProvider.selectedLanguage;
+    var isEnglish = selectedLanguage == 'English';
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('ایحاد کارمند جدید'),
+            title: Text(translations[selectedLanguage]?['StaffReg'] ?? ''),
             leading: Tooltip(
-              message: 'رفتن به صفحه قبلی',
+              message: translations[selectedLanguage]?['GoBack'] ?? '',
               child: IconButton(
                 icon: const BackButtonIcon(),
                 onPressed: () {

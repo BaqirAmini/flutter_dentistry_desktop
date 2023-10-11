@@ -3,7 +3,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:provider/provider.dart';
 
 class NewStaffForm extends StatefulWidget {
   const NewStaffForm({super.key});
@@ -11,6 +14,11 @@ class NewStaffForm extends StatefulWidget {
   @override
   State<NewStaffForm> createState() => _NewStaffFormState();
 }
+
+// ignore: prefer_typing_uninitialized_variables
+var languageProvider;
+// ignore: prefer_typing_uninitialized_variables
+var selectedLanguage;
 
 class _NewStaffFormState extends State<NewStaffForm> {
   // position types dropdown variables
@@ -49,6 +57,11 @@ class _NewStaffFormState extends State<NewStaffForm> {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    var isEnglish = selectedLanguage == 'English';
+
     return SingleChildScrollView(
       child: Center(
         child: Form(
@@ -59,13 +72,14 @@ class _NewStaffFormState extends State<NewStaffForm> {
               children: [
                 Container(
                   margin: const EdgeInsets.only(top: 20.0),
-                  child: const Text(
-                    'لطفا معلومات مرتبط به کارمند را در فورمهای ذیل با دقت درج نمایید.',
+                  child: Text(
+                    translations[selectedLanguage]?['StaffRegMsg'] ?? '',
                     style: TextStyle(color: Color.fromARGB(255, 133, 133, 133)),
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                  margin: const EdgeInsets.only(
+                      left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: TextFormField(
                     controller: _nameController,
                     inputFormatters: [
@@ -75,15 +89,15 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     ],
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'نام الزامی است.';
+                        return translations[selectedLanguage]?['FNRequired'] ?? '';
                       } else if (value.length < 3) {
-                        return 'نام باید حداقل 3 حرف باشد.';
+                        return translations[selectedLanguage]?['FNLength'] ?? '';
                       }
                       return null;
                     },
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'نام',
+                      labelText: translations[selectedLanguage]?['FName'] ?? '',
                       suffixIcon: Icon(Icons.person),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
@@ -102,7 +116,8 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                  margin: const EdgeInsets.only(
+                      left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: TextFormField(
                     controller: _lastNameController,
                     inputFormatters: [
@@ -113,7 +128,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     validator: (value) {
                       if (value!.isNotEmpty) {
                         if (value.length < 3 || value.length > 10) {
-                          return 'تخلص باید از سه الی ده حرف باشد.';
+                          return translations[selectedLanguage]?['LNLength'] ?? '';
                         } else {
                           return null;
                         }
@@ -122,9 +137,9 @@ class _NewStaffFormState extends State<NewStaffForm> {
                       }
                     },
                     keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'تخلص',
+                      labelText: translations[selectedLanguage]?['LName'] ?? '',
                       suffixIcon: Icon(Icons.person),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
@@ -143,11 +158,12 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                  margin: const EdgeInsets.only(
+                      left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: InputDecorator(
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'عنوان وظیفه',
+                      labelText: translations[selectedLanguage]?['Position'] ?? '',
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.grey)),
@@ -187,7 +203,8 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                  margin: const EdgeInsets.only(
+                      left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: TextFormField(
                     textDirection: TextDirection.ltr,
                     controller: _phoneController,
@@ -198,24 +215,24 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     ],
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'نمبر تماس الزامی است.';
+                        return translations[selectedLanguage]?['PhoneRequired'] ?? '';
                       } else if (value.startsWith('07')) {
                         if (value.length < 10 || value.length > 10) {
-                          return 'نمبر تماس باید 10 عدد باشد.';
+                          return translations[selectedLanguage]?['Phone10'] ?? '';
                         }
                       } else if (value.startsWith('+93')) {
                         if (value.length < 12 || value.length > 12) {
-                          return 'نمبر تماس  همراه با کود کشور باید 12 عدد باشد.';
+                          return translations[selectedLanguage]?['Phone12'] ?? '';
                         }
                       } else {
-                        return 'نمبر تماس نا معتبر است.';
+                        return translations[selectedLanguage]?['ValidPhone'] ?? '';
                       }
                       return null;
                     },
                     // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'نمبر تماس',
+                      labelText: translations[selectedLanguage]?['Phone'] ?? '',
                       suffixIcon: Icon(Icons.phone),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
@@ -234,14 +251,15 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                  margin: const EdgeInsets.only(
+                      left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: TextFormField(
                     controller: _salaryController,
                     validator: (value) {
                       if (value!.isNotEmpty) {
                         final salary = double.tryParse(value);
                         if (salary! < 1000 || salary > 100000) {
-                          return 'مقدار معاش باید بین 1000 افغانی و 100,000 افغانی باشد.';
+                          return translations[selectedLanguage]?['ValidSalary'] ?? '';
                         }
                       }
                       return null;
@@ -249,9 +267,9 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
                     ],
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'مقدار معاش',
+                      labelText: translations[selectedLanguage]?['Salary'] ?? '',
                       suffixIcon: Icon(Icons.money),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
@@ -270,13 +288,14 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                  margin: const EdgeInsets.only(
+                      left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: TextFormField(
                     controller: _tazkiraController,
                     validator: (value) {
                       if (value!.isNotEmpty) {
                         if (!_tazkiraPattern.hasMatch(value)) {
-                          return 'فورمت نمبر تذکره باید xxxx-xxxx-xxxxx باشد.';
+                          return translations[selectedLanguage]?['ValidTazkira'] ?? '';
                         }
                       }
                       return null;
@@ -287,9 +306,9 @@ class _NewStaffFormState extends State<NewStaffForm> {
                         RegExp(r'[0-9-]'),
                       ),
                     ],
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'نمبر تذکره',
+                      labelText: translations[selectedLanguage]?['Tazkira'] ?? '',
                       suffixIcon: Icon(Icons.perm_identity),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
@@ -308,7 +327,8 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                  margin: const EdgeInsets.only(
+                      left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: TextFormField(
                     controller: _addressController,
                     inputFormatters: [
@@ -316,9 +336,9 @@ class _NewStaffFormState extends State<NewStaffForm> {
                         RegExp(_regExOnlyAbc),
                       ),
                     ],
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'آدرس',
+                      labelText: translations[selectedLanguage]?['Address'] ?? '',
                       suffixIcon: Icon(Icons.location_on_outlined),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
@@ -339,7 +359,8 @@ class _NewStaffFormState extends State<NewStaffForm> {
                 Container(
                   width: 400.0,
                   height: 35.0,
-                  margin: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                  margin: const EdgeInsets.only(
+                      left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -378,7 +399,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                 addr
                               ]);
                           if (query.affectedRows! > 0) {
-                            onShowSnackBar('کارمند موفقانه اضافه شد.');
+                            onShowSnackBar(translations[selectedLanguage]?['StaffRegSuccess'] ?? '');
                             _nameController.clear();
                             _lastNameController.clear();
                             _salaryController.clear();
@@ -394,7 +415,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                         }
                       }
                     },
-                    child: const Text('ثبت کردن'),
+                    child: Text(translations[selectedLanguage]?['AddBtn'] ?? ''),
                   ),
                 )
               ],
