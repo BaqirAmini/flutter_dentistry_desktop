@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/staff/new_staff.dart';
 import 'package:galileo_mysql/galileo_mysql.dart';
+import 'package:provider/provider.dart';
 import 'staff_info.dart';
 
 // Create the global key at the top level of your Dart file
@@ -28,27 +31,36 @@ void main() {
   return runApp(const Staff());
 }
 
+// ignore: prefer_typing_uninitialized_variables
+var selectedLanguage;
+// ignore: prefer_typing_uninitialized_variables
+var isEnglish;
+
 class Staff extends StatelessWidget {
   const Staff({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: ScaffoldMessenger(
         key: _globalKey3,
         child: Directionality(
-          textDirection: TextDirection.rtl,
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
           child: Scaffold(
             appBar: AppBar(
               leading: Tooltip(
-                message: 'رفتن به داشبورد',
+                message: translations[selectedLanguage]?['GoToDashboard'] ?? '',
                 child: IconButton(
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.home_outlined),
                 ),
               ),
-              title: const Text('کارمندان'),
+              title: Text(translations[selectedLanguage]?['Staff'] ?? ''),
             ),
             body: const MyDataTable(),
           ),
@@ -138,7 +150,7 @@ class _MyDataTableState extends State<MyDataTable> {
                   controller: _searchController,
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
-                    labelText: 'جستجو...',
+                    labelText: translations[selectedLanguage]?['Search'] ?? '',
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
                       onPressed: () {
@@ -180,7 +192,8 @@ class _MyDataTableState extends State<MyDataTable> {
                       _fetchData();
                     });
                   },
-                  child: const Text('افزودن کارمند جدید'),
+                  child: Text(
+                      translations[selectedLanguage]?['AddNewStaff'] ?? ''),
                 ),
             ],
           ),
@@ -199,21 +212,22 @@ class _MyDataTableState extends State<MyDataTable> {
               else
                 PaginatedDataTable(
                   source: dataSource,
-                  header: const Text("همه کارمندان |"),
+                  header: Text(
+                      '${translations[selectedLanguage]?['AllStaff'] ?? ''} |'),
                   sortColumnIndex: _sortColumnIndex,
                   sortAscending: _sortAscending,
                   columns: [
-                    const DataColumn(
+                    DataColumn(
                         label: Text(
-                          "عکس",
-                          style: TextStyle(
+                          translations[selectedLanguage]?['Photo'] ?? '',
+                          style: const TextStyle(
                               color: Colors.blue, fontWeight: FontWeight.bold),
                         ),
                         numeric: true),
                     DataColumn(
-                      label: const Text(
-                        "اسم",
-                        style: TextStyle(
+                      label: Text(
+                        translations[selectedLanguage]?['FName'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       onSort: (columnIndex, ascending) {
@@ -229,9 +243,9 @@ class _MyDataTableState extends State<MyDataTable> {
                       },
                     ),
                     DataColumn(
-                      label: const Text(
-                        "تخلص",
-                        style: TextStyle(
+                      label: Text(
+                        translations[selectedLanguage]?['LName'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       onSort: (columnIndex, ascending) {
@@ -247,9 +261,9 @@ class _MyDataTableState extends State<MyDataTable> {
                       },
                     ),
                     DataColumn(
-                      label: const Text(
-                        "مقام",
-                        style: TextStyle(
+                      label: Text(
+                        translations[selectedLanguage]?['Position'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       onSort: (columnIndex, ascending) {
@@ -265,9 +279,9 @@ class _MyDataTableState extends State<MyDataTable> {
                       },
                     ),
                     DataColumn(
-                      label: const Text(
-                        "مقدار معاش",
-                        style: TextStyle(
+                      label: Text(
+                        translations[selectedLanguage]?['Salary'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       onSort: (columnIndex, ascending) {
@@ -283,9 +297,9 @@ class _MyDataTableState extends State<MyDataTable> {
                       },
                     ),
                     DataColumn(
-                      label: const Text(
-                        "نمبر تماس",
-                        style: TextStyle(
+                      label: Text(
+                        translations[selectedLanguage]?['Phone'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       onSort: (columnIndex, ascending) {
@@ -301,9 +315,9 @@ class _MyDataTableState extends State<MyDataTable> {
                       },
                     ),
                     DataColumn(
-                      label: const Text(
-                        "نمبر تذکره",
-                        style: TextStyle(
+                      label: Text(
+                        translations[selectedLanguage]?['Tazkira'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       onSort: (columnIndex, ascending) {
@@ -319,9 +333,9 @@ class _MyDataTableState extends State<MyDataTable> {
                       },
                     ),
                     DataColumn(
-                      label: const Text(
-                        "آدرس",
-                        style: TextStyle(
+                      label: Text(
+                        translations[selectedLanguage]?['Address'] ?? '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       onSort: (columnIndex, ascending) {
@@ -338,10 +352,10 @@ class _MyDataTableState extends State<MyDataTable> {
                     ),
                     // This condition only allows 'system admin' to edit/delete... the staff
                     if (StaffInfo.staffRole == 'مدیر سیستم')
-                      const DataColumn(
+                      DataColumn(
                         label: Text(
-                          "اقدامات",
-                          style: TextStyle(
+                          translations[selectedLanguage]?['Actions'] ?? '',
+                          style: const TextStyle(
                               color: Colors.blue, fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -402,7 +416,8 @@ class MyData extends DataTableSource {
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
               PopupMenuItem(
                 child: Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
                   child: ListTile(
                     leading: const Icon(
                       Icons.list,
@@ -420,7 +435,8 @@ class MyData extends DataTableSource {
               ),
               PopupMenuItem(
                 child: Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
                   child: Builder(builder: (BuildContext context) {
                     return ListTile(
                       leading: const Icon(
@@ -456,7 +472,8 @@ class MyData extends DataTableSource {
               ),
               PopupMenuItem(
                 child: Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
                   child: Builder(builder: (BuildContext context) {
                     return ListTile(
                       leading: const Icon(
@@ -502,7 +519,8 @@ class MyData extends DataTableSource {
               ),
               PopupMenuItem(
                 child: Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
                   child: ListTile(
                     leading: const Icon(
                       Icons.delete,
@@ -554,12 +572,12 @@ onDeleteStaff(BuildContext context, int staffId, String firstName,
     builder: (ctx) => StatefulBuilder(
       builder: (BuildContext context, StateSetter setState) {
         return AlertDialog(
-          title: const Directionality(
-            textDirection: TextDirection.rtl,
-            child: Text('حذف کارمند'),
+          title: Directionality(
+            textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+            child: const Text('حذف کارمند'),
           ),
           content: Directionality(
-            textDirection: TextDirection.rtl,
+            textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
             child: Text('آیا میخواهید $firstName $lastName را حذف کنید؟'),
           ),
           actions: [
@@ -637,14 +655,14 @@ onEditStaff(
         builder: ((context, setState) {
           return AlertDialog(
             title: Directionality(
-              textDirection: TextDirection.rtl,
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: Text(
                 'تغییر مشخصات $firstname $lastname',
                 style: const TextStyle(color: Colors.blue),
               ),
             ),
             content: Directionality(
-              textDirection: TextDirection.rtl,
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: Form(
                 key: formKey1,
                 child: SizedBox(
@@ -948,7 +966,8 @@ onEditStaff(
             ),
             actions: [
               Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -1024,15 +1043,15 @@ onCreateUserAccount(BuildContext context, int staff_id) {
       return StatefulBuilder(
         builder: ((context, setState) {
           return AlertDialog(
-            title: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text(
+            title: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: const Text(
                 'ایجاد حساب کاربری (یوزر اکونت)',
                 style: TextStyle(color: Colors.blue),
               ),
             ),
             content: Directionality(
-              textDirection: TextDirection.rtl,
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: Form(
                 key: formKey2,
                 child: SizedBox(
@@ -1204,7 +1223,8 @@ onCreateUserAccount(BuildContext context, int staff_id) {
             ),
             actions: [
               Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -1278,15 +1298,15 @@ onUpdateUserAccount(
       return StatefulBuilder(
         builder: ((context, setState) {
           return AlertDialog(
-            title: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text(
+            title: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: const Text(
                 'تغییر حساب کاربری (یوزر اکونت)',
                 style: TextStyle(color: Colors.blue),
               ),
             ),
             content: Directionality(
-              textDirection: TextDirection.rtl,
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: Form(
                 key: formKey3,
                 child: SizedBox(
@@ -1458,7 +1478,8 @@ onUpdateUserAccount(
             ),
             actions: [
               Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [

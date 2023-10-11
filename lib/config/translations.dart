@@ -55,7 +55,19 @@ final Map<String, Map<String, String>> translations = {
     'PrevBtn': 'Previous',
     'AddBtn': 'Add',
     /*-----/. PATIENTS -----*/
-     /*----- SHARED VALUES -----*/
+    /*-------- STAFF ------- */
+    'AllStaff': 'All Staff',
+    'Photo': 'Photo',
+    'Salary': 'Salary',
+    'Tazkira': 'Tazkira NO',
+    'Position': 'Position',
+    'Address': 'Address',
+    'Actions': 'Actions',
+    'AddNewStaff': 'Add new staff',
+    'StaffDetail': 'Details',
+    'StaffUA': 'User Account',
+    /*--------/. STAFF ------- */
+    /*----- SHARED VALUES -----*/
     'FName': 'First Name',
     'LName': 'Last Name',
     'Age': 'Age',
@@ -64,6 +76,7 @@ final Map<String, Map<String, String>> translations = {
     'Phone': 'Phone',
     'Details': 'Details',
     'Delete': 'Delete',
+    'GoToDashboard': 'Go To Dashboard',
     /*-----/. SHARED VALUES -----*/
     // Add other English translations here
   },
@@ -122,6 +135,18 @@ final Map<String, Map<String, String>> translations = {
     'PrevBtn': 'قبلی',
     'AddBtn': 'ثبت',
     /*-----/. PATIENTS -----*/
+    /*-------- STAFF ------- */
+    'AllStaff': 'همه کارمندان',
+    'Photo': 'عکس',
+    'Salary': 'مقدار معاش',
+    'Tazkira': 'نمبر تذکره',
+    'Position': 'مقام',
+    'Address': 'آدرس',
+    'Actions': 'اقدامات',
+    'AddNewStaff': 'افزودن کارمند جدید',
+    'StaffDetail': 'جزییات',
+    'StaffUA': 'حساب کاربری',
+    /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'اسم',
     'LName': 'تخلص',
@@ -131,6 +156,7 @@ final Map<String, Map<String, String>> translations = {
     'Phone': 'تماس',
     'Details': 'شرح',
     'Delete': 'حذف',
+    'GoToDashboard': 'رفتن به داشبورد',
     /*-----/. SHARED VALUES -----*/
     // Add other Dari translations here
   },
@@ -185,12 +211,25 @@ final Map<String, Map<String, String>> translations = {
     'َPatientPersInfo': 'د ناروغ شخصي معلومات',
     'َDentalService': 'اړین خدمتونه',
     'َServiceFee': 'فیس',
-    'Step1Msg': 'مهرباني وکړئ د ناروغ شخصي معلومات په احتیاط سره په لاندې برخو کې دننه کړئ.',
+    'Step1Msg':
+        'مهرباني وکړئ د ناروغ شخصي معلومات په احتیاط سره په لاندې برخو کې دننه کړئ.',
     'NextBtn': 'دوام',
     'PrevBtn': 'مخکینی',
     'AddBtn': 'راجستر',
     /*-----/. PATIENTS -----*/
-     /*----- SHARED VALUES -----*/
+    /*-------- STAFF ------- */
+    'AllStaff': 'ټول کارکوونکي',
+    'Photo': 'انځور',
+    'Salary': 'د معاش اندازه',
+    'Tazkira': 'د پیژندپاڼې شمیره',
+    'Position': 'موقف',
+    'Address': 'پته',
+    'Actions': 'کړنې',
+    'AddNewStaff': 'افزودن کارمند جدید',
+    'StaffDetail': 'جزییات',
+    'StaffUA': 'حساب کاربری',
+    /*--------/. STAFF ------- */
+    /*----- SHARED VALUES -----*/
     'FName': 'نوم',
     'LName': 'تخلص',
     'Age': 'عمر',
@@ -199,6 +238,7 @@ final Map<String, Map<String, String>> translations = {
     'Phone': 'اړیکه',
     'Details': 'تفصیل',
     'Delete': 'ړنګول',
+    'GoToDashboard': 'ډشبورډ ته لاړ شئ',
     /*-----/. SHARED VALUES -----*/
     // Add other Dari translations here
   },
