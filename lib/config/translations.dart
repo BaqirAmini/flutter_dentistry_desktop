@@ -78,6 +78,10 @@ final Map<String, Map<String, String>> translations = {
     'ValidSalary': 'Salary must be between 1000 AFN and 100,000 AFN.',
     'ValidTazkira': 'Tazkira NO must be have format xxxx-xxxx-xxxxx.',
     'StaffRegSuccess': 'The staff registered successfully.',
+    'ChangeUAHeader': 'Change User Account',
+    'ConfirmPassword': 'Confirm Password',
+    'ChooseRole': 'Choose Role',
+    'SaveUABtn': 'Done',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'First Name',
@@ -87,6 +91,7 @@ final Map<String, Map<String, String>> translations = {
     'Marital': 'Marital Status',
     'Phone': 'Phone',
     'Details': 'Details',
+    'Edit': 'Edit',
     'Delete': 'Delete',
     'GoToDashboard': 'Go To Dashboard',
     'RegBtn': 'Register',
@@ -173,6 +178,10 @@ final Map<String, Map<String, String>> translations = {
     'ValidSalary': 'مقدار معاش باید بین 1000 افغانی و 100,000 افغانی باشد.',
     'ValidTazkira': 'نمبر تذکره باید دارای فورمت xxxx-xxxx-xxxxx باشد.',
     'StaffRegSuccess': 'کارمند موفقانه ثبت گردید.',
+    'ChangeUAHeader': 'تغییر حساب یوزر',
+    'ConfirmPassword': 'تایید رمز',
+    'ChooseRole': 'تعیین صلاحیت',
+    'SaveUABtn': 'انجام',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'اسم',
@@ -182,6 +191,7 @@ final Map<String, Map<String, String>> translations = {
     'Marital': 'حالت تاهل',
     'Phone': 'تماس',
     'Details': 'شرح',
+    'Edit': 'تغییر',
     'Delete': 'حذف',
     'GoToDashboard': 'رفتن به داشبورد',
     'RegBtn': 'ثبت کردن',
@@ -256,7 +266,7 @@ final Map<String, Map<String, String>> translations = {
     'Actions': 'کړنې',
     'AddNewStaff': 'نوي کارکوونکي اضافه کړئ',
     'StaffDetail': 'جزییات',
-    'StaffUA': 'حساب کاربری',
+    'StaffUA': 'د کارن حساب',
     'StaffReg': 'د نویو کارکوونکو ثبتول',
     'StaffRegMsg':
         'مهرباني وکړئ په لاندې برخو کې د نوي کارمند معلومات په احتیاط سره دننه کړئ.',
@@ -270,6 +280,10 @@ final Map<String, Map<String, String>> translations = {
     'ValidSalary': 'د معاش اندازه باید د 1000 څخه تر 100000 پورې وي.',
     'ValidTazkira': 'تذکره نمبر باید د xxxx-xxxx-xxxx بڼه ولري.',
     'StaffRegSuccess': 'کارمند په بریالیتوب سره ثبت شو.',
+    'ChangeUAHeader': 'د کارونکي حساب بدل کړئ',
+    'ConfirmPassword': 'پاسورډ تایید کړه',
+    'ChooseRole': 'وړتوبونه',
+    'SaveUABtn': 'ترسره شوی',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'نوم',
@@ -279,6 +293,7 @@ final Map<String, Map<String, String>> translations = {
     'Marital': 'مدني حالت',
     'Phone': 'د تماس شمېره',
     'Details': 'تفصیل',
+    'Edit': 'سم کول',
     'Delete': 'ړنګول',
     'GoToDashboard': 'ډشبورډ ته لاړ شئ',
     'RegBtn': 'راجستر',

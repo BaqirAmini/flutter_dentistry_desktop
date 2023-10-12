@@ -423,9 +423,9 @@ class MyData extends DataTableSource {
                       Icons.list,
                       size: 20.0,
                     ),
-                    title: const Text(
-                      'جزییات',
-                      style: TextStyle(fontSize: 15.0),
+                    title: Text(
+                      translations[selectedLanguage]?['Details'] ?? '',
+                      style: const TextStyle(fontSize: 15.0),
                     ),
                     onTap: () {
                       Navigator.pop(context);
@@ -443,9 +443,9 @@ class MyData extends DataTableSource {
                         Icons.lock_person_outlined,
                         size: 20.0,
                       ),
-                      title: const Text(
-                        'حساب کاربری',
-                        style: TextStyle(fontSize: 15.0),
+                      title: Text(
+                        translations[selectedLanguage]?['StaffUA'] ?? '',
+                        style: const TextStyle(fontSize: 15.0),
                       ),
                       onTap: () async {
                         int staffId = data[index].staffID;
@@ -480,9 +480,9 @@ class MyData extends DataTableSource {
                         Icons.edit,
                         size: 20.0,
                       ),
-                      title: const Text(
-                        'تغییر دادن',
-                        style: TextStyle(fontSize: 15.0),
+                      title: Text(
+                        translations[selectedLanguage]?['Edit'] ?? '',
+                        style: const TextStyle(fontSize: 15.0),
                       ),
                       onTap: () async {
                         int staffId = data[index].staffID;
@@ -526,9 +526,9 @@ class MyData extends DataTableSource {
                       Icons.delete,
                       size: 20.0,
                     ),
-                    title: const Text(
-                      'حذف کردن',
-                      style: TextStyle(fontSize: 15.0),
+                    title: Text(
+                      translations[selectedLanguage]?['Delete'] ?? '',
+                      style: const TextStyle(fontSize: 15.0),
                     ),
                     onTap: () async {
                       int staffID = data[index].staffID;
@@ -1300,9 +1300,9 @@ onUpdateUserAccount(
           return AlertDialog(
             title: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text(
-                'تغییر حساب کاربری (یوزر اکونت)',
-                style: TextStyle(color: Colors.blue),
+              child: Text(
+                translations[selectedLanguage]?['ChangeUAHeader'] ?? '',
+                style: const TextStyle(color: Colors.blue),
               ),
             ),
             content: Directionality(
@@ -1334,23 +1334,25 @@ onUpdateUserAccount(
                                 return 'نام کاربری باید بین 6 و 10 حرف باشد.';
                               }
                             },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'نام کاربری (نام یوزر)',
-                              suffixIcon: Icon(Icons.person),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['UserName'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.person),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1370,23 +1372,25 @@ onUpdateUserAccount(
                               }
                             },
                             obscureText: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'رمز (پاسورد)',
-                              suffixIcon: Icon(Icons.lock_open_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['Password'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.lock_open_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1407,23 +1411,25 @@ onUpdateUserAccount(
                               }
                             },
                             obscureText: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تایید رمز (پاسورد)',
-                              suffixIcon: Icon(Icons.lock_open_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['ConfirmPassword'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.lock_open_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1434,14 +1440,16 @@ onUpdateUserAccount(
                         Container(
                           margin: const EdgeInsets.all(20.0),
                           child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تعیین صلاحیت',
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['ChooseRole'] ??
+                                  '',
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
@@ -1484,10 +1492,12 @@ onUpdateUserAccount(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                          onPressed: () {
-                            Navigator.of(context, rootNavigator: true).pop();
-                          },
-                          child: const Text('لغو')),
+                        onPressed: () {
+                          Navigator.of(context, rootNavigator: true).pop();
+                        },
+                        child: Text(
+                            translations[selectedLanguage]?['CancelBtn'] ?? ''),
+                      ),
                       ElevatedButton(
                         onPressed: () async {
                           if (formKey3.currentState!.validate()) {
@@ -1512,7 +1522,8 @@ onUpdateUserAccount(
                             }
                           }
                         },
-                        child: const Text('تغییر دادن'),
+                        child: Text(
+                            translations[selectedLanguage]?['SaveUABtn'] ?? ''),
                       ),
                     ],
                   ))
