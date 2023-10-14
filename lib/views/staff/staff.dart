@@ -412,15 +412,23 @@ class MyData extends DataTableSource {
           backgroundImage: AssetImage('assets/graphics/patient.png'),
         ),
       ),
-      DataCell(Text(data[index].firstName, style: isEnglish ? const TextStyle(fontSize: 12) : null)),
-      DataCell(Text(data[index].lastName, style: isEnglish ? const TextStyle(fontSize: 12) : null)),
-      DataCell(Text(data[index].position, style: isEnglish ? const TextStyle(fontSize: 12) : null)),
+      DataCell(Text(data[index].firstName,
+          style: isEnglish ? const TextStyle(fontSize: 12) : null)),
+      DataCell(Text(data[index].lastName,
+          style: isEnglish ? const TextStyle(fontSize: 12) : null)),
+      DataCell(Text(data[index].position,
+          style: isEnglish ? const TextStyle(fontSize: 12) : null)),
       DataCell(
-        Text('${data[index].salary} افغانی', style: isEnglish ? const TextStyle(fontSize: 12) : null),
+        Text(
+            '${data[index].salary} ${translations[selectedLanguage]?['Afn'] ?? ''}',
+            style: isEnglish ? const TextStyle(fontSize: 12) : null),
       ),
-      DataCell(Text(data[index].phone, style: isEnglish ? const TextStyle(fontSize: 12) : null)),
-      DataCell(Text(data[index].tazkira, style: isEnglish ? const TextStyle(fontSize: 12) : null)),
-      DataCell(Text(data[index].address, style: isEnglish ? const TextStyle(fontSize: 12) : null)),
+      DataCell(Text(data[index].phone,
+          style: isEnglish ? const TextStyle(fontSize: 12) : null)),
+      DataCell(Text(data[index].tazkira,
+          style: isEnglish ? const TextStyle(fontSize: 12) : null)),
+      DataCell(Text(data[index].address,
+          style: isEnglish ? const TextStyle(fontSize: 12) : null)),
       // This condition only allows 'system admin' to edit/delete... the staff
       if (StaffInfo.staffRole == 'مدیر سیستم')
         DataCell(
@@ -1127,29 +1135,35 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                             controller: pwdController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'رمز الزامی است.';
+                                return translations[selectedLanguage]
+                                        ?['RequirePassword'] ??
+                                    '';
                               } else if (value.length < 8) {
-                                return 'رمز باید حداقل 8 حرف باشد.';
+                                return translations[selectedLanguage]
+                                        ?['PasswordLength'] ??
+                                    '';
                               }
                             },
                             obscureText: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'رمز (پاسورد)',
-                              suffixIcon: Icon(Icons.lock_open_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['Password'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.lock_open_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1163,30 +1177,36 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                             controller: confirmController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'تایید رمز الزامی است.';
+                                return translations[selectedLanguage]
+                                        ?['RequirePwdConfirm'] ??
+                                    '';
                               } else if (pwdController.text !=
                                   confirmController.text) {
-                                return 'رمز تان همخوانی ندارد. دوباره سعی کنید.';
+                                return translations[selectedLanguage]
+                                        ?['ConfirmPwdMsg'] ??
+                                    '';
                               }
                             },
                             obscureText: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تایید رمز (پاسورد)',
-                              suffixIcon: Icon(Icons.lock_open_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['ConfirmPassword'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.lock_open_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1197,14 +1217,16 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                         Container(
                           margin: const EdgeInsets.all(20.0),
                           child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تعیین صلاحیت',
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['ChooseRole'] ??
+                                  '',
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
@@ -1272,8 +1294,11 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                               // ignore: use_build_context_synchronously
                               Navigator.pop(context);
                               // ignore: use_build_context_synchronously
-                              _onShowSnack(Colors.green,
-                                  'حساب کاربری موفقانه ایجاد شد.');
+                              _onShowSnack(
+                                  Colors.green,
+                                  translations[selectedLanguage]
+                                          ?['UpdateUAMsg'] ??
+                                      '');
                             }
                           }
                         },
@@ -1346,10 +1371,10 @@ onUpdateUserAccount(
                             ],
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'نام کابری الزامی است.';
+                                return translations[selectedLanguage]?['RequireUserName'] ?? '';
                               } else if (value.length < 6 ||
                                   value.length > 10) {
-                                return 'نام کاربری باید بین 6 و 10 حرف باشد.';
+                                return translations[selectedLanguage]?['UserNameLength'] ?? '';
                               }
                             },
                             decoration: InputDecoration(
@@ -1384,9 +1409,9 @@ onUpdateUserAccount(
                             controller: pwdController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'رمز الزامی است.';
+                                return translations[selectedLanguage]?['RequirePassword'] ?? '';
                               } else if (value.length < 8) {
-                                return 'رمز باید حداقل 8 حرف باشد.';
+                                return translations[selectedLanguage]?['PasswordLength'] ?? '';;
                               }
                             },
                             obscureText: true,
@@ -1422,10 +1447,10 @@ onUpdateUserAccount(
                             controller: confirmController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'تایید رمز الزامی است.';
+                                return translations[selectedLanguage]?['RequirePwdConfirm'] ?? '';
                               } else if (pwdController.text !=
                                   confirmController.text) {
-                                return 'رمز تان همخوانی ندارد. دوباره سعی کنید.';
+                                return translations[selectedLanguage]?['ConfirmPwdMsg'] ?? '';
                               }
                             },
                             obscureText: true,
@@ -1536,7 +1561,7 @@ onUpdateUserAccount(
                               Navigator.pop(context);
                               // ignore: use_build_context_synchronously
                               _onShowSnack(Colors.green,
-                                  'حساب کاربری موفقانه تغییر کرد.');
+                                  translations[selectedLanguage]?['UpdateUAMsg'] ?? '');
                             }
                           }
                         },

@@ -82,6 +82,13 @@ final Map<String, Map<String, String>> translations = {
     'ConfirmPassword': 'Confirm Password',
     'ChooseRole': 'Choose Role',
     'SaveUABtn': 'Done',
+    'RequireUserName': 'User Name is required.',
+    'UserNameLength': 'User Name must be at least 6 and at most 10 characters.',
+    'RequirePassword': 'Password is required.',
+    'RequirePwdConfirm': 'Re-typing Password is required.',
+    'PasswordLength': 'Password must be at least 8 characters.',
+    'ConfirmPwdMsg': 'The Password doesn\' match. Try again.',
+    'UpdateUAMsg': 'The user account updated successfully.',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'First Name',
@@ -182,6 +189,13 @@ final Map<String, Map<String, String>> translations = {
     'ConfirmPassword': 'تایید رمز',
     'ChooseRole': 'تعیین صلاحیت',
     'SaveUABtn': 'انجام',
+    'RequirePassword': 'رمز الزامی است.',
+    'RequireUserName': 'نام یوزر الزامی میباشد.',
+    'UserNameLength': 'نام یوزر باید حداقل 6 و حداکثر 10 حرف باشد.',
+    'RequirePwdConfirm': 'تایید رمز الزامی است.',
+    'PasswordLength': 'رمز باید حداقل 8 حرف باشد.',
+    'ConfirmPwdMsg': 'رمز همخوانی ندارد. دوباره سعی کنید.',
+    'UpdateUAMsg': 'حساب یوزر موفقانه تغییر کرد.',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'اسم',
@@ -271,6 +285,7 @@ final Map<String, Map<String, String>> translations = {
     'StaffRegMsg':
         'مهرباني وکړئ په لاندې برخو کې د نوي کارمند معلومات په احتیاط سره دننه کړئ.',
     'FNRequired': 'نوم اړین دی.',
+    'RequireUserName': 'د کارن نوم اړین دی.',
     'FNLength': 'نوم باید د 3 او 10 حروفو ترمنځ وي.',
     'LNLength': 'تخلص باید د 3 او 10 حروفو ترمنځ وي.',
     'PhoneRequired': 'د تماس شمیره اړینه ده.',
@@ -281,9 +296,15 @@ final Map<String, Map<String, String>> translations = {
     'ValidTazkira': 'تذکره نمبر باید د xxxx-xxxx-xxxx بڼه ولري.',
     'StaffRegSuccess': 'کارمند په بریالیتوب سره ثبت شو.',
     'ChangeUAHeader': 'د کارونکي حساب بدل کړئ',
-    'ConfirmPassword': 'پاسورډ تایید کړه',
+    'ConfirmPassword': 'پټنوم تایید کړه',
     'ChooseRole': 'وړتوبونه',
     'SaveUABtn': 'ترسره شوی',
+    'RequirePassword': 'پټنوم اړین دی',
+    'UserNameLength': 'د کارن نوم باید لږترلږ 6 او اعظمي 10 حروف وي.',
+    'RequirePwdConfirm': 'د پټنوم تایید ته اړتیا ده.',
+    'PasswordLength': 'پټنوم باید لږترلږه 8 حروف اوږد وي.',
+    'ConfirmPwdMsg': 'پټنوم سره سمون نه خوري. بیا هڅه وکړه.',
+    'UpdateUAMsg': 'د کارن حساب په بریالیتوب سره بدل شوی.',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'نوم',
