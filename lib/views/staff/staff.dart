@@ -220,15 +220,19 @@ class _MyDataTableState extends State<MyDataTable> {
                     DataColumn(
                         label: Text(
                           translations[selectedLanguage]?['Photo'] ?? '',
-                          style: const TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: isEnglish ? 11 : null),
                         ),
                         numeric: true),
                     DataColumn(
                       label: Text(
                         translations[selectedLanguage]?['FName'] ?? '',
-                        style: const TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: isEnglish ? 11 : null),
                       ),
                       onSort: (columnIndex, ascending) {
                         setState(() {
@@ -245,8 +249,10 @@ class _MyDataTableState extends State<MyDataTable> {
                     DataColumn(
                       label: Text(
                         translations[selectedLanguage]?['LName'] ?? '',
-                        style: const TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: isEnglish ? 11 : null),
                       ),
                       onSort: (columnIndex, ascending) {
                         setState(() {
@@ -263,8 +269,10 @@ class _MyDataTableState extends State<MyDataTable> {
                     DataColumn(
                       label: Text(
                         translations[selectedLanguage]?['Position'] ?? '',
-                        style: const TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: isEnglish ? 11 : null),
                       ),
                       onSort: (columnIndex, ascending) {
                         setState(() {
@@ -281,8 +289,10 @@ class _MyDataTableState extends State<MyDataTable> {
                     DataColumn(
                       label: Text(
                         translations[selectedLanguage]?['Salary'] ?? '',
-                        style: const TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: isEnglish ? 11 : null),
                       ),
                       onSort: (columnIndex, ascending) {
                         setState(() {
@@ -299,8 +309,10 @@ class _MyDataTableState extends State<MyDataTable> {
                     DataColumn(
                       label: Text(
                         translations[selectedLanguage]?['Phone'] ?? '',
-                        style: const TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: isEnglish ? 11 : null),
                       ),
                       onSort: (columnIndex, ascending) {
                         setState(() {
@@ -317,8 +329,10 @@ class _MyDataTableState extends State<MyDataTable> {
                     DataColumn(
                       label: Text(
                         translations[selectedLanguage]?['Tazkira'] ?? '',
-                        style: const TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: isEnglish ? 11 : null),
                       ),
                       onSort: (columnIndex, ascending) {
                         setState(() {
@@ -335,8 +349,10 @@ class _MyDataTableState extends State<MyDataTable> {
                     DataColumn(
                       label: Text(
                         translations[selectedLanguage]?['Address'] ?? '',
-                        style: const TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                            fontSize: isEnglish ? 11 : null),
                       ),
                       onSort: (columnIndex, ascending) {
                         setState(() {
@@ -355,8 +371,10 @@ class _MyDataTableState extends State<MyDataTable> {
                       DataColumn(
                         label: Text(
                           translations[selectedLanguage]?['Actions'] ?? '',
-                          style: const TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                              fontSize: isEnglish ? 11 : null),
                         ),
                       ),
                   ],
@@ -394,15 +412,15 @@ class MyData extends DataTableSource {
           backgroundImage: AssetImage('assets/graphics/patient.png'),
         ),
       ),
-      DataCell(Text(data[index].firstName)),
-      DataCell(Text(data[index].lastName)),
-      DataCell(Text(data[index].position)),
+      DataCell(Text(data[index].firstName, style: isEnglish ? const TextStyle(fontSize: 12) : null)),
+      DataCell(Text(data[index].lastName, style: isEnglish ? const TextStyle(fontSize: 12) : null)),
+      DataCell(Text(data[index].position, style: isEnglish ? const TextStyle(fontSize: 12) : null)),
       DataCell(
-        Text('${data[index].salary} افغانی'),
+        Text('${data[index].salary} افغانی', style: isEnglish ? const TextStyle(fontSize: 12) : null),
       ),
-      DataCell(Text(data[index].phone)),
-      DataCell(Text(data[index].tazkira)),
-      DataCell(Text(data[index].address)),
+      DataCell(Text(data[index].phone, style: isEnglish ? const TextStyle(fontSize: 12) : null)),
+      DataCell(Text(data[index].tazkira, style: isEnglish ? const TextStyle(fontSize: 12) : null)),
+      DataCell(Text(data[index].address, style: isEnglish ? const TextStyle(fontSize: 12) : null)),
       // This condition only allows 'system admin' to edit/delete... the staff
       if (StaffInfo.staffRole == 'مدیر سیستم')
         DataCell(
