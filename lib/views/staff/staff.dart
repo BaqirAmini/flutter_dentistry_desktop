@@ -600,16 +600,16 @@ onDeleteStaff(BuildContext context, int staffId, String firstName,
         return AlertDialog(
           title: Directionality(
             textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-            child: const Text('حذف کارمند'),
+            child: Text('${translations[selectedLanguage]?['Delete'] ?? ''} $firstName $lastName'),
           ),
           content: Directionality(
             textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-            child: Text('آیا میخواهید $firstName $lastName را حذف کنید؟'),
+            child: Text(translations[selectedLanguage]?['ConfirmStaffDelete'] ?? ''),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-              child: const Text('لغو'),
+              child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
             ),
             TextButton(
               onPressed: () async {
@@ -617,13 +617,13 @@ onDeleteStaff(BuildContext context, int staffId, String firstName,
                 final deleteResult = await conn
                     .query('DELETE FROM staff WHERE staff_ID = ?', [staffId]);
                 if (deleteResult.affectedRows! > 0) {
-                  _onShowSnack(Colors.green, 'کارمند موفقانه حذف شد.');
+                  _onShowSnack(Colors.green, translations[selectedLanguage]?['DeleteStaffMsg'] ?? '');
                   onDelete();
                 }
                 await conn.close();
                 Navigator.of(context, rootNavigator: true).pop();
               },
-              child: const Text('حذف'),
+              child: Text(translations[selectedLanguage]?['Delete'] ?? ''),
             ),
           ],
         );

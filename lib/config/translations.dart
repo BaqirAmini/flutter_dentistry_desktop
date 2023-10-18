@@ -92,6 +92,8 @@ final Map<String, Map<String, String>> translations = {
     'CreateUAHeader': 'Create User Account',
     'StaffEditMsg': 'The changes applied successfully.',
     'StaffEditErrMsg': 'Nothing has been edited.',
+    'ConfirmStaffDelete': 'Are you sure you want to delete this staff?',
+    'DeleteStaffMsg': 'The staff deleted successfully.',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'First Name',
@@ -202,6 +204,8 @@ final Map<String, Map<String, String>> translations = {
     'CreateUAHeader': 'ایجاد حساب یوزر',
     'StaffEditMsg': 'تغییرات موفقانه انجام شد.',
     'StaffEditErrMsg': 'شما هیچ تغییراتی نیاورده اید.',
+    'ConfirmStaffDelete': 'آیا میخواهید این کارمند را حذف کنید؟',
+    'DeleteStaffMsg': 'کارمند موفقانه حذف شد.',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'اسم',
@@ -314,6 +318,8 @@ final Map<String, Map<String, String>> translations = {
     'CreateUAHeader': 'د کارن حساب جوړ کړئ',
     'StaffEditMsg': 'بدلونونه په بریالیتوب سره ترسره شول.',
     'StaffEditErrMsg': 'تاسو هیڅ بدلون نه دی کړی.',
+    'ConfirmStaffDelete': 'ایا تاسو غواړئ دا کارمند حذف کړئ؟',
+    'DeleteStaffMsg': 'کارمند په بریالیتوب سره ړنګ شو.',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'نوم',
