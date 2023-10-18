@@ -90,6 +90,8 @@ final Map<String, Map<String, String>> translations = {
     'ConfirmPwdMsg': 'The Password doesn\' match. Try again.',
     'UpdateUAMsg': 'The user account updated successfully.',
     'CreateUAHeader': 'Create User Account',
+    'StaffEditMsg': 'The changes applied successfully.',
+    'StaffEditErrMsg': 'Nothing has been edited.',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'First Name',
@@ -198,6 +200,8 @@ final Map<String, Map<String, String>> translations = {
     'ConfirmPwdMsg': 'رمز همخوانی ندارد. دوباره سعی کنید.',
     'UpdateUAMsg': 'حساب یوزر موفقانه تغییر کرد.',
     'CreateUAHeader': 'ایجاد حساب یوزر',
+    'StaffEditMsg': 'تغییرات موفقانه انجام شد.',
+    'StaffEditErrMsg': 'شما هیچ تغییراتی نیاورده اید.',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'اسم',
@@ -308,6 +312,8 @@ final Map<String, Map<String, String>> translations = {
     'ConfirmPwdMsg': 'پټنوم سره سمون نه خوري. بیا هڅه وکړه.',
     'UpdateUAMsg': 'د کارن حساب په بریالیتوب سره بدل شوی.',
     'CreateUAHeader': 'د کارن حساب جوړ کړئ',
+    'StaffEditMsg': 'بدلونونه په بریالیتوب سره ترسره شول.',
+    'StaffEditErrMsg': 'تاسو هیڅ بدلون نه دی کړی.',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'نوم',

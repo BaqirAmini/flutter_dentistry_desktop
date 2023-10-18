@@ -683,7 +683,7 @@ onEditStaff(
             title: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: Text(
-                'تغییر مشخصات $firstname $lastname',
+                '${translations[selectedLanguage]?['Edit'] ?? ''} $firstname $lastname',
                 style: const TextStyle(color: Colors.blue),
               ),
             ),
@@ -705,28 +705,28 @@ onEditStaff(
                             controller: nameController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'نام الزامی است.';
-                              } else if (value.length < 3) {
-                                return 'نام باید حداقل 3 حرف باشد.';
+                                return translations[selectedLanguage]?['FNRequired'] ?? '';
+                              } else if (value.length < 3 || value.length > 10) {
+                                return translations[selectedLanguage]?['FNLength'] ?? '';
                               }
                             },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'نام',
-                              suffixIcon: Icon(Icons.person_add_alt_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]?['FName'] ?? '',
+                              suffixIcon: const Icon(Icons.person_add_alt_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -741,7 +741,7 @@ onEditStaff(
                             validator: (value) {
                               if (value!.isNotEmpty) {
                                 if (value.length < 3 || value.length > 10) {
-                                  return 'تخلص باید از سه الی ده حرف باشد.';
+                                  return translations[selectedLanguage]?['LNLength'] ?? '';
                                 } else {
                                   return null;
                                 }
@@ -749,23 +749,23 @@ onEditStaff(
                                 return null;
                               }
                             },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تخلص',
-                              suffixIcon: Icon(Icons.person),
-                              enabledBorder: OutlineInputBorder(
+                            decoration:  InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]?['LName'] ?? '',
+                              suffixIcon: const Icon(Icons.person),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -776,22 +776,22 @@ onEditStaff(
                         Container(
                           margin: const EdgeInsets.all(20.0),
                           child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'عنوان وظیفه',
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]?['Position'] ?? '',
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -834,36 +834,36 @@ onEditStaff(
                             ],
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'نمبر تماس الزامی است.';
+                                return translations[selectedLanguage]?['PhoneRequired'] ?? '';
                               } else if (value.startsWith('07')) {
                                 if (value.length < 10 || value.length > 10) {
-                                  return 'نمبر تماس باید 10 عدد باشد.';
+                                  return translations[selectedLanguage]?['Phone10'] ?? '';
                                 }
                               } else if (value.startsWith('+93')) {
                                 if (value.length < 12 || value.length > 12) {
-                                  return 'نمبر تماس  همراه با کود کشور باید 12 عدد باشد.';
+                                  return translations[selectedLanguage]?['Phone12'] ?? '';
                                 }
                               } else {
-                                return 'نمبر تماس نا معتبر است.';
+                                return translations[selectedLanguage]?['ValidPhone'] ?? '';
                               }
                             },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'نمبر تماس',
-                              suffixIcon: Icon(Icons.phone),
-                              enabledBorder: OutlineInputBorder(
+                            decoration:  InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]?['Phone'] ?? '',
+                              suffixIcon: const Icon(Icons.phone),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -879,7 +879,7 @@ onEditStaff(
                               if (value!.isNotEmpty) {
                                 final salary = double.tryParse(value!);
                                 if (salary! < 1000 || salary > 100000) {
-                                  return 'مقدار معاش باید بین 1000 افغانی و 100,000 افغانی باشد.';
+                                  return translations[selectedLanguage]?['ValidSalary'] ?? '';
                                 }
                               }
                             },
@@ -887,23 +887,23 @@ onEditStaff(
                               FilteringTextInputFormatter.allow(
                                   RegExp(r'[0-9.]'))
                             ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'مقدار معاش',
-                              suffixIcon: Icon(Icons.money),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]?['Salary'] ?? '',
+                              suffixIcon: const Icon(Icons.money),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -918,7 +918,7 @@ onEditStaff(
                             validator: (value) {
                               if (value!.isNotEmpty) {
                                 if (!tazkiraPattern.hasMatch(value)) {
-                                  return 'فورمت نمبر تذکره باید xxxx-xxxx-xxxxx باشد.';
+                                  return translations[selectedLanguage]?['ValidTazkira'] ?? '';
                                 }
                               }
                               return null;
@@ -927,23 +927,23 @@ onEditStaff(
                               FilteringTextInputFormatter.allow(
                                   RegExp(r'[0-9-]'))
                             ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'نمبر تذکره',
-                              suffixIcon: Icon(Icons.perm_identity),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]?['Tazkira'] ?? '',
+                              suffixIcon: const Icon(Icons.perm_identity),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -960,23 +960,23 @@ onEditStaff(
                                 RegExp(regExOnlyAbc),
                               ),
                             ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'آدرس',
-                              suffixIcon: Icon(Icons.location_on_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]?['Address'] ?? '',
+                              suffixIcon: const Icon(Icons.location_on_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -999,7 +999,7 @@ onEditStaff(
                     children: [
                       TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('لغو')),
+                          child: Text(translations[selectedLanguage]?['CancelBtn'] ?? '')),
                       ElevatedButton(
                         onPressed: () async {
                           if (formKey1.currentState!.validate()) {
@@ -1025,17 +1025,17 @@ onEditStaff(
                                 ]);
                             if (results.affectedRows! > 0) {
                               _onShowSnack(Colors.green,
-                                  'مشخصات این کارمند موفقانه تغییر کرد.');
+                                  translations[selectedLanguage]?['StaffEditMsg'] ?? '');
                               Navigator.pop(context);
                               onUpdate();
                             } else {
                               _onShowSnack(
-                                  Colors.red, 'متاسفم، تغییرات ناکام شد.');
+                                  Colors.red, translations[selectedLanguage]?['StaffEditErrMsg'] ?? '');
                               Navigator.pop(context);
                             }
                           }
                         },
-                        child: const Text('تغییر'),
+                        child: Text(translations[selectedLanguage]?['Edit'] ?? ''),
                       ),
                     ],
                   ))
@@ -1099,15 +1099,21 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                             ],
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return translations[selectedLanguage]?['RequireUserName'] ?? '';
+                                return translations[selectedLanguage]
+                                        ?['RequireUserName'] ??
+                                    '';
                               } else if (value.length < 6 ||
                                   value.length > 10) {
-                                return translations[selectedLanguage]?['UserNameLength'] ?? '';
+                                return translations[selectedLanguage]
+                                        ?['UserNameLength'] ??
+                                    '';
                               }
                             },
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]?['UserName'] ?? '',
+                              labelText: translations[selectedLanguage]
+                                      ?['UserName'] ??
+                                  '',
                               suffixIcon: const Icon(Icons.person),
                               enabledBorder: const OutlineInputBorder(
                                   borderRadius:
@@ -1371,10 +1377,14 @@ onUpdateUserAccount(
                             ],
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return translations[selectedLanguage]?['RequireUserName'] ?? '';
+                                return translations[selectedLanguage]
+                                        ?['RequireUserName'] ??
+                                    '';
                               } else if (value.length < 6 ||
                                   value.length > 10) {
-                                return translations[selectedLanguage]?['UserNameLength'] ?? '';
+                                return translations[selectedLanguage]
+                                        ?['UserNameLength'] ??
+                                    '';
                               }
                             },
                             decoration: InputDecoration(
@@ -1409,9 +1419,14 @@ onUpdateUserAccount(
                             controller: pwdController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return translations[selectedLanguage]?['RequirePassword'] ?? '';
+                                return translations[selectedLanguage]
+                                        ?['RequirePassword'] ??
+                                    '';
                               } else if (value.length < 8) {
-                                return translations[selectedLanguage]?['PasswordLength'] ?? '';;
+                                return translations[selectedLanguage]
+                                        ?['PasswordLength'] ??
+                                    '';
+                                ;
                               }
                             },
                             obscureText: true,
@@ -1447,10 +1462,14 @@ onUpdateUserAccount(
                             controller: confirmController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return translations[selectedLanguage]?['RequirePwdConfirm'] ?? '';
+                                return translations[selectedLanguage]
+                                        ?['RequirePwdConfirm'] ??
+                                    '';
                               } else if (pwdController.text !=
                                   confirmController.text) {
-                                return translations[selectedLanguage]?['ConfirmPwdMsg'] ?? '';
+                                return translations[selectedLanguage]
+                                        ?['ConfirmPwdMsg'] ??
+                                    '';
                               }
                             },
                             obscureText: true,
@@ -1560,8 +1579,11 @@ onUpdateUserAccount(
                               // ignore: use_build_context_synchronously
                               Navigator.pop(context);
                               // ignore: use_build_context_synchronously
-                              _onShowSnack(Colors.green,
-                                  translations[selectedLanguage]?['UpdateUAMsg'] ?? '');
+                              _onShowSnack(
+                                  Colors.green,
+                                  translations[selectedLanguage]
+                                          ?['UpdateUAMsg'] ??
+                                      '');
                             }
                           }
                         },
