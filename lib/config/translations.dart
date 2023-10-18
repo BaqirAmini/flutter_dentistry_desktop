@@ -89,6 +89,7 @@ final Map<String, Map<String, String>> translations = {
     'PasswordLength': 'Password must be at least 8 characters.',
     'ConfirmPwdMsg': 'The Password doesn\' match. Try again.',
     'UpdateUAMsg': 'The user account updated successfully.',
+    'CreateUAHeader': 'Create User Account',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'First Name',
@@ -196,6 +197,7 @@ final Map<String, Map<String, String>> translations = {
     'PasswordLength': 'رمز باید حداقل 8 حرف باشد.',
     'ConfirmPwdMsg': 'رمز همخوانی ندارد. دوباره سعی کنید.',
     'UpdateUAMsg': 'حساب یوزر موفقانه تغییر کرد.',
+    'CreateUAHeader': 'ایجاد حساب یوزر',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'اسم',
@@ -305,6 +307,7 @@ final Map<String, Map<String, String>> translations = {
     'PasswordLength': 'پټنوم باید لږترلږه 8 حروف اوږد وي.',
     'ConfirmPwdMsg': 'پټنوم سره سمون نه خوري. بیا هڅه وکړه.',
     'UpdateUAMsg': 'د کارن حساب په بریالیتوب سره بدل شوی.',
+    'CreateUAHeader': 'د کارن حساب جوړ کړئ',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'نوم',

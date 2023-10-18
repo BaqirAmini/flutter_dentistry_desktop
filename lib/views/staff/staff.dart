@@ -1071,9 +1071,9 @@ onCreateUserAccount(BuildContext context, int staff_id) {
           return AlertDialog(
             title: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text(
-                'ایجاد حساب کاربری (یوزر اکونت)',
-                style: TextStyle(color: Colors.blue),
+              child: Text(
+                translations[selectedLanguage]?['CreateUAHeader'] ?? '',
+                style: const TextStyle(color: Colors.blue),
               ),
             ),
             content: Directionality(
@@ -1099,29 +1099,29 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                             ],
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'نام کابری الزامی است.';
+                                return translations[selectedLanguage]?['RequireUserName'] ?? '';
                               } else if (value.length < 6 ||
                                   value.length > 10) {
-                                return 'نام کاربری باید بین 6 و 10 حرف باشد.';
+                                return translations[selectedLanguage]?['UserNameLength'] ?? '';
                               }
                             },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'نام کاربری (نام یوزر)',
-                              suffixIcon: Icon(Icons.person),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]?['UserName'] ?? '',
+                              suffixIcon: const Icon(Icons.person),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
