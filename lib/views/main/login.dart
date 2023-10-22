@@ -10,8 +10,12 @@ import 'package:galileo_mysql/galileo_mysql.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:window_manager/window_manager.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await WindowManager.instance.ensureInitialized();
+  await WindowManager.instance.setTitle('Dental Clinic MIS');
   return runApp(
     ChangeNotifierProvider(
       create: (context) => LanguageProvider(),
