@@ -150,344 +150,391 @@ class _NewPatientState extends State<NewPatient> {
           title:
               Text(translations[selectedLanguage]?['َPatientPersInfo'] ?? ''),
           content: Center(
-            child: SizedBox(
-              width: 500.0,
-              child: Form(
-                key: _formKey1,
-                child: Column(
-                  children: [
-                     Text(translations[selectedLanguage]?['Step1Msg'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold),),
-                    Container(
-                      margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                      child: TextFormField(
-                        controller: _nameController,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(_regExOnlyAbc),
+            child: Form(
+              key: _formKey1,
+              child: Column(
+                children: [
+                  Text(
+                    translations[selectedLanguage]?['Step1Msg'] ?? '',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                            width: 400.0,
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: TextFormField(
+                              controller: _nameController,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(_regExOnlyAbc),
+                                ),
+                              ],
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'نام مریض الزامی است.';
+                                } else if (value.length < 3 ||
+                                    value.length > 10) {
+                                  return 'نام مریض باید بین 3 و 12 حرف باشد.';
+                                }
+                                return null;
+                              },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'نام',
+                                suffixIcon: Icon(Icons.person),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                            ),
                           ),
-                        ],
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'نام مریض الزامی است.';
-                          } else if (value.length < 3 || value.length > 10) {
-                            return 'نام مریض باید بین 3 و 12 حرف باشد.';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'نام',
-                          suffixIcon: Icon(Icons.person),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                          errorBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.red)),
-                          focusedErrorBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide:
-                                  BorderSide(color: Colors.red, width: 1.5)),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                      child: TextFormField(
-                        controller: _lNameController,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(_regExOnlyAbc),
+                          Container(
+                            width: 400.0,
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: TextFormField(
+                              controller: _lNameController,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(_regExOnlyAbc),
+                                ),
+                              ],
+                              validator: (value) {
+                                if (value!.isNotEmpty) {
+                                  if (value.length < 3 || value.length > 10) {
+                                    return 'تخلص باید از سه الی ده حرف باشد.';
+                                  } else {
+                                    return null;
+                                  }
+                                } else {
+                                  return null;
+                                }
+                              },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'تخلص',
+                                suffixIcon: Icon(Icons.person),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                            ),
                           ),
-                        ],
-                        validator: (value) {
-                          if (value!.isNotEmpty) {
-                            if (value.length < 3 || value.length > 10) {
-                              return 'تخلص باید از سه الی ده حرف باشد.';
-                            } else {
-                              return null;
-                            }
-                          } else {
-                            return null;
-                          }
-                        },
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'تخلص',
-                          suffixIcon: Icon(Icons.person),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                          errorBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.red)),
-                          focusedErrorBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide:
-                                  BorderSide(color: Colors.red, width: 1.5)),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'سن',
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: SizedBox(
-                            height: 26.0,
-                            child: DropdownButton(
-                              isExpanded: true,
-                              icon: const Icon(Icons.arrow_drop_down),
-                              value: ageDropDown,
-                              items: getAges().map((int ageItems) {
-                                return DropdownMenuItem(
-                                  alignment: Alignment.centerRight,
-                                  value: ageItems,
-                                  child: Directionality(
-                                    textDirection: isEnglish
-                                        ? TextDirection.ltr
-                                        : TextDirection.rtl,
-                                    child: Text('$ageItems سال '),
+                          Container(
+                            width: 400.0,
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'سن',
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: SizedBox(
+                                  height: 26.0,
+                                  child: DropdownButton(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: ageDropDown,
+                                    items: getAges().map((int ageItems) {
+                                      return DropdownMenuItem(
+                                        alignment: Alignment.centerRight,
+                                        value: ageItems,
+                                        child: Directionality(
+                                          textDirection: isEnglish
+                                              ? TextDirection.ltr
+                                              : TextDirection.rtl,
+                                          child: Text('$ageItems سال '),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (int? newValue) {
+                                      setState(() {
+                                        ageDropDown = newValue!;
+                                      });
+                                    },
                                   ),
-                                );
-                              }).toList(),
-                              onChanged: (int? newValue) {
-                                setState(() {
-                                  ageDropDown = newValue!;
-                                });
-                              },
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'جنیست',
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: SizedBox(
-                            height: 26.0,
-                            child: DropdownButton(
-                              isExpanded: true,
-                              icon: const Icon(Icons.arrow_drop_down),
-                              value: genderDropDown,
-                              items: genderItems.map((String genderItems) {
-                                return DropdownMenuItem(
-                                  alignment: Alignment.centerRight,
-                                  value: genderItems,
-                                  child: Text(genderItems),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  genderDropDown = newValue!;
-                                });
-                              },
+                          Container(
+                            width: 400.0,
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'جنیست',
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: SizedBox(
+                                  height: 26.0,
+                                  child: DropdownButton(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: genderDropDown,
+                                    items:
+                                        genderItems.map((String genderItems) {
+                                      return DropdownMenuItem(
+                                        alignment: Alignment.centerRight,
+                                        value: genderItems,
+                                        child: Text(genderItems),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        genderDropDown = newValue!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'حالت مدنی',
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: SizedBox(
-                            height: 26.0,
-                            child: DropdownButton(
-                              isExpanded: true,
-                              icon: const Icon(Icons.arrow_drop_down),
-                              value: maritalStatusDD,
-                              items: items.map((String items) {
-                                return DropdownMenuItem(
-                                  alignment: Alignment.centerRight,
-                                  value: items,
-                                  child: Text(items),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  maritalStatusDD = newValue!;
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'گروپ خون',
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: SizedBox(
-                            height: 26.0,
-                            child: DropdownButton(
-                              isExpanded: true,
-                              icon: const Icon(Icons.arrow_drop_down),
-                              value: bloodDropDown,
-                              items:
-                                  bloodGroupItems.map((String bloodGroupItems) {
-                                return DropdownMenuItem(
-                                  alignment: Alignment.centerRight,
-                                  value: bloodGroupItems,
-                                  child: Text(bloodGroupItems),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  bloodDropDown = newValue!;
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                      child: TextFormField(
-                        textDirection: TextDirection.ltr,
-                        controller: _phoneController,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(_regExOnlydigits),
                           ),
                         ],
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'نمبر تماس الزامی است.';
-                          } else if (value.startsWith('07')) {
-                            if (value.length < 10 || value.length > 10) {
-                              return 'نمبر تماس باید 10 عدد باشد.';
-                            }
-                          } else if (value.startsWith('+93')) {
-                            if (value.length < 12 || value.length > 12) {
-                              return 'نمبر تماس  همراه با کود کشور باید 12 عدد باشد.';
-                            }
-                          } else {
-                            return 'نمبر تماس نا معتبر است.';
-                          }
-                          return null;
-                        },
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'نمبر تماس',
-                          suffixIcon: Icon(Icons.phone),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                          errorBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.red)),
-                          focusedErrorBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide:
-                                  BorderSide(color: Colors.red, width: 1.5)),
-                        ),
                       ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(
-                          left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                      child: TextFormField(
-                        controller: _addrController,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(_regExOnlyAbc),
+                      Column(
+                        children: [
+                          Container(
+                            width: 400.0,
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'حالت مدنی',
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: SizedBox(
+                                  height: 26.0,
+                                  child: DropdownButton(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: maritalStatusDD,
+                                    items: items.map((String items) {
+                                      return DropdownMenuItem(
+                                        alignment: Alignment.centerRight,
+                                        value: items,
+                                        child: Text(items),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        maritalStatusDD = newValue!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 400.0,
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'گروپ خون',
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: SizedBox(
+                                  height: 26.0,
+                                  child: DropdownButton(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: bloodDropDown,
+                                    items: bloodGroupItems
+                                        .map((String bloodGroupItems) {
+                                      return DropdownMenuItem(
+                                        alignment: Alignment.centerRight,
+                                        value: bloodGroupItems,
+                                        child: Text(bloodGroupItems),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        bloodDropDown = newValue!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 400.0,
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: TextFormField(
+                              textDirection: TextDirection.ltr,
+                              controller: _phoneController,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(_regExOnlydigits),
+                                ),
+                              ],
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'نمبر تماس الزامی است.';
+                                } else if (value.startsWith('07')) {
+                                  if (value.length < 10 || value.length > 10) {
+                                    return 'نمبر تماس باید 10 عدد باشد.';
+                                  }
+                                } else if (value.startsWith('+93')) {
+                                  if (value.length < 12 || value.length > 12) {
+                                    return 'نمبر تماس  همراه با کود کشور باید 12 عدد باشد.';
+                                  }
+                                } else {
+                                  return 'نمبر تماس نا معتبر است.';
+                                }
+                                return null;
+                              },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'نمبر تماس',
+                                suffixIcon: Icon(Icons.phone),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: 400.0,
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 20.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: TextFormField(
+                              controller: _addrController,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(_regExOnlyAbc),
+                                ),
+                              ],
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'آدرس',
+                                suffixIcon: Icon(Icons.location_on_outlined),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                              ),
+                            ),
                           ),
                         ],
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'آدرس',
-                          suffixIcon: Icon(Icons.location_on_outlined),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                      )
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
@@ -1638,7 +1685,8 @@ class _NewPatientState extends State<NewPatient> {
                     TextButton(
                       onPressed:
                           _currentStep == 0 ? null : details.onStepCancel,
-                      child: Text(translations[selectedLanguage]?['PrevBtn'] ?? ''),
+                      child: Text(
+                          translations[selectedLanguage]?['PrevBtn'] ?? ''),
                     ),
                     ElevatedButton(
                       style: OutlinedButton.styleFrom(
