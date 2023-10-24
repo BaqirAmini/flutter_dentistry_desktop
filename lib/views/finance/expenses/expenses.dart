@@ -5,7 +5,9 @@ import 'package:flutter_dentistry/models/expense_data_model.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart' as intl;
+// import 'package:shamsi_date/shamsi_date.dart';
 import '/views/finance/expenses/expense_info.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKey1 =
@@ -79,7 +81,10 @@ class _ExpenseListState extends State<ExpenseList> {
               leading: Tooltip(
                 message: 'رفتن به داشبورد',
                 child: IconButton(
-                  onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Dashboard())),
+                  onPressed: () => Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Dashboard())),
                   icon: const Icon(Icons.home_outlined),
                 ),
               ),
@@ -520,6 +525,18 @@ class _ExpenseListState extends State<ExpenseList> {
                                   final String formattedDate =
                                       formatter.format(dateTime);
                                   purchaseDateController.text = formattedDate;
+                                }
+
+                                // Set Hijry/Jalali calendar
+                                // ignore: use_build_context_synchronously
+                                Jalali? picked = await showPersianDatePicker(
+                                    context: context,
+                                    initialDate: Jalali.now(),
+                                    firstDate: Jalali(1395, 8),
+                                    lastDate: Jalali(1450, 9));
+                                if (picked != null) {
+                                  print(
+                                      'Jalali Date: ${picked.formatFullDate()}');
                                 }
                               },
                               inputFormatters: [
