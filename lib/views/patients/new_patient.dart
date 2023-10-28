@@ -54,9 +54,9 @@ class _NewPatientState extends State<NewPatient> {
   var genderItems = ['مرد', 'زن'];
 
   // Blood group types
-  String bloodDropDown = 'نامشخص';
+  String bloodDropDown = (selectedLanguage == 'English') ? 'N/A' : (selectedLanguage == 'دری') ? 'نامشخص' : 'نامعلوم';
   var bloodGroupItems = [
-    'نامشخص',
+    (selectedLanguage == 'English') ? 'N/A' : (selectedLanguage == 'دری') ? 'نامشخص' : 'نامعلوم',
     'A+',
     'B+',
     'AB+',
@@ -1424,11 +1424,7 @@ class _NewPatientState extends State<NewPatient> {
     var staffId = StaffInfo.staffID;
     var firstName = _nameController.text;
     var lastName = _lNameController.text;
-    var sex = (genderDropDown == 'Male' ||
-            genderDropDown == 'مرد' ||
-            genderDropDown == 'نارینه')
-        ? 'Male'
-        : 'Female';
+    var sex = genderDropDown;
     var age = ageDropDown;
     var maritalStatus = maritalStatusDD;
     var phone = _phoneController.text;

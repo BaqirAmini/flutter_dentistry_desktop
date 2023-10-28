@@ -42,7 +42,7 @@ final Map<String, Map<String, String>> translations = {
     /*----- PATIENTS -----*/
     'Search': 'Search...',
     'GenPresc': 'Prescription',
-    'AddNewPatient': 'Add new patient',
+    'AddNewPatient': 'Add New Patient',
     'DeletePatientTitle': 'Delete',
     'ConfirmDelete': 'Are you sure you want to delete this patient?',
     'DeleteSuccess': 'The patient deleted.',
@@ -161,6 +161,7 @@ final Map<String, Map<String, String>> translations = {
     /*----- PATIENTS -----*/
     'Search': 'جستجو...',
     'GenPresc': 'تجویز نسخه',
+    'AddNewPatient': 'افزودن مریض جدید',
     'DeletePatientTitle': 'حذف',
     'ConfirmDelete': 'آیا میخواهید این مریض را حذف کنید؟',
     'DeleteSuccess': 'مریض حذف شد.',
