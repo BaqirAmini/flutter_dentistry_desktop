@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
-import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:intl/intl.dart' as intl2;
 import 'package:provider/provider.dart';
@@ -30,8 +29,10 @@ class _NewPatientState extends State<NewPatient> {
   final GlobalKey<ScaffoldMessengerState> _globalKey2 =
       GlobalKey<ScaffoldMessengerState>();
 
+  // Marital Status
   String maritalStatusDD = 'مجرد';
-  var items = ['مجرد', 'متاهل'];
+  var items = ['مجرد', 'متأهل'];
+
   String? selectedTooth2;
   var selectedRemovableTooth;
   String removedTooth = 'عقل دندان';
@@ -179,30 +180,34 @@ class _NewPatientState extends State<NewPatient> {
                               ],
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'نام مریض الزامی است.';
+                                  return translations[selectedLanguage]
+                                      ?['FNRequired'];
                                 } else if (value.length < 3 ||
                                     value.length > 10) {
-                                  return 'نام مریض باید بین 3 و 12 حرف باشد.';
+                                  return translations[selectedLanguage]
+                                      ?['FNLength'];
                                 }
                                 return null;
                               },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'نام',
-                                suffixIcon: Icon(Icons.person),
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['FName'] ??
+                                    '',
+                                suffixIcon: const Icon(Icons.person),
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
+                                errorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
+                                focusedErrorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(
@@ -227,7 +232,8 @@ class _NewPatientState extends State<NewPatient> {
                               validator: (value) {
                                 if (value!.isNotEmpty) {
                                   if (value.length < 3 || value.length > 10) {
-                                    return 'تخلص باید از سه الی ده حرف باشد.';
+                                    return translations[selectedLanguage]
+                                        ?['LNLength'];
                                   } else {
                                     return null;
                                   }
@@ -294,7 +300,8 @@ class _NewPatientState extends State<NewPatient> {
                                           textDirection: isEnglish
                                               ? TextDirection.ltr
                                               : TextDirection.rtl,
-                                          child: Text('$ageItems سال '),
+                                          child: Text(
+                                              '$ageItems ${translations[selectedLanguage]?['Year'] ?? ''} '),
                                         ),
                                       );
                                     }).toList(),
@@ -316,14 +323,15 @@ class _NewPatientState extends State<NewPatient> {
                                 top: 10.0,
                                 bottom: 10.0),
                             child: InputDecorator(
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'جنیست',
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                    ?['Sex'],
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
@@ -365,14 +373,15 @@ class _NewPatientState extends State<NewPatient> {
                                 top: 10.0,
                                 bottom: 10.0),
                             child: InputDecorator(
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'حالت مدنی',
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                    ?['Marital'],
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
@@ -380,12 +389,12 @@ class _NewPatientState extends State<NewPatient> {
                               child: DropdownButtonHideUnderline(
                                 child: SizedBox(
                                   height: 26.0,
-                                  child: DropdownButton(
+                                  child: DropdownButton<String>(
                                     isExpanded: true,
                                     icon: const Icon(Icons.arrow_drop_down),
                                     value: maritalStatusDD,
                                     items: items.map((String items) {
-                                      return DropdownMenuItem(
+                                      return DropdownMenuItem<String>(
                                         alignment: Alignment.centerRight,
                                         value: items,
                                         child: Text(items),
@@ -409,14 +418,15 @@ class _NewPatientState extends State<NewPatient> {
                                 top: 10.0,
                                 bottom: 10.0),
                             child: InputDecorator(
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'گروپ خون',
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                    ?['BloodGroup'],
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
@@ -463,37 +473,47 @@ class _NewPatientState extends State<NewPatient> {
                               ],
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'نمبر تماس الزامی است.';
+                                  return translations[selectedLanguage]
+                                          ?['PhoneRequired'] ??
+                                      '';
                                 } else if (value.startsWith('07')) {
                                   if (value.length < 10 || value.length > 10) {
-                                    return 'نمبر تماس باید 10 عدد باشد.';
+                                    return translations[selectedLanguage]
+                                            ?['Phone10'] ??
+                                        '';
                                   }
                                 } else if (value.startsWith('+93')) {
                                   if (value.length < 12 || value.length > 12) {
-                                    return 'نمبر تماس  همراه با کود کشور باید 12 عدد باشد.';
+                                    return translations[selectedLanguage]
+                                            ?['Phone12'] ??
+                                        '';
                                   }
                                 } else {
-                                  return 'نمبر تماس نا معتبر است.';
+                                  return translations[selectedLanguage]
+                                          ?['ValidPhone'] ??
+                                      '';
                                 }
                                 return null;
                               },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'نمبر تماس',
-                                suffixIcon: Icon(Icons.phone),
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['Phone'] ??
+                                    '',
+                                suffixIcon: const Icon(Icons.phone),
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
+                                errorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
+                                focusedErrorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(
@@ -515,15 +535,18 @@ class _NewPatientState extends State<NewPatient> {
                                   RegExp(_regExOnlyAbc),
                                 ),
                               ],
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'آدرس',
-                                suffixIcon: Icon(Icons.location_on_outlined),
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['Address'] ??
+                                    '',
+                                suffixIcon:
+                                    const Icon(Icons.location_on_outlined),
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
@@ -1401,7 +1424,11 @@ class _NewPatientState extends State<NewPatient> {
     var staffId = StaffInfo.staffID;
     var firstName = _nameController.text;
     var lastName = _lNameController.text;
-    var sex = genderDropDown;
+    var sex = (genderDropDown == 'Male' ||
+            genderDropDown == 'مرد' ||
+            genderDropDown == 'نارینه')
+        ? 'Male'
+        : 'Female';
     var age = ageDropDown;
     var maritalStatus = maritalStatusDD;
     var phone = _phoneController.text;

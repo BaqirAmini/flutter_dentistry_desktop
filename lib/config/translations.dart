@@ -54,6 +54,7 @@ final Map<String, Map<String, String>> translations = {
     'NextBtn': 'Next',
     'PrevBtn': 'Previous',
     'AddBtn': 'Register',
+    'BloodGroup': 'Blood Group',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'All Staff',
@@ -108,6 +109,12 @@ final Map<String, Map<String, String>> translations = {
     'GoToDashboard': 'Go To Dashboard',
     'RegBtn': 'Register',
     'GoBack': 'Go to previous page',
+    'Year': 'year',
+    'Single': 'Single',
+    'Married': 'Married',
+    'NotAvable': 'N/A',
+    'Male': 'Male',
+    'Female': 'Female',
     /*-----/. SHARED VALUES -----*/
     // Add other English translations here
   },
@@ -165,6 +172,7 @@ final Map<String, Map<String, String>> translations = {
     'NextBtn': 'ادامه',
     'PrevBtn': 'قبلی',
     'AddBtn': 'ثبت',
+    'BloodGroup': 'گروپ خون',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'همه کارمندان',
@@ -220,6 +228,12 @@ final Map<String, Map<String, String>> translations = {
     'GoToDashboard': 'رفتن به داشبورد',
     'RegBtn': 'ثبت کردن',
     'GoBack': 'رفتن به صفحه قبل',
+    'Year': 'سال',
+    'Single': 'مجرد',
+    'Married': 'متأهل',
+    'NotAvable': 'نامشخص',
+    'Male': 'مرد',
+    'Female': 'زن',
     /*-----/. SHARED VALUES -----*/
     // Add other Dari translations here
   },
@@ -279,6 +293,7 @@ final Map<String, Map<String, String>> translations = {
     'NextBtn': 'دوام',
     'PrevBtn': 'مخکینی',
     'AddBtn': 'راجستر',
+    'BloodGroup': 'د وینې ګروپ',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'ټول کارکوونکي',
@@ -334,6 +349,12 @@ final Map<String, Map<String, String>> translations = {
     'GoToDashboard': 'ډشبورډ ته لاړ شئ',
     'RegBtn': 'راجستر',
     'GoBack': 'پخوانۍ پاڼې ته لاړ شئ',
+    'Year': 'کال',
+    'Single': 'مجرد',
+    'Married': 'واده شوی',
+    'NotAvable': 'نامعلوم',
+    'Male': 'نارینه',
+    'Female': 'ښځه',
     /*-----/. SHARED VALUES -----*/
     // Add other Dari translations here
   },
