@@ -31,35 +31,45 @@ class QuadrantGrid extends StatefulWidget {
 }
 
 class _QuadrantGridState extends State<QuadrantGrid> {
-  List<String> _selectedLetters = [];
+  final List<String> _selectedLetters = [];
+  final Map<String, bool> _isHovering = {};
 
   Widget _buildQuadrant(String quadrantId, List<int> toothNumbers) {
     return Row(
       children: toothNumbers.map((toothNum) {
         String id = '$quadrantId-$toothNum';
         return Expanded(
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                if (_selectedLetters.contains(id)) {
-                  _selectedLetters.remove(id);
-                } else {
-                  _selectedLetters.add(id);
-                }
-                printSelectedTeeth();
-              });
-            },
-            child: Container(
-              margin: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color:
-                    _selectedLetters.contains(id) ? Colors.blue : Colors.grey,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  toothNum.toString(),
-                  style: const TextStyle(fontSize: 24, color: Colors.white),
+          child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onEnter: (_) => setState(() => _isHovering[id] = true),
+            onExit: (_) => setState(() => _isHovering[id] = false),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (_selectedLetters.contains(id)) {
+                    _selectedLetters.remove(id);
+                  } else {
+                    _selectedLetters.add(id);
+                  }
+                  printSelectedTeeth();
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                margin: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: _selectedLetters.contains(id)
+                      ? Colors.blue
+                      : (_isHovering[id] ?? false
+                          ? const Color.fromARGB(255, 71, 190, 245)
+                          : Colors.grey),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    toothNum.toString(),
+                    style: const TextStyle(fontSize: 24, color: Colors.white),
+                  ),
                 ),
               ),
             ),

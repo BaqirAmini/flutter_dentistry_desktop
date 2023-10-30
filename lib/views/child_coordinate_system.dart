@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         ),
         body: Center(
           child: SizedBox(
-            width: 600,
+            width: 500,
             height: 300,
             child: QuadrantGrid(),
           ),
@@ -31,35 +31,45 @@ class QuadrantGrid extends StatefulWidget {
 }
 
 class _QuadrantGridState extends State<QuadrantGrid> {
-  List<String> _selectedLetters = [];
+  final List<String> _selectedLetters = [];
+  final Map<String, bool> _isHovering = {};
 
   Widget _buildQuadrant(String quadrantId, List<String> letters) {
     return Row(
       children: letters.map((letter) {
         String id = '$quadrantId-$letter';
         return Expanded(
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                if (_selectedLetters.contains(id)) {
-                  _selectedLetters.remove(id);
-                } else {
-                  _selectedLetters.add(id);
-                }
-                printSelectedTeeth();
-              });
-            },
-            child: Container(
-              margin: const EdgeInsets.all(8.0),
-              decoration: BoxDecoration(
-                color:
-                    _selectedLetters.contains(id) ? Colors.blue : Colors.grey,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  letter,
-                  style: const TextStyle(fontSize: 24, color: Colors.white),
+          child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            onEnter: (_) => setState(() => _isHovering[id] = true),
+            onExit: (_) => setState(() => _isHovering[id] = false),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (_selectedLetters.contains(id)) {
+                    _selectedLetters.remove(id);
+                  } else {
+                    _selectedLetters.add(id);
+                  }
+                  printSelectedTeeth();
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                margin: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: _selectedLetters.contains(id)
+                      ? Colors.blue
+                      : (_isHovering[id] ?? false
+                          ? const Color.fromARGB(255, 71, 190, 245)
+                          : Colors.grey),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    letter.toString(),
+                    style: const TextStyle(fontSize: 24, color: Colors.white),
+                  ),
                 ),
               ),
             ),
