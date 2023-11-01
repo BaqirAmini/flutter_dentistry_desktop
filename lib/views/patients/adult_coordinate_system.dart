@@ -1,36 +1,14 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+class AdultQuadrantGrid extends StatefulWidget {
+  const AdultQuadrantGrid({super.key});
 
-class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Adults\'s Teeth Selection'),
-        ),
-        body: Center(
-          child: SizedBox(
-            width: 800,
-            height: 300,
-            child: QuadrantGrid(),
-          ),
-        ),
-      ),
-    );
-  }
+  // ignore: library_private_types_in_public_api
+  _AdultQuadrantGrid createState() => _AdultQuadrantGrid();
 }
 
-class QuadrantGrid extends StatefulWidget {
-  @override
-  _QuadrantGridState createState() => _QuadrantGridState();
-}
-
-class _QuadrantGridState extends State<QuadrantGrid> {
+class _AdultQuadrantGrid extends State<AdultQuadrantGrid> {
   final List<String> _selectedLetters = [];
   final Map<String, bool> _isHovering = {};
 
@@ -89,14 +67,14 @@ class _QuadrantGridState extends State<QuadrantGrid> {
               child: Row(
                 children: [
                   _buildQuadrantWithLabel(
-                    'Q1',
+                    'Q2',
                     List<int>.generate(
                       8,
                       (i) => (i + 1),
                     ).reversed.toList(),
                   ),
                   _buildQuadrantWithLabel(
-                    'Q2',
+                    'Q1',
                     List<int>.generate(
                       8,
                       (i) => (i + 1),
@@ -109,14 +87,14 @@ class _QuadrantGridState extends State<QuadrantGrid> {
               child: Row(
                 children: [
                   _buildQuadrantWithLabel(
-                    'Q4',
+                    'Q3',
                     List<int>.generate(
                       8,
                       (i) => (i + 1),
                     ).reversed.toList(),
                   ),
                   _buildQuadrantWithLabel(
-                    'Q3',
+                    'Q4',
                     List<int>.generate(
                       8,
                       (i) => (i + 1),

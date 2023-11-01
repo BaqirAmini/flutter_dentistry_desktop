@@ -1,36 +1,14 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+class ChildQuadrantGrid extends StatefulWidget {
+  const ChildQuadrantGrid({super.key});
 
-class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Children\'s Teeth Selection'),
-        ),
-        body: Center(
-          child: SizedBox(
-            width: 500,
-            height: 300,
-            child: QuadrantGrid(),
-          ),
-        ),
-      ),
-    );
-  }
+  // ignore: library_private_types_in_public_api
+  _ChildQuadrantGrid createState() => _ChildQuadrantGrid();
 }
 
-class QuadrantGrid extends StatefulWidget {
-  @override
-  _QuadrantGridState createState() => _QuadrantGridState();
-}
-
-class _QuadrantGridState extends State<QuadrantGrid> {
+class _ChildQuadrantGrid extends State<ChildQuadrantGrid> {
   final List<String> _selectedLetters = [];
   final Map<String, bool> _isHovering = {};
 
@@ -89,13 +67,13 @@ class _QuadrantGridState extends State<QuadrantGrid> {
               child: Row(
                 children: [
                   _buildQuadrantWithLabel(
-                      'Q1',
+                      'Q2',
                       List<String>.generate(
                               5, (i) => String.fromCharCode(65 + i))
                           .reversed
                           .toList()),
                   _buildQuadrantWithLabel(
-                      'Q2',
+                      'Q1',
                       List<String>.generate(
                           5, (i) => String.fromCharCode(65 + i))),
                 ],
@@ -105,13 +83,13 @@ class _QuadrantGridState extends State<QuadrantGrid> {
               child: Row(
                 children: [
                   _buildQuadrantWithLabel(
-                      'Q4',
+                      'Q3',
                       List<String>.generate(
                               5, (i) => String.fromCharCode(65 + i))
                           .reversed
                           .toList()),
                   _buildQuadrantWithLabel(
-                      'Q3',
+                      'Q4',
                       List<String>.generate(
                           5, (i) => String.fromCharCode(65 + i))),
                 ],

@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/patients/adult_coordinate_system.dart';
+import 'package:flutter_dentistry/views/patients/child_coordinate_system.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:intl/intl.dart' as intl2;
 import 'package:provider/provider.dart';
@@ -858,23 +860,21 @@ class _NewPatientState extends State<NewPatient> {
                                       height: 26.0,
                                       child: DropdownButton(
                                         isExpanded: true,
-                                        icon:
-                                            const Icon(Icons.arrow_drop_down),
+                                        icon: const Icon(Icons.arrow_drop_down),
                                         value: selectedBleachStep,
                                         items: teethBleachings.map((step) {
                                           return DropdownMenuItem<String>(
                                             value: step['ser_det_ID'],
                                             alignment: Alignment.centerRight,
-                                            child: Text(step[
-                                                'service_specific_value']),
+                                            child: Text(
+                                                step['service_specific_value']),
                                           );
                                         }).toList(),
                                         onChanged: (String? newValue) {
                                           setState(() {
                                             selectedBleachStep = newValue;
                                             selectedServiceDetailID =
-                                                int.parse(
-                                                    selectedBleachStep!);
+                                                int.parse(selectedBleachStep!);
                                           });
                                         },
                                       ),
@@ -912,8 +912,7 @@ class _NewPatientState extends State<NewPatient> {
                                       height: 26.0,
                                       child: DropdownButton(
                                         isExpanded: true,
-                                        icon:
-                                            const Icon(Icons.arrow_drop_down),
+                                        icon: const Icon(Icons.arrow_drop_down),
                                         value: removeTeeth.any((tooth) =>
                                                 tooth['td_ID'].toString() ==
                                                 selectedTooth)
@@ -949,7 +948,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                            Visibility(
+                           /*  Visibility(
                               visible: _isVisibleForScaling
                                   ? _isVisibleForScaling
                                   : _isVisibleForOrtho
@@ -984,8 +983,7 @@ class _NewPatientState extends State<NewPatient> {
                                       height: 26.0,
                                       child: DropdownButton(
                                         isExpanded: true,
-                                        icon:
-                                            const Icon(Icons.arrow_drop_down),
+                                        icon: const Icon(Icons.arrow_drop_down),
                                         value: selectedGumType1,
                                         items: gumsType1.map((gumType1) {
                                           return DropdownMenuItem<String>(
@@ -1005,7 +1003,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                            Visibility(
+ */                            /* Visibility(
                               visible: _isVisibleForFilling
                                   ? _isVisibleForFilling
                                   : _isVisibleForBleaching
@@ -1046,8 +1044,7 @@ class _NewPatientState extends State<NewPatient> {
                                       height: 26.0,
                                       child: DropdownButton<String>(
                                         isExpanded: true,
-                                        icon:
-                                            const Icon(Icons.arrow_drop_down),
+                                        icon: const Icon(Icons.arrow_drop_down),
                                         value: selectedGumType2,
                                         items: gums.map((gums) {
                                           return DropdownMenuItem<String>(
@@ -1073,7 +1070,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                          ],
+ */                          ],
                         ),
                         Column(
                           children: [
@@ -1106,8 +1103,7 @@ class _NewPatientState extends State<NewPatient> {
                                       height: 26.0,
                                       child: DropdownButton(
                                         isExpanded: true,
-                                        icon:
-                                            const Icon(Icons.arrow_drop_down),
+                                        icon: const Icon(Icons.arrow_drop_down),
                                         value: selectedCover,
                                         items: coverings.map((covering) {
                                           return DropdownMenuItem<String>(
@@ -1161,8 +1157,7 @@ class _NewPatientState extends State<NewPatient> {
                                       height: 26.0,
                                       child: DropdownButton(
                                         isExpanded: true,
-                                        icon:
-                                            const Icon(Icons.arrow_drop_down),
+                                        icon: const Icon(Icons.arrow_drop_down),
                                         value: selectedProthesis,
                                         items: protheses.map((prothesis) {
                                           return DropdownMenuItem<String>(
@@ -1215,8 +1210,7 @@ class _NewPatientState extends State<NewPatient> {
                                       height: 26.0,
                                       child: DropdownButton<String>(
                                         isExpanded: true,
-                                        icon:
-                                            const Icon(Icons.arrow_drop_down),
+                                        icon: const Icon(Icons.arrow_drop_down),
                                         value: selectedFilling,
                                         items: teethFillings.map((material) {
                                           return DropdownMenuItem<String>(
@@ -1244,7 +1238,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                            Visibility(
+                           /*  Visibility(
                               visible: _isVisibleForFilling
                                   ? _isVisibleForFilling
                                   : _isVisibleForRoot
@@ -1281,8 +1275,7 @@ class _NewPatientState extends State<NewPatient> {
                                       height: 26.0,
                                       child: DropdownButton(
                                         isExpanded: true,
-                                        icon:
-                                            const Icon(Icons.arrow_drop_down),
+                                        icon: const Icon(Icons.arrow_drop_down),
                                         value: selectedTooth2,
                                         items: teeth.map((tooth) {
                                           return DropdownMenuItem<String>(
@@ -1303,7 +1296,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                            Visibility(
+ */                            Visibility(
                               visible: true,
                               child: Container(
                                 width: 400.0,
@@ -1361,6 +1354,11 @@ class _NewPatientState extends State<NewPatient> {
                         ),
                       ],
                     ),
+                    SizedBox(
+                      width: (ageDropDown <= 13) ? 470 : 800,
+                      height: 300,
+                      child: (ageDropDown <= 13) ? const ChildQuadrantGrid() : const AdultQuadrantGrid(),
+                    )
                   ],
                 ),
               ),
