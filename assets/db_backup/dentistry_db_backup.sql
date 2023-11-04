@@ -3,13 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 01, 2023 at 11:59 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.0.25
-
--- Create database
-CREATE DATABASE IF NOT EXISTS dentistry_db;
-USE dentistry_db;
+-- Generation Time: Nov 04, 2023 at 05:57 PM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.1.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -44,7 +40,7 @@ CREATE TABLE `appointments` (
   `meet_date` date DEFAULT NULL,
   `staff_ID` int(128) DEFAULT NULL,
   `note` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `appointments`
@@ -66,7 +62,7 @@ CREATE TABLE `clinics` (
   `open_date` date DEFAULT NULL,
   `cli_addr` varchar(64) DEFAULT NULL,
   `founder` varchar(64) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `clinics`
@@ -89,7 +85,7 @@ CREATE TABLE `conditions` (
   `diagnosis_date` date DEFAULT NULL,
   `pat_ID` int(128) DEFAULT NULL,
   `notes` tinytext DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -101,7 +97,7 @@ CREATE TABLE `expenses` (
   `exp_ID` int(128) NOT NULL,
   `cli_ID` int(128) NOT NULL,
   `exp_name` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `expenses`
@@ -110,7 +106,8 @@ CREATE TABLE `expenses` (
 INSERT INTO `expenses` (`exp_ID`, `cli_ID`, `exp_name`) VALUES
 (5, 0, 'تجهیزات کلینیک'),
 (6, 0, 'خوراک'),
-(7, 0, 'نیازمندیهای صحی');
+(7, 0, 'نیازمندیهای صحی'),
+(10, 0, 'مصارف شهرداری');
 
 -- --------------------------------------------------------
 
@@ -131,7 +128,7 @@ CREATE TABLE `expense_detail` (
   `purchase_date` date NOT NULL,
   `invoice` varchar(128) DEFAULT NULL,
   `note` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `expense_detail`
@@ -162,7 +159,7 @@ CREATE TABLE `patients` (
   `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `blood_group` varchar(12) DEFAULT NULL,
   `address` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `patients`
@@ -182,7 +179,7 @@ CREATE TABLE `selected_teeth` (
   `tooth` varchar(16) NOT NULL,
   `notes` tinytext DEFAULT NULL,
   `pat_ID` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -194,24 +191,27 @@ CREATE TABLE `services` (
   `ser_ID` int(128) NOT NULL,
   `ser_name` varchar(64) NOT NULL,
   `ser_fee` decimal(10,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `services`
 --
 
 INSERT INTO `services` (`ser_ID`, `ser_name`, `ser_fee`) VALUES
-(1, 'عصب کشی', '999.99'),
-(2, 'پرکاری', NULL),
+(1, 'عصب کشی(R.C.T)', '999.99'),
+(2, 'پرکاری(Filling)', '0.00'),
 (3, 'سفید کردن', '0.00'),
-(4, 'جرم گیری', NULL),
-(5, 'ارتودانسی', NULL),
-(6, 'جراحی ریشه', '0.00'),
-(7, 'جراحی لثه', NULL),
-(8, 'معاینه دهان', NULL),
-(9, 'پروتیز', '0.00'),
-(10, 'کشیدن دندان', '500.00'),
-(11, 'پوش کردن', NULL);
+(4, 'Scaling and Polishing', '0.00'),
+(5, 'Orthodontics', '0.00'),
+(7, 'Maxillofacial Surgery', '0.00'),
+(8, 'Oral Examination', '0.00'),
+(9, 'Denture', '0.00'),
+(11, 'پوش کردن(Crown)', '0.00'),
+(12, 'Flouride Therapy', '0.00'),
+(13, 'Night Gaurd Prothesis', '0.00'),
+(14, 'Snap-on Smile', '0.00'),
+(15, 'Implant', '0.00'),
+(16, 'Smile Design Correction', '0.00');
 
 -- --------------------------------------------------------
 
@@ -223,7 +223,7 @@ CREATE TABLE `service_details` (
   `ser_det_ID` int(11) NOT NULL,
   `ser_id` int(11) DEFAULT NULL,
   `service_specific_value` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `service_details`
@@ -266,7 +266,7 @@ CREATE TABLE `staff` (
   `tazkira_ID` varchar(16) DEFAULT NULL,
   `photo` mediumblob DEFAULT NULL,
   `address` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `staff`
@@ -294,7 +294,7 @@ CREATE TABLE `staff_auth` (
   `username` varchar(64) NOT NULL,
   `password` varchar(64) NOT NULL,
   `role` varchar(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `staff_auth`
@@ -316,7 +316,7 @@ CREATE TABLE `taxes` (
   `total_annual_tax` decimal(15,2) NOT NULL,
   `TIN` char(10) DEFAULT NULL,
   `tax_for_year` int(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `taxes`
@@ -348,7 +348,7 @@ CREATE TABLE `tax_payments` (
   `note` mediumtext DEFAULT NULL,
   `modified_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `docs` blob DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -359,7 +359,7 @@ CREATE TABLE `tax_payments` (
 CREATE TABLE `teeth` (
   `teeth_ID` int(128) NOT NULL,
   `gum` varchar(32) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `teeth`
@@ -385,7 +385,7 @@ CREATE TABLE `tooth_details` (
   `tooth_ID` int(11) DEFAULT NULL,
   `tooth` varchar(64) DEFAULT NULL,
   `tooth_photo` mediumblob DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `tooth_details`
@@ -593,7 +593,7 @@ ALTER TABLE `conditions`
 -- AUTO_INCREMENT for table `expenses`
 --
 ALTER TABLE `expenses`
-  MODIFY `exp_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `exp_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `expense_detail`
@@ -617,7 +617,7 @@ ALTER TABLE `selected_teeth`
 -- AUTO_INCREMENT for table `services`
 --
 ALTER TABLE `services`
-  MODIFY `ser_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `ser_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `service_details`
