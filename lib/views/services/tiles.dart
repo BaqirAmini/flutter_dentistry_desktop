@@ -178,6 +178,7 @@ class _ServicesTileState extends State<ServicesTile> {
           height: 10.0,
         ),
         Text(
+          textAlign: TextAlign.center,
           myText,
           style: const TextStyle(fontSize: 22.0),
         ),
@@ -204,7 +205,7 @@ class _ServicesTileState extends State<ServicesTile> {
 
     nameController.text = serviceName;
     feeController.text = serviceFee.toString();
-    const regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
+    const regExOnlyAbc = "[a-zA-Z,().، \u0600-\u06FFF]";
 
     return showDialog(
       context: context,
@@ -233,8 +234,8 @@ class _ServicesTileState extends State<ServicesTile> {
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'نام سرویس الزامی میباشد.';
-                          } else if (value.length < 5 || value.length > 15) {
-                            return 'نام سرویس باید 5 الی 15 حرف شد.';
+                          } else if (value.length < 5 || value.length > 30) {
+                            return 'نام سرویس باید 5 الی 30 حرف شد.';
                           }
                         },
                         inputFormatters: [
