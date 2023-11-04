@@ -36,8 +36,6 @@ class _NewPatientState extends State<NewPatient> {
   var items = ['مجرد', 'متأهل'];
 
   String? selectedTooth2;
-  var selectedRemovableTooth;
-  String removedTooth = 'عقل دندان';
 
   /*----------------------- Note #1: In fact the below variables contain service_details.ser_det_ID  ------------------*/
   // For Filling
@@ -91,7 +89,6 @@ class _NewPatientState extends State<NewPatient> {
     fetchBleachings();
     fetchProtheses();
     fetchToothCover();
-    fetchRemoveTooth();
   }
 
   Future<void> fetchServices() async {
@@ -141,7 +138,6 @@ class _NewPatientState extends State<NewPatient> {
   bool _isVisibleForProthesis = false;
   bool _isVisibleForRoot = false;
   bool _isVisibleGum = false;
-  bool _isVisibleForTeethRemove = false;
   bool _isVisibleForCover = false;
   bool _isVisibleMouth = false;
   bool _isVisibleForPayment = false;
@@ -699,32 +695,30 @@ class _NewPatientState extends State<NewPatient> {
                                             _isVisibleForScaling = false;
                                             _isVisibleForOrtho = false;
                                             _isVisibleForProthesis = false;
-                                            _isVisibleForTeethRemove = false;
                                             _isVisibleForCover = false;
                                             _isVisibleGum = false;
-                                            _isVisibleForRoot = false;
+
                                             _isVisibleMouth = false;
                                           } else if (selectedSerId == '3') {
                                             _isVisibleForFilling = false;
                                             _isVisibleForBleaching = true;
                                             _isVisibleForProthesis = false;
                                             _isVisibleForScaling = false;
-                                            _isVisibleForTeethRemove = false;
                                             _isVisibleForCover = false;
                                             _isVisibleGum = false;
                                             _isVisibleForOrtho = false;
-                                            _isVisibleForRoot = false;
+
                                             _isVisibleMouth = false;
                                           } else if (selectedSerId == '4') {
                                             _isVisibleForScaling = true;
                                             _isVisibleForFilling = false;
                                             _isVisibleForBleaching = false;
                                             _isVisibleForProthesis = false;
-                                            _isVisibleForTeethRemove = false;
+
                                             _isVisibleForCover = false;
                                             _isVisibleForOrtho = false;
                                             _isVisibleGum = false;
-                                            _isVisibleForRoot = false;
+
                                             _isVisibleMouth = false;
                                             // Set the first dropdown value to avoid conflict
                                             selectedGumType1 = '3';
@@ -735,9 +729,9 @@ class _NewPatientState extends State<NewPatient> {
                                             _isVisibleForScaling = false;
                                             _isVisibleForProthesis = false;
                                             _isVisibleGum = false;
-                                            _isVisibleForTeethRemove = false;
+
                                             _isVisibleForCover = false;
-                                            _isVisibleForRoot = false;
+
                                             _isVisibleMouth = false;
                                           } else if (selectedSerId == '9') {
                                             _isVisibleForProthesis = true;
@@ -746,21 +740,20 @@ class _NewPatientState extends State<NewPatient> {
                                             _isVisibleForBleaching = false;
                                             _isVisibleForScaling = false;
                                             _isVisibleGum = false;
-                                            _isVisibleForTeethRemove = false;
+
                                             _isVisibleForCover = false;
-                                            _isVisibleForRoot = false;
+
                                             _isVisibleMouth = false;
                                             // Set selected tooth '1'
                                             selectedTooth2 = '1';
                                           } else if (selectedSerId == '6') {
-                                            _isVisibleForRoot = true;
                                             _isVisibleForProthesis = false;
                                             _isVisibleForOrtho = false;
                                             _isVisibleForFilling = false;
                                             _isVisibleForBleaching = false;
                                             _isVisibleForScaling = false;
                                             _isVisibleGum = false;
-                                            _isVisibleForTeethRemove = false;
+
                                             _isVisibleForCover = false;
                                             _isVisibleMouth = false;
                                             // Set selected tooth '1'
@@ -772,8 +765,7 @@ class _NewPatientState extends State<NewPatient> {
                                             _isVisibleForFilling = false;
                                             _isVisibleForBleaching = false;
                                             _isVisibleForScaling = false;
-                                            _isVisibleForRoot = false;
-                                            _isVisibleForTeethRemove = false;
+
                                             _isVisibleForCover = false;
                                             _isVisibleMouth = false;
                                             selectedGumType1 = '3';
@@ -784,21 +776,10 @@ class _NewPatientState extends State<NewPatient> {
                                             _isVisibleForFilling = false;
                                             _isVisibleForBleaching = false;
                                             _isVisibleForScaling = false;
-                                            _isVisibleForRoot = false;
+
                                             _isVisibleGum = false;
-                                            _isVisibleForTeethRemove = false;
+
                                             _isVisibleForCover = false;
-                                          } else if (selectedSerId == '10') {
-                                            _isVisibleForTeethRemove = true;
-                                            _isVisibleForProthesis = false;
-                                            _isVisibleForOrtho = false;
-                                            _isVisibleForFilling = false;
-                                            _isVisibleForBleaching = false;
-                                            _isVisibleForScaling = false;
-                                            _isVisibleForRoot = false;
-                                            _isVisibleGum = false;
-                                            _isVisibleForCover = false;
-                                            _isVisibleMouth = false;
                                           } else if (selectedSerId == '11') {
                                             _isVisibleForCover = true;
                                             _isVisibleForProthesis = false;
@@ -806,9 +787,9 @@ class _NewPatientState extends State<NewPatient> {
                                             _isVisibleForFilling = false;
                                             _isVisibleForBleaching = false;
                                             _isVisibleForScaling = false;
-                                            _isVisibleForRoot = false;
+
                                             _isVisibleGum = false;
-                                            _isVisibleForTeethRemove = false;
+
                                             _isVisibleMouth = false;
                                             // Set selected tooth '1'
                                             selectedTooth2 = '1';
@@ -818,10 +799,10 @@ class _NewPatientState extends State<NewPatient> {
                                             _isVisibleForFilling = false;
                                             _isVisibleForBleaching = false;
                                             _isVisibleForScaling = false;
-                                            _isVisibleForRoot = false;
+
                                             _isVisibleMouth = false;
                                             _isVisibleGum = false;
-                                            _isVisibleForTeethRemove = false;
+
                                             _isVisibleForCover = false;
                                           }
                                         });
@@ -883,194 +864,31 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                            Visibility(
-                              visible: _isVisibleForTeethRemove,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'نوعیت دندان',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: removeTeeth.any((tooth) =>
-                                                tooth['td_ID'].toString() ==
-                                                selectedTooth)
-                                            ? selectedTooth
-                                            : null,
-                                        items: removeTeeth.map((tooth) {
-                                          return DropdownMenuItem<String>(
-                                            value: tooth['td_ID'].toString(),
-                                            alignment: Alignment.centerRight,
-                                            child: Text(tooth['tooth']),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            selectedTooth = newValue;
-                                            selectedRemovableTooth =
-                                                removeTeeth.firstWhere(
-                                              (tooth) =>
-                                                  tooth['td_ID'].toString() ==
-                                                  newValue,
-                                            );
-                                            // Fetch type the teeth which will be removed (پوسیده، عقل دندان..)
-                                            removedTooth =
-                                                selectedRemovableTooth != null
-                                                    ? selectedRemovableTooth[
-                                                        'tooth']
-                                                    : null;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
+                            Container(
+                              width: 400.0,
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: const InputDecorator(
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'نوعیت دندان',
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
                                 ),
                               ),
                             ),
-                           /*  Visibility(
-                              visible: _isVisibleForScaling
-                                  ? _isVisibleForScaling
-                                  : _isVisibleForOrtho
-                                      ? _isVisibleForOrtho
-                                      : _isVisibleGum
-                                          ? _isVisibleGum
-                                          : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'فک / لثه',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: selectedGumType1,
-                                        items: gumsType1.map((gumType1) {
-                                          return DropdownMenuItem<String>(
-                                            value: gumType1['teeth_ID'],
-                                            alignment: Alignment.centerRight,
-                                            child: Text(gumType1['gum']),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            selectedGumType1 = newValue;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
- */                            /* Visibility(
-                              visible: _isVisibleForFilling
-                                  ? _isVisibleForFilling
-                                  : _isVisibleForBleaching
-                                      ? _isVisibleForBleaching
-                                      : _isVisibleForProthesis
-                                          ? _isVisibleForProthesis
-                                          : _isVisibleForRoot
-                                              ? _isVisibleForRoot
-                                              : _isVisibleForTeethRemove
-                                                  ? _isVisibleForTeethRemove
-                                                  : _isVisibleForCover
-                                                      ? _isVisibleForCover
-                                                      : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'فک / لثه',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: selectedGumType2,
-                                        items: gums.map((gums) {
-                                          return DropdownMenuItem<String>(
-                                            value: gums['teeth_ID'],
-                                            alignment: Alignment.centerRight,
-                                            child: Text(gums['gum']),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            selectedGumType2 = newValue;
-                                            print('Gum: $selectedGumType2');
-                                            if (selectedSerId == '10') {
-                                              // Set this value since by changing لثه / فک below it, it should fetch the default selected value.
-                                              removedTooth = 'عقل دندان';
-                                              fetchRemoveTooth();
-                                            }
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
- */                          ],
+                          ],
                         ),
                         Column(
                           children: [
@@ -1238,65 +1056,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                           /*  Visibility(
-                              visible: _isVisibleForFilling
-                                  ? _isVisibleForFilling
-                                  : _isVisibleForRoot
-                                      ? _isVisibleForRoot
-                                      : _isVisibleForProthesis
-                                          ? _isVisibleForProthesis
-                                          : _isVisibleForCover
-                                              ? _isVisibleForCover
-                                              : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'دندان',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: selectedTooth2,
-                                        items: teeth.map((tooth) {
-                                          return DropdownMenuItem<String>(
-                                            value: tooth['td_ID'],
-                                            alignment: Alignment.centerRight,
-                                            child: Text(tooth['tooth']),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            selectedTooth2 = newValue;
-                                            // print('Service: $selectedSerId');
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
- */                            Visibility(
+                            Visibility(
                               visible: true,
                               child: Container(
                                 width: 400.0,
@@ -1357,7 +1117,9 @@ class _NewPatientState extends State<NewPatient> {
                     SizedBox(
                       width: (ageDropDown <= 13) ? 470 : 800,
                       height: 300,
-                      child: (ageDropDown <= 13) ? const ChildQuadrantGrid() : const AdultQuadrantGrid(),
+                      child: (ageDropDown <= 13)
+                          ? const ChildQuadrantGrid()
+                          : const AdultQuadrantGrid(),
                     )
                   ],
                 ),
@@ -1554,14 +1316,6 @@ class _NewPatientState extends State<NewPatient> {
         if (toothResult.isNotEmpty) {
           var tdRow = toothResult.first;
           tDetailID = tdRow['td_ID'];
-        }
-      } else if (serviceID == 10) {
-        var removeResult = await conn.query(
-            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
-            [removedTooth, selectedGumType2]);
-        if (removeResult.isNotEmpty) {
-          var row = removeResult.first;
-          tDetailID = row['td_ID'];
         }
       } else if (serviceID == 3) {
         var bleachResult = await conn.query(
@@ -1864,47 +1618,6 @@ class _NewPatientState extends State<NewPatient> {
     await conn.close();
   }
 
-//  نوعیت کشیدن دندان
-  String? selectedTooth;
-
-  List<Map<String, dynamic>> removeTeeth = [];
-  Future<void> fetchRemoveTooth() async {
-    print('Testing gum: $selectedGumType2');
-    var conn = await onConnToDb();
-    if (selectedGumType2 != null) {
-      var results = await conn.query(
-          'SELECT td_ID, tooth FROM tooth_details WHERE (td_ID >= 35 AND td_ID <= 49) AND tooth_ID = ?',
-          [selectedGumType2]);
-
-      setState(() {
-        removeTeeth = results
-            .map(
-                (result) => {'td_ID': result[0].toString(), 'tooth': result[1]})
-            .toList();
-        selectedTooth = removeTeeth.isNotEmpty ? removeTeeth[0]['td_ID'] : null;
-      });
-    } else {
-      // Set a default value for selectedTooth using the defaultResult query
-      var defaultResult = await conn.query(
-          'SELECT td_ID, tooth FROM tooth_details WHERE td_ID >= 35 AND td_ID <= 37');
-      if (defaultResult.isNotEmpty) {
-        setState(() {
-          selectedTooth = defaultResult.first['td_ID'].toString();
-          removeTeeth = defaultResult
-              .map((result) =>
-                  {'td_ID': result['td_ID'], 'tooth': result['tooth']})
-              .toList();
-          selectedTooth = removeTeeth.isNotEmpty
-              ? removeTeeth[0]['td_ID'].toString()
-              : null;
-        });
-        // selectedTooth = removeTeeth.isNotEmpty ? removeTeeth[0]['td_ID'] : null;
-      }
-    }
-
-    await conn.close();
-  }
-
   //  لثه برای جرم گیری
   String? selectedGumType1;
   List<Map<String, dynamic>> gumsType1 = [];
@@ -1922,12 +1635,6 @@ class _NewPatientState extends State<NewPatient> {
   List<String> onTeethScaling() {
     List<String> gumItems = ['بالا', 'پایین', 'هردو'];
     return gumItems;
-  }
-
-  //  جراحی لثه دندان
-  List<int> onGumSurgery() {
-    List<int> gumSurgeryItems = [1, 2, 3, 4];
-    return gumSurgeryItems;
   }
 
   //  لثه برای استفاده متعدد
