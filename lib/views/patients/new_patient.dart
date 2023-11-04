@@ -93,8 +93,8 @@ class _NewPatientState extends State<NewPatient> {
 
   Future<void> fetchServices() async {
     var conn = await onConnToDb();
-    var queryService = await conn
-        .query('SELECT ser_ID, ser_name FROM services WHERE ser_ID > 1');
+    var queryService =
+        await conn.query('SELECT ser_ID, ser_name FROM services');
     setState(() {
       services = queryService
           .map((result) =>
@@ -812,59 +812,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                            Visibility(
-                              visible: _isVisibleForBleaching,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'نوعیت سفید کردن دندانها',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: selectedBleachStep,
-                                        items: teethBleachings.map((step) {
-                                          return DropdownMenuItem<String>(
-                                            value: step['ser_det_ID'],
-                                            alignment: Alignment.centerRight,
-                                            child: Text(
-                                                step['service_specific_value']),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            selectedBleachStep = newValue;
-                                            selectedServiceDetailID =
-                                                int.parse(selectedBleachStep!);
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
+                            /* Container(
                               width: 400.0,
                               margin: const EdgeInsets.only(
                                   left: 20.0,
@@ -888,6 +836,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
+ */
                           ],
                         ),
                         Column(
@@ -1057,6 +1006,58 @@ class _NewPatientState extends State<NewPatient> {
                               ),
                             ),
                             Visibility(
+                              visible: _isVisibleForBleaching,
+                              child: Container(
+                                width: 400.0,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'نوعیت سفید کردن دندانها',
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: SizedBox(
+                                      height: 26.0,
+                                      child: DropdownButton(
+                                        isExpanded: true,
+                                        icon: const Icon(Icons.arrow_drop_down),
+                                        value: selectedBleachStep,
+                                        items: teethBleachings.map((step) {
+                                          return DropdownMenuItem<String>(
+                                            value: step['ser_det_ID'],
+                                            alignment: Alignment.centerRight,
+                                            child: Text(
+                                                step['service_specific_value']),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            selectedBleachStep = newValue;
+                                            selectedServiceDetailID =
+                                                int.parse(selectedBleachStep!);
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Visibility(
                               visible: true,
                               child: Container(
                                 width: 400.0,
@@ -1114,12 +1115,40 @@ class _NewPatientState extends State<NewPatient> {
                         ),
                       ],
                     ),
-                    SizedBox(
-                      width: (ageDropDown <= 13) ? 470 : 800,
-                      height: 300,
-                      child: (ageDropDown <= 13)
-                          ? const ChildQuadrantGrid()
-                          : const AdultQuadrantGrid(),
+                    Visibility(
+                      visible: (selectedSerId == '1' ||
+                              selectedSerId == '2' ||
+                              selectedSerId == '11')
+                          ? true
+                          : false,
+                      child: Column(
+                        children: [
+                          Container(
+                            margin:
+                                const EdgeInsets.only(bottom: 10.0, top: 10.0),
+                            child: (ageDropDown <= 13)
+                                ? const Text(
+                                    'Children\'s Teeth Selection Chart',
+                                    style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                : const Text(
+                                    'Adults\' Teeth Selection Chart',
+                                    style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                          ),
+                          SizedBox(
+                            width: (ageDropDown <= 13) ? 470 : 800,
+                            height: 300,
+                            child: (ageDropDown <= 13)
+                                ? const ChildQuadrantGrid()
+                                : const AdultQuadrantGrid(),
+                          )
+                        ],
+                      ),
                     )
                   ],
                 ),
