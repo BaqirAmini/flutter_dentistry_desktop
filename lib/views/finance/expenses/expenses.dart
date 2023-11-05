@@ -529,7 +529,7 @@ class _ExpenseListState extends State<ExpenseList> {
 
                                 // Set Hijry/Jalali calendar
                                 // ignore: use_build_context_synchronously
-                            /*     Jalali? picked = await showPersianDatePicker(
+                                /*     Jalali? picked = await showPersianDatePicker(
                                     context: context,
                                     initialDate: Jalali.now(),
                                     firstDate: Jalali(1395, 8),

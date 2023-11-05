@@ -56,17 +56,8 @@ class _NewPatientState extends State<NewPatient> {
   var genderItems = ['مرد', 'زن'];
 
   // Blood group types
-  String bloodDropDown = (selectedLanguage == 'English')
-      ? 'N/A'
-      : (selectedLanguage == 'دری')
-          ? 'نامشخص'
-          : 'نامعلوم';
+  String? bloodDropDown;
   var bloodGroupItems = [
-    (selectedLanguage == 'English')
-        ? 'N/A'
-        : (selectedLanguage == 'دری')
-            ? 'نامشخص'
-            : 'نامعلوم',
     'A+',
     'B+',
     'AB+',
@@ -174,56 +165,70 @@ class _NewPatientState extends State<NewPatient> {
                     children: [
                       Column(
                         children: [
-                          Container(
-                            width: 400.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: _nameController,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(_regExOnlyAbc),
-                                ),
-                              ],
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return translations[selectedLanguage]
-                                      ?['FNRequired'];
-                                } else if (value.length < 3 ||
-                                    value.length > 10) {
-                                  return translations[selectedLanguage]
-                                      ?['FNLength'];
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translations[selectedLanguage]
-                                        ?['FName'] ??
-                                    '',
-                                suffixIcon: const Icon(Icons.person),
-                                enabledBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
+                          Row(
+                            children: [
+                              const Text(
+                                '*',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold),
                               ),
-                            ),
+                              Container(
+                                width: 400.0,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: TextFormField(
+                                  controller: _nameController,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(_regExOnlyAbc),
+                                    ),
+                                  ],
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return translations[selectedLanguage]
+                                          ?['FNRequired'];
+                                    } else if (value.length < 3 ||
+                                        value.length > 10) {
+                                      return translations[selectedLanguage]
+                                          ?['FNLength'];
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                            ?['FName'] ??
+                                        '',
+                                    suffixIcon: const Icon(Icons.person),
+                                    enabledBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                    errorBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.red)),
+                                    focusedErrorBorder:
+                                        const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           Container(
                             width: 400.0,
@@ -444,7 +449,7 @@ class _NewPatientState extends State<NewPatient> {
                               child: DropdownButtonHideUnderline(
                                 child: SizedBox(
                                   height: 26.0,
-                                  child: DropdownButton(
+                                  child: DropdownButtonFormField(
                                     isExpanded: true,
                                     icon: const Icon(Icons.arrow_drop_down),
                                     value: bloodDropDown,
@@ -461,75 +466,95 @@ class _NewPatientState extends State<NewPatient> {
                                         bloodDropDown = newValue!;
                                       });
                                     },
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please select a blood group';
+                                      }
+                                      return null;
+                                    },
                                   ),
                                 ),
                               ),
                             ),
                           ),
-                          Container(
-                            width: 400.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              textDirection: TextDirection.ltr,
-                              controller: _phoneController,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(_regExOnlydigits),
+                          Row(
+                            children: [
+                              const Text('*',
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold)),
+                              Container(
+                                width: 400.0,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: TextFormField(
+                                  textDirection: TextDirection.ltr,
+                                  controller: _phoneController,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(_regExOnlydigits),
+                                    ),
+                                  ],
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return translations[selectedLanguage]
+                                              ?['PhoneRequired'] ??
+                                          '';
+                                    } else if (value.startsWith('07')) {
+                                      if (value.length < 10 ||
+                                          value.length > 10) {
+                                        return translations[selectedLanguage]
+                                                ?['Phone10'] ??
+                                            '';
+                                      }
+                                    } else if (value.startsWith('+93')) {
+                                      if (value.length < 12 ||
+                                          value.length > 12) {
+                                        return translations[selectedLanguage]
+                                                ?['Phone12'] ??
+                                            '';
+                                      }
+                                    } else {
+                                      return translations[selectedLanguage]
+                                              ?['ValidPhone'] ??
+                                          '';
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                            ?['Phone'] ??
+                                        '',
+                                    suffixIcon: const Icon(Icons.phone),
+                                    enabledBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                    errorBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.red)),
+                                    focusedErrorBorder:
+                                        const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
+                                  ),
                                 ),
-                              ],
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return translations[selectedLanguage]
-                                          ?['PhoneRequired'] ??
-                                      '';
-                                } else if (value.startsWith('07')) {
-                                  if (value.length < 10 || value.length > 10) {
-                                    return translations[selectedLanguage]
-                                            ?['Phone10'] ??
-                                        '';
-                                  }
-                                } else if (value.startsWith('+93')) {
-                                  if (value.length < 12 || value.length > 12) {
-                                    return translations[selectedLanguage]
-                                            ?['Phone12'] ??
-                                        '';
-                                  }
-                                } else {
-                                  return translations[selectedLanguage]
-                                          ?['ValidPhone'] ??
-                                      '';
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translations[selectedLanguage]
-                                        ?['Phone'] ??
-                                    '',
-                                suffixIcon: const Icon(Icons.phone),
-                                enabledBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
                               ),
-                            ),
+                            ],
                           ),
                           Container(
                             width: 400.0,
@@ -948,7 +973,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                           /*  Visibility(
+                            /*  Visibility(
                               visible: _isVisibleForScaling
                                   ? _isVisibleForScaling
                                   : _isVisibleForOrtho
@@ -1003,7 +1028,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
- */                            /* Visibility(
+ */ /* Visibility(
                               visible: _isVisibleForFilling
                                   ? _isVisibleForFilling
                                   : _isVisibleForBleaching
@@ -1070,7 +1095,8 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
- */                          ],
+ */
+                          ],
                         ),
                         Column(
                           children: [
@@ -1238,7 +1264,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                           /*  Visibility(
+                            /*  Visibility(
                               visible: _isVisibleForFilling
                                   ? _isVisibleForFilling
                                   : _isVisibleForRoot
@@ -1296,7 +1322,8 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
- */                            Visibility(
+ */
+                            Visibility(
                               visible: true,
                               child: Container(
                                 width: 400.0,
@@ -1357,7 +1384,9 @@ class _NewPatientState extends State<NewPatient> {
                     SizedBox(
                       width: (ageDropDown <= 13) ? 470 : 800,
                       height: 300,
-                      child: (ageDropDown <= 13) ? const ChildQuadrantGrid() : const AdultQuadrantGrid(),
+                      child: (ageDropDown <= 13)
+                          ? const ChildQuadrantGrid()
+                          : const AdultQuadrantGrid(),
                     )
                   ],
                 ),
