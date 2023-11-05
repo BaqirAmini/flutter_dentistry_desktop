@@ -57,16 +57,7 @@ class _NewPatientState extends State<NewPatient> {
 
   // Blood group types
   String? bloodDropDown;
-  var bloodGroupItems = [
-    'A+',
-    'B+',
-    'AB+',
-    'O+',
-    'A-',
-    'B-',
-    'AB-',
-    'O-'
-  ];
+  var bloodGroupItems = ['A+', 'B+', 'AB+', 'O+', 'A-', 'B-', 'AB-', 'O-'];
 
   String? selectedSerId;
   List<Map<String, dynamic>> services = [];
@@ -139,7 +130,7 @@ class _NewPatientState extends State<NewPatient> {
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
   final _formKey3 = GlobalKey<FormState>();
-
+  String? _errorMessage;
   /* ---------------- variable to get assigned values based on services types dropdown */
 
   /* ----------------END variable to get assigned values based on services types dropdown */
@@ -432,49 +423,60 @@ class _NewPatientState extends State<NewPatient> {
                                 right: 20.0,
                                 top: 10.0,
                                 bottom: 10.0),
-                            child: InputDecorator(
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translations[selectedLanguage]
-                                    ?['BloodGroup'],
-                                enabledBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: SizedBox(
-                                  height: 26.0,
-                                  child: DropdownButtonFormField(
-                                    isExpanded: true,
-                                    icon: const Icon(Icons.arrow_drop_down),
-                                    value: bloodDropDown,
-                                    items: bloodGroupItems
-                                        .map((String bloodGroupItems) {
-                                      return DropdownMenuItem(
-                                        alignment: Alignment.centerRight,
-                                        value: bloodGroupItems,
-                                        child: Text(bloodGroupItems),
-                                      );
-                                    }).toList(),
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        bloodDropDown = newValue!;
-                                      });
-                                    },
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please select a blood group';
-                                      }
-                                      return null;
-                                    },
+                            child: Column(
+                              children: <Widget>[
+                                InputDecorator(
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                        ?['BloodGroup'],
+                                    enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey),
+                                    ),
+                                    focusedBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue),
+                                    ),
+                                    errorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(color: Colors.red),
+                                    ),
+                                    errorText: bloodDropDown == null ||
+                                            bloodDropDown!.isEmpty
+                                        ? 'Please select a blood group'
+                                        : null,
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: SizedBox(
+                                      height: 26.0,
+                                      child: DropdownButton(
+                                        // isExpanded: true,
+                                        icon: const Icon(Icons.arrow_drop_down),
+                                        value: bloodDropDown,
+                                        items: bloodGroupItems
+                                            .map((String bloodGroupItems) {
+                                          return DropdownMenuItem(
+                                            alignment: Alignment.centerRight,
+                                            value: bloodGroupItems,
+                                            child: Text(bloodGroupItems),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            bloodDropDown = newValue;
+                                          });
+                                        },
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                           Row(
@@ -1381,12 +1383,33 @@ class _NewPatientState extends State<NewPatient> {
                         ),
                       ],
                     ),
-                    SizedBox(
-                      width: (ageDropDown <= 13) ? 470 : 800,
-                      height: 300,
-                      child: (ageDropDown <= 13)
-                          ? const ChildQuadrantGrid()
-                          : const AdultQuadrantGrid(),
+                    Column(
+                      children: [
+                        Container(
+                          margin:
+                              const EdgeInsets.only(bottom: 15.0, top: 15.0),
+                          child: (ageDropDown > 13)
+                              ? const Text(
+                                  'Adults\' Teeth Selection Chart',
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              : const Text(
+                                  'Children\'s Teeth Selection Chart',
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                        ),
+                        SizedBox(
+                          width: (ageDropDown <= 13) ? 470 : 800,
+                          height: 300,
+                          child: (ageDropDown <= 13)
+                              ? const ChildQuadrantGrid()
+                              : const AdultQuadrantGrid(),
+                        ),
+                      ],
                     )
                   ],
                 ),
