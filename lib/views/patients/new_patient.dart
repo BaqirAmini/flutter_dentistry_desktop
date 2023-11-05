@@ -78,8 +78,8 @@ class _NewPatientState extends State<NewPatient> {
 
   Future<void> fetchServices() async {
     var conn = await onConnToDb();
-    var queryService = await conn
-        .query('SELECT ser_ID, ser_name FROM services WHERE ser_ID > 1');
+    var queryService =
+        await conn.query('SELECT ser_ID, ser_name FROM services WHERE ser_ID');
     setState(() {
       services = queryService
           .map((result) =>
@@ -130,7 +130,10 @@ class _NewPatientState extends State<NewPatient> {
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
   final _formKey3 = GlobalKey<FormState>();
-  String? _errorMessage;
+
+  // Radio Buttons
+  String _groupValue = 'radioCrown';
+
   /* ---------------- variable to get assigned values based on services types dropdown */
 
   /* ----------------END variable to get assigned values based on services types dropdown */
@@ -858,6 +861,36 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
+                            Container(
+                              width: 400.0,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: RadioListTile(
+                                        title: const Text('R.C.T'),
+                                        value: 'R.C.T',
+                                        groupValue: _groupValue,
+                                        onChanged: (String? value) {
+                                          setState(() {
+                                            _groupValue = value!;
+                                          });
+                                        }),
+                                  ),
+                                  Expanded(
+                                    child: RadioListTile(
+                                        title: const Text('Vital'),
+                                        value: 'Vital',
+                                        groupValue: _groupValue,
+                                        onChanged: (String? value) {
+                                          setState(() {
+                                            _groupValue = value!;
+                                          });
+                                        }),
+                                  ),
+                                ],
+                              ),
+                            ),
                             Visibility(
                               visible: _isVisibleForBleaching,
                               child: Container(
@@ -1210,7 +1243,11 @@ class _NewPatientState extends State<NewPatient> {
                             ),
                             Visibility(
                               // ignore: unrelated_type_equality_checks
-                              visible: _isVisibleForFilling,
+                              visible: (selectedSerId == '1' ||
+                                      selectedSerId == '8' ||
+                                      selectedSerId == '11')
+                                  ? false
+                                  : true,
                               child: Container(
                                 width: 400.0,
                                 margin: const EdgeInsets.only(
@@ -1383,34 +1420,41 @@ class _NewPatientState extends State<NewPatient> {
                         ),
                       ],
                     ),
-                    Column(
-                      children: [
-                        Container(
-                          margin:
-                              const EdgeInsets.only(bottom: 15.0, top: 15.0),
-                          child: (ageDropDown > 13)
-                              ? const Text(
-                                  'Adults\' Teeth Selection Chart',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
-                                )
-                              : const Text(
-                                  'Children\'s Teeth Selection Chart',
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                        ),
-                        SizedBox(
-                          width: (ageDropDown <= 13) ? 470 : 800,
-                          height: 300,
-                          child: (ageDropDown <= 13)
-                              ? const ChildQuadrantGrid()
-                              : const AdultQuadrantGrid(),
-                        ),
-                      ],
-                    )
+                    Visibility(
+                        visible: (selectedSerId == '1' ||
+                                selectedSerId == '2' ||
+                                selectedSerId == '11' ||
+                                selectedSerId == '15')
+                            ? true
+                            : false,
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  bottom: 15.0, top: 15.0),
+                              child: (ageDropDown > 13)
+                                  ? const Text(
+                                      'Adults\' Teeth Selection Chart',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  : const Text(
+                                      'Children\'s Teeth Selection Chart',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                            ),
+                            SizedBox(
+                              width: (ageDropDown <= 13) ? 470 : 800,
+                              height: 300,
+                              child: (ageDropDown <= 13)
+                                  ? const ChildQuadrantGrid()
+                                  : const AdultQuadrantGrid(),
+                            ),
+                          ],
+                        )),
                   ],
                 ),
               ),
