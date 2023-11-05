@@ -1,8 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/services/tiles.dart';
 
 void main() => runApp(const Service());
+
+// Create the global key at the top level of your Dart file
+final GlobalKey<ScaffoldMessengerState> _globalKeyForService =
+    GlobalKey<ScaffoldMessengerState>();
+
+// This is shows snackbar when called
+void _onShowSnack(Color backColor, String msg) {
+  _globalKeyForService.currentState?.showSnackBar(
+    SnackBar(
+      backgroundColor: backColor,
+      content: SizedBox(
+        height: 20.0,
+        child: Center(
+          child: Text(msg),
+        ),
+      ),
+    ),
+  );
+}
 
 class Service extends StatefulWidget {
   const Service({super.key});
@@ -57,57 +77,60 @@ class _ServiceState extends State<Service> {
       debugShowCheckedModeBanner: false,
       home: Directionality(
         textDirection: TextDirection.rtl,
-        child: Scaffold(
-          backgroundColor: const Color.fromARGB(255, 234, 231, 231),
-          appBar: AppBar(
-            leading: Tooltip(
-              message: 'رفتن به داشبورد',
-              child: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.home_outlined),
+        child: ScaffoldMessenger(
+          key: _globalKeyForService,
+          child: Scaffold(
+            backgroundColor: const Color.fromARGB(255, 234, 231, 231),
+            appBar: AppBar(
+              leading: Tooltip(
+                message: 'رفتن به داشبورد',
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.home_outlined),
+                ),
               ),
+              actions: [
+                IconButton(
+                  icon: Icon(_isSearching ? Icons.close : Icons.search),
+                  onPressed: () {
+                    setState(() {
+                      if (_isSearching) {
+                        _isSearching = false;
+                        _searchQuery.clear();
+                      } else {
+                        _isSearching = true;
+                      }
+                    });
+                  },
+                ),
+                const SizedBox(width: 20),
+                Builder(builder: (context) {
+                  return Tooltip(
+                    message: 'افزودن خدمات',
+                    child: IconButton(
+                      onPressed: () {
+                        onCreateDentalService(context);
+                      },
+                      icon: const Icon(Icons.medical_services_outlined),
+                    ),
+                  );
+                }),
+                const SizedBox(width: 20),
+              ],
+              title: _isSearching
+                  ? TextField(
+                      controller: _searchQuery,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                          hintText: "جستجو...",
+                          hintStyle: TextStyle(color: Colors.white)),
+                    )
+                  : const Text("خدمات ما"),
             ),
-            actions: [
-              IconButton(
-                icon: Icon(_isSearching ? Icons.close : Icons.search),
-                onPressed: () {
-                  setState(() {
-                    if (_isSearching) {
-                      _isSearching = false;
-                      _searchQuery.clear();
-                    } else {
-                      _isSearching = true;
-                    }
-                  });
-                },
-              ),
-              const SizedBox(width: 20),
-              Builder(builder: (context) {
-                return Tooltip(
-                  message: 'افزودن خدمات',
-                  child: IconButton(
-                    onPressed: () {
-                      onCreateDentalService(context);
-                    },
-                    icon: const Icon(Icons.medical_services_outlined),
-                  ),
-                );
-              }),
-              const SizedBox(width: 20),
-            ],
-            title: _isSearching
-                ? TextField(
-                    controller: _searchQuery,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: const InputDecoration(
-                        hintText: "جستجو...",
-                        hintStyle: TextStyle(color: Colors.white)),
-                  )
-                : const Text("خدمات ما"),
+            body: const ServicesTile(),
           ),
-          body: const ServicesTile(),
         ),
       ),
     );
@@ -194,10 +217,28 @@ class _ServiceState extends State<Service> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('لغو')),
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('لغو'),
+                  ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      String serviceName = nameController.text;
+                      double serviceFee = feeController.text.isEmpty
+                          ? 0
+                          : double.parse(feeController.text);
+                      final conn = await onConnToDb();
+                      final results = await conn.query(
+                        'INSERT INTO services (ser_name, ser_fee) VALUES(?, ?)',
+                        [serviceName, serviceFee],
+                      );
+                      if (results.affectedRows! > 0) {
+                        _onShowSnack(Colors.green, 'سرویس موفقانه ثبت شد.');
+                      } else {
+                        _onShowSnack(Colors.red, 'متأسفم، ثبت سرویس ناکام شد.');
+                      }
+                      Navigator.pop(context);
+                      await conn.close();
+                    },
                     child: const Text('ایجاد کردن'),
                   ),
                 ],
