@@ -59,6 +59,30 @@ class _NewPatientState extends State<NewPatient> {
   String? bloodDropDown;
   var bloodGroupItems = ['A+', 'B+', 'AB+', 'O+', 'A-', 'B-', 'AB-', 'O-'];
 
+  //  پوش کردن دندان
+  String? defaultCrown = 'Please select a material';
+  List<String> crownItems = [
+    'Please select a material',
+    'Porcelain',
+    'Metal-Porcelain',
+    'CAD CAM',
+    'Zirconia',
+    'Mital',
+    'Gold',
+    'سایر'
+  ];
+
+  //  پرکاری دندان
+  String? defaultFilling = 'Please select a material';
+  List<String> fillingItems = [
+    'Please select a material',
+    'Amalgam',
+    'Silicate',
+    'Composite',
+    'G.C (Glass Inomir)',
+    'سایر',
+  ];
+
   String? selectedSerId;
   List<Map<String, dynamic>> services = [];
 
@@ -66,13 +90,11 @@ class _NewPatientState extends State<NewPatient> {
   void initState() {
     super.initState();
     fetchServices();
-    onFillTeeth();
     onChooseGum2();
     fetchToothNum();
     chooseGumType1();
     fetchBleachings();
     fetchProtheses();
-    fetchToothCover();
     fetchRemoveTooth();
   }
 
@@ -132,7 +154,8 @@ class _NewPatientState extends State<NewPatient> {
   final _formKey3 = GlobalKey<FormState>();
 
   // Radio Buttons
-  String _groupValue = 'radioCrown';
+  String _crownGroupValue = 'R.C.T';
+  String _fillingGroupValue = 'R.C.T';
 
   /* ---------------- variable to get assigned values based on services types dropdown */
 
@@ -861,34 +884,70 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                            Container(
-                              width: 400.0,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Expanded(
-                                    child: RadioListTile(
-                                        title: const Text('R.C.T'),
-                                        value: 'R.C.T',
-                                        groupValue: _groupValue,
-                                        onChanged: (String? value) {
-                                          setState(() {
-                                            _groupValue = value!;
-                                          });
-                                        }),
-                                  ),
-                                  Expanded(
-                                    child: RadioListTile(
-                                        title: const Text('Vital'),
-                                        value: 'Vital',
-                                        groupValue: _groupValue,
-                                        onChanged: (String? value) {
-                                          setState(() {
-                                            _groupValue = value!;
-                                          });
-                                        }),
-                                  ),
-                                ],
+                            Visibility(
+                              visible: (selectedSerId == '11') ? true : false,
+                              child: SizedBox(
+                                width: 400.0,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: RadioListTile(
+                                          title: const Text('R.C.T'),
+                                          value: 'R.C.T',
+                                          groupValue: _crownGroupValue,
+                                          onChanged: (String? value) {
+                                            setState(() {
+                                              _crownGroupValue = value!;
+                                            });
+                                          }),
+                                    ),
+                                    Expanded(
+                                      child: RadioListTile(
+                                          title: const Text('Vital'),
+                                          value: 'Vital',
+                                          groupValue: _crownGroupValue,
+                                          onChanged: (String? value) {
+                                            setState(() {
+                                              _crownGroupValue = value!;
+                                            });
+                                          }),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible: (selectedSerId == '2') ? true : false,
+                              child: SizedBox(
+                                width: 400.0,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: RadioListTile(
+                                          title: const Text('R.C.T'),
+                                          value: 'R.C.T',
+                                          groupValue: _fillingGroupValue,
+                                          onChanged: (String? value) {
+                                            setState(() {
+                                              _fillingGroupValue = value!;
+                                            });
+                                          }),
+                                    ),
+                                    Expanded(
+                                      child: RadioListTile(
+                                          title: const Text('Operative'),
+                                          value: 'Operative',
+                                          groupValue: _fillingGroupValue,
+                                          onChanged: (String? value) {
+                                            setState(() {
+                                              _fillingGroupValue = value!;
+                                            });
+                                          }),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                             Visibility(
@@ -1145,19 +1204,32 @@ class _NewPatientState extends State<NewPatient> {
                                     top: 10.0,
                                     bottom: 10.0),
                                 child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
                                     labelText: 'نوعیت مواد پوش',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
+                                    enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey),
+                                    ),
+                                    focusedBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue),
+                                    ),
+                                    errorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(50),
+                                      ),
+                                      borderSide: BorderSide(color: Colors.red),
+                                    ),
+                                    errorText: defaultCrown == null ||
+                                            defaultCrown ==
+                                                'Please select a material'
+                                        ? 'Please select a material'
+                                        : null,
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
@@ -1165,20 +1237,17 @@ class _NewPatientState extends State<NewPatient> {
                                       child: DropdownButton(
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
-                                        value: selectedCover,
-                                        items: coverings.map((covering) {
+                                        value: defaultCrown,
+                                        items: crownItems.map((String items) {
                                           return DropdownMenuItem<String>(
-                                            value: covering['ser_det_ID'],
+                                            value: items,
                                             alignment: Alignment.centerRight,
-                                            child: Text(covering[
-                                                'service_specific_value']),
+                                            child: Text(items),
                                           );
                                         }).toList(),
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            selectedCover = newValue;
-                                            selectedMaterial =
-                                                int.parse(selectedCover!);
+                                            defaultCrown = newValue;
                                           });
                                         },
                                       ),
@@ -1276,25 +1345,22 @@ class _NewPatientState extends State<NewPatient> {
                                       child: DropdownButton<String>(
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
-                                        value: selectedFilling,
-                                        items: teethFillings.map((material) {
+                                        value: defaultFilling,
+                                        items: fillingItems.map((String item) {
                                           return DropdownMenuItem<String>(
                                             alignment: Alignment.centerRight,
-                                            value: material['ser_det_ID'],
+                                            value: item,
                                             child: Directionality(
                                               textDirection: isEnglish
                                                   ? TextDirection.ltr
                                                   : TextDirection.rtl,
-                                              child: Text(material[
-                                                  'service_specific_value']),
+                                              child: Text(item),
                                             ),
                                           );
                                         }).toList(),
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            selectedFilling = newValue!;
-                                            selectedFill =
-                                                int.parse(selectedFilling!);
+                                            defaultFilling = newValue!;
                                           });
                                         },
                                       ),
@@ -2041,25 +2107,6 @@ class _NewPatientState extends State<NewPatient> {
     await conn.close();
   }
 
-  //  پوش کردن دندان
-  String? selectedCover;
-  List<Map<String, dynamic>> coverings = [];
-  Future<void> fetchToothCover() async {
-    var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_id = 11');
-    setState(() {
-      coverings = results
-          .map((result) => {
-                'ser_det_ID': result[0].toString(),
-                'service_specific_value': result[1]
-              })
-          .toList();
-    });
-    selectedCover = coverings.isNotEmpty ? coverings[0]['ser_det_ID'] : null;
-    await conn.close();
-  }
-
   //  پروتز دندان
   String? selectedProthesis;
   List<Map<String, dynamic>> protheses = [];
@@ -2077,26 +2124,6 @@ class _NewPatientState extends State<NewPatient> {
     });
     selectedProthesis =
         protheses.isNotEmpty ? protheses[0]['ser_det_ID'] : null;
-    await conn.close();
-  }
-
-  //  پرکاری دندان
-  String? selectedFilling;
-  List<Map<String, dynamic>> teethFillings = [];
-
-  Future<void> onFillTeeth() async {
-    var conn = await onConnToDb();
-    var queryFill = await conn.query(
-        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_det_ID >= 1 AND ser_det_ID < 4');
-    teethFillings = queryFill
-        .map((result) => {
-              'ser_det_ID': result[0].toString(),
-              'service_specific_value': result[1]
-            })
-        .toList();
-
-    selectedFilling =
-        teethFillings.isNotEmpty ? teethFillings[0]['ser_det_ID'] : null;
     await conn.close();
   }
 
