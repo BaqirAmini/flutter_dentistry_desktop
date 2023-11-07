@@ -83,6 +83,15 @@ class _NewPatientState extends State<NewPatient> {
     'سایر',
   ];
 
+  // ارتودانسی
+  String defaultOrthoType = 'Please select a gum';
+  List<String> orthoItems = [
+    'Please select a gum',
+    'یک فک',
+    'هردو فک',
+    'بستن دیاسیتم وسطی'
+  ];
+
   String? selectedSerId;
   List<Map<String, dynamic>> services = [];
 
@@ -1312,11 +1321,7 @@ class _NewPatientState extends State<NewPatient> {
                             ),
                             Visibility(
                               // ignore: unrelated_type_equality_checks
-                              visible: (selectedSerId == '1' ||
-                                      selectedSerId == '8' ||
-                                      selectedSerId == '11')
-                                  ? false
-                                  : true,
+                              visible: (selectedSerId == '2') ? true : false,
                               child: Container(
                                 width: 400.0,
                                 margin: const EdgeInsets.only(
@@ -1361,6 +1366,61 @@ class _NewPatientState extends State<NewPatient> {
                                         onChanged: (String? newValue) {
                                           setState(() {
                                             defaultFilling = newValue!;
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              // ignore: unrelated_type_equality_checks
+                              visible: (selectedSerId == '5') ? true : false,
+                              child: Container(
+                                width: 400.0,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'نوعیت ارتودانسی',
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: SizedBox(
+                                      height: 26.0,
+                                      child: DropdownButton<String>(
+                                        isExpanded: true,
+                                        icon: const Icon(Icons.arrow_drop_down),
+                                        value: defaultOrthoType,
+                                        items: orthoItems.map((String item) {
+                                          return DropdownMenuItem<String>(
+                                            alignment: Alignment.centerRight,
+                                            value: item,
+                                            child: Directionality(
+                                              textDirection: isEnglish
+                                                  ? TextDirection.ltr
+                                                  : TextDirection.rtl,
+                                              child: Text(item),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            defaultOrthoType = newValue!;
                                           });
                                         },
                                       ),
