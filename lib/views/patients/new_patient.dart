@@ -87,11 +87,22 @@ class _NewPatientState extends State<NewPatient> {
   String defaultOrthoType = 'Please select a gum';
   List<String> orthoItems = [
     'Please select a gum',
-    'یک فک',
+    'فک بالا',
+    'فک پایین',
     'هردو فک',
-    'بستن دیاسیتم وسطی'
+    'بستن دیاستم وسطی'
   ];
 
+// MaxilloFacial وجه فک
+  String defaultMaxillo = 'Please select a type';
+  List<String> maxilloItems = [
+    'Please select a type',
+    'Tooth Extraction',
+    'Abscess Treatment',
+    'T.M.J',
+    'Tooth Reimplantation',
+    'Jaw Fracture Fixation'
+  ];
   String? selectedSerId;
   List<Map<String, dynamic>> services = [];
 
@@ -1429,16 +1440,9 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                            /*  Visibility(
-                              visible: _isVisibleForFilling
-                                  ? _isVisibleForFilling
-                                  : _isVisibleForRoot
-                                      ? _isVisibleForRoot
-                                      : _isVisibleForProthesis
-                                          ? _isVisibleForProthesis
-                                          : _isVisibleForCover
-                                              ? _isVisibleForCover
-                                              : false,
+                            Visibility(
+                              // ignore: unrelated_type_equality_checks
+                              visible: (selectedSerId == '7') ? true : false,
                               child: Container(
                                 width: 400.0,
                                 margin: const EdgeInsets.only(
@@ -1449,7 +1453,7 @@ class _NewPatientState extends State<NewPatient> {
                                 child: InputDecorator(
                                   decoration: const InputDecoration(
                                     border: OutlineInputBorder(),
-                                    labelText: 'دندان',
+                                    labelText: 'نوعیت',
                                     enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
@@ -1464,21 +1468,25 @@ class _NewPatientState extends State<NewPatient> {
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
                                       height: 26.0,
-                                      child: DropdownButton(
+                                      child: DropdownButton<String>(
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
-                                        value: selectedTooth2,
-                                        items: teeth.map((tooth) {
+                                        value: defaultMaxillo,
+                                        items: maxilloItems.map((String item) {
                                           return DropdownMenuItem<String>(
-                                            value: tooth['td_ID'],
                                             alignment: Alignment.centerRight,
-                                            child: Text(tooth['tooth']),
+                                            value: item,
+                                            child: Directionality(
+                                              textDirection: isEnglish
+                                                  ? TextDirection.ltr
+                                                  : TextDirection.rtl,
+                                              child: Text(item),
+                                            ),
                                           );
                                         }).toList(),
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            selectedTooth2 = newValue;
-                                            // print('Service: $selectedSerId');
+                                            defaultMaxillo = newValue!;
                                           });
                                         },
                                       ),
@@ -1487,7 +1495,6 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
- */
                             Visibility(
                               visible: true,
                               child: Container(
@@ -1550,7 +1557,9 @@ class _NewPatientState extends State<NewPatient> {
                         visible: (selectedSerId == '1' ||
                                 selectedSerId == '2' ||
                                 selectedSerId == '11' ||
-                                selectedSerId == '15')
+                                selectedSerId == '15' ||
+                                defaultMaxillo == 'Tooth Extraction' ||
+                                defaultMaxillo == 'Tooth Reimplantation')
                             ? true
                             : false,
                         child: Column(
