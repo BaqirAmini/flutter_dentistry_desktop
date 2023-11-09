@@ -190,7 +190,9 @@ class _NewPatientState extends State<NewPatient> {
   // Radio Buttons
   String _crownGroupValue = 'R.C.T';
   String _fillingGroupValue = 'R.C.T';
-  String _abscessTrateValue = 'راست';
+  String _abscessTreatValue = 'راست';
+  String _tmgGroupValue = 'راست';
+  String _sexGroupValue = 'مرد';
 
   /* ---------------- variable to get assigned values based on services types dropdown */
 
@@ -391,40 +393,50 @@ class _NewPatientState extends State<NewPatient> {
                                 bottom: 10.0),
                             child: InputDecorator(
                               decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 10.0),
                                 border: const OutlineInputBorder(),
                                 labelText: translations[selectedLanguage]
                                     ?['Sex'],
                                 enabledBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: SizedBox(
-                                  height: 26.0,
-                                  child: DropdownButton(
-                                    isExpanded: true,
-                                    icon: const Icon(Icons.arrow_drop_down),
-                                    value: genderDropDown,
-                                    items:
-                                        genderItems.map((String genderItems) {
-                                      return DropdownMenuItem(
-                                        alignment: Alignment.centerRight,
-                                        value: genderItems,
-                                        child: Text(genderItems),
-                                      );
-                                    }).toList(),
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        genderDropDown = newValue!;
-                                      });
-                                    },
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(50.0),
                                   ),
+                                  borderSide: BorderSide(color: Colors.grey),
                                 ),
+                                focusedBorder: const OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(50.0),
+                                  ),
+                                  borderSide: BorderSide(color: Colors.blue),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: RadioListTile(
+                                        title: const Text('مرد'),
+                                        value: 'مرد',
+                                        groupValue: _sexGroupValue,
+                                        onChanged: (String? value) {
+                                          setState(() {
+                                            _sexGroupValue = value!;
+                                          });
+                                        }),
+                                  ),
+                                  Expanded(
+                                    child: RadioListTile(
+                                        title: const Text('زن'),
+                                        value: 'زن',
+                                        groupValue: _sexGroupValue,
+                                        onChanged: (String? value) {
+                                          setState(() {
+                                            _sexGroupValue = value!;
+                                          });
+                                        }),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -921,67 +933,113 @@ class _NewPatientState extends State<NewPatient> {
                             ),
                             Visibility(
                               visible: (selectedSerId == '11') ? true : false,
-                              child: SizedBox(
+                              child: Container(
                                 width: 400.0,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: RadioListTile(
-                                          title: const Text('R.C.T'),
-                                          value: 'R.C.T',
-                                          groupValue: _crownGroupValue,
-                                          onChanged: (String? value) {
-                                            setState(() {
-                                              _crownGroupValue = value!;
-                                            });
-                                          }),
-                                    ),
-                                    Expanded(
-                                      child: RadioListTile(
-                                          title: const Text('Vital'),
-                                          value: 'Vital',
-                                          groupValue: _crownGroupValue,
-                                          onChanged: (String? value) {
-                                            setState(() {
-                                              _crownGroupValue = value!;
-                                            });
-                                          }),
-                                    ),
-                                  ],
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 10.0),
+                                    border: OutlineInputBorder(),
+                                    labelText: 'نوعیت',
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: RadioListTile(
+                                            title: const Text('R.C.T'),
+                                            value: 'R.C.T',
+                                            groupValue: _crownGroupValue,
+                                            onChanged: (String? value) {
+                                              setState(() {
+                                                _crownGroupValue = value!;
+                                              });
+                                            }),
+                                      ),
+                                      Expanded(
+                                        child: RadioListTile(
+                                            title: const Text('Vital'),
+                                            value: 'Vital',
+                                            groupValue: _crownGroupValue,
+                                            onChanged: (String? value) {
+                                              setState(() {
+                                                _crownGroupValue = value!;
+                                              });
+                                            }),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                             Visibility(
                               visible: (selectedSerId == '2') ? true : false,
-                              child: SizedBox(
+                              child: Container(
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
                                 width: 400.0,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: RadioListTile(
-                                          title: const Text('R.C.T'),
-                                          value: 'R.C.T',
-                                          groupValue: _fillingGroupValue,
-                                          onChanged: (String? value) {
-                                            setState(() {
-                                              _fillingGroupValue = value!;
-                                            });
-                                          }),
-                                    ),
-                                    Expanded(
-                                      child: RadioListTile(
-                                          title: const Text('Operative'),
-                                          value: 'Operative',
-                                          groupValue: _fillingGroupValue,
-                                          onChanged: (String? value) {
-                                            setState(() {
-                                              _fillingGroupValue = value!;
-                                            });
-                                          }),
-                                    ),
-                                  ],
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 10.0),
+                                    border: OutlineInputBorder(),
+                                    labelText: 'نوعیت',
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: RadioListTile(
+                                            title: const Text('R.C.T'),
+                                            value: 'R.C.T',
+                                            groupValue: _fillingGroupValue,
+                                            onChanged: (String? value) {
+                                              setState(() {
+                                                _fillingGroupValue = value!;
+                                              });
+                                            }),
+                                      ),
+                                      Expanded(
+                                        child: RadioListTile(
+                                            title: const Text('Operative'),
+                                            value: 'Operative',
+                                            groupValue: _fillingGroupValue,
+                                            onChanged: (String? value) {
+                                              setState(() {
+                                                _fillingGroupValue = value!;
+                                              });
+                                            }),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -1519,6 +1577,8 @@ class _NewPatientState extends State<NewPatient> {
                                     bottom: 10.0),
                                 child: InputDecorator(
                                   decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 10.0),
                                     border: OutlineInputBorder(),
                                     labelText: 'ناحیه آبسه',
                                     enabledBorder: OutlineInputBorder(
@@ -1543,10 +1603,10 @@ class _NewPatientState extends State<NewPatient> {
                                         child: RadioListTile(
                                             title: const Text('راست'),
                                             value: 'راست',
-                                            groupValue: _abscessTrateValue,
+                                            groupValue: _abscessTreatValue,
                                             onChanged: (String? value) {
                                               setState(() {
-                                                _abscessTrateValue = value!;
+                                                _abscessTreatValue = value!;
                                               });
                                             }),
                                       ),
@@ -1554,10 +1614,10 @@ class _NewPatientState extends State<NewPatient> {
                                         child: RadioListTile(
                                             title: const Text('چپ'),
                                             value: 'چپ',
-                                            groupValue: _abscessTrateValue,
+                                            groupValue: _abscessTreatValue,
                                             onChanged: (String? value) {
                                               setState(() {
-                                                _abscessTrateValue = value!;
+                                                _abscessTreatValue = value!;
                                               });
                                             }),
                                       ),
@@ -1565,10 +1625,82 @@ class _NewPatientState extends State<NewPatient> {
                                         child: RadioListTile(
                                             title: const Text('هردو'),
                                             value: 'هردو',
-                                            groupValue: _abscessTrateValue,
+                                            groupValue: _abscessTreatValue,
                                             onChanged: (String? value) {
                                               setState(() {
-                                                _abscessTrateValue = value!;
+                                                _abscessTreatValue = value!;
+                                              });
+                                            }),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible:
+                                  (defaultMaxillo == 'T.M.J') ? true : false,
+                              child: Container(
+                                width: 400.0,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 10.0),
+                                    border: OutlineInputBorder(),
+                                    labelText: 'ناحیه',
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: RadioListTile(
+                                            title: const Text('راست'),
+                                            value: 'راست',
+                                            groupValue: _tmgGroupValue,
+                                            onChanged: (String? value) {
+                                              setState(() {
+                                                _tmgGroupValue = value!;
+                                              });
+                                            }),
+                                      ),
+                                      Expanded(
+                                        child: RadioListTile(
+                                            title: const Text('چپ'),
+                                            value: 'چپ',
+                                            groupValue: _tmgGroupValue,
+                                            onChanged: (String? value) {
+                                              setState(() {
+                                                _tmgGroupValue = value!;
+                                              });
+                                            }),
+                                      ),
+                                      Expanded(
+                                        child: RadioListTile(
+                                            title: const Text('هردو'),
+                                            value: 'هردو',
+                                            groupValue: _tmgGroupValue,
+                                            onChanged: (String? value) {
+                                              setState(() {
+                                                _tmgGroupValue = value!;
                                               });
                                             }),
                                       ),
