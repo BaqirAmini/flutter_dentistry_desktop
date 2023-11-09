@@ -103,8 +103,22 @@ class _NewPatientState extends State<NewPatient> {
     'Tooth Reimplantation',
     'Jaw Fracture Fixation'
   ];
+
+// Gum selection for Abscess treatment
+  String defaultGumAbscess = 'Please select a gum';
+  List<String> abscessItems = [
+    'Please select a gum',
+    'فک بالا',
+    'فک پایین',
+    'هردو'
+  ];
+
   String? selectedSerId;
   List<Map<String, dynamic>> services = [];
+
+  // Abscess affected area
+  String defaultGumArea = 'Please select gum area';
+  List<String> gumAreaItems = ['Please select gum area', 'راست', 'چپ', 'هردو'];
 
   @override
   void initState() {
@@ -176,6 +190,7 @@ class _NewPatientState extends State<NewPatient> {
   // Radio Buttons
   String _crownGroupValue = 'R.C.T';
   String _fillingGroupValue = 'R.C.T';
+  String _abscessTrateValue = 'راست';
 
   /* ---------------- variable to get assigned values based on services types dropdown */
 
@@ -1087,14 +1102,10 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                            /*  Visibility(
-                              visible: _isVisibleForScaling
-                                  ? _isVisibleForScaling
-                                  : _isVisibleForOrtho
-                                      ? _isVisibleForOrtho
-                                      : _isVisibleGum
-                                          ? _isVisibleGum
-                                          : false,
+                            Visibility(
+                              visible: (defaultMaxillo == 'Abscess Treatment')
+                                  ? true
+                                  : false,
                               child: Container(
                                 width: 400.0,
                                 margin: const EdgeInsets.only(
@@ -1105,7 +1116,7 @@ class _NewPatientState extends State<NewPatient> {
                                 child: InputDecorator(
                                   decoration: const InputDecoration(
                                     border: OutlineInputBorder(),
-                                    labelText: 'فک / لثه',
+                                    labelText: 'انتخاب فک',
                                     enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
@@ -1123,17 +1134,17 @@ class _NewPatientState extends State<NewPatient> {
                                       child: DropdownButton(
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
-                                        value: selectedGumType1,
-                                        items: gumsType1.map((gumType1) {
+                                        value: defaultGumAbscess,
+                                        items: abscessItems.map((item) {
                                           return DropdownMenuItem<String>(
-                                            value: gumType1['teeth_ID'],
+                                            value: item,
                                             alignment: Alignment.centerRight,
-                                            child: Text(gumType1['gum']),
+                                            child: Text(item),
                                           );
                                         }).toList(),
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            selectedGumType1 = newValue;
+                                            defaultGumAbscess = newValue!;
                                           });
                                         },
                                       ),
@@ -1142,7 +1153,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
- */ /* Visibility(
+                            /* Visibility(
                               visible: _isVisibleForFilling
                                   ? _isVisibleForFilling
                                   : _isVisibleForBleaching
@@ -1491,6 +1502,77 @@ class _NewPatientState extends State<NewPatient> {
                                         },
                                       ),
                                     ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible: (defaultMaxillo == 'Abscess Treatment')
+                                  ? true
+                                  : false,
+                              child: Container(
+                                width: 400.0,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'ناحیه آبسه',
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: RadioListTile(
+                                            title: const Text('راست'),
+                                            value: 'راست',
+                                            groupValue: _abscessTrateValue,
+                                            onChanged: (String? value) {
+                                              setState(() {
+                                                _abscessTrateValue = value!;
+                                              });
+                                            }),
+                                      ),
+                                      Expanded(
+                                        child: RadioListTile(
+                                            title: const Text('چپ'),
+                                            value: 'چپ',
+                                            groupValue: _abscessTrateValue,
+                                            onChanged: (String? value) {
+                                              setState(() {
+                                                _abscessTrateValue = value!;
+                                              });
+                                            }),
+                                      ),
+                                      Expanded(
+                                        child: RadioListTile(
+                                            title: const Text('هردو'),
+                                            value: 'هردو',
+                                            groupValue: _abscessTrateValue,
+                                            onChanged: (String? value) {
+                                              setState(() {
+                                                _abscessTrateValue = value!;
+                                              });
+                                            }),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
