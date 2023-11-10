@@ -59,59 +59,74 @@ class _ChildQuadrantGrid extends State<ChildQuadrantGrid> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Column(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  _buildQuadrantWithLabel(
-                      'Q2',
-                      List<String>.generate(
-                              5, (i) => String.fromCharCode(65 + i))
-                          .reversed
-                          .toList()),
-                  _buildQuadrantWithLabel(
-                      'Q1',
-                      List<String>.generate(
-                          5, (i) => String.fromCharCode(65 + i))),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Row(
-                children: [
-                  _buildQuadrantWithLabel(
-                      'Q3',
-                      List<String>.generate(
-                              5, (i) => String.fromCharCode(65 + i))
-                          .reversed
-                          .toList()),
-                  _buildQuadrantWithLabel(
-                      'Q4',
-                      List<String>.generate(
-                          5, (i) => String.fromCharCode(65 + i))),
-                ],
-              ),
-            ),
-          ],
-        ),
-        Center(
-          child: Container(
-            width: 1,
-            height: double.infinity,
-            color: Colors.black,
+    return InputDecorator(
+      decoration: const InputDecoration(
+        contentPadding: EdgeInsets.all(20),
+        border: OutlineInputBorder(),
+        labelText: 'Childrent\'s Teeth Selection Chart',
+        floatingLabelAlignment: FloatingLabelAlignment.center,
+        labelStyle: TextStyle(color: Colors.blue, fontSize: 18),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(30.0),
           ),
+          borderSide: BorderSide(color: Colors.blue),
         ),
-        Center(
-          child: Container(
-            height: 1,
-            width: double.infinity,
-            color: Colors.black,
+      ),
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    _buildQuadrantWithLabel(
+                        'Q2',
+                        List<String>.generate(
+                                5, (i) => String.fromCharCode(65 + i))
+                            .reversed
+                            .toList()),
+                    _buildQuadrantWithLabel(
+                        'Q1',
+                        List<String>.generate(
+                            5, (i) => String.fromCharCode(65 + i))),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    _buildQuadrantWithLabel(
+                        'Q3',
+                        List<String>.generate(
+                                5, (i) => String.fromCharCode(65 + i))
+                            .reversed
+                            .toList()),
+                    _buildQuadrantWithLabel(
+                        'Q4',
+                        List<String>.generate(
+                            5, (i) => String.fromCharCode(65 + i))),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+          Center(
+            child: Container(
+              width: 1,
+              height: double.infinity,
+              color: Colors.blue,
+            ),
+          ),
+          Center(
+            child: Container(
+              height: 1,
+              width: double.infinity,
+              color: Colors.blue,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
