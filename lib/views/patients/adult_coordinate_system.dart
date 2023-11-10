@@ -59,67 +59,85 @@ class _AdultQuadrantGrid extends State<AdultQuadrantGrid> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Column(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  _buildQuadrantWithLabel(
-                    'Q2',
-                    List<int>.generate(
-                      8,
-                      (i) => (i + 1),
-                    ).reversed.toList(),
-                  ),
-                  _buildQuadrantWithLabel(
-                    'Q1',
-                    List<int>.generate(
-                      8,
-                      (i) => (i + 1),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Row(
-                children: [
-                  _buildQuadrantWithLabel(
-                    'Q3',
-                    List<int>.generate(
-                      8,
-                      (i) => (i + 1),
-                    ).reversed.toList(),
-                  ),
-                  _buildQuadrantWithLabel(
-                    'Q4',
-                    List<int>.generate(
-                      8,
-                      (i) => (i + 1),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+    return InputDecorator(
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(),
+        labelText: 'Adults\'s Teeth Selection Chart',
+        contentPadding: EdgeInsets.all(20),
+        floatingLabelAlignment: FloatingLabelAlignment.center,
+        labelStyle: TextStyle(color: Colors.blue, fontSize: 18),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+          borderSide: BorderSide(color: Colors.blue),
         ),
-        Center(
-          child: Container(
-            width: 1,
-            height: double.infinity,
-            color: Colors.black,
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(50.0),
           ),
         ),
-        Center(
-          child: Container(
-            height: 1,
-            width: double.infinity,
-            color: Colors.black,
+      ),
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    _buildQuadrantWithLabel(
+                      'Q2',
+                      List<int>.generate(
+                        8,
+                        (i) => (i + 1),
+                      ).reversed.toList(),
+                    ),
+                    _buildQuadrantWithLabel(
+                      'Q1',
+                      List<int>.generate(
+                        8,
+                        (i) => (i + 1),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    _buildQuadrantWithLabel(
+                      'Q3',
+                      List<int>.generate(
+                        8,
+                        (i) => (i + 1),
+                      ).reversed.toList(),
+                    ),
+                    _buildQuadrantWithLabel(
+                      'Q4',
+                      List<int>.generate(
+                        8,
+                        (i) => (i + 1),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+          Center(
+            child: Container(
+              width: 1,
+              height: double.infinity,
+              color: Colors.blue,
+            ),
+          ),
+          Center(
+            child: Container(
+              height: 1,
+              width: double.infinity,
+              color: Colors.blue,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
