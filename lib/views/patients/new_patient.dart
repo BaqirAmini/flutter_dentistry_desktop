@@ -113,6 +113,24 @@ class _NewPatientState extends State<NewPatient> {
     'هردو'
   ];
 
+  // Bleaching
+  String _defaultBleachValue = 'Please select a level';
+  final List<String> _bleachingItems = [
+    'Please select a level',
+    'یک مرحله',
+    'دو مرحله',
+    'سه مرحله'
+  ];
+
+  // Select gums for Denture
+  String _defaultDentureValue = 'Please select a gum';
+  final List<String> _dentureItems = [
+    'Please select a gum',
+    'فک بالا',
+    'فک پایین',
+    'هردو'
+  ];
+
   String? selectedSerId;
   List<Map<String, dynamic>> services = [];
 
@@ -127,7 +145,6 @@ class _NewPatientState extends State<NewPatient> {
     onChooseGum2();
     fetchToothNum();
     chooseGumType1();
-    fetchBleachings();
     fetchProtheses();
     fetchRemoveTooth();
   }
@@ -186,6 +203,8 @@ class _NewPatientState extends State<NewPatient> {
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
   final _formKey3 = GlobalKey<FormState>();
+  final _condFormKey = GlobalKey<FormState>();
+  final _condEditFormKey = GlobalKey<FormState>();
 
   // Radio Buttons
   String _crownGroupValue = 'R.C.T';
@@ -193,6 +212,10 @@ class _NewPatientState extends State<NewPatient> {
   String _abscessTreatValue = 'راست';
   String _tmgGroupValue = 'راست';
   String _sexGroupValue = 'مرد';
+  String _spGroupValue = 'Scaling';
+  String _dentureGroupValue = 'Full';
+  // Create a Map to store the group values for each condition
+  final Map<int, int> _condResultGV = {};
 
   /* ---------------- variable to get assigned values based on services types dropdown */
 
@@ -415,26 +438,44 @@ class _NewPatientState extends State<NewPatient> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Expanded(
-                                    child: RadioListTile(
-                                        title: const Text('مرد'),
-                                        value: 'مرد',
-                                        groupValue: _sexGroupValue,
-                                        onChanged: (String? value) {
-                                          setState(() {
-                                            _sexGroupValue = value!;
-                                          });
-                                        }),
+                                    child: Theme(
+                                      data: Theme.of(context).copyWith(
+                                        listTileTheme: const ListTileThemeData(
+                                            horizontalTitleGap: 0.5),
+                                      ),
+                                      child: RadioListTile(
+                                          title: const Text(
+                                            'مرد',
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                          value: 'مرد',
+                                          groupValue: _sexGroupValue,
+                                          onChanged: (String? value) {
+                                            setState(() {
+                                              _sexGroupValue = value!;
+                                            });
+                                          }),
+                                    ),
                                   ),
                                   Expanded(
-                                    child: RadioListTile(
-                                        title: const Text('زن'),
-                                        value: 'زن',
-                                        groupValue: _sexGroupValue,
-                                        onChanged: (String? value) {
-                                          setState(() {
-                                            _sexGroupValue = value!;
-                                          });
-                                        }),
+                                    child: Theme(
+                                      data: Theme.of(context).copyWith(
+                                        listTileTheme: const ListTileThemeData(
+                                            horizontalTitleGap: 0.5),
+                                      ),
+                                      child: RadioListTile(
+                                          title: const Text(
+                                            'زن',
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                          value: 'زن',
+                                          groupValue: _sexGroupValue,
+                                          onChanged: (String? value) {
+                                            setState(() {
+                                              _sexGroupValue = value!;
+                                            });
+                                          }),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -675,7 +716,218 @@ class _NewPatientState extends State<NewPatient> {
         Step(
           state: _currentStep <= 1 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 1,
-          title: Text(translations[selectedLanguage]?['َDentalService'] ?? ''),
+          title: const Text('تاریخچه صحی مریض'),
+          content: SizedBox(
+            child: Center(
+              child: Form(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'تاریخچه صحی مریض که قبل از خدمات دندان باید جداً درنظر گرفته شود:',
+                          style: TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.bold),
+                        ),
+                        InkWell(
+                          onTap: () => __onCreateNewCondition(),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border:
+                                  Border.all(color: Colors.blue, width: 2.0),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    FutureBuilder(
+                      future: _onGetCondition(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final conds = snapshot.data;
+                          List<Widget> conditionWidgets =
+                              []; // Create an empty list of widgets
+                          for (var cond in conds!) {
+                            // Set a dynamic group value for radio buttons
+                            _condResultGV[cond.condID] ??= 0;
+                            // Add each Text widget to the list
+                            conditionWidgets.add(
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(' - ${cond.CondName}'),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Expanded(
+                                          flex: 1,
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                horizontalTitleGap: 0.5,
+                                              ),
+                                            ),
+                                            child: RadioListTile(
+                                              title: const Text(
+                                                'مثبت',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 1,
+                                              groupValue:
+                                                  _condResultGV[cond.condID],
+                                              onChanged: (int? value) {
+                                                setState(
+                                                  () {
+                                                    _condResultGV[cond.condID] =
+                                                        value!;
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 1,
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                horizontalTitleGap: 0.5,
+                                              ),
+                                            ),
+                                            child: RadioListTile(
+                                              title: const Text(
+                                                'منفی',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 0,
+                                              groupValue:
+                                                  _condResultGV[cond.condID],
+                                              onChanged: (int? value) {
+                                                setState(
+                                                  () {
+                                                    _condResultGV[cond.condID] =
+                                                        value!;
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 1,
+                                          child: PopupMenuButton(
+                                            icon: const Icon(
+                                              Icons.more_horiz,
+                                              color: Colors.blue,
+                                            ),
+                                            tooltip: 'بیشتر...',
+                                            itemBuilder:
+                                                (BuildContext context) =>
+                                                    <PopupMenuEntry>[
+                                              PopupMenuItem(
+                                                child: Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: ListTile(
+                                                    leading:
+                                                        const Icon(Icons.list),
+                                                    title: const Text(
+                                                        'شرح بیشتر تاریخچه'),
+                                                    onTap: () {},
+                                                  ),
+                                                ),
+                                              ),
+                                              PopupMenuItem(
+                                                child: Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: Builder(builder:
+                                                      (BuildContext context) {
+                                                    return ListTile(
+                                                      leading: const Icon(
+                                                          Icons.edit),
+                                                      title: const Text(
+                                                          'تغییر دادن'),
+                                                      onTap: () {
+                                                        _onEditHealthHistory(
+                                                            cond.condID,
+                                                            cond.CondName);
+                                                        Navigator.pop(context);
+                                                      },
+                                                    );
+                                                  }),
+                                                ),
+                                              ),
+                                              PopupMenuItem(
+                                                child: Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: ListTile(
+                                                      leading: const Icon(
+                                                          Icons.delete_outline_rounded),
+                                                      title: const Text(
+                                                          'حذف کردن'),
+                                                      onTap: () {
+                                                        _onDeleteHealthHistory(
+                                                            cond.condID);
+                                                        Navigator.pop(context);
+                                                      }),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        // Add your second RadioListTile here
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          // Return a Column with all the widgets
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment
+                                .start, // Align text to the left
+                            // For right alignment, use CrossAxisAlignment.end
+                            children: conditionWidgets,
+                          );
+                        } else if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else {
+                          return const CircularProgressIndicator();
+                        }
+                        return const Text('No Data');
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Step(
+          state: _currentStep <= 2 ? StepState.editing : StepState.complete,
+          isActive: _currentStep >= 2,
+          title: const Text('خدمات مورد نیاز'),
           content: SizedBox(
             child: Center(
               child: Form(
@@ -683,9 +935,10 @@ class _NewPatientState extends State<NewPatient> {
                 child: Column(
                   children: [
                     const Text(
-                        'لطفا نوعیت سرویس (خدمات) و خانه های مربوطه آنرا با دقت پر کنید.'),
+                        'لطفاً اوضاع عمومی مریض را با دقت ارزیابی نموده و طبق خدمات را به پیش ببرید'),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Column(
                           children: [
@@ -961,26 +1214,46 @@ class _NewPatientState extends State<NewPatient> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Expanded(
-                                        child: RadioListTile(
-                                            title: const Text('R.C.T'),
-                                            value: 'R.C.T',
-                                            groupValue: _crownGroupValue,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _crownGroupValue = value!;
-                                              });
-                                            }),
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'R.C.T',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'R.C.T',
+                                              groupValue: _crownGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _crownGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
                                       ),
                                       Expanded(
-                                        child: RadioListTile(
-                                            title: const Text('Vital'),
-                                            value: 'Vital',
-                                            groupValue: _crownGroupValue,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _crownGroupValue = value!;
-                                              });
-                                            }),
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'Vital',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'Vital',
+                                              groupValue: _crownGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _crownGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -1017,80 +1290,48 @@ class _NewPatientState extends State<NewPatient> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Expanded(
-                                        child: RadioListTile(
-                                            title: const Text('R.C.T'),
-                                            value: 'R.C.T',
-                                            groupValue: _fillingGroupValue,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _fillingGroupValue = value!;
-                                              });
-                                            }),
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'R.C.T',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'R.C.T',
+                                              groupValue: _fillingGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _fillingGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
                                       ),
                                       Expanded(
-                                        child: RadioListTile(
-                                            title: const Text('Operative'),
-                                            value: 'Operative',
-                                            groupValue: _fillingGroupValue,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _fillingGroupValue = value!;
-                                              });
-                                            }),
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'Operative',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'Operative',
+                                              groupValue: _fillingGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _fillingGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
                                       ),
                                     ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible: _isVisibleForBleaching,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'نوعیت سفید کردن دندانها',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: selectedBleachStep,
-                                        items: teethBleachings.map((step) {
-                                          return DropdownMenuItem<String>(
-                                            value: step['ser_det_ID'],
-                                            alignment: Alignment.centerRight,
-                                            child: Text(
-                                                step['service_specific_value']),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            selectedBleachStep = newValue;
-                                            selectedServiceDetailID =
-                                                int.parse(selectedBleachStep!);
-                                          });
-                                        },
-                                      ),
-                                    ),
                                   ),
                                 ),
                               ),
@@ -1346,8 +1587,112 @@ class _NewPatientState extends State<NewPatient> {
                               ),
                             ),
                             Visibility(
-                              visible: _isVisibleForProthesis
-                                  ? _isVisibleForProthesis
+                              visible: (selectedSerId == '9') ? true : false,
+                              child: Container(
+                                width: 400.0,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 10.0),
+                                    border: OutlineInputBorder(),
+                                    labelText: 'نوعیت دینچر',
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'Full',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'Full',
+                                              groupValue: _dentureGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _dentureGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'Partial',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'Partial',
+                                              groupValue: _dentureGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _dentureGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'C.C Plate',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'C.C Plate',
+                                              groupValue: _dentureGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _dentureGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              // ignore: unrelated_type_equality_checks
+                              visible: (selectedSerId == '9' &&
+                                      (_dentureGroupValue == 'Full' ||
+                                          _dentureGroupValue == 'C.C Plate'))
+                                  ? true
                                   : false,
                               child: Container(
                                 width: 400.0,
@@ -1359,7 +1704,7 @@ class _NewPatientState extends State<NewPatient> {
                                 child: InputDecorator(
                                   decoration: const InputDecoration(
                                     border: OutlineInputBorder(),
-                                    labelText: 'نوعیت پروتیز',
+                                    labelText: 'انتخاب فک',
                                     enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
@@ -1374,23 +1719,25 @@ class _NewPatientState extends State<NewPatient> {
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
                                       height: 26.0,
-                                      child: DropdownButton(
+                                      child: DropdownButton<String>(
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
-                                        value: selectedProthesis,
-                                        items: protheses.map((prothesis) {
+                                        value: _defaultDentureValue,
+                                        items: _dentureItems.map((String item) {
                                           return DropdownMenuItem<String>(
-                                            value: prothesis['ser_det_ID'],
                                             alignment: Alignment.centerRight,
-                                            child: Text(prothesis[
-                                                'service_specific_value']),
+                                            value: item,
+                                            child: Directionality(
+                                              textDirection: isEnglish
+                                                  ? TextDirection.ltr
+                                                  : TextDirection.rtl,
+                                              child: Text(item),
+                                            ),
                                           );
                                         }).toList(),
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            selectedProthesis = newValue;
-                                            selectedProthis =
-                                                int.parse(selectedProthesis!);
+                                            defaultOrthoType = newValue!;
                                           });
                                         },
                                       ),
@@ -1600,37 +1947,67 @@ class _NewPatientState extends State<NewPatient> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Expanded(
-                                        child: RadioListTile(
-                                            title: const Text('راست'),
-                                            value: 'راست',
-                                            groupValue: _abscessTreatValue,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _abscessTreatValue = value!;
-                                              });
-                                            }),
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'راست',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'راست',
+                                              groupValue: _abscessTreatValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _abscessTreatValue = value!;
+                                                });
+                                              }),
+                                        ),
                                       ),
                                       Expanded(
-                                        child: RadioListTile(
-                                            title: const Text('چپ'),
-                                            value: 'چپ',
-                                            groupValue: _abscessTreatValue,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _abscessTreatValue = value!;
-                                              });
-                                            }),
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'چپ',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'چپ',
+                                              groupValue: _abscessTreatValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _abscessTreatValue = value!;
+                                                });
+                                              }),
+                                        ),
                                       ),
                                       Expanded(
-                                        child: RadioListTile(
-                                            title: const Text('هردو'),
-                                            value: 'هردو',
-                                            groupValue: _abscessTreatValue,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _abscessTreatValue = value!;
-                                              });
-                                            }),
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'هردو',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'هردو',
+                                              groupValue: _abscessTreatValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _abscessTreatValue = value!;
+                                                });
+                                              }),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -1638,8 +2015,10 @@ class _NewPatientState extends State<NewPatient> {
                               ),
                             ),
                             Visibility(
-                              visible:
-                                  (defaultMaxillo == 'T.M.J') ? true : false,
+                              visible: (defaultMaxillo == 'T.M.J' &&
+                                      selectedSerId == '7')
+                                  ? true
+                                  : false,
                               child: Container(
                                 width: 400.0,
                                 margin: const EdgeInsets.only(
@@ -1672,39 +2051,219 @@ class _NewPatientState extends State<NewPatient> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Expanded(
-                                        child: RadioListTile(
-                                            title: const Text('راست'),
-                                            value: 'راست',
-                                            groupValue: _tmgGroupValue,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _tmgGroupValue = value!;
-                                              });
-                                            }),
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'راست',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'راست',
+                                              groupValue: _tmgGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _tmgGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
                                       ),
                                       Expanded(
-                                        child: RadioListTile(
-                                            title: const Text('چپ'),
-                                            value: 'چپ',
-                                            groupValue: _tmgGroupValue,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _tmgGroupValue = value!;
-                                              });
-                                            }),
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'چپ',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'چپ',
+                                              groupValue: _tmgGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _tmgGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
                                       ),
                                       Expanded(
-                                        child: RadioListTile(
-                                            title: const Text('هردو'),
-                                            value: 'هردو',
-                                            groupValue: _tmgGroupValue,
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                _tmgGroupValue = value!;
-                                              });
-                                            }),
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'هردو',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'هردو',
+                                              groupValue: _tmgGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _tmgGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
                                       ),
                                     ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible: (selectedSerId == '4') ? true : false,
+                              child: Container(
+                                width: 400.0,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 10.0),
+                                    border: OutlineInputBorder(),
+                                    labelText: 'نوعیت اجرا',
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'Scaling',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'Scaling',
+                                              groupValue: _spGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _spGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'Polishing',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'Polishing',
+                                              groupValue: _spGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _spGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'Both',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'Both',
+                                              groupValue: _spGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _spGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Visibility(
+                              visible: _isVisibleForBleaching,
+                              child: Container(
+                                width: 400.0,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 20.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'نوعیت سفید کردن دندانها',
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: SizedBox(
+                                      height: 26.0,
+                                      child: DropdownButton(
+                                        isExpanded: true,
+                                        icon: const Icon(Icons.arrow_drop_down),
+                                        value: _defaultBleachValue,
+                                        items: _bleachingItems.map((item) {
+                                          return DropdownMenuItem<String>(
+                                            value: item,
+                                            alignment: Alignment.centerRight,
+                                            child: Text(item),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            _defaultBleachValue = newValue!;
+                                          });
+                                        },
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1734,7 +2293,8 @@ class _NewPatientState extends State<NewPatient> {
                                       RegExp(_regExOnlyAbc),
                                     ),
                                   ],
-                                  maxLines: 3,
+                                  minLines: 1,
+                                  maxLines: 2,
                                   decoration: const InputDecoration(
                                     border: OutlineInputBorder(),
                                     labelText: 'توضیحات',
@@ -1768,42 +2328,25 @@ class _NewPatientState extends State<NewPatient> {
                       ],
                     ),
                     Visibility(
-                        visible: (selectedSerId == '1' ||
-                                selectedSerId == '2' ||
-                                selectedSerId == '11' ||
-                                selectedSerId == '15' ||
-                                defaultMaxillo == 'Tooth Extraction' ||
-                                defaultMaxillo == 'Tooth Reimplantation')
-                            ? true
-                            : false,
-                        child: Column(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(
-                                  bottom: 15.0, top: 15.0),
-                              child: (ageDropDown > 13)
-                                  ? const Text(
-                                      'Adults\' Teeth Selection Chart',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                  : const Text(
-                                      'Children\'s Teeth Selection Chart',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                            ),
-                            SizedBox(
-                              width: (ageDropDown <= 13) ? 470 : 800,
-                              height: 300,
-                              child: (ageDropDown <= 13)
-                                  ? const ChildQuadrantGrid()
-                                  : const AdultQuadrantGrid(),
-                            ),
-                          ],
-                        )),
+                      visible: (selectedSerId == '1' ||
+                              selectedSerId == '2' ||
+                              selectedSerId == '11' ||
+                              selectedSerId == '15' ||
+                              defaultMaxillo == 'Tooth Extraction' ||
+                              defaultMaxillo == 'Tooth Reimplantation' ||
+                              (selectedSerId == '9' &&
+                                  _dentureGroupValue == 'Partial'))
+                          ? true
+                          : false,
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 20),
+                        width: (ageDropDown <= 13) ? 470 : 770,
+                        height: 300,
+                        child: (ageDropDown <= 13)
+                            ? const ChildQuadrantGrid()
+                            : const AdultQuadrantGrid(),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1811,8 +2354,8 @@ class _NewPatientState extends State<NewPatient> {
           ),
         ),
         Step(
-          state: _currentStep <= 1 ? StepState.editing : StepState.complete,
-          isActive: _currentStep >= 1,
+          state: _currentStep <= 3 ? StepState.editing : StepState.complete,
+          isActive: _currentStep >= 3,
           title: Text(translations[selectedLanguage]?['َServiceFee'] ?? ''),
           content: SizedBox(
             child: Center(
@@ -2189,6 +2732,238 @@ class _NewPatientState extends State<NewPatient> {
             ));
   }
 
+// Create new patient conditions
+  __onCreateNewCondition() {
+    final condNameController = TextEditingController();
+    return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Directionality(
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+          child: const Text('ایجاد تاریخچه صحی مریض'),
+        ),
+        content: Directionality(
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+          child: SizedBox(
+            height: 100,
+            width: 600,
+            child: Form(
+              key: _condFormKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: condNameController,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp('[a-zA-Z,،?. \u0600-\u06FFF]'),
+                      ),
+                    ],
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'تاریخچه صحی مریض نمی تواند خالی باشد.';
+                      } else if (value.length > 256) {
+                        return 'تاریخچه صحی خیلی طولانی است. لطفاً کمی مختصرش کنید.';
+                      }
+                      return null;
+                    },
+                    minLines: 1,
+                    maxLines: 2,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'تاریخچه صحی مریض',
+                      suffixIcon: Icon(Icons.note_alt_outlined),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide: BorderSide(color: Colors.grey)),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide: BorderSide(color: Colors.blue)),
+                      errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide: BorderSide(color: Colors.red)),
+                      focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 1.5)),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            child: const Text('لغو'),
+          ),
+          ElevatedButton(
+              onPressed: () async {
+                if (_condFormKey.currentState!.validate()) {
+                  var condText = condNameController.text;
+                  final conn = await onConnToDb();
+                  final insertResults = await conn.query(
+                      'INSERT INTO conditions (name) VALUES (?)', [condText]);
+                  if (insertResults.affectedRows! > 0) {
+                    _onShowSnack(Colors.green, 'سوال موفقانه ثبت گردید.');
+                    setState(() {});
+                  } else {
+                    _onShowSnack(Colors.red, 'ثبت سوال ناکام شد.');
+                  }
+                  Navigator.of(context, rootNavigator: true).pop();
+                  await conn.close();
+                }
+              },
+              child: const Text('ثبت')),
+        ],
+      ),
+    );
+  }
+
+// Edit patient health history
+  _onEditHealthHistory(int condID, String condText) {
+    final condNameController = TextEditingController();
+    condNameController.text = condText;
+    return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Directionality(
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+          child: const Text('تغییر تاریخچه صحی مریض'),
+        ),
+        content: Directionality(
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+          child: SizedBox(
+            height: 100,
+            width: 600,
+            child: Form(
+              key: _condEditFormKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: condNameController,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp('[a-zA-Z,،?. \u0600-\u06FFF]'),
+                      ),
+                    ],
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'تاریخچه صحی مریض نمی تواند خالی باشد.';
+                      } else if (value.length > 256) {
+                        return 'تاریخچه صحی خیلی طولانی است. لطفاً کمی مختصرش کنید.';
+                      }
+                      return null;
+                    },
+                    minLines: 1,
+                    maxLines: 2,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'تاریخچه صحی مریض',
+                      suffixIcon: Icon(Icons.note_alt_outlined),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide: BorderSide(color: Colors.grey)),
+                      focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide: BorderSide(color: Colors.blue)),
+                      errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide: BorderSide(color: Colors.red)),
+                      focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                          borderSide:
+                              BorderSide(color: Colors.red, width: 1.5)),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            child: const Text('لغو'),
+          ),
+          ElevatedButton(
+              onPressed: () async {
+                print('Editing $condID');
+                if (_condEditFormKey.currentState!.validate()) {
+                  var condText = condNameController.text;
+                  final conn = await onConnToDb();
+                  final editResults = await conn.query(
+                      'UPDATE conditions SET name = ? WHERE cond_ID = ?',
+                      [condText, condID]);
+                  if (editResults.affectedRows! > 0) {
+                    _onShowSnack(
+                        Colors.green, 'تاریخچه صحی مریض موفقانه تغییر کرد.');
+                    setState(() {});
+                  } else {
+                    _onShowSnack(Colors.red, 'هیچ تغییراتی نیاورده اید.');
+                  }
+                  Navigator.of(context, rootNavigator: true).pop();
+                  await conn.close();
+                }
+              },
+              child: const Text('تغییر دادن')),
+        ],
+      ),
+    );
+  }
+
+// Fetch patient condidtions
+  Future<List<PatientCondition>> _onGetCondition() async {
+    final conn = await onConnToDb();
+    final results = await conn.query('SELECT cond_ID, name FROM conditions');
+    final conditions = results
+        .map(
+          (row) =>
+              PatientCondition(condID: row[0], CondName: row[1].toString()),
+        )
+        .toList();
+    await conn.close();
+    return conditions;
+  }
+
+  _onDeleteHealthHistory(int condID) {
+    return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Directionality(
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+          child: const Text('حذف تاریخچه صحی مریض'),
+        ),
+        content: Directionality(
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+          child: const Text(
+              'آیا مطمیین هستید که میخواهید این تاریخچه صحی را حذف نمایید؟'),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+              child: const Text('لغو')),
+          ElevatedButton(
+            onPressed: () async {
+              final conn = await onConnToDb();
+              final deleteResults = await conn
+                  .query('DELETE FROM conditions WHERE cond_ID = ?', [condID]);
+              if (deleteResults.affectedRows! > 0) {
+                _onShowSnack(Colors.green, 'تاریخچه صحی موفقانه حذف گردید.');
+                setState(() {});
+              } else {
+                _onShowSnack(Colors.red, 'حذف تاریخچه صحی ناکام شد.');
+              }
+              Navigator.of(context, rootNavigator: true).pop();
+              await conn.close();
+            },
+            child: const Text('حذف'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Fetch translations keys based on the selected language.
@@ -2286,27 +3061,6 @@ class _NewPatientState extends State<NewPatient> {
       ages.add(a);
     }
     return ages;
-  }
-
-//  سفید کردن دندان
-  String? selectedBleachStep;
-  List<Map<String, dynamic>> teethBleachings = [];
-
-  Future<void> fetchBleachings() async {
-    var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_id = 3');
-    setState(() {
-      teethBleachings = results
-          .map((result) => {
-                'ser_det_ID': result[0].toString(),
-                'service_specific_value': result[1]
-              })
-          .toList();
-    });
-    selectedBleachStep =
-        teethBleachings.isNotEmpty ? teethBleachings[0]['ser_det_ID'] : null;
-    await conn.close();
   }
 
 //  نوعیت کشیدن دندان
@@ -2430,4 +3184,15 @@ class _NewPatientState extends State<NewPatient> {
     List<String> installmentItems = ['تکمیل', 'دو قسط', 'سه قسط'];
     return installmentItems;
   }
+}
+
+// Data Model Class
+class PatientCondition {
+  final int condID;
+  // ignore: non_constant_identifier_names
+  final String CondName;
+
+  // Constructor
+  // ignore: non_constant_identifier_names
+  PatientCondition({required this.condID, required this.CondName});
 }
