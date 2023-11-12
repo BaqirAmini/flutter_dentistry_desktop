@@ -215,7 +215,8 @@ class _NewPatientState extends State<NewPatient> {
   String _sexGroupValue = 'مرد';
   String _spGroupValue = 'Scaling';
   String _dentureGroupValue = 'Full';
-  String _histCondGroupValue = 'نا معلوم';
+  String _histCondGroupValue = 'نامعلوم';
+  String _durationGroupValue = 'نامعلوم';
   // Create a Map to store the group values for each condition
   final Map<int, int> _condResultGV = {};
 
@@ -732,18 +733,22 @@ class _NewPatientState extends State<NewPatient> {
                         style: TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
-                      InkWell(
-                        onTap: () => _onCreateNewHealthHistory(),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.blue, width: 2.0),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(5.0),
-                            child: Icon(
-                              Icons.add,
-                              color: Colors.blue,
+                      Tooltip(
+                        message: 'تاریخچه صحی جدید',
+                        child: InkWell(
+                          onTap: () => _onCreateNewHealthHistory(),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border:
+                                  Border.all(color: Colors.blue, width: 2.0),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(5.0),
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.blue,
+                              ),
                             ),
                           ),
                         ),
@@ -762,144 +767,155 @@ class _NewPatientState extends State<NewPatient> {
                           _condResultGV[cond.condID] ??= 0;
                           // Add each Text widget to the list
                           conditionWidgets.add(
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: Text(' - ${cond.CondName}'),
+                            Container(
+                              decoration: const BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                      width: 0.4, color: Colors.grey),
                                 ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                              horizontalTitleGap: 0.5,
-                                            ),
-                                          ),
-                                          child: RadioListTile(
-                                            title: const Text(
-                                              'مثبت',
-                                              style: TextStyle(fontSize: 14),
-                                            ),
-                                            value: 1,
-                                            groupValue:
-                                                _condResultGV[cond.condID],
-                                            onChanged: (int? value) {
-                                              setState(
-                                                () {
-                                                  _condResultGV[cond.condID] =
-                                                      value!;
-                                                },
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                              horizontalTitleGap: 0.5,
-                                            ),
-                                          ),
-                                          child: RadioListTile(
-                                            title: const Text(
-                                              'منفی',
-                                              style: TextStyle(fontSize: 14),
-                                            ),
-                                            value: 0,
-                                            groupValue:
-                                                _condResultGV[cond.condID],
-                                            onChanged: (int? value) {
-                                              setState(
-                                                () {
-                                                  _condResultGV[cond.condID] =
-                                                      value!;
-                                                },
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: PopupMenuButton(
-                                          icon: const Icon(
-                                            Icons.more_horiz,
-                                            color: Colors.blue,
-                                          ),
-                                          tooltip: 'بیشتر...',
-                                          itemBuilder: (BuildContext context) =>
-                                              <PopupMenuEntry>[
-                                            PopupMenuItem(
-                                              child: Directionality(
-                                                textDirection:
-                                                    TextDirection.rtl,
-                                                child: ListTile(
-                                                  leading:
-                                                      const Icon(Icons.list),
-                                                  title: const Text(
-                                                      'شرح بیشتر تاریخچه'),
-                                                  onTap: () {
-                                                    _onAddMoreDetailsforHistory();
-                                                  },
-                                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(' - ${cond.CondName}'),
+                                  ),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Expanded(
+                                          flex: 1,
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                horizontalTitleGap: 0.5,
                                               ),
                                             ),
-                                            PopupMenuItem(
-                                              child: Directionality(
-                                                textDirection:
-                                                    TextDirection.rtl,
-                                                child: Builder(builder:
-                                                    (BuildContext context) {
-                                                  return ListTile(
+                                            child: RadioListTile(
+                                              title: const Text(
+                                                'مثبت',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 1,
+                                              groupValue:
+                                                  _condResultGV[cond.condID],
+                                              onChanged: (int? value) {
+                                                setState(
+                                                  () {
+                                                    _condResultGV[cond.condID] =
+                                                        value!;
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 1,
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                horizontalTitleGap: 0.5,
+                                              ),
+                                            ),
+                                            child: RadioListTile(
+                                              title: const Text(
+                                                'منفی',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 0,
+                                              groupValue:
+                                                  _condResultGV[cond.condID],
+                                              onChanged: (int? value) {
+                                                setState(
+                                                  () {
+                                                    _condResultGV[cond.condID] =
+                                                        value!;
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 1,
+                                          child: PopupMenuButton(
+                                            icon: const Icon(
+                                              Icons.more_horiz,
+                                              color: Colors.blue,
+                                            ),
+                                            tooltip: 'بیشتر...',
+                                            itemBuilder:
+                                                (BuildContext context) =>
+                                                    <PopupMenuEntry>[
+                                              PopupMenuItem(
+                                                child: Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: ListTile(
                                                     leading:
-                                                        const Icon(Icons.edit),
+                                                        const Icon(Icons.list),
                                                     title: const Text(
-                                                        'تغییر دادن'),
+                                                        'تکمیل تاریخچه'),
                                                     onTap: () {
-                                                      _onEditHealthHistory(
-                                                          cond.condID,
-                                                          cond.CondName);
+                                                      _onAddMoreDetailsforHistory();
                                                       Navigator.pop(context);
                                                     },
-                                                  );
-                                                }),
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                            PopupMenuItem(
-                                              child: Directionality(
-                                                textDirection:
-                                                    TextDirection.rtl,
-                                                child: ListTile(
-                                                    leading: const Icon(Icons
-                                                        .delete_outline_rounded),
-                                                    title:
-                                                        const Text('حذف کردن'),
-                                                    onTap: () {
-                                                      _onDeleteHealthHistory(
-                                                          cond.condID);
-                                                      Navigator.pop(context);
-                                                    }),
+                                              PopupMenuItem(
+                                                child: Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: Builder(builder:
+                                                      (BuildContext context) {
+                                                    return ListTile(
+                                                      leading: const Icon(
+                                                          Icons.edit),
+                                                      title: const Text(
+                                                          'تغییر دادن'),
+                                                      onTap: () {
+                                                        _onEditHealthHistory(
+                                                            cond.condID,
+                                                            cond.CondName);
+                                                        Navigator.pop(context);
+                                                      },
+                                                    );
+                                                  }),
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                              PopupMenuItem(
+                                                child: Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: ListTile(
+                                                      leading: const Icon(Icons
+                                                          .delete_outline_rounded),
+                                                      title: const Text(
+                                                          'حذف کردن'),
+                                                      onTap: () {
+                                                        _onDeleteHealthHistory(
+                                                            cond.condID);
+                                                        Navigator.pop(context);
+                                                      }),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      // Add your second RadioListTile here
-                                    ],
+                                        // Add your second RadioListTile here
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         }
@@ -2979,6 +2995,7 @@ class _NewPatientState extends State<NewPatient> {
   }
 
   _onAddMoreDetailsforHistory() {
+    TextEditingController healthHistoryNotes = TextEditingController();
     return showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -2989,15 +3006,15 @@ class _NewPatientState extends State<NewPatient> {
         content: Directionality(
           textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
           child: SizedBox(
-            width: 500,
+            height: 380,
             child: Form(
               key: _hisDetFormKey,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text(
-                      'آیا مطمیین هستید که میخواهید این تاریخچه صحی را حذف نمایید؟'),
                   Container(
-                    width: 400.0,
+                    width: 500.0,
                     margin: const EdgeInsets.only(
                         left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                     child: TextFormField(
@@ -3146,10 +3163,10 @@ class _NewPatientState extends State<NewPatient> {
                               ),
                               child: RadioListTile(
                                   title: const Text(
-                                    'نا معلوم',
+                                    'نامعلوم',
                                     style: TextStyle(fontSize: 14),
                                   ),
-                                  value: 'نا معلوم',
+                                  value: 'نامعلوم',
                                   groupValue: _histCondGroupValue,
                                   onChanged: (String? value) {
                                     setState(() {
@@ -3159,6 +3176,181 @@ class _NewPatientState extends State<NewPatient> {
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 500.0,
+                    margin: const EdgeInsets.only(
+                        left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 10.0),
+                        border: OutlineInputBorder(),
+                        labelText: 'سابقه / مدت',
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(50.0),
+                          ),
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(50.0),
+                          ),
+                          borderSide: BorderSide(color: Colors.blue),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                listTileTheme: const ListTileThemeData(
+                                    horizontalTitleGap: 0.5),
+                              ),
+                              child: RadioListTile(
+                                  title: const Text(
+                                    '1 هفته',
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                  value: '1 هفته',
+                                  groupValue: _durationGroupValue,
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      _durationGroupValue = value!;
+                                    });
+                                  }),
+                            ),
+                          ),
+                          Expanded(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                listTileTheme: const ListTileThemeData(
+                                    horizontalTitleGap: 0.5),
+                              ),
+                              child: RadioListTile(
+                                  title: const Text(
+                                    '1 ماه',
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                  value: '1 ماه',
+                                  groupValue: _durationGroupValue,
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      _durationGroupValue = value!;
+                                    });
+                                  }),
+                            ),
+                          ),
+                          Expanded(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                listTileTheme: const ListTileThemeData(
+                                    horizontalTitleGap: 0.5),
+                              ),
+                              child: RadioListTile(
+                                  title: const Text(
+                                    '6 ماه',
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                  value: '6 ماه',
+                                  groupValue: _durationGroupValue,
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      _durationGroupValue = value!;
+                                    });
+                                  }),
+                            ),
+                          ),
+                          Expanded(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                listTileTheme: const ListTileThemeData(
+                                    horizontalTitleGap: 0.5),
+                              ),
+                              child: RadioListTile(
+                                  title: const Text(
+                                    'بیشتر',
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                  value: 'بیشتر',
+                                  groupValue: _durationGroupValue,
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      _durationGroupValue = value!;
+                                    });
+                                  }),
+                            ),
+                          ),
+                          Expanded(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                listTileTheme: const ListTileThemeData(
+                                    horizontalTitleGap: 0.5),
+                              ),
+                              child: RadioListTile(
+                                  title: const Text(
+                                    'نامعلوم',
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                  value: 'نامعلوم',
+                                  groupValue: _durationGroupValue,
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      _durationGroupValue = value!;
+                                    });
+                                  }),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 500.0,
+                    margin: const EdgeInsets.only(
+                        left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                    child: TextFormField(
+                      controller: healthHistoryNotes,
+                      validator: (value) {
+                        if (value!.isNotEmpty) {
+                          if (value.length > 40 || value.length < 10) {
+                            return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                          }
+                        }
+                        return null;
+                      },
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(_regExOnlyAbc),
+                        ),
+                      ],
+                      minLines: 1,
+                      maxLines: 2,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'توضیحات',
+                        suffixIcon: Icon(Icons.note_alt_outlined),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.grey)),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.blue)),
+                        errorBorder: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.red)),
+                        focusedErrorBorder: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide:
+                                BorderSide(color: Colors.red, width: 1.5)),
                       ),
                     ),
                   ),
@@ -3173,7 +3365,8 @@ class _NewPatientState extends State<NewPatient> {
               child: const Text('لغو')),
           ElevatedButton(
             onPressed: () async {
-              /*  final conn = await onConnToDb();
+              if (_hisDetFormKey.currentState!.validate()) {}
+              /*   final conn = await onConnToDb();
               final deleteResults = await conn
                   .query('DELETE FROM conditions WHERE cond_ID = ?', [condID]);
               if (deleteResults.affectedRows! > 0) {
