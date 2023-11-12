@@ -719,211 +719,221 @@ class _NewPatientState extends State<NewPatient> {
           state: _currentStep <= 1 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 1,
           title: const Text('تاریخچه صحی مریض'),
-          content: SizedBox(
-            child: Center(
-              child: Form(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'تاریخچه صحی مریض که قبل از خدمات دندان باید جداً درنظر گرفته شود:',
-                          style: TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.bold),
-                        ),
-                        InkWell(
-                          onTap: () => _onCreateNewHealthHistory(),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border:
-                                  Border.all(color: Colors.blue, width: 2.0),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Icon(
-                                Icons.add,
-                                color: Colors.blue,
-                              ),
+          content: Center(
+            child: Form(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'تاریخچه صحی مریض که قبل از خدمات دندان باید جداً درنظر گرفته شود:',
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                      InkWell(
+                        onTap: () => _onCreateNewHealthHistory(),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.blue, width: 2.0),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(5.0),
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.blue,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                    FutureBuilder(
-                      future: _onFetchHealthHistory(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          final conds = snapshot.data;
-                          List<Widget> conditionWidgets =
-                              []; // Create an empty list of widgets
-                          for (var cond in conds!) {
-                            // Set a dynamic group value for radio buttons
-                            _condResultGV[cond.condID] ??= 0;
-                            // Add each Text widget to the list
-                            conditionWidgets.add(
-                              Row(
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(' - ${cond.CondName}'),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Expanded(
-                                          flex: 1,
-                                          child: Theme(
-                                            data: Theme.of(context).copyWith(
-                                              listTileTheme:
-                                                  const ListTileThemeData(
-                                                horizontalTitleGap: 0.5,
-                                              ),
-                                            ),
-                                            child: RadioListTile(
-                                              title: const Text(
-                                                'مثبت',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 1,
-                                              groupValue:
-                                                  _condResultGV[cond.condID],
-                                              onChanged: (int? value) {
-                                                setState(
-                                                  () {
-                                                    _condResultGV[cond.condID] =
-                                                        value!;
-                                                  },
-                                                );
-                                              },
+                      ),
+                    ],
+                  ),
+                  FutureBuilder(
+                    future: _onFetchHealthHistory(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final conds = snapshot.data;
+                        List<Widget> conditionWidgets =
+                            []; // Create an empty list of widgets
+                        for (var cond in conds!) {
+                          // Set a dynamic group value for radio buttons
+                          _condResultGV[cond.condID] ??= 0;
+                          // Add each Text widget to the list
+                          conditionWidgets.add(
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(' - ${cond.CondName}'),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Expanded(
+                                        flex: 1,
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                              horizontalTitleGap: 0.5,
                                             ),
                                           ),
-                                        ),
-                                        Expanded(
-                                          flex: 1,
-                                          child: Theme(
-                                            data: Theme.of(context).copyWith(
-                                              listTileTheme:
-                                                  const ListTileThemeData(
-                                                horizontalTitleGap: 0.5,
-                                              ),
+                                          child: RadioListTile(
+                                            title: const Text(
+                                              'مثبت',
+                                              style: TextStyle(fontSize: 14),
                                             ),
-                                            child: RadioListTile(
-                                              title: const Text(
-                                                'منفی',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 0,
-                                              groupValue:
-                                                  _condResultGV[cond.condID],
-                                              onChanged: (int? value) {
-                                                setState(
-                                                  () {
-                                                    _condResultGV[cond.condID] =
-                                                        value!;
-                                                  },
-                                                );
-                                              },
-                                            ),
+                                            value: 1,
+                                            groupValue:
+                                                _condResultGV[cond.condID],
+                                            onChanged: (int? value) {
+                                              setState(
+                                                () {
+                                                  _condResultGV[cond.condID] =
+                                                      value!;
+                                                },
+                                              );
+                                            },
                                           ),
                                         ),
-                                        Expanded(
-                                          flex: 1,
-                                          child: PopupMenuButton(
-                                            icon: const Icon(
-                                              Icons.more_horiz,
-                                              color: Colors.blue,
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                              horizontalTitleGap: 0.5,
                                             ),
-                                            tooltip: 'بیشتر...',
-                                            itemBuilder:
-                                                (BuildContext context) =>
-                                                    <PopupMenuEntry>[
-                                              PopupMenuItem(
-                                                child: Directionality(
-                                                  textDirection:
-                                                      TextDirection.rtl,
-                                                  child: ListTile(
+                                          ),
+                                          child: RadioListTile(
+                                            title: const Text(
+                                              'منفی',
+                                              style: TextStyle(fontSize: 14),
+                                            ),
+                                            value: 0,
+                                            groupValue:
+                                                _condResultGV[cond.condID],
+                                            onChanged: (int? value) {
+                                              setState(
+                                                () {
+                                                  _condResultGV[cond.condID] =
+                                                      value!;
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: PopupMenuButton(
+                                          icon: const Icon(
+                                            Icons.more_horiz,
+                                            color: Colors.blue,
+                                          ),
+                                          tooltip: 'بیشتر...',
+                                          itemBuilder: (BuildContext context) =>
+                                              <PopupMenuEntry>[
+                                            PopupMenuItem(
+                                              child: Directionality(
+                                                textDirection:
+                                                    TextDirection.rtl,
+                                                child: ListTile(
+                                                  leading:
+                                                      const Icon(Icons.list),
+                                                  title: const Text(
+                                                      'شرح بیشتر تاریخچه'),
+                                                  onTap: () {
+                                                    _onAddMoreDetailsforHistory();
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                            PopupMenuItem(
+                                              child: Directionality(
+                                                textDirection:
+                                                    TextDirection.rtl,
+                                                child: Builder(builder:
+                                                    (BuildContext context) {
+                                                  return ListTile(
                                                     leading:
-                                                        const Icon(Icons.list),
+                                                        const Icon(Icons.edit),
                                                     title: const Text(
-                                                        'شرح بیشتر تاریخچه'),
+                                                        'تغییر دادن'),
                                                     onTap: () {
-                                                      _onAddMoreDetailsforHistory();
+                                                      _onEditHealthHistory(
+                                                          cond.condID,
+                                                          cond.CondName);
+                                                      Navigator.pop(context);
                                                     },
-                                                  ),
-                                                ),
+                                                  );
+                                                }),
                                               ),
-                                              PopupMenuItem(
-                                                child: Directionality(
-                                                  textDirection:
-                                                      TextDirection.rtl,
-                                                  child: Builder(builder:
-                                                      (BuildContext context) {
-                                                    return ListTile(
-                                                      leading: const Icon(
-                                                          Icons.edit),
-                                                      title: const Text(
-                                                          'تغییر دادن'),
-                                                      onTap: () {
-                                                        _onEditHealthHistory(
-                                                            cond.condID,
-                                                            cond.CondName);
-                                                        Navigator.pop(context);
-                                                      },
-                                                    );
-                                                  }),
-                                                ),
+                                            ),
+                                            PopupMenuItem(
+                                              child: Directionality(
+                                                textDirection:
+                                                    TextDirection.rtl,
+                                                child: ListTile(
+                                                    leading: const Icon(Icons
+                                                        .delete_outline_rounded),
+                                                    title:
+                                                        const Text('حذف کردن'),
+                                                    onTap: () {
+                                                      _onDeleteHealthHistory(
+                                                          cond.condID);
+                                                      Navigator.pop(context);
+                                                    }),
                                               ),
-                                              PopupMenuItem(
-                                                child: Directionality(
-                                                  textDirection:
-                                                      TextDirection.rtl,
-                                                  child: ListTile(
-                                                      leading: const Icon(Icons
-                                                          .delete_outline_rounded),
-                                                      title: const Text(
-                                                          'حذف کردن'),
-                                                      onTap: () {
-                                                        _onDeleteHealthHistory(
-                                                            cond.condID);
-                                                        Navigator.pop(context);
-                                                      }),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
-                                        // Add your second RadioListTile here
-                                      ],
-                                    ),
+                                      ),
+                                      // Add your second RadioListTile here
+                                    ],
                                   ),
-                                ],
-                              ),
-                            );
-                          }
-                          // Return a Column with all the widgets
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment
-                                .start, // Align text to the left
-                            // For right alignment, use CrossAxisAlignment.end
-                            children: conditionWidgets,
+                                ),
+                              ],
+                            ),
                           );
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else {
-                          return const CircularProgressIndicator();
                         }
-                        return const Text('No Data');
-                      },
-                    ),
-                  ],
-                ),
+                        // Return a Column with all the widgets
+                        return Container(
+                          height: 400,
+                          margin: const EdgeInsets.all(10),
+                          child: SingleChildScrollView(
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(20.0),
+                                    ),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment
+                                    .start, // Align text to the left
+                                // For right alignment, use CrossAxisAlignment.end
+                                children: conditionWidgets,
+                              ),
+                            ),
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        return const CircularProgressIndicator();
+                      }
+                    },
+                  ),
+                ],
               ),
             ),
           ),
@@ -3010,7 +3020,8 @@ class _NewPatientState extends State<NewPatient> {
                         if (dateTime != null) {
                           final intl2.DateFormat formatter =
                               intl2.DateFormat('yyyy-MM-dd');
-                          final String formattedDate = formatter.format(dateTime);
+                          final String formattedDate =
+                              formatter.format(dateTime);
                           _meetController.text = formattedDate;
                         }
                       },
@@ -3022,16 +3033,20 @@ class _NewPatientState extends State<NewPatient> {
                         labelText: 'تاریخ تشخیص / معاینه',
                         suffixIcon: Icon(Icons.calendar_month_outlined),
                         enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
                             borderSide: BorderSide(color: Colors.grey)),
                         focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
                             borderSide: BorderSide(color: Colors.blue)),
                         errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
                             borderSide: BorderSide(color: Colors.red)),
                         focusedErrorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
                             borderSide:
                                 BorderSide(color: Colors.red, width: 1.5)),
                       ),
