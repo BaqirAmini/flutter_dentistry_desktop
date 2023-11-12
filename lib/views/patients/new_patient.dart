@@ -205,6 +205,7 @@ class _NewPatientState extends State<NewPatient> {
   final _formKey3 = GlobalKey<FormState>();
   final _condFormKey = GlobalKey<FormState>();
   final _condEditFormKey = GlobalKey<FormState>();
+  final _hisDetFormKey = GlobalKey<FormState>();
 
   // Radio Buttons
   String _crownGroupValue = 'R.C.T';
@@ -214,6 +215,7 @@ class _NewPatientState extends State<NewPatient> {
   String _sexGroupValue = 'مرد';
   String _spGroupValue = 'Scaling';
   String _dentureGroupValue = 'Full';
+  String _histCondGroupValue = 'نا معلوم';
   // Create a Map to store the group values for each condition
   final Map<int, int> _condResultGV = {};
 
@@ -732,7 +734,7 @@ class _NewPatientState extends State<NewPatient> {
                               color: Colors.blue, fontWeight: FontWeight.bold),
                         ),
                         InkWell(
-                          onTap: () => __onCreateNewCondition(),
+                          onTap: () => _onCreateNewHealthHistory(),
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
@@ -751,7 +753,7 @@ class _NewPatientState extends State<NewPatient> {
                       ],
                     ),
                     FutureBuilder(
-                      future: _onGetCondition(),
+                      future: _onFetchHealthHistory(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           final conds = snapshot.data;
@@ -851,7 +853,9 @@ class _NewPatientState extends State<NewPatient> {
                                                         const Icon(Icons.list),
                                                     title: const Text(
                                                         'شرح بیشتر تاریخچه'),
-                                                    onTap: () {},
+                                                    onTap: () {
+                                                      _onAddMoreDetailsforHistory();
+                                                    },
                                                   ),
                                                 ),
                                               ),
@@ -881,8 +885,8 @@ class _NewPatientState extends State<NewPatient> {
                                                   textDirection:
                                                       TextDirection.rtl,
                                                   child: ListTile(
-                                                      leading: const Icon(
-                                                          Icons.delete_outline_rounded),
+                                                      leading: const Icon(Icons
+                                                          .delete_outline_rounded),
                                                       title: const Text(
                                                           'حذف کردن'),
                                                       onTap: () {
@@ -2733,7 +2737,7 @@ class _NewPatientState extends State<NewPatient> {
   }
 
 // Create new patient conditions
-  __onCreateNewCondition() {
+  _onCreateNewHealthHistory() {
     final condNameController = TextEditingController();
     return showDialog(
       context: context,
@@ -2913,7 +2917,7 @@ class _NewPatientState extends State<NewPatient> {
   }
 
 // Fetch patient condidtions
-  Future<List<PatientCondition>> _onGetCondition() async {
+  Future<List<PatientCondition>> _onFetchHealthHistory() async {
     final conn = await onConnToDb();
     final results = await conn.query('SELECT cond_ID, name FROM conditions');
     final conditions = results
@@ -2958,6 +2962,215 @@ class _NewPatientState extends State<NewPatient> {
               await conn.close();
             },
             child: const Text('حذف'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  _onAddMoreDetailsforHistory() {
+    return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Directionality(
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+          child: const Text('جزییات بیشتر راجع به تاریخچه صحی'),
+        ),
+        content: Directionality(
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+          child: SizedBox(
+            width: 500,
+            child: Form(
+              key: _hisDetFormKey,
+              child: Column(
+                children: [
+                  const Text(
+                      'آیا مطمیین هستید که میخواهید این تاریخچه صحی را حذف نمایید؟'),
+                  Container(
+                    width: 400.0,
+                    margin: const EdgeInsets.only(
+                        left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                    child: TextFormField(
+                      controller: _meetController,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'لطفا تاریخ مراجعه مریض را انتخاب کنید.';
+                        }
+                        return null;
+                      },
+                      onTap: () async {
+                        FocusScope.of(context).requestFocus(
+                          FocusNode(),
+                        );
+                        final DateTime? dateTime = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(1900),
+                            lastDate: DateTime(2100));
+                        if (dateTime != null) {
+                          final intl2.DateFormat formatter =
+                              intl2.DateFormat('yyyy-MM-dd');
+                          final String formattedDate = formatter.format(dateTime);
+                          _meetController.text = formattedDate;
+                        }
+                      },
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+                      ],
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'تاریخ تشخیص / معاینه',
+                        suffixIcon: Icon(Icons.calendar_month_outlined),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.grey)),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.blue)),
+                        errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.red)),
+                        focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                            borderSide:
+                                BorderSide(color: Colors.red, width: 1.5)),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: 500.0,
+                    margin: const EdgeInsets.only(
+                        left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 10.0),
+                        border: OutlineInputBorder(),
+                        labelText: 'شدت / سصح',
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(50.0),
+                          ),
+                          borderSide: BorderSide(color: Colors.grey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(50.0),
+                          ),
+                          borderSide: BorderSide(color: Colors.blue),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                listTileTheme: const ListTileThemeData(
+                                    horizontalTitleGap: 0.5),
+                              ),
+                              child: RadioListTile(
+                                  title: const Text(
+                                    'خفیف',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  value: 'خفیف',
+                                  groupValue: _histCondGroupValue,
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      _histCondGroupValue = value!;
+                                    });
+                                  }),
+                            ),
+                          ),
+                          Expanded(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                listTileTheme: const ListTileThemeData(
+                                    horizontalTitleGap: 0.5),
+                              ),
+                              child: RadioListTile(
+                                  title: const Text(
+                                    'متوسط',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  value: 'متوسط',
+                                  groupValue: _histCondGroupValue,
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      _histCondGroupValue = value!;
+                                    });
+                                  }),
+                            ),
+                          ),
+                          Expanded(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                listTileTheme: const ListTileThemeData(
+                                    horizontalTitleGap: 0.5),
+                              ),
+                              child: RadioListTile(
+                                  title: const Text(
+                                    'شدید',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  value: 'شدید',
+                                  groupValue: _histCondGroupValue,
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      _histCondGroupValue = value!;
+                                    });
+                                  }),
+                            ),
+                          ),
+                          Expanded(
+                            child: Theme(
+                              data: Theme.of(context).copyWith(
+                                listTileTheme: const ListTileThemeData(
+                                    horizontalTitleGap: 0.5),
+                              ),
+                              child: RadioListTile(
+                                  title: const Text(
+                                    'نا معلوم',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                  value: 'نا معلوم',
+                                  groupValue: _histCondGroupValue,
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      _histCondGroupValue = value!;
+                                    });
+                                  }),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+              child: const Text('لغو')),
+          ElevatedButton(
+            onPressed: () async {
+              /*  final conn = await onConnToDb();
+              final deleteResults = await conn
+                  .query('DELETE FROM conditions WHERE cond_ID = ?', [condID]);
+              if (deleteResults.affectedRows! > 0) {
+                _onShowSnack(Colors.green, 'تاریخچه صحی موفقانه حذف گردید.');
+                setState(() {});
+              } else {
+                _onShowSnack(Colors.red, 'حذف تاریخچه صحی ناکام شد.');
+              }
+              Navigator.of(context, rootNavigator: true).pop();
+              await conn.close(); */
+            },
+            child: const Text('انجام'),
           ),
         ],
       ),
