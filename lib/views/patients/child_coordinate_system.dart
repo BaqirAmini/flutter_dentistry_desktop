@@ -1,4 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/models/db_conn.dart';
+
+void updateSelectedTeeth(List<String> selectedTeeth) async {
+  final conn = await onConnToDb();
+  await conn.close();
+
+  // Convert the list of selected teeth to a string
+  var selectedTeethString = selectedTeeth.join(',');
+
+  // Update the database
+  await conn.query(
+    'INSERT INTO selected_teeth (tooth)',
+    [selectedTeethString],
+  );
+
+  // Close the connection
+  await conn.close();
+}
 
 class ChildQuadrantGrid extends StatefulWidget {
   const ChildQuadrantGrid({super.key});
