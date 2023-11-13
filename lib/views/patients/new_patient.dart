@@ -56,8 +56,18 @@ class _NewPatientState extends State<NewPatient> {
   var genderItems = ['مرد', 'زن'];
 
   // Blood group types
-  String? bloodDropDown;
-  var bloodGroupItems = ['A+', 'B+', 'AB+', 'O+', 'A-', 'B-', 'AB-', 'O-'];
+  String? bloodDropDown = 'نامعلوم';
+  var bloodGroupItems = [
+    'نامعلوم',
+    'A+',
+    'B+',
+    'AB+',
+    'O+',
+    'A-',
+    'B-',
+    'AB-',
+    'O-'
+  ];
 
   //  پوش کردن دندان
   String? defaultCrown = 'Please select a material';
@@ -164,7 +174,8 @@ class _NewPatientState extends State<NewPatient> {
   }
 
   // Declare a dropdown for ages
-  int ageDropDown = 1;
+  int ageDropDown = 0;
+  bool _isAgeSelected = false;
 
   // Declare a variable for gum surgery
   int gumSurgeryDropDown = 1;
@@ -368,17 +379,28 @@ class _NewPatientState extends State<NewPatient> {
                                 top: 10.0,
                                 bottom: 10.0),
                             child: InputDecorator(
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'سن',
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['Age'] ??
+                                    '',
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
+                                errorText: ageDropDown == 0 && _isAgeSelected
+                                    ? 'Please select an age'
+                                    : null,
+                                errorBorder: const OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(50.0),
+                                  ),
+                                  borderSide: BorderSide(color: Colors.red),
+                                ),
                               ),
                               child: DropdownButtonHideUnderline(
                                 child: SizedBox(
@@ -387,23 +409,32 @@ class _NewPatientState extends State<NewPatient> {
                                     isExpanded: true,
                                     icon: const Icon(Icons.arrow_drop_down),
                                     value: ageDropDown,
-                                    items: getAges().map((int ageItems) {
-                                      return DropdownMenuItem(
-                                        alignment: Alignment.centerRight,
-                                        value: ageItems,
-                                        child: Directionality(
-                                          textDirection: isEnglish
-                                              ? TextDirection.ltr
-                                              : TextDirection.rtl,
-                                          child: Text(
-                                              '$ageItems ${translations[selectedLanguage]?['Year'] ?? ''} '),
-                                        ),
-                                      );
-                                    }).toList(),
+                                    items: <DropdownMenuItem<int>>[
+                                      const DropdownMenuItem(
+                                        value: 0,
+                                        child: Text('Please select an age'),
+                                      ),
+                                      ...getAges().map((int ageItems) {
+                                        return DropdownMenuItem(
+                                          alignment: Alignment.centerRight,
+                                          value: ageItems,
+                                          child: Directionality(
+                                            textDirection: isEnglish
+                                                ? TextDirection.ltr
+                                                : TextDirection.rtl,
+                                            child: Text(
+                                                '$ageItems ${translations[selectedLanguage]?['Year'] ?? ''} '),
+                                          ),
+                                        );
+                                      }).toList(),
+                                    ],
                                     onChanged: (int? newValue) {
-                                      setState(() {
-                                        ageDropDown = newValue!;
-                                      });
+                                      if (newValue != 0) {
+                                        // Ignore the 'Please select an age' option
+                                        setState(() {
+                                          ageDropDown = newValue!;
+                                        });
+                                      }
                                     },
                                   ),
                                 ),
@@ -564,10 +595,6 @@ class _NewPatientState extends State<NewPatient> {
                                           Radius.circular(50.0)),
                                       borderSide: BorderSide(color: Colors.red),
                                     ),
-                                    errorText: bloodDropDown == null ||
-                                            bloodDropDown!.isEmpty
-                                        ? 'Please select a blood group'
-                                        : null,
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
@@ -3424,6 +3451,7 @@ class _NewPatientState extends State<NewPatient> {
               currentStep: _currentStep,
               onStepContinue: () {
                 if (_formKey1.currentState!.validate()) {
+                  _isAgeSelected = true;
                   if (_currentStep < stepList().length - 1) {
                     setState(() {
                       if (_currentStep == 1) {
