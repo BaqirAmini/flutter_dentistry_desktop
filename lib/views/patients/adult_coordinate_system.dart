@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/views/patients/tooth_selection_info.dart';
 
 class AdultQuadrantGrid extends StatefulWidget {
   const AdultQuadrantGrid({super.key});
@@ -9,7 +10,7 @@ class AdultQuadrantGrid extends StatefulWidget {
 }
 
 class _AdultQuadrantGrid extends State<AdultQuadrantGrid> {
-  final List<String> _selectedLetters = [];
+  final List<String> _selectedTeethNum = [];
   final Map<String, bool> _isHovering = {};
 
   Widget _buildQuadrant(String quadrantId, List<int> toothNumbers) {
@@ -24,10 +25,10 @@ class _AdultQuadrantGrid extends State<AdultQuadrantGrid> {
             child: GestureDetector(
               onTap: () {
                 setState(() {
-                  if (_selectedLetters.contains(id)) {
-                    _selectedLetters.remove(id);
+                  if (_selectedTeethNum.contains(id)) {
+                    _selectedTeethNum.remove(id);
                   } else {
-                    _selectedLetters.add(id);
+                    _selectedTeethNum.add(id);
                   }
                   printSelectedTeeth();
                 });
@@ -36,7 +37,7 @@ class _AdultQuadrantGrid extends State<AdultQuadrantGrid> {
                 duration: const Duration(milliseconds: 200),
                 margin: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color: _selectedLetters.contains(id)
+                  color: _selectedTeethNum.contains(id)
                       ? Colors.blue
                       : (_isHovering[id] ?? false
                           ? const Color.fromARGB(255, 71, 190, 245)
@@ -59,18 +60,24 @@ class _AdultQuadrantGrid extends State<AdultQuadrantGrid> {
 
   @override
   Widget build(BuildContext context) {
+    Tooth.adultToothSelected = _selectedTeethNum.isEmpty ? false : true;
     return InputDecorator(
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
-        labelText: 'Adults\'s Teeth Selection Chart',
-        contentPadding: EdgeInsets.all(20),
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: _selectedTeethNum.isEmpty
+            ? 'Please select a tooth'
+            : 'Adults\' Teeth Selection Chart',
+        contentPadding: const EdgeInsets.all(20),
         floatingLabelAlignment: FloatingLabelAlignment.center,
-        labelStyle: TextStyle(color: Colors.blue, fontSize: 18),
+        labelStyle: TextStyle(
+            color: _selectedTeethNum.isEmpty ? Colors.red : Colors.blue,
+            fontSize: 18),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(30.0)),
-          borderSide: BorderSide(color: Colors.blue),
+          borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+          borderSide: BorderSide(
+              color: _selectedTeethNum.isEmpty ? Colors.red : Colors.blue),
         ),
-        focusedBorder: OutlineInputBorder(
+        focusedBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(50.0),
           ),
@@ -158,7 +165,7 @@ class _AdultQuadrantGrid extends State<AdultQuadrantGrid> {
 
   void printSelectedTeeth() {
     print('Selected teeth:');
-    for (String id in _selectedLetters) {
+    for (String id in _selectedTeethNum) {
       print(id);
     }
   }
