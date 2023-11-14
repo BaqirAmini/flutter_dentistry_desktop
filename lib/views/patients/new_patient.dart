@@ -7,6 +7,7 @@ import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/adult_coordinate_system.dart';
 import 'package:flutter_dentistry/views/patients/child_coordinate_system.dart';
+import 'package:flutter_dentistry/views/patients/tooth_selection_info.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:intl/intl.dart' as intl2;
 import 'package:provider/provider.dart';
@@ -175,7 +176,7 @@ class _NewPatientState extends State<NewPatient> {
 
   // Declare a dropdown for ages
   int ageDropDown = 0;
-  bool _isAgeSelected = false;
+  bool _ageSelected = false;
 
   // Declare a variable for gum surgery
   int gumSurgeryDropDown = 1;
@@ -392,14 +393,14 @@ class _NewPatientState extends State<NewPatient> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
-                                errorText: ageDropDown == 0 && _isAgeSelected
+                                errorText: ageDropDown == 0 && !_ageSelected
                                     ? 'Please select an age'
                                     : null,
-                                errorBorder: const OutlineInputBorder(
+                                errorBorder:  OutlineInputBorder(
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(50.0),
                                   ),
-                                  borderSide: BorderSide(color: Colors.red),
+                                  borderSide: BorderSide(color: !_ageSelected ? Colors.red : Colors.grey),
                                 ),
                               ),
                               child: DropdownButtonHideUnderline(
@@ -433,6 +434,7 @@ class _NewPatientState extends State<NewPatient> {
                                         // Ignore the 'Please select an age' option
                                         setState(() {
                                           ageDropDown = newValue!;
+                                          _ageSelected = true;
                                         });
                                       }
                                     },
@@ -948,7 +950,7 @@ class _NewPatientState extends State<NewPatient> {
                         }
                         // Return a Column with all the widgets
                         return Container(
-                          height: 400,
+                          height: MediaQuery.of(context).size.height * 0.56,
                           margin: const EdgeInsets.all(10),
                           child: SingleChildScrollView(
                             child: InputDecorator(
@@ -3450,16 +3452,32 @@ class _NewPatientState extends State<NewPatient> {
               },
               currentStep: _currentStep,
               onStepContinue: () {
-                if (_formKey1.currentState!.validate()) {
-                  _isAgeSelected = true;
+                _ageSelected = ageDropDown > 0 ? true : false;
+                if (_formKey1.currentState!.validate() && _ageSelected) {
                   if (_currentStep < stepList().length - 1) {
                     setState(() {
-                      if (_currentStep == 1) {
+                      if (_currentStep == 2) {
                         if (_formKey2.currentState!.validate()) {
-                          onConfirmForm();
+                          // Set this condition only for those services which require teeth coordinate system
+                          if (selectedSerId == '1' ||
+                              selectedSerId == '2' ||
+                              selectedSerId == '11' ||
+                              selectedSerId == '15' ||
+                              defaultMaxillo == 'Tooth Extraction' ||
+                              defaultMaxillo == 'Tooth Reimplantation' ||
+                              (selectedSerId == '9' &&
+                                  _dentureGroupValue == 'Partial')) {
+                            if (ageDropDown > 13 && Tooth.adultToothSelected! ||
+                                ageDropDown <= 13 &&
+                                    Tooth.childToothSelected!) {
+                              _currentStep++;
+                            }
+                          } else {
+                            _currentStep++;
+                          }
                         }
                       } else {
-                        onConfirmForm();
+                        _currentStep++;
                       }
                     });
                   } else {
