@@ -194,6 +194,7 @@ class _NewPatientState extends State<NewPatient> {
   final _phoneController = TextEditingController();
   final _addrController = TextEditingController();
   final _totalExpController = TextEditingController();
+  final _discountController = TextEditingController();
   final _recievableController = TextEditingController();
   final _meetController = TextEditingController();
   final _noteController = TextEditingController();
@@ -397,7 +398,7 @@ class _NewPatientState extends State<NewPatient> {
                                     ? 'Please select an age'
                                     : null,
                                 errorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
+                                  borderRadius: const BorderRadius.all(
                                     Radius.circular(50.0),
                                   ),
                                   borderSide: BorderSide(
@@ -2446,7 +2447,7 @@ class _NewPatientState extends State<NewPatient> {
                           controller: _totalExpController,
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return 'مصارف کل نمیتواند خالی باشد.';
+                              return 'مجموع فیس نمیتواند خالی باشد.';
                             }
                             return null;
                           },
@@ -2457,8 +2458,48 @@ class _NewPatientState extends State<NewPatient> {
                           ],
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: 'کل مصارف',
+                            labelText: 'مجموع فیس',
                             suffixIcon: Icon(Icons.money_rounded),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.blue)),
+                            errorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.red)),
+                            focusedErrorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 1.5)),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                        child: TextFormField(
+                          controller: _discountController,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'فیصدی تخفیف نمیتواند خالی باشد.';
+                            }
+                            return null;
+                          },
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(_regExDecimal),
+                            ),
+                          ],
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'تخفیف فیصدی',
+                            suffixIcon: Icon(Icons.money_off),
                             enabledBorder: OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
@@ -2567,6 +2608,30 @@ class _NewPatientState extends State<NewPatient> {
                             ),
                           ),
                         ),
+                      ),
+                      Container(
+                        width: 450.0,
+                        height: 40,
+                        margin: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors
+                                .grey, // Change this color to change the border color
+                            width:
+                                1.0, // Change this value to change the border width
+                          ),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(
+                                18.0), // Change this value to change the border radius
+                          ),
+                        ),
+                        child: const Center(
+                            child: Text(
+                          '30,000 افغانی',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.blue),
+                        )),
                       ),
                     ],
                   ),
@@ -3480,18 +3545,17 @@ class _NewPatientState extends State<NewPatient> {
                               defaultMaxillo == 'Tooth Reimplantation' ||
                               (selectedSerId == '9' &&
                                   _dentureGroupValue == 'Partial')) {
-                            if (ageDropDown > 13 && Tooth.adultToothSelected! ||
-                                ageDropDown <= 13 &&
-                                    Tooth.childToothSelected!) {
+                            print('ssss: $_fMaterialSelected');
+                            if (selectedSerId == '2' &&
+                                    (ageDropDown > 13 &&
+                                        Tooth.adultToothSelected!) ||
+                                (ageDropDown <= 13 &&
+                                        Tooth.childToothSelected!) &&
+                                    _fMaterialSelected) {
+                              _currentStep++;
+                            } else {
                               _currentStep++;
                             }
-                          } else if (selectedSerId == '2' &&
-                                  (ageDropDown > 13 &&
-                                      Tooth.adultToothSelected!) ||
-                              (ageDropDown <= 13 &&
-                                      Tooth.childToothSelected!) &&
-                                  _fMaterialSelected) {
-                            _currentStep++;
                           } else {
                             _currentStep++;
                           }
