@@ -84,9 +84,9 @@ class _NewPatientState extends State<NewPatient> {
   ];
 
   //  پرکاری دندان
-  String? defaultFilling = 'Please select a material';
+  String? defaultFilling;
+  bool _fMaterialSelected = false;
   List<String> fillingItems = [
-    'Please select a material',
     'Amalgam',
     'Silicate',
     'Composite',
@@ -396,11 +396,14 @@ class _NewPatientState extends State<NewPatient> {
                                 errorText: ageDropDown == 0 && !_ageSelected
                                     ? 'Please select an age'
                                     : null,
-                                errorBorder:  OutlineInputBorder(
+                                errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(50.0),
                                   ),
-                                  borderSide: BorderSide(color: !_ageSelected ? Colors.red : Colors.grey),
+                                  borderSide: BorderSide(
+                                      color: !_ageSelected
+                                          ? Colors.red
+                                          : Colors.grey),
                                 ),
                               ),
                               child: DropdownButtonHideUnderline(
@@ -1837,22 +1840,32 @@ class _NewPatientState extends State<NewPatient> {
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
                                         value: defaultFilling,
-                                        items: fillingItems.map((String item) {
-                                          return DropdownMenuItem<String>(
-                                            alignment: Alignment.centerRight,
-                                            value: item,
-                                            child: Directionality(
-                                              textDirection: isEnglish
-                                                  ? TextDirection.ltr
-                                                  : TextDirection.rtl,
-                                              child: Text(item),
-                                            ),
-                                          );
-                                        }).toList(),
+                                        items: <DropdownMenuItem<String>>[
+                                          const DropdownMenuItem(
+                                            value: null,
+                                            child:
+                                                Text('Please select an item'),
+                                          ),
+                                          ...fillingItems.map((String item) {
+                                            return DropdownMenuItem<String>(
+                                              alignment: Alignment.centerRight,
+                                              value: item,
+                                              child: Directionality(
+                                                textDirection: isEnglish
+                                                    ? TextDirection.ltr
+                                                    : TextDirection.rtl,
+                                                child: Text(item),
+                                              ),
+                                            );
+                                          }).toList(),
+                                        ],
                                         onChanged: (String? newValue) {
-                                          setState(() {
-                                            defaultFilling = newValue!;
-                                          });
+                                          if (newValue != null) {
+                                            setState(() {
+                                              defaultFilling = newValue;
+                                              _fMaterialSelected = true;
+                                            });
+                                          }
                                         },
                                       ),
                                     ),
@@ -3472,6 +3485,13 @@ class _NewPatientState extends State<NewPatient> {
                                     Tooth.childToothSelected!) {
                               _currentStep++;
                             }
+                          } else if (selectedSerId == '2' &&
+                                  (ageDropDown > 13 &&
+                                      Tooth.adultToothSelected!) ||
+                              (ageDropDown <= 13 &&
+                                      Tooth.childToothSelected!) &&
+                                  _fMaterialSelected) {
+                            _currentStep++;
                           } else {
                             _currentStep++;
                           }
