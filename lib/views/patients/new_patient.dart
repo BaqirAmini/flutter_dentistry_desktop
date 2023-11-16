@@ -104,9 +104,8 @@ class _NewPatientState extends State<NewPatient> {
   ];
 
 // MaxilloFacial وجه فک
-  String defaultMaxillo = 'Please select a type';
+  String? defaultMaxillo;
   List<String> maxilloItems = [
-    'Please select a type',
     'Tooth Extraction',
     'Abscess Treatment',
     'T.M.J',
@@ -115,13 +114,8 @@ class _NewPatientState extends State<NewPatient> {
   ];
 
 // Gum selection for Abscess treatment
-  String defaultGumAbscess = 'Please select a gum';
-  List<String> abscessItems = [
-    'Please select a gum',
-    'فک بالا',
-    'فک پایین',
-    'هردو'
-  ];
+  String? defaultGumAbscess;
+  List<String> abscessItems = ['فک بالا', 'فک پایین', 'هردو'];
 
   // Bleaching
   String? _defaultBleachValue;
@@ -129,13 +123,8 @@ class _NewPatientState extends State<NewPatient> {
   final List<String> _bleachingItems = ['یک مرحله', 'دو مرحله', 'سه مرحله'];
 
   // Select gums for Denture
-  final String _defaultDentureValue = 'Please select a gum';
-  final List<String> _dentureItems = [
-    'Please select a gum',
-    'فک بالا',
-    'فک پایین',
-    'هردو'
-  ];
+  String? _defaultDentureValue;
+  final List<String> _dentureItems = ['فک بالا', 'فک پایین', 'هردو'];
 
   String? selectedSerId;
   List<Map<String, dynamic>> services = [];
@@ -1283,20 +1272,28 @@ class _NewPatientState extends State<NewPatient> {
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
                                       height: 26.0,
-                                      child: DropdownButton(
+                                      child: DropdownButton<String>(
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
                                         value: defaultGumAbscess,
-                                        items: abscessItems.map((item) {
-                                          return DropdownMenuItem<String>(
-                                            value: item,
-                                            alignment: Alignment.centerRight,
-                                            child: Text(item),
-                                          );
-                                        }).toList(),
+                                        items: [
+                                          const DropdownMenuItem(
+                                            value: null,
+                                            child: Text('Please select a gum'),
+                                          ),
+                                          ...abscessItems.map((item) {
+                                            return DropdownMenuItem<String>(
+                                              value: item,
+                                              alignment: Alignment.centerRight,
+                                              child: Text(item),
+                                            );
+                                          }).toList(),
+                                        ],
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            defaultGumAbscess = newValue!;
+                                            if (newValue != null) {
+                                              defaultGumAbscess = newValue;
+                                            }
                                           });
                                         },
                                       ),
@@ -1508,21 +1505,29 @@ class _NewPatientState extends State<NewPatient> {
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
                                         value: _defaultDentureValue,
-                                        items: _dentureItems.map((String item) {
-                                          return DropdownMenuItem<String>(
-                                            alignment: Alignment.centerRight,
-                                            value: item,
-                                            child: Directionality(
-                                              textDirection: isEnglish
-                                                  ? TextDirection.ltr
-                                                  : TextDirection.rtl,
-                                              child: Text(item),
-                                            ),
-                                          );
-                                        }).toList(),
+                                        items: [
+                                          const DropdownMenuItem(
+                                              value: null,
+                                              child:
+                                                  Text('Please select a gum')),
+                                          ..._dentureItems.map((String item) {
+                                            return DropdownMenuItem<String>(
+                                              alignment: Alignment.centerRight,
+                                              value: item,
+                                              child: Directionality(
+                                                textDirection: isEnglish
+                                                    ? TextDirection.ltr
+                                                    : TextDirection.rtl,
+                                                child: Text(item),
+                                              ),
+                                            );
+                                          }).toList(),
+                                        ],
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            _defaultOrthoType = newValue!;
+                                            if (newValue != null) {
+                                              _defaultDentureValue = newValue;
+                                            }
                                           });
                                         },
                                       ),
@@ -1691,21 +1696,29 @@ class _NewPatientState extends State<NewPatient> {
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
                                         value: defaultMaxillo,
-                                        items: maxilloItems.map((String item) {
-                                          return DropdownMenuItem<String>(
-                                            alignment: Alignment.centerRight,
-                                            value: item,
-                                            child: Directionality(
-                                              textDirection: isEnglish
-                                                  ? TextDirection.ltr
-                                                  : TextDirection.rtl,
-                                              child: Text(item),
-                                            ),
-                                          );
-                                        }).toList(),
+                                        items: [
+                                          const DropdownMenuItem(
+                                            value: null,
+                                            child: Text('Please select a type'),
+                                          ),
+                                          ...maxilloItems.map((String item) {
+                                            return DropdownMenuItem<String>(
+                                              alignment: Alignment.centerRight,
+                                              value: item,
+                                              child: Directionality(
+                                                textDirection: isEnglish
+                                                    ? TextDirection.ltr
+                                                    : TextDirection.rtl,
+                                                child: Text(item),
+                                              ),
+                                            );
+                                          }).toList()
+                                        ],
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            defaultMaxillo = newValue!;
+                                            if (newValue != null) {
+                                              defaultMaxillo = newValue;
+                                            }
                                           });
                                         },
                                       ),
@@ -3304,6 +3317,28 @@ class _NewPatientState extends State<NewPatient> {
                             }
                           } else if (selectedSerId == '5') {
                             if (_defaultOrthoType != null) {
+                              _currentStep++;
+                            }
+                          } else if (selectedSerId == '7') {
+                            if (defaultMaxillo == 'Tooth Extraction' ||
+                                defaultMaxillo == 'Tooth Reimplantation') {
+                              if (ageDropDown > 13) {
+                                if (Tooth.adultToothSelected) {
+                                  _currentStep++;
+                                }
+                              } else {
+                                if (Tooth.childToothSelected) {
+                                  _currentStep++;
+                                }
+                              }
+                            } else if (defaultMaxillo == 'Abscess Treatment' &&
+                                defaultGumAbscess != null) {
+                              _currentStep++;
+                            } else {
+                              _currentStep++;
+                            }
+                          } else if (selectedSerId == '9') {
+                            if (_defaultDentureValue != null) {
                               _currentStep++;
                             }
                           } else {
