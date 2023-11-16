@@ -95,9 +95,8 @@ class _NewPatientState extends State<NewPatient> {
   ];
 
   // ارتودانسی
-  String defaultOrthoType = 'Please select a gum';
-  List<String> orthoItems = [
-    'Please select a gum',
+  String? _defaultOrthoType;
+  final List<String> _orthoItems = [
     'فک بالا',
     'فک پایین',
     'هردو فک',
@@ -125,16 +124,12 @@ class _NewPatientState extends State<NewPatient> {
   ];
 
   // Bleaching
-  String _defaultBleachValue = 'Please select a level';
-  final List<String> _bleachingItems = [
-    'Please select a level',
-    'یک مرحله',
-    'دو مرحله',
-    'سه مرحله'
-  ];
+  String? _defaultBleachValue;
+  bool _levelSelected = false;
+  final List<String> _bleachingItems = ['یک مرحله', 'دو مرحله', 'سه مرحله'];
 
   // Select gums for Denture
-  String _defaultDentureValue = 'Please select a gum';
+  final String _defaultDentureValue = 'Please select a gum';
   final List<String> _dentureItems = [
     'Please select a gum',
     'فک بالا',
@@ -1800,7 +1795,7 @@ class _NewPatientState extends State<NewPatient> {
                                         }).toList(),
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            defaultOrthoType = newValue!;
+                                            _defaultOrthoType = newValue!;
                                           });
                                         },
                                       ),
@@ -1905,22 +1900,30 @@ class _NewPatientState extends State<NewPatient> {
                                       child: DropdownButton<String>(
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
-                                        value: defaultOrthoType,
-                                        items: orthoItems.map((String item) {
-                                          return DropdownMenuItem<String>(
-                                            alignment: Alignment.centerRight,
-                                            value: item,
-                                            child: Directionality(
-                                              textDirection: isEnglish
-                                                  ? TextDirection.ltr
-                                                  : TextDirection.rtl,
-                                              child: Text(item),
-                                            ),
-                                          );
-                                        }).toList(),
+                                        value: _defaultOrthoType,
+                                        items: [
+                                          const DropdownMenuItem(
+                                            value: null,
+                                            child: Text('Please select a gum'),
+                                          ),
+                                          ..._orthoItems.map((String item) {
+                                            return DropdownMenuItem<String>(
+                                              alignment: Alignment.centerRight,
+                                              value: item,
+                                              child: Directionality(
+                                                textDirection: isEnglish
+                                                    ? TextDirection.ltr
+                                                    : TextDirection.rtl,
+                                                child: Text(item),
+                                              ),
+                                            );
+                                          }).toList(),
+                                        ],
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            defaultOrthoType = newValue!;
+                                            if (newValue != null) {
+                                              _defaultOrthoType = newValue;
+                                            }
                                           });
                                         },
                                       ),
@@ -2319,20 +2322,30 @@ class _NewPatientState extends State<NewPatient> {
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
                                       height: 26.0,
-                                      child: DropdownButton(
+                                      child: DropdownButton<String>(
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
                                         value: _defaultBleachValue,
-                                        items: _bleachingItems.map((item) {
-                                          return DropdownMenuItem<String>(
-                                            value: item,
-                                            alignment: Alignment.centerRight,
-                                            child: Text(item),
-                                          );
-                                        }).toList(),
+                                        items: [
+                                          const DropdownMenuItem(
+                                            value: null,
+                                            child:
+                                                Text('Please select a level'),
+                                          ),
+                                          ..._bleachingItems.map((item) {
+                                            return DropdownMenuItem<String>(
+                                              value: item,
+                                              alignment: Alignment.centerRight,
+                                              child: Text(item),
+                                            );
+                                          }).toList(),
+                                        ],
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            _defaultBleachValue = newValue!;
+                                            if (newValue != null) {
+                                              _defaultBleachValue = newValue;
+                                              _levelSelected = true;
+                                            }
                                           });
                                         },
                                       ),
@@ -3536,24 +3549,34 @@ class _NewPatientState extends State<NewPatient> {
                     setState(() {
                       if (_currentStep == 2) {
                         if (_formKey2.currentState!.validate()) {
-                          // Set this condition only for those services which require teeth coordinate system
-                          if (selectedSerId == '1' ||
-                              selectedSerId == '2' ||
-                              selectedSerId == '11' ||
-                              selectedSerId == '15' ||
-                              defaultMaxillo == 'Tooth Extraction' ||
-                              defaultMaxillo == 'Tooth Reimplantation' ||
-                              (selectedSerId == '9' &&
-                                  _dentureGroupValue == 'Partial')) {
-                            print('ssss: $_fMaterialSelected');
-                            if (selectedSerId == '2' &&
-                                    (ageDropDown > 13 &&
-                                        Tooth.adultToothSelected!) ||
-                                (ageDropDown <= 13 &&
-                                        Tooth.childToothSelected!) &&
-                                    _fMaterialSelected) {
-                              _currentStep++;
+                          if (selectedSerId == '2') {
+                            if (ageDropDown > 13) {
+                              if (_fMaterialSelected &&
+                                  Tooth.adultToothSelected) {
+                                _currentStep++;
+                              }
                             } else {
+                              if (_fMaterialSelected &&
+                                  Tooth.childToothSelected) {
+                                _currentStep++;
+                              }
+                            }
+                          } else if (selectedSerId == '1') {
+                            if (ageDropDown > 13) {
+                              if (Tooth.adultToothSelected) {
+                                _currentStep++;
+                              }
+                            } else {
+                              if (Tooth.childToothSelected) {
+                                _currentStep++;
+                              }
+                            }
+                          } else if (selectedSerId == '3') {
+                            if (_levelSelected) {
+                              _currentStep++;
+                            }
+                          } else if (selectedSerId == '5') {
+                            if (_defaultOrthoType != null) {
                               _currentStep++;
                             }
                           } else {
