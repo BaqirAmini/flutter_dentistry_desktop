@@ -197,17 +197,8 @@ class _NewPatientState extends State<NewPatient> {
   final _regExOnlydigits = "[0-9+]";
   final _regExDecimal = "[0-9.]";
 
-  bool _isVisibleForFilling = true;
-  bool _isVisibleForBleaching = false;
-  bool _isVisibleForScaling = false;
-  bool _isVisibleForOrtho = false;
-  bool _isVisibleForProthesis = false;
-  bool _isVisibleForRoot = false;
-  bool _isVisibleGum = false;
-  bool _isVisibleForTeethRemove = false;
-  bool _isVisibleForCover = false;
-  bool _isVisibleMouth = false;
   bool _isVisibleForPayment = false;
+// Global keys for forms created in this file.
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
   final _formKey3 = GlobalKey<FormState>();
@@ -1104,137 +1095,6 @@ class _NewPatientState extends State<NewPatient> {
                                       onChanged: (String? newValue) {
                                         setState(() {
                                           selectedSerId = newValue;
-                                          if (selectedSerId == '2') {
-                                            _isVisibleForFilling = true;
-                                            _isVisibleForBleaching = false;
-                                            _isVisibleForScaling = false;
-                                            _isVisibleForOrtho = false;
-                                            _isVisibleForProthesis = false;
-                                            _isVisibleForTeethRemove = false;
-                                            _isVisibleForCover = false;
-                                            _isVisibleGum = false;
-                                            _isVisibleForRoot = false;
-                                            _isVisibleMouth = false;
-                                          } else if (selectedSerId == '3') {
-                                            _isVisibleForFilling = false;
-                                            _isVisibleForBleaching = true;
-                                            _isVisibleForProthesis = false;
-                                            _isVisibleForScaling = false;
-                                            _isVisibleForTeethRemove = false;
-                                            _isVisibleForCover = false;
-                                            _isVisibleGum = false;
-                                            _isVisibleForOrtho = false;
-                                            _isVisibleForRoot = false;
-                                            _isVisibleMouth = false;
-                                          } else if (selectedSerId == '4') {
-                                            _isVisibleForScaling = true;
-                                            _isVisibleForFilling = false;
-                                            _isVisibleForBleaching = false;
-                                            _isVisibleForProthesis = false;
-                                            _isVisibleForTeethRemove = false;
-                                            _isVisibleForCover = false;
-                                            _isVisibleForOrtho = false;
-                                            _isVisibleGum = false;
-                                            _isVisibleForRoot = false;
-                                            _isVisibleMouth = false;
-                                            // Set the first dropdown value to avoid conflict
-                                            selectedGumType1 = '3';
-                                          } else if (selectedSerId == '5') {
-                                            _isVisibleForOrtho = true;
-                                            _isVisibleForFilling = false;
-                                            _isVisibleForBleaching = false;
-                                            _isVisibleForScaling = false;
-                                            _isVisibleForProthesis = false;
-                                            _isVisibleGum = false;
-                                            _isVisibleForTeethRemove = false;
-                                            _isVisibleForCover = false;
-                                            _isVisibleForRoot = false;
-                                            _isVisibleMouth = false;
-                                          } else if (selectedSerId == '9') {
-                                            _isVisibleForProthesis = true;
-                                            _isVisibleForOrtho = false;
-                                            _isVisibleForFilling = false;
-                                            _isVisibleForBleaching = false;
-                                            _isVisibleForScaling = false;
-                                            _isVisibleGum = false;
-                                            _isVisibleForTeethRemove = false;
-                                            _isVisibleForCover = false;
-                                            _isVisibleForRoot = false;
-                                            _isVisibleMouth = false;
-                                            // Set selected tooth '1'
-                                            selectedTooth2 = '1';
-                                          } else if (selectedSerId == '6') {
-                                            _isVisibleForRoot = true;
-                                            _isVisibleForProthesis = false;
-                                            _isVisibleForOrtho = false;
-                                            _isVisibleForFilling = false;
-                                            _isVisibleForBleaching = false;
-                                            _isVisibleForScaling = false;
-                                            _isVisibleGum = false;
-                                            _isVisibleForTeethRemove = false;
-                                            _isVisibleForCover = false;
-                                            _isVisibleMouth = false;
-                                            // Set selected tooth '1'
-                                            selectedTooth2 = '1';
-                                          } else if (selectedSerId == '7') {
-                                            _isVisibleGum = true;
-                                            _isVisibleForProthesis = false;
-                                            _isVisibleForOrtho = false;
-                                            _isVisibleForFilling = false;
-                                            _isVisibleForBleaching = false;
-                                            _isVisibleForScaling = false;
-                                            _isVisibleForRoot = false;
-                                            _isVisibleForTeethRemove = false;
-                                            _isVisibleForCover = false;
-                                            _isVisibleMouth = false;
-                                            selectedGumType1 = '3';
-                                          } else if (selectedSerId == '8') {
-                                            _isVisibleMouth = true;
-                                            _isVisibleForProthesis = false;
-                                            _isVisibleForOrtho = false;
-                                            _isVisibleForFilling = false;
-                                            _isVisibleForBleaching = false;
-                                            _isVisibleForScaling = false;
-                                            _isVisibleForRoot = false;
-                                            _isVisibleGum = false;
-                                            _isVisibleForTeethRemove = false;
-                                            _isVisibleForCover = false;
-                                          } else if (selectedSerId == '10') {
-                                            _isVisibleForTeethRemove = true;
-                                            _isVisibleForProthesis = false;
-                                            _isVisibleForOrtho = false;
-                                            _isVisibleForFilling = false;
-                                            _isVisibleForBleaching = false;
-                                            _isVisibleForScaling = false;
-                                            _isVisibleForRoot = false;
-                                            _isVisibleGum = false;
-                                            _isVisibleForCover = false;
-                                            _isVisibleMouth = false;
-                                          } else if (selectedSerId == '11') {
-                                            _isVisibleForCover = true;
-                                            _isVisibleForProthesis = false;
-                                            _isVisibleForOrtho = false;
-                                            _isVisibleForFilling = false;
-                                            _isVisibleForBleaching = false;
-                                            _isVisibleForScaling = false;
-                                            _isVisibleForRoot = false;
-                                            _isVisibleGum = false;
-                                            _isVisibleForTeethRemove = false;
-                                            _isVisibleMouth = false;
-                                            // Set selected tooth '1'
-                                            selectedTooth2 = '1';
-                                          } else {
-                                            _isVisibleForProthesis = false;
-                                            _isVisibleForOrtho = false;
-                                            _isVisibleForFilling = false;
-                                            _isVisibleForBleaching = false;
-                                            _isVisibleForScaling = false;
-                                            _isVisibleForRoot = false;
-                                            _isVisibleMouth = false;
-                                            _isVisibleGum = false;
-                                            _isVisibleForTeethRemove = false;
-                                            _isVisibleForCover = false;
-                                          }
                                         });
                                       },
                                     ),
@@ -1395,71 +1255,6 @@ class _NewPatientState extends State<NewPatient> {
                               ),
                             ),
                             Visibility(
-                              visible: _isVisibleForTeethRemove,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'نوعیت دندان',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: removeTeeth.any((tooth) =>
-                                                tooth['td_ID'].toString() ==
-                                                selectedTooth)
-                                            ? selectedTooth
-                                            : null,
-                                        items: removeTeeth.map((tooth) {
-                                          return DropdownMenuItem<String>(
-                                            value: tooth['td_ID'].toString(),
-                                            alignment: Alignment.centerRight,
-                                            child: Text(tooth['tooth']),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            selectedTooth = newValue;
-                                            selectedRemovableTooth =
-                                                removeTeeth.firstWhere(
-                                              (tooth) =>
-                                                  tooth['td_ID'].toString() ==
-                                                  newValue,
-                                            );
-                                            // Fetch type the teeth which will be removed (پوسیده، عقل دندان..)
-                                            removedTooth =
-                                                selectedRemovableTooth != null
-                                                    ? selectedRemovableTooth[
-                                                        'tooth']
-                                                    : null;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
                               visible: (defaultMaxillo == 'Abscess Treatment')
                                   ? true
                                   : false,
@@ -1510,80 +1305,12 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                             ),
-                            /* Visibility(
-                              visible: _isVisibleForFilling
-                                  ? _isVisibleForFilling
-                                  : _isVisibleForBleaching
-                                      ? _isVisibleForBleaching
-                                      : _isVisibleForProthesis
-                                          ? _isVisibleForProthesis
-                                          : _isVisibleForRoot
-                                              ? _isVisibleForRoot
-                                              : _isVisibleForTeethRemove
-                                                  ? _isVisibleForTeethRemove
-                                                  : _isVisibleForCover
-                                                      ? _isVisibleForCover
-                                                      : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'فک / لثه',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: selectedGumType2,
-                                        items: gums.map((gums) {
-                                          return DropdownMenuItem<String>(
-                                            value: gums['teeth_ID'],
-                                            alignment: Alignment.centerRight,
-                                            child: Text(gums['gum']),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            selectedGumType2 = newValue;
-                                            print('Gum: $selectedGumType2');
-                                            if (selectedSerId == '10') {
-                                              // Set this value since by changing لثه / فک below it, it should fetch the default selected value.
-                                              removedTooth = 'عقل دندان';
-                                              fetchRemoveTooth();
-                                            }
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
- */
                           ],
                         ),
                         Column(
                           children: [
                             Visibility(
-                              visible: _isVisibleForCover,
+                              visible: selectedSerId == '11' ? true : false,
                               child: Container(
                                 width: 400.0,
                                 margin: const EdgeInsets.only(
@@ -2296,7 +2023,7 @@ class _NewPatientState extends State<NewPatient> {
                               ),
                             ),
                             Visibility(
-                              visible: _isVisibleForBleaching,
+                              visible: selectedSerId == '3' ? true : false,
                               child: Container(
                                 width: 400.0,
                                 margin: const EdgeInsets.only(
