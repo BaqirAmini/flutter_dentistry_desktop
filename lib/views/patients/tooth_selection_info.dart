@@ -1,4 +1,4 @@
 class Tooth {
-  static bool? adultToothSelected;
-  static bool? childToothSelected;
+  static bool adultToothSelected = false;
+  static bool childToothSelected = false;
 }
