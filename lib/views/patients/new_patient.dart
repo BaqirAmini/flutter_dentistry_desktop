@@ -71,9 +71,8 @@ class _NewPatientState extends State<NewPatient> {
   ];
 
   //  پوش کردن دندان
-  String? defaultCrown = 'Please select a material';
-  List<String> crownItems = [
-    'Please select a material',
+  String? _defaultCrown;
+  final List<String> _crownItems = [
     'Porcelain',
     'Metal-Porcelain',
     'CAD CAM',
@@ -137,11 +136,6 @@ class _NewPatientState extends State<NewPatient> {
   void initState() {
     super.initState();
     fetchServices();
-    onChooseGum2();
-    fetchToothNum();
-    chooseGumType1();
-    fetchProtheses();
-    fetchRemoveTooth();
   }
 
   Future<void> fetchServices() async {
@@ -187,6 +181,25 @@ class _NewPatientState extends State<NewPatient> {
   final _regExDecimal = "[0-9.]";
 
   bool _isVisibleForPayment = false;
+  int _defaultDiscountRate = 0;
+  final List<int> _discountItems = [2, 5, 10, 15, 20, 30, 50];
+  double _receivableAmt = 0;
+
+  void _setDiscount(String text) {
+    double totalFee = _totalExpController.text.isEmpty
+        ? 0
+        : double.parse(_totalExpController.text);
+
+    setState(() {
+      if (_defaultDiscountRate == 0) {
+        _receivableAmt = totalFee;
+      } else {
+        double discountDeducted = (_defaultDiscountRate * totalFee) / 100;
+        _receivableAmt = totalFee - discountDeducted;
+      }
+    });
+  }
+
 // Global keys for forms created in this file.
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
@@ -207,11 +220,6 @@ class _NewPatientState extends State<NewPatient> {
   String _durationGroupValue = 'نامعلوم';
   // Create a Map to store the group values for each condition
   final Map<int, int> _condResultGV = {};
-
-  /* ---------------- variable to get assigned values based on services types dropdown */
-
-  /* ----------------END variable to get assigned values based on services types dropdown */
-
   // Declare a list to contain patients' info
   List<Step> stepList() => [
         Step(
@@ -1244,7 +1252,8 @@ class _NewPatientState extends State<NewPatient> {
                               ),
                             ),
                             Visibility(
-                              visible: (defaultMaxillo == 'Abscess Treatment')
+                              visible: (selectedSerId == '7' &&
+                                      defaultMaxillo == 'Abscess Treatment')
                                   ? true
                                   : false,
                               child: Container(
@@ -1255,19 +1264,31 @@ class _NewPatientState extends State<NewPatient> {
                                     top: 10.0,
                                     bottom: 10.0),
                                 child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
                                     labelText: 'انتخاب فک',
-                                    enabledBorder: OutlineInputBorder(
+                                    enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
+                                    errorText: defaultGumAbscess == null
+                                        ? 'Please select a gum'
+                                        : null,
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide: BorderSide(
+                                          color: defaultGumAbscess == null
+                                              ? Colors.red
+                                              : Colors.grey),
+                                    ),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
@@ -1337,8 +1358,8 @@ class _NewPatientState extends State<NewPatient> {
                                       ),
                                       borderSide: BorderSide(color: Colors.red),
                                     ),
-                                    errorText: defaultCrown == null ||
-                                            defaultCrown ==
+                                    errorText: _defaultCrown == null ||
+                                            _defaultCrown ==
                                                 'Please select a material'
                                         ? 'Please select a material'
                                         : null,
@@ -1346,20 +1367,28 @@ class _NewPatientState extends State<NewPatient> {
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
                                       height: 26.0,
-                                      child: DropdownButton(
+                                      child: DropdownButton<String>(
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
-                                        value: defaultCrown,
-                                        items: crownItems.map((String items) {
-                                          return DropdownMenuItem<String>(
-                                            value: items,
-                                            alignment: Alignment.centerRight,
-                                            child: Text(items),
-                                          );
-                                        }).toList(),
+                                        value: _defaultCrown,
+                                        items: [
+                                          const DropdownMenuItem(
+                                              value: null,
+                                              child: Text(
+                                                  'Please select a material')),
+                                          ..._crownItems.map((String items) {
+                                            return DropdownMenuItem<String>(
+                                              value: items,
+                                              alignment: Alignment.centerRight,
+                                              child: Text(items),
+                                            );
+                                          }).toList(),
+                                        ],
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            defaultCrown = newValue;
+                                            if (newValue != null) {
+                                              _defaultCrown = newValue;
+                                            }
                                           });
                                         },
                                       ),
@@ -1484,19 +1513,31 @@ class _NewPatientState extends State<NewPatient> {
                                     top: 10.0,
                                     bottom: 10.0),
                                 child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
                                     labelText: 'انتخاب فک',
-                                    enabledBorder: OutlineInputBorder(
+                                    enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
+                                    errorText: _defaultDentureValue == null
+                                        ? 'Please select a gum'
+                                        : null,
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide: BorderSide(
+                                          color: _defaultDentureValue == null
+                                              ? Colors.red
+                                              : Colors.grey),
+                                    ),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
@@ -1547,19 +1588,31 @@ class _NewPatientState extends State<NewPatient> {
                                     top: 10.0,
                                     bottom: 10.0),
                                 child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
                                     labelText: 'نوعیت مواد',
-                                    enabledBorder: OutlineInputBorder(
+                                    enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
+                                    errorText: !_fMaterialSelected
+                                        ? 'Please select filling material'
+                                        : null,
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide: BorderSide(
+                                          color: !_fMaterialSelected
+                                              ? Colors.red
+                                              : Colors.grey),
+                                    ),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
@@ -1612,19 +1665,31 @@ class _NewPatientState extends State<NewPatient> {
                                     top: 10.0,
                                     bottom: 10.0),
                                 child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
                                     labelText: 'نوعیت ارتودانسی',
-                                    enabledBorder: OutlineInputBorder(
+                                    enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
+                                    errorText: _defaultOrthoType == null
+                                        ? 'Please select a gum'
+                                        : null,
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide: BorderSide(
+                                          color: _defaultOrthoType == null
+                                              ? Colors.red
+                                              : Colors.grey),
+                                    ),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
@@ -1675,19 +1740,31 @@ class _NewPatientState extends State<NewPatient> {
                                     top: 10.0,
                                     bottom: 10.0),
                                 child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
                                     labelText: 'نوعیت',
-                                    enabledBorder: OutlineInputBorder(
+                                    enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
+                                    errorText: defaultMaxillo == null
+                                        ? 'Please select a type'
+                                        : null,
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide: BorderSide(
+                                          color: defaultMaxillo == null
+                                              ? Colors.red
+                                              : Colors.grey),
+                                    ),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
@@ -1728,7 +1805,8 @@ class _NewPatientState extends State<NewPatient> {
                               ),
                             ),
                             Visibility(
-                              visible: (defaultMaxillo == 'Abscess Treatment')
+                              visible: (selectedSerId == '7' &&
+                                      defaultMaxillo == 'Abscess Treatment')
                                   ? true
                                   : false,
                               child: Container(
@@ -2045,19 +2123,33 @@ class _NewPatientState extends State<NewPatient> {
                                     top: 10.0,
                                     bottom: 10.0),
                                 child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'نوعیت سفید کردن دندانها',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: 'مراحل سفید کردن',
+                                    enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey),
+                                    ),
+                                    focusedBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue),
+                                    ),
+                                    errorText: _defaultBleachValue == null
+                                        ? 'Please select a bleaching level'
+                                        : null,
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide: BorderSide(
+                                          color: _defaultBleachValue == null
+                                              ? Colors.red
+                                              : Colors.grey),
+                                    ),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
@@ -2158,8 +2250,10 @@ class _NewPatientState extends State<NewPatient> {
                               selectedSerId == '2' ||
                               selectedSerId == '11' ||
                               selectedSerId == '15' ||
-                              defaultMaxillo == 'Tooth Extraction' ||
-                              defaultMaxillo == 'Tooth Reimplantation' ||
+                              (selectedSerId == '7' &&
+                                  defaultMaxillo == 'Tooth Extraction') ||
+                              (selectedSerId == '7' &&
+                                  defaultMaxillo == 'Tooth Reimplantation') ||
                               (selectedSerId == '9' &&
                                   _dentureGroupValue == 'Partial'))
                           ? true
@@ -2209,6 +2303,7 @@ class _NewPatientState extends State<NewPatient> {
                               RegExp(_regExDecimal),
                             ),
                           ],
+                          onChanged: _setDiscount,
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             labelText: 'مجموع فیس',
@@ -2236,40 +2331,63 @@ class _NewPatientState extends State<NewPatient> {
                       Container(
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                        child: TextFormField(
-                          controller: _discountController,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'فیصدی تخفیف نمیتواند خالی باشد.';
-                            }
-                            return null;
-                          },
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(_regExDecimal),
-                            ),
-                          ],
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'تخفیف فیصدی',
-                            suffixIcon: Icon(Icons.money_off),
-                            enabledBorder: OutlineInputBorder(
+                        child: InputDecorator(
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: 'فیصدی تخفیف',
+                            enabledBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
+                            errorText: ageDropDown == 0 && !_ageSelected
+                                ? 'Please select an age'
+                                : null,
                             errorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.red)),
-                            focusedErrorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide:
-                                    BorderSide(color: Colors.red, width: 1.5)),
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(50.0),
+                              ),
+                              borderSide: BorderSide(
+                                  color:
+                                      !_ageSelected ? Colors.red : Colors.grey),
+                            ),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: SizedBox(
+                              height: 26.0,
+                              child: DropdownButton(
+                                isExpanded: true,
+                                icon: const Icon(Icons.arrow_drop_down),
+                                value: _defaultDiscountRate,
+                                items: <DropdownMenuItem<int>>[
+                                  const DropdownMenuItem(
+                                    value: 0,
+                                    child: Text('No discount'),
+                                  ),
+                                  ..._discountItems.map((int item) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: item,
+                                      child: Directionality(
+                                        textDirection: isEnglish
+                                            ? TextDirection.ltr
+                                            : TextDirection.rtl,
+                                        child: Text('$item%'),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ],
+                                onChanged: (int? newValue) {
+                                  setState(() {
+                                    _defaultDiscountRate = newValue!;
+                                  });
+                                    _setDiscount(_defaultDiscountRate.toString());
+                                },
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -2379,10 +2497,10 @@ class _NewPatientState extends State<NewPatient> {
                                 18.0), // Change this value to change the border radius
                           ),
                         ),
-                        child: const Center(
+                        child: Center(
                             child: Text(
-                          '30,000 افغانی',
-                          style: TextStyle(
+                          '$_receivableAmt افغانی',
+                          style: const TextStyle(
                               fontWeight: FontWeight.bold, color: Colors.blue),
                         )),
                       ),
@@ -2417,160 +2535,6 @@ class _NewPatientState extends State<NewPatient> {
       setState(() {
         _currentStep = 0;
       });
-    } else {
-      int? tDetailID;
-      if (serviceID == 2 ||
-          serviceID == 6 ||
-          serviceID == 9 ||
-          serviceID == 11) {
-        // Query for those services which require tooth numbers (1 - 8)
-
-        // Fetch tooth ID based on its primary key from tooth_details.
-        var toothResult = await conn.query(
-            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
-            [selectedTooth2, selectedGumType2]);
-        if (toothResult.isNotEmpty) {
-          var tdRow = toothResult.first;
-          tDetailID = tdRow['td_ID'];
-        }
-      } else if (serviceID == 10) {
-        var removeResult = await conn.query(
-            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
-            [removedTooth, selectedGumType2]);
-        if (removeResult.isNotEmpty) {
-          var row = removeResult.first;
-          tDetailID = row['td_ID'];
-        }
-      } else if (serviceID == 3) {
-        var bleachResult = await conn.query(
-            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
-            ['tooth not required', selectedGumType2]);
-        if (bleachResult.isNotEmpty) {
-          var row = bleachResult.first;
-          tDetailID = row['td_ID'];
-        }
-      } else if (serviceID == 4) {
-        var scaleResult = await conn.query(
-            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
-            ['tooth not required', selectedGumType1]);
-        if (scaleResult.isNotEmpty) {
-          var row = scaleResult.first;
-          tDetailID = row['td_ID'];
-        }
-      } else if (serviceID == 5) {
-        var orthoResult = await conn.query(
-            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
-            ['tooth not required', selectedGumType1]);
-        if (orthoResult.isNotEmpty) {
-          var row = orthoResult.first;
-          tDetailID = row['td_ID'];
-        }
-      } else if (serviceID == 7) {
-        var gumResult = await conn.query(
-            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
-            ['tooth not required', selectedGumType1]);
-        if (gumResult.isNotEmpty) {
-          var row = gumResult.first;
-          tDetailID = row['td_ID'];
-        }
-      } else {
-        var toothResult = await conn.query(
-            'SELECT * FROM tooth_details WHERE tooth = ? AND tooth_ID = ?',
-            ['tooth not required', selectedGumType2]);
-        if (toothResult.isNotEmpty) {
-          var tdRow = toothResult.first;
-          tDetailID = tdRow['td_ID'];
-        }
-      }
-
-// Declare this variable to be assigned ser_det_ID of service_details table
-      int? serviceDID;
-      if (serviceID == 2) {
-        serviceDID = selectedFill;
-      } else if (serviceID == 3) {
-        serviceDID = selectedServiceDetailID;
-      } else if (serviceID == 9) {
-        serviceDID = selectedProthis;
-      } else if (serviceID == 11) {
-        serviceDID = selectedMaterial;
-      } else if (serviceID == 8) {
-        tDetailID = null;
-        serviceDID = 15;
-      } else {
-        serviceDID = 15;
-      }
-
-      // Firstly insert a patient into patients table
-      var queryResult = await conn.query(
-          'INSERT INTO patients (staff_ID, firstname, lastname, sex, age, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-          [
-            staffId,
-            firstName,
-            lastName,
-            sex,
-            age,
-            maritalStatus,
-            phone,
-            bGrop,
-            addr
-          ]);
-// Choose a specific patient to fetch his/here ID
-      if (queryResult.affectedRows! > 0) {
-        String meetDate = _meetController.text;
-        String note = _noteController.text;
-        var queryResult1 = await conn.query(
-            'SELECT * FROM patients WHERE firstname = ? AND sex = ? AND age = ? AND phone = ?',
-            [firstName, sex, age, phone]);
-        final row = queryResult1.first;
-        final patId = row['pat_ID'];
-        double totalAmount = double.parse(_totalExpController.text);
-        double recieved = totalAmount;
-        double dueAmount = 0;
-        int installment = payTypeDropdown == 'تکمیل'
-            ? 1
-            : payTypeDropdown == 'دو قسط'
-                ? 2
-                : 3;
-        if (payTypeDropdown != 'تکمیل') {
-          recieved = double.parse(_recievableController.text);
-          dueAmount = totalAmount - recieved;
-        }
-
-        // Now add appointment of the patient
-        var queryResult2 = await conn.query(
-            'INSERT INTO appointments (pat_ID, tooth_detail_ID, service_detail_ID, installment, round, paid_amount, due_amount, meet_date, staff_ID, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [
-              patId,
-              tDetailID,
-              serviceDID,
-              installment,
-              1,
-              recieved,
-              dueAmount,
-              meetDate,
-              staffId,
-              note
-            ]);
-
-        if (queryResult2.affectedRows! > 0) {
-          _onShowSnack(Colors.green, 'مریض موفقانه افزوده شد.');
-          _nameController.clear();
-          _lNameController.clear();
-          _phoneController.clear();
-          _addrController.clear();
-          _noteController.clear();
-          _meetController.clear();
-          _totalExpController.clear();
-          _recievableController.clear();
-          setState(() {
-            _currentStep = 0;
-          });
-        } else {
-          print('Adding appointments faield.');
-        }
-      } else {
-        print('Patient registration faield.');
-      }
     }
   }
 
@@ -3320,26 +3284,51 @@ class _NewPatientState extends State<NewPatient> {
                               _currentStep++;
                             }
                           } else if (selectedSerId == '7') {
-                            if (defaultMaxillo == 'Tooth Extraction' ||
-                                defaultMaxillo == 'Tooth Reimplantation') {
-                              if (ageDropDown > 13) {
-                                if (Tooth.adultToothSelected) {
+                            if (defaultMaxillo != null) {
+                              if (defaultMaxillo == 'Tooth Extraction' ||
+                                  defaultMaxillo == 'Tooth Reimplantation') {
+                                if (ageDropDown > 13) {
+                                  if (Tooth.adultToothSelected) {
+                                    _currentStep++;
+                                  }
+                                } else {
+                                  if (Tooth.childToothSelected) {
+                                    _currentStep++;
+                                  }
+                                }
+                              } else if (defaultMaxillo ==
+                                  'Abscess Treatment') {
+                                if (defaultGumAbscess != null) {
                                   _currentStep++;
                                 }
                               } else {
-                                if (Tooth.childToothSelected) {
-                                  _currentStep++;
-                                }
+                                _currentStep++;
                               }
-                            } else if (defaultMaxillo == 'Abscess Treatment' &&
-                                defaultGumAbscess != null) {
-                              _currentStep++;
-                            } else {
-                              _currentStep++;
                             }
                           } else if (selectedSerId == '9') {
                             if (_defaultDentureValue != null) {
                               _currentStep++;
+                            }
+                          } else if (selectedSerId == '11' &&
+                              _defaultCrown != null) {
+                            if (ageDropDown > 13) {
+                              if (Tooth.adultToothSelected) {
+                                _currentStep++;
+                              }
+                            } else {
+                              if (Tooth.childToothSelected) {
+                                _currentStep++;
+                              }
+                            }
+                          } else if (selectedSerId == '15') {
+                            if (ageDropDown > 13) {
+                              if (Tooth.adultToothSelected) {
+                                _currentStep++;
+                              }
+                            } else {
+                              if (Tooth.childToothSelected) {
+                                _currentStep++;
+                              }
                             }
                           } else {
                             _currentStep++;
@@ -3399,61 +3388,6 @@ class _NewPatientState extends State<NewPatient> {
     return ages;
   }
 
-//  نوعیت کشیدن دندان
-  String? selectedTooth;
-
-  List<Map<String, dynamic>> removeTeeth = [];
-  Future<void> fetchRemoveTooth() async {
-    print('Testing gum: $selectedGumType2');
-    var conn = await onConnToDb();
-    if (selectedGumType2 != null) {
-      var results = await conn.query(
-          'SELECT td_ID, tooth FROM tooth_details WHERE (td_ID >= 35 AND td_ID <= 49) AND tooth_ID = ?',
-          [selectedGumType2]);
-
-      setState(() {
-        removeTeeth = results
-            .map(
-                (result) => {'td_ID': result[0].toString(), 'tooth': result[1]})
-            .toList();
-        selectedTooth = removeTeeth.isNotEmpty ? removeTeeth[0]['td_ID'] : null;
-      });
-    } else {
-      // Set a default value for selectedTooth using the defaultResult query
-      var defaultResult = await conn.query(
-          'SELECT td_ID, tooth FROM tooth_details WHERE td_ID >= 35 AND td_ID <= 37');
-      if (defaultResult.isNotEmpty) {
-        setState(() {
-          selectedTooth = defaultResult.first['td_ID'].toString();
-          removeTeeth = defaultResult
-              .map((result) =>
-                  {'td_ID': result['td_ID'], 'tooth': result['tooth']})
-              .toList();
-          selectedTooth = removeTeeth.isNotEmpty
-              ? removeTeeth[0]['td_ID'].toString()
-              : null;
-        });
-        // selectedTooth = removeTeeth.isNotEmpty ? removeTeeth[0]['td_ID'] : null;
-      }
-    }
-
-    await conn.close();
-  }
-
-  //  لثه برای جرم گیری
-  String? selectedGumType1;
-  List<Map<String, dynamic>> gumsType1 = [];
-  Future<void> chooseGumType1() async {
-    var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT teeth_ID, gum from teeth WHERE teeth_ID IN (1, 2, 3) ORDER BY teeth_ID DESC');
-    gumsType1 = results
-        .map((result) => {'teeth_ID': result[0].toString(), 'gum': result[1]})
-        .toList();
-    selectedGumType1 = gumsType1.isNotEmpty ? gumsType1[0]['teeth_ID'] : null;
-    await conn.close();
-  }
-
   List<String> onTeethScaling() {
     List<String> gumItems = ['بالا', 'پایین', 'هردو'];
     return gumItems;
@@ -3463,21 +3397,6 @@ class _NewPatientState extends State<NewPatient> {
   List<int> onGumSurgery() {
     List<int> gumSurgeryItems = [1, 2, 3, 4];
     return gumSurgeryItems;
-  }
-
-  //  لثه برای استفاده متعدد
-  String? selectedGumType2;
-  List<Map<String, dynamic>> gums = [];
-
-  Future<void> onChooseGum2() async {
-    var conn = await onConnToDb();
-    var queryResult = await conn.query(
-        'SELECT teeth_ID, gum FROM teeth WHERE teeth_ID IN (4, 5, 6, 7, 1)');
-    gums = queryResult
-        .map((row) => {'teeth_ID': row[0].toString(), 'gum': row[1]})
-        .toList();
-    selectedGumType2 = gums.isNotEmpty ? gums[1]['teeth_ID'] : null;
-    await conn.close();
   }
 
   //  پروتز دندان
@@ -3497,21 +3416,6 @@ class _NewPatientState extends State<NewPatient> {
     });
     selectedProthesis =
         protheses.isNotEmpty ? protheses[0]['ser_det_ID'] : null;
-    await conn.close();
-  }
-
-  //  تعداد دندان
-  List<Map<String, dynamic>> teeth = [];
-  Future<void> fetchToothNum() async {
-    String? toothId = selectedGumType2 ?? '4';
-    var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT td_ID, tooth from tooth_details WHERE tooth_ID = ? LIMIT 8',
-        [toothId]);
-    teeth = results
-        .map((result) => {'td_ID': result[0].toString(), 'tooth': result[1]})
-        .toList();
-    selectedTooth2 = teeth.isNotEmpty ? teeth[0]['td_ID'] : null;
     await conn.close();
   }
 
