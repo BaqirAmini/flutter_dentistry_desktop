@@ -36,22 +36,6 @@ class _NewPatientState extends State<NewPatient> {
   String maritalStatusDD = 'مجرد';
   var items = ['مجرد', 'متأهل'];
 
-  String? selectedTooth2;
-  var selectedRemovableTooth;
-  String removedTooth = 'عقل دندان';
-
-  /*----------------------- Note #1: In fact the below variables contain service_details.ser_det_ID  ------------------*/
-  // For Filling
-  int selectedFill = 1;
-  // For Bleaching
-  int selectedServiceDetailID = 4;
-// For prothesis
-  int selectedProthis = 8;
-  // For teeth cover
-  int selectedMaterial = 10;
-// For mouth test
-  int mouthTest = 15;
-  /*----------------------- End of Note #1  Do not get confused of variables name (They are ser_det_ID values) ------------------*/
   // ِDeclare variables for gender dropdown
   String genderDropDown = 'مرد';
   var genderItems = ['مرد', 'زن'];
@@ -79,7 +63,7 @@ class _NewPatientState extends State<NewPatient> {
     'Zirconia',
     'Mital',
     'Gold',
-    'سایر'
+    'وسایر'
   ];
 
   //  پرکاری دندان
@@ -90,7 +74,7 @@ class _NewPatientState extends State<NewPatient> {
     'Silicate',
     'Composite',
     'G.C (Glass Inomir)',
-    'سایر',
+    'وسایر',
   ];
 
   // ارتودانسی
@@ -128,10 +112,6 @@ class _NewPatientState extends State<NewPatient> {
   String? selectedSerId;
   List<Map<String, dynamic>> services = [];
 
-  // Abscess affected area
-  String defaultGumArea = 'Please select gum area';
-  List<String> gumAreaItems = ['Please select gum area', 'راست', 'چپ', 'هردو'];
-
   @override
   void initState() {
     super.initState();
@@ -155,16 +135,6 @@ class _NewPatientState extends State<NewPatient> {
   // Declare a dropdown for ages
   int ageDropDown = 0;
   bool _ageSelected = false;
-
-  // Declare a variable for gum surgery
-  int gumSurgeryDropDown = 1;
-
-  // Declare a variable for teeth numbers
-  int teethNumbers = 1;
-
-  // Declare a variable for payment installment
-  String payTypeDropdown = 'تکمیل';
-
   int _currentStep = 0;
 
   final _nameController = TextEditingController();
@@ -172,7 +142,6 @@ class _NewPatientState extends State<NewPatient> {
   final _phoneController = TextEditingController();
   final _addrController = TextEditingController();
   final _totalExpController = TextEditingController();
-  final _discountController = TextEditingController();
   final _recievableController = TextEditingController();
   final _meetController = TextEditingController();
   final _noteController = TextEditingController();
@@ -181,10 +150,10 @@ class _NewPatientState extends State<NewPatient> {
   final _regExDecimal = "[0-9.]";
 
   bool _isVisibleForPayment = false;
+  // Declare for discount.
   int _defaultDiscountRate = 0;
   final List<int> _discountItems = [2, 5, 10, 15, 20, 30, 50];
   double _receivableAmt = 0;
-
   void _setDiscount(String text) {
     double totalFee = _totalExpController.text.isEmpty
         ? 0
@@ -199,6 +168,20 @@ class _NewPatientState extends State<NewPatient> {
       }
     });
   }
+
+  // This function deducts installments
+  double _lastRecieved = 0;
+
+  void _setInstallment(String text) {
+    double recieved = text.isEmpty ? 0 : double.parse(text);
+    setState(() {
+      _receivableAmt = _receivableAmt + _lastRecieved - recieved;
+      _lastRecieved = recieved;
+    });
+  }
+
+  int _defaultInstallment = 0;
+  final List<int> _installmentItems = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 // Global keys for forms created in this file.
   final _formKey1 = GlobalKey<FormState>();
@@ -2384,7 +2367,7 @@ class _NewPatientState extends State<NewPatient> {
                                   setState(() {
                                     _defaultDiscountRate = newValue!;
                                   });
-                                    _setDiscount(_defaultDiscountRate.toString());
+                                  _setDiscount(_defaultDiscountRate.toString());
                                 },
                               ),
                             ),
@@ -2410,27 +2393,32 @@ class _NewPatientState extends State<NewPatient> {
                           child: DropdownButtonHideUnderline(
                             child: SizedBox(
                               height: 26.0,
-                              child: DropdownButton(
+                              child: DropdownButton<int>(
                                 isExpanded: true,
                                 icon: const Icon(Icons.arrow_drop_down),
-                                value: payTypeDropdown,
-                                items: onPayInstallment()
-                                    .map((String installmentItems) {
-                                  return DropdownMenuItem(
-                                    alignment: Alignment.centerRight,
-                                    value: installmentItems,
-                                    child: Directionality(
-                                      textDirection: isEnglish
-                                          ? TextDirection.ltr
-                                          : TextDirection.rtl,
-                                      child: Text(installmentItems),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
+                                value: _defaultInstallment,
+                                items: [
+                                  const DropdownMenuItem(
+                                    value: 0,
+                                    child: Text('تکمیل'),
+                                  ),
+                                  ..._installmentItems.map((int item) {
+                                    return DropdownMenuItem(
+                                      alignment: Alignment.centerRight,
+                                      value: item,
+                                      child: Directionality(
+                                        textDirection: isEnglish
+                                            ? TextDirection.ltr
+                                            : TextDirection.rtl,
+                                        child: Text('$item قسط'),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ],
+                                onChanged: (int? newValue) {
                                   setState(() {
-                                    payTypeDropdown = newValue!;
-                                    if (payTypeDropdown != 'تکمیل') {
+                                    _defaultInstallment = newValue!;
+                                    if (_defaultInstallment != 0) {
                                       _isVisibleForPayment = true;
                                     } else {
                                       _isVisibleForPayment = false;
@@ -2449,12 +2437,18 @@ class _NewPatientState extends State<NewPatient> {
                               left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: _recievableController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(_regExDecimal),
+                              ),
+                            ],
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'مبلغ رسید نمی تواند خالی باشد.';
                               }
                               return null;
                             },
+                            onChanged: _setInstallment,
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'مبلغ رسید',
@@ -2485,17 +2479,11 @@ class _NewPatientState extends State<NewPatient> {
                         height: 40,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors
-                                .grey, // Change this color to change the border color
-                            width:
-                                1.0, // Change this value to change the border width
-                          ),
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(
-                                18.0), // Change this value to change the border radius
-                          ),
+                        decoration: const BoxDecoration(
+                          border: Border(
+                              top: BorderSide(color: Colors.blue, width: 0.6),
+                              bottom:
+                                  BorderSide(color: Colors.blue, width: 0.6)),
                         ),
                         child: Center(
                             child: Text(
@@ -3386,43 +3374,6 @@ class _NewPatientState extends State<NewPatient> {
       ages.add(a);
     }
     return ages;
-  }
-
-  List<String> onTeethScaling() {
-    List<String> gumItems = ['بالا', 'پایین', 'هردو'];
-    return gumItems;
-  }
-
-  //  جراحی لثه دندان
-  List<int> onGumSurgery() {
-    List<int> gumSurgeryItems = [1, 2, 3, 4];
-    return gumSurgeryItems;
-  }
-
-  //  پروتز دندان
-  String? selectedProthesis;
-  List<Map<String, dynamic>> protheses = [];
-  Future<void> fetchProtheses() async {
-    var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_id = 9');
-    setState(() {
-      protheses = results
-          .map((result) => {
-                'ser_det_ID': result[0].toString(),
-                'service_specific_value': result[1]
-              })
-          .toList();
-    });
-    selectedProthesis =
-        protheses.isNotEmpty ? protheses[0]['ser_det_ID'] : null;
-    await conn.close();
-  }
-
-  //  اقساط پرداخت
-  List<String> onPayInstallment() {
-    List<String> installmentItems = ['تکمیل', 'دو قسط', 'سه قسط'];
-    return installmentItems;
   }
 }
 
