@@ -3,12 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 04, 2023 at 05:57 PM
+-- Generation Time: Nov 18, 2023 at 05:39 PM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
--- Create database
-CREATE DATABASE IF NOT EXISTS dentistry_db;
-USE dentistry_db;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -34,10 +31,10 @@ CREATE TABLE `appointments` (
   `apt_ID` int(128) NOT NULL,
   `cli_ID` int(128) NOT NULL,
   `pat_ID` int(128) NOT NULL,
-  `tooth_detail_ID` int(11) DEFAULT NULL,
-  `service_detail_ID` int(128) DEFAULT NULL,
+  `service_detail` varchar(64) DEFAULT NULL,
   `installment` int(2) DEFAULT 1,
   `round` int(2) NOT NULL DEFAULT 1,
+  `discount` double(12,2) DEFAULT NULL,
   `paid_amount` decimal(12,2) NOT NULL,
   `due_amount` decimal(12,2) NOT NULL,
   `meet_date` date DEFAULT NULL,
@@ -49,8 +46,8 @@ CREATE TABLE `appointments` (
 -- Dumping data for table `appointments`
 --
 
-INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `tooth_detail_ID`, `service_detail_ID`, `installment`, `round`, `paid_amount`, `due_amount`, `meet_date`, `staff_ID`, `note`) VALUES
-(41, 0, 69, 5, 9, 1, 1, '5000.00', '0.00', '2023-08-23', 17, '');
+INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `service_detail`, `installment`, `round`, `discount`, `paid_amount`, `due_amount`, `meet_date`, `staff_ID`, `note`) VALUES
+(41, 0, 69, '9', 1, 1, NULL, '5000.00', '0.00', '2023-08-23', 17, '');
 
 -- --------------------------------------------------------
 
@@ -81,10 +78,36 @@ INSERT INTO `clinics` (`cli_ID`, `cli_logo`, `cli_name`, `open_date`, `cli_addr`
 --
 
 CREATE TABLE `conditions` (
-  `cond_ID` int(128) NOT NULL,
-  `name` text NOT NULL,
+  `cond_ID` int(11) NOT NULL,
+  `name` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `conditions`
+--
+
+INSERT INTO `conditions` (`cond_ID`, `name`) VALUES
+(1, 'آیا دچار افت فشار خون و یا بلند رفتن فشار خون که موجب بعضی علایم یا مشکلات گردد، هستید؟'),
+(2, 'امراض قلبی دارید و یا قبلا دچار آن شده اید؟'),
+(4, 'داشتن امراض جلدی و یا حساسیت جلدی'),
+(5, 'آیا زردی سیاه دارید؟'),
+(6, 'درد در قفسه سینه'),
+(7, 'آیا حمل دارید اگر بله، چند مدت میشود؟'),
+(8, 'آیا دخانیات مصرف میکنید؟'),
+(9, 'سابقه مرض شکر');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `condition_details`
+--
+
+CREATE TABLE `condition_details` (
+  `cond_detail_ID` int(128) NOT NULL,
+  `cond_ID` int(11) DEFAULT NULL,
   `result` tinyint(1) NOT NULL DEFAULT 0,
   `severty` varchar(64) DEFAULT NULL,
+  `duration` int(11) DEFAULT NULL,
   `diagnosis_date` date DEFAULT NULL,
   `pat_ID` int(128) DEFAULT NULL,
   `notes` tinytext DEFAULT NULL
@@ -219,43 +242,6 @@ INSERT INTO `services` (`ser_ID`, `ser_name`, `ser_fee`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `service_details`
---
-
-CREATE TABLE `service_details` (
-  `ser_det_ID` int(11) NOT NULL,
-  `ser_id` int(11) DEFAULT NULL,
-  `service_specific_value` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `service_details`
---
-
-INSERT INTO `service_details` (`ser_det_ID`, `ser_id`, `service_specific_value`) VALUES
-(1, 2, 'کامپوزیت'),
-(2, 2, 'املگم'),
-(3, 2, 'سایر مواد'),
-(4, 3, 'یک مرحله ی'),
-(5, 3, 'دو مرحله ی'),
-(6, 3, 'سه مرحله ی'),
-(7, 3, 'چهار مرحله ی'),
-(8, 9, 'پروتیز قسمی'),
-(9, 9, 'پروتیز کامل'),
-(10, 11, 'پورسلن'),
-(11, 11, 'میتل'),
-(12, 11, 'زرگونیم'),
-(13, 11, 'گیگم'),
-(14, 11, 'طلا'),
-(15, 8, 'value not required'),
-(16, 3, 'value not required'),
-(17, 4, 'value not required'),
-(18, 5, 'value not required'),
-(19, 7, 'value not required');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `staff`
 --
 
@@ -353,111 +339,6 @@ CREATE TABLE `tax_payments` (
   `docs` blob DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `teeth`
---
-
-CREATE TABLE `teeth` (
-  `teeth_ID` int(128) NOT NULL,
-  `gum` varchar(32) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `teeth`
---
-
-INSERT INTO `teeth` (`teeth_ID`, `gum`) VALUES
-(1, 'هردو'),
-(2, 'بالا'),
-(3, 'پایین'),
-(4, 'بالا-راست'),
-(5, 'بالا-چپ'),
-(6, 'پایین-راست'),
-(7, 'پایین-چپ');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `tooth_details`
---
-
-CREATE TABLE `tooth_details` (
-  `td_ID` int(11) NOT NULL,
-  `tooth_ID` int(11) DEFAULT NULL,
-  `tooth` varchar(64) DEFAULT NULL,
-  `tooth_photo` mediumblob DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `tooth_details`
---
-
-INSERT INTO `tooth_details` (`td_ID`, `tooth_ID`, `tooth`, `tooth_photo`) VALUES
-(1, 4, '1', NULL),
-(2, 4, '2', NULL),
-(3, 4, '3', NULL),
-(4, 4, '4', NULL),
-(5, 4, '5', NULL),
-(6, 4, '6', NULL),
-(7, 4, '7', NULL),
-(8, 4, '8', NULL),
-(9, 5, '1', NULL),
-(10, 5, '2', NULL),
-(11, 5, '3', NULL),
-(12, 5, '4', NULL),
-(13, 5, '5', NULL),
-(14, 5, '6', NULL),
-(15, 5, '7', NULL),
-(16, 5, '8', NULL),
-(17, 6, '1', NULL),
-(18, 6, '2', NULL),
-(19, 6, '3', NULL),
-(20, 6, '4', NULL),
-(21, 6, '5', NULL),
-(22, 6, '6', NULL),
-(23, 6, '7', NULL),
-(24, 6, '8', NULL),
-(25, 7, '1', NULL),
-(26, 7, '2', NULL),
-(27, 7, '3', NULL),
-(28, 7, '4', NULL),
-(29, 7, '5', NULL),
-(30, 7, '6', NULL),
-(31, 7, '7', NULL),
-(32, 7, '8', NULL),
-(35, 4, 'عقل دندان', NULL),
-(36, 4, 'دندان پوسیده', NULL),
-(37, 4, 'شلوغ(دندان اضافی)', NULL),
-(38, 1, 'عقل دندان', NULL),
-(39, 1, 'دندان پوسیده', NULL),
-(40, 1, 'شلوغ(دندان اضافی)', NULL),
-(41, 5, 'عقل دندان', NULL),
-(42, 5, 'دندان پوسیده', NULL),
-(43, 5, 'شلوغ(دندان اضافی)', NULL),
-(44, 6, 'عقل دندان', NULL),
-(45, 6, 'دندان پوسیده', NULL),
-(46, 6, 'شلوغ(دندان اضافی)', NULL),
-(47, 7, 'عقل دندان', NULL),
-(48, 7, 'دندان پوسیده', NULL),
-(49, 7, 'شلوغ(دندان اضافی)', NULL),
-(50, 1, '1', NULL),
-(51, 1, '2', NULL),
-(52, 1, '3', NULL),
-(53, 1, '4', NULL),
-(54, 1, '5', NULL),
-(55, 1, '6', NULL),
-(56, 1, '7', NULL),
-(57, 1, '8', NULL),
-(58, 1, 'tooth not required', NULL),
-(59, 2, 'tooth not required', NULL),
-(60, 3, 'tooth not required', NULL),
-(61, 4, 'tooth not required', NULL),
-(62, 5, 'tooth not required', NULL),
-(63, 6, 'tooth not required', NULL),
-(64, 7, 'tooth not required', NULL);
-
 --
 -- Indexes for dumped tables
 --
@@ -468,10 +349,7 @@ INSERT INTO `tooth_details` (`td_ID`, `tooth_ID`, `tooth`, `tooth_photo`) VALUES
 ALTER TABLE `appointments`
   ADD PRIMARY KEY (`apt_ID`),
   ADD KEY `cli_ID_fk` (`cli_ID`),
-  ADD KEY `pat_ID_fk` (`pat_ID`),
-  ADD KEY `ser_ID_fk` (`service_detail_ID`),
-  ADD KEY `sdetail_ID_fk` (`staff_ID`),
-  ADD KEY `teeth_apt_id_fk` (`tooth_detail_ID`);
+  ADD KEY `pat_ID_fk` (`pat_ID`);
 
 --
 -- Indexes for table `clinics`
@@ -483,8 +361,15 @@ ALTER TABLE `clinics`
 -- Indexes for table `conditions`
 --
 ALTER TABLE `conditions`
-  ADD PRIMARY KEY (`cond_ID`),
-  ADD KEY `conditions_pat_id_fk` (`pat_ID`);
+  ADD PRIMARY KEY (`cond_ID`);
+
+--
+-- Indexes for table `condition_details`
+--
+ALTER TABLE `condition_details`
+  ADD PRIMARY KEY (`cond_detail_ID`),
+  ADD KEY `conditions_pat_id_fk` (`pat_ID`),
+  ADD KEY `condition_detail_id_fk` (`cond_ID`);
 
 --
 -- Indexes for table `expenses`
@@ -524,13 +409,6 @@ ALTER TABLE `services`
   ADD PRIMARY KEY (`ser_ID`);
 
 --
--- Indexes for table `service_details`
---
-ALTER TABLE `service_details`
-  ADD PRIMARY KEY (`ser_det_ID`),
-  ADD KEY `ser_ser_det_id` (`ser_id`);
-
---
 -- Indexes for table `staff`
 --
 ALTER TABLE `staff`
@@ -558,19 +436,6 @@ ALTER TABLE `tax_payments`
   ADD KEY `staff_tax_pay_id_fk` (`paid_by`);
 
 --
--- Indexes for table `teeth`
---
-ALTER TABLE `teeth`
-  ADD PRIMARY KEY (`teeth_ID`);
-
---
--- Indexes for table `tooth_details`
---
-ALTER TABLE `tooth_details`
-  ADD PRIMARY KEY (`td_ID`),
-  ADD KEY `tooth_td_id` (`tooth_ID`);
-
---
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -590,7 +455,13 @@ ALTER TABLE `clinics`
 -- AUTO_INCREMENT for table `conditions`
 --
 ALTER TABLE `conditions`
-  MODIFY `cond_ID` int(128) NOT NULL AUTO_INCREMENT;
+  MODIFY `cond_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `condition_details`
+--
+ALTER TABLE `condition_details`
+  MODIFY `cond_detail_ID` int(128) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `expenses`
@@ -623,12 +494,6 @@ ALTER TABLE `services`
   MODIFY `ser_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT for table `service_details`
---
-ALTER TABLE `service_details`
-  MODIFY `ser_det_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
-
---
 -- AUTO_INCREMENT for table `staff`
 --
 ALTER TABLE `staff`
@@ -653,18 +518,6 @@ ALTER TABLE `tax_payments`
   MODIFY `tax_pay_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
--- AUTO_INCREMENT for table `teeth`
---
-ALTER TABLE `teeth`
-  MODIFY `teeth_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT for table `tooth_details`
---
-ALTER TABLE `tooth_details`
-  MODIFY `td_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
-
---
 -- Constraints for dumped tables
 --
 
@@ -673,15 +526,14 @@ ALTER TABLE `tooth_details`
 --
 ALTER TABLE `appointments`
   ADD CONSTRAINT `pat_apt_id_fk` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `service_detail_id_fk` FOREIGN KEY (`service_detail_ID`) REFERENCES `service_details` (`ser_det_ID`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `staff_apt_id_fk` FOREIGN KEY (`staff_ID`) REFERENCES `staff` (`staff_ID`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `tooth_det_id_fk` FOREIGN KEY (`tooth_detail_ID`) REFERENCES `tooth_details` (`td_ID`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `staff_apt_id_fk` FOREIGN KEY (`staff_ID`) REFERENCES `staff` (`staff_ID`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `conditions`
+-- Constraints for table `condition_details`
 --
-ALTER TABLE `conditions`
-  ADD CONSTRAINT `conditions_pat_id_fk` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `condition_details`
+  ADD CONSTRAINT `condition__detail_pat_id_fk` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `condition_detail_id_fk` FOREIGN KEY (`cond_ID`) REFERENCES `conditions` (`cond_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `expense_detail`
@@ -703,12 +555,6 @@ ALTER TABLE `selected_teeth`
   ADD CONSTRAINT `selected_teeth_pat_id_fk` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `service_details`
---
-ALTER TABLE `service_details`
-  ADD CONSTRAINT `ser_ser_det_id` FOREIGN KEY (`ser_id`) REFERENCES `services` (`ser_ID`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
 -- Constraints for table `staff_auth`
 --
 ALTER TABLE `staff_auth`
@@ -720,12 +566,6 @@ ALTER TABLE `staff_auth`
 ALTER TABLE `tax_payments`
   ADD CONSTRAINT `staff_tax_pay_id_fk` FOREIGN KEY (`paid_by`) REFERENCES `staff` (`staff_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `taxes_pay_id_fk` FOREIGN KEY (`tax_ID`) REFERENCES `taxes` (`tax_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `tooth_details`
---
-ALTER TABLE `tooth_details`
-  ADD CONSTRAINT `tooth_td_id` FOREIGN KEY (`tooth_ID`) REFERENCES `teeth` (`teeth_ID`) ON DELETE NO ACTION ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
