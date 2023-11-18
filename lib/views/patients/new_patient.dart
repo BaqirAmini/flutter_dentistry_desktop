@@ -217,7 +217,12 @@ class _NewPatientState extends State<NewPatient> {
                 children: [
                   Text(
                     translations[selectedLanguage]?['Step1Msg'] ?? '',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(top: 10, bottom: 10),
+                    child: const Text(
+                        '* نشان دهنده فیلد(خانه)های الزامی میباشد.',
+                        textAlign: TextAlign.right, style: TextStyle(color: Colors.blue),),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -236,7 +241,7 @@ class _NewPatientState extends State<NewPatient> {
                                 width: 400.0,
                                 margin: const EdgeInsets.only(
                                     left: 20.0,
-                                    right: 20.0,
+                                    right: 10.0,
                                     top: 10.0,
                                     bottom: 10.0),
                                 child: TextFormField(
@@ -293,7 +298,7 @@ class _NewPatientState extends State<NewPatient> {
                             width: 400.0,
                             margin: const EdgeInsets.only(
                                 left: 20.0,
-                                right: 20.0,
+                                right: 10.0,
                                 top: 10.0,
                                 bottom: 10.0),
                             child: TextFormField(
@@ -339,85 +344,97 @@ class _NewPatientState extends State<NewPatient> {
                               ),
                             ),
                           ),
-                          Container(
-                            width: 400.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: InputDecorator(
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translations[selectedLanguage]
-                                        ?['Age'] ??
-                                    '',
-                                enabledBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorText: ageDropDown == 0 && !_ageSelected
-                                    ? 'Please select an age'
-                                    : null,
-                                errorBorder: OutlineInputBorder(
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(50.0),
-                                  ),
-                                  borderSide: BorderSide(
-                                      color: !_ageSelected
-                                          ? Colors.red
-                                          : Colors.grey),
-                                ),
+                          Row(
+                            children: [
+                              const Text(
+                                '*',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold),
                               ),
-                              child: DropdownButtonHideUnderline(
-                                child: SizedBox(
-                                  height: 26.0,
-                                  child: DropdownButton(
-                                    isExpanded: true,
-                                    icon: const Icon(Icons.arrow_drop_down),
-                                    value: ageDropDown,
-                                    items: <DropdownMenuItem<int>>[
-                                      const DropdownMenuItem(
-                                        value: 0,
-                                        child: Text('Please select an age'),
+                              Container(
+                                width: 400.0,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 10.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: InputDecorator(
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                            ?['Age'] ??
+                                        '',
+                                    enabledBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                    errorText: ageDropDown == 0 && !_ageSelected
+                                        ? 'Please select an age'
+                                        : null,
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: const BorderRadius.all(
+                                        Radius.circular(50.0),
                                       ),
-                                      ...getAges().map((int ageItems) {
-                                        return DropdownMenuItem(
-                                          alignment: Alignment.centerRight,
-                                          value: ageItems,
-                                          child: Directionality(
-                                            textDirection: isEnglish
-                                                ? TextDirection.ltr
-                                                : TextDirection.rtl,
-                                            child: Text(
-                                                '$ageItems ${translations[selectedLanguage]?['Year'] ?? ''} '),
+                                      borderSide: BorderSide(
+                                          color: !_ageSelected
+                                              ? Colors.red
+                                              : Colors.grey),
+                                    ),
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: SizedBox(
+                                      height: 26.0,
+                                      child: DropdownButton(
+                                        isExpanded: true,
+                                        icon: const Icon(Icons.arrow_drop_down),
+                                        value: ageDropDown,
+                                        items: <DropdownMenuItem<int>>[
+                                          const DropdownMenuItem(
+                                            value: 0,
+                                            child: Text('No age selected'),
                                           ),
-                                        );
-                                      }).toList(),
-                                    ],
-                                    onChanged: (int? newValue) {
-                                      if (newValue != 0) {
-                                        // Ignore the 'Please select an age' option
-                                        setState(() {
-                                          ageDropDown = newValue!;
-                                          _ageSelected = true;
-                                        });
-                                      }
-                                    },
+                                          ...getAges().map((int ageItems) {
+                                            return DropdownMenuItem(
+                                              alignment: Alignment.centerRight,
+                                              value: ageItems,
+                                              child: Directionality(
+                                                textDirection: isEnglish
+                                                    ? TextDirection.ltr
+                                                    : TextDirection.rtl,
+                                                child: Text(
+                                                    '$ageItems ${translations[selectedLanguage]?['Year'] ?? ''} '),
+                                              ),
+                                            );
+                                          }).toList(),
+                                        ],
+                                        onChanged: (int? newValue) {
+                                          if (newValue != 0) {
+                                            // Ignore the 'Please select an age' option
+                                            setState(() {
+                                              ageDropDown = newValue!;
+                                              _ageSelected = true;
+                                            });
+                                          }
+                                        },
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
                           Container(
                             width: 400.0,
                             margin: const EdgeInsets.only(
                                 left: 20.0,
-                                right: 20.0,
+                                right: 10.0,
                                 top: 10.0,
                                 bottom: 10.0),
                             child: InputDecorator(
@@ -495,7 +512,7 @@ class _NewPatientState extends State<NewPatient> {
                             width: 400.0,
                             margin: const EdgeInsets.only(
                                 left: 20.0,
-                                right: 20.0,
+                                right: 10.0,
                                 top: 10.0,
                                 bottom: 10.0),
                             child: InputDecorator(
@@ -540,7 +557,7 @@ class _NewPatientState extends State<NewPatient> {
                             width: 400.0,
                             margin: const EdgeInsets.only(
                                 left: 20.0,
-                                right: 20.0,
+                                right: 10.0,
                                 top: 10.0,
                                 bottom: 10.0),
                             child: Column(
@@ -605,7 +622,7 @@ class _NewPatientState extends State<NewPatient> {
                                 width: 400.0,
                                 margin: const EdgeInsets.only(
                                     left: 20.0,
-                                    right: 20.0,
+                                    right: 10.0,
                                     top: 10.0,
                                     bottom: 10.0),
                                 child: TextFormField(
@@ -678,7 +695,7 @@ class _NewPatientState extends State<NewPatient> {
                             width: 400.0,
                             margin: const EdgeInsets.only(
                                 left: 20.0,
-                                right: 20.0,
+                                right: 10.0,
                                 top: 10.0,
                                 bottom: 10.0),
                             child: TextFormField(
@@ -2551,39 +2568,6 @@ class _NewPatientState extends State<NewPatient> {
     );
   }
 
-// Create an alert dialog to confirm fields are inserted correctly.
-  onConfirmForm() {
-    return showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-              title: Directionality(
-                textDirection:
-                    isEnglish ? TextDirection.ltr : TextDirection.rtl,
-                child: const Text('کسب اطمینان'),
-              ),
-              content: Directionality(
-                textDirection:
-                    isEnglish ? TextDirection.ltr : TextDirection.rtl,
-                child: const Text(
-                    'آیا کاملاً مطمیین هستید در قسمت خانه پری این صفحه؟'),
-              ),
-              actions: [
-                TextButton(
-                    onPressed: () =>
-                        Navigator.of(context, rootNavigator: true).pop(),
-                    child: const Text('نگاه مجدد')),
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _currentStep++;
-                      });
-                      Navigator.of(context, rootNavigator: true).pop();
-                    },
-                    child: const Text('بله')),
-              ],
-            ));
-  }
-
 // Create new patient conditions
   _onCreateNewHealthHistory() {
     final condNameController = TextEditingController();
@@ -2597,11 +2581,12 @@ class _NewPatientState extends State<NewPatient> {
         content: Directionality(
           textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
           child: SizedBox(
-            height: 100,
+            height: MediaQuery.of(context).size.height * 0.12,
             width: 600,
             child: Form(
               key: _condFormKey,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextFormField(
                     controller: condNameController,
@@ -3338,7 +3323,9 @@ class _NewPatientState extends State<NewPatient> {
                     });
                   } else {
                     if (_formKey3.currentState!.validate()) {
-                      onAddNewPatient(context);
+                      // _onFetchHealthHistory();
+                      print(_onFetchHealthHistory());
+                      // onAddNewPatient(context);
                     }
                   }
                 }
