@@ -6,6 +6,9 @@
 -- Generation Time: Nov 18, 2023 at 05:39 PM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
+-- Create the database
+CREATE DATABASE IF NOT EXISTS dentistry_db;
+USE dentistry_db;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
