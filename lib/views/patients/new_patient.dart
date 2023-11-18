@@ -2348,7 +2348,7 @@ class _NewPatientState extends State<NewPatient> {
                                 items: <DropdownMenuItem<int>>[
                                   const DropdownMenuItem(
                                     value: 0,
-                                    child: Text('No discount'),
+                                    child: Text('No Discount'),
                                   ),
                                   ..._discountItems.map((int item) {
                                     return DropdownMenuItem(
@@ -2476,21 +2476,31 @@ class _NewPatientState extends State<NewPatient> {
                       ),
                       Container(
                         width: 450.0,
-                        height: 40,
-                        margin: const EdgeInsets.only(
-                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         decoration: const BoxDecoration(
-                          border: Border(
-                              top: BorderSide(color: Colors.blue, width: 0.6),
-                              bottom:
-                                  BorderSide(color: Colors.blue, width: 0.6)),
-                        ),
-                        child: Center(
-                            child: Text(
-                          '$_receivableAmt افغانی',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.blue),
+                            border: Border(
+                          top: BorderSide(width: 1, color: Colors.grey),
+                          bottom: BorderSide(width: 1, color: Colors.grey),
                         )),
+                        margin: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, bottom: 10.0, top: 10.0),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              labelText: 'قابل دریافت',
+                              floatingLabelAlignment:
+                                  FloatingLabelAlignment.center),
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Center(
+                              child: Text(
+                                '$_receivableAmt افغانی',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
