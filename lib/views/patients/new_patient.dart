@@ -221,8 +221,10 @@ class _NewPatientState extends State<NewPatient> {
                   Container(
                     margin: const EdgeInsets.only(top: 10, bottom: 10),
                     child: const Text(
-                        '* نشان دهنده فیلد(خانه)های الزامی میباشد.',
-                        textAlign: TextAlign.right, style: TextStyle(color: Colors.blue),),
+                      '* نشان دهنده فیلد(خانه)های الزامی میباشد.',
+                      textAlign: TextAlign.right,
+                      style: TextStyle(color: Colors.blue),
+                    ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -2528,6 +2530,36 @@ class _NewPatientState extends State<NewPatient> {
         ),
       ];
 
+// Store patients' Health History into condition_details table.
+  Future<void> _storeSelectedConditions() async {
+    try {
+      // Connect to the database
+      final conn = await onConnToDb();
+
+      // Start a transaction
+      await conn.transaction((ctx) async {
+        for (var condID in _condResultGV.keys) {
+          // Prepare an insert query
+          var query =
+              'INSERT INTO condition_details (cond_ID, result) VALUES (?, ?)';
+
+          // Get the selected value ('مثبت' or 'منفی')
+          var selectedValue = _condResultGV[condID] == 1 ? 1 : 0;
+
+          // Execute the query with the condition ID and the selected value
+          await ctx.query(
+              query, [condID, selectedValue.toInt()]);
+        }
+      });
+
+      // Close the connection
+      await conn.close();
+      _onShowSnack(Colors.green, 'History added.');
+    } catch (e) {
+      _onShowSnack(Colors.red, 'Adding history faield.$e');
+    }
+  }
+
 // Add a new patient
   Future<void> onAddNewPatient(BuildContext context) async {
     var staffId = StaffInfo.staffID;
@@ -2550,7 +2582,80 @@ class _NewPatientState extends State<NewPatient> {
       setState(() {
         _currentStep = 0;
       });
-    }
+    } /* else {
+  
+      // Firstly insert a patient into patients table
+      var queryResult = await conn.query(
+          'INSERT INTO patients (staff_ID, firstname, lastname, sex, age, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          [
+            staffId,
+            firstName,
+            lastName,
+            sex,
+            age,
+            maritalStatus,
+            phone,
+            bGrop,
+            addr
+          ]);
+// Choose a specific patient to fetch his/here ID
+      if (queryResult.affectedRows! > 0) {
+        String meetDate = _meetController.text;
+        String note = _noteController.text;
+        var queryResult1 = await conn.query(
+            'SELECT * FROM patients WHERE firstname = ? AND sex = ? AND age = ? AND phone = ?',
+            [firstName, sex, age, phone]);
+        final row = queryResult1.first;
+        final patId = row['pat_ID'];
+        double totalAmount = double.parse(_totalExpController.text);
+        double recieved = totalAmount;
+        double dueAmount = 0;
+        int installment = payTypeDropdown == 'تکمیل'
+            ? 1
+            : payTypeDropdown == 'دو قسط'
+                ? 2
+                : 3;
+        if (payTypeDropdown != 'تکمیل') {
+          recieved = double.parse(_recievableController.text);
+          dueAmount = totalAmount - recieved;
+        }
+
+        // Now add appointment of the patient
+        var queryResult2 = await conn.query(
+            'INSERT INTO appointments (pat_ID, tooth_detail_ID, service_detail_ID, installment, round, paid_amount, due_amount, meet_date, staff_ID, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+              patId,
+              tDetailID,
+              serviceDID,
+              installment,
+              1,
+              recieved,
+              dueAmount,
+              meetDate,
+              staffId,
+              note
+            ]);
+
+        if (queryResult2.affectedRows! > 0) {
+          _onShowSnack(Colors.green, 'مریض موفقانه افزوده شد.');
+          _nameController.clear();
+          _lNameController.clear();
+          _phoneController.clear();
+          _addrController.clear();
+          _noteController.clear();
+          _meetController.clear();
+          _totalExpController.clear();
+          _recievableController.clear();
+          setState(() {
+            _currentStep = 0;
+          });
+        } else {
+          print('Adding appointments faield.');
+        }
+      } else {
+        print('Patient registration faield.');
+      }
+ */
   }
 
 // This is shows snackbar when called
@@ -3324,7 +3429,7 @@ class _NewPatientState extends State<NewPatient> {
                   } else {
                     if (_formKey3.currentState!.validate()) {
                       // _onFetchHealthHistory();
-                      print(_onFetchHealthHistory());
+                      _storeSelectedConditions();
                       // onAddNewPatient(context);
                     }
                   }
