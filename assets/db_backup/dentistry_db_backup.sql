@@ -3,17 +3,17 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 18, 2023 at 05:39 PM
--- Server version: 10.4.24-MariaDB
--- PHP Version: 8.1.6
--- Create the database
-CREATE DATABASE IF NOT EXISTS dentistry_db;
-USE dentistry_db;
+-- Generation Time: Nov 21, 2023 at 11:30 AM
+-- Server version: 10.4.27-MariaDB
+-- PHP Version: 8.0.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
+-- Create database
+CREATE DATABASE IF NOT EXISTS dentistry_db;
+USE dentistry_db;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -34,7 +34,7 @@ CREATE TABLE `appointments` (
   `apt_ID` int(128) NOT NULL,
   `cli_ID` int(128) NOT NULL,
   `pat_ID` int(128) NOT NULL,
-  `service_detail` varchar(64) DEFAULT NULL,
+  `service_ID` int(11) DEFAULT NULL,
   `installment` int(2) DEFAULT 1,
   `round` int(2) NOT NULL DEFAULT 1,
   `discount` double(12,2) DEFAULT NULL,
@@ -43,14 +43,14 @@ CREATE TABLE `appointments` (
   `meet_date` date DEFAULT NULL,
   `staff_ID` int(128) DEFAULT NULL,
   `note` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `appointments`
 --
 
-INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `service_detail`, `installment`, `round`, `discount`, `paid_amount`, `due_amount`, `meet_date`, `staff_ID`, `note`) VALUES
-(41, 0, 69, '9', 1, 1, NULL, '5000.00', '0.00', '2023-08-23', 17, '');
+INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `service_ID`, `installment`, `round`, `discount`, `paid_amount`, `due_amount`, `meet_date`, `staff_ID`, `note`) VALUES
+(41, 0, 69, 9, 1, 1, NULL, '5000.00', '0.00', '2023-08-23', 17, '');
 
 -- --------------------------------------------------------
 
@@ -65,7 +65,7 @@ CREATE TABLE `clinics` (
   `open_date` date DEFAULT NULL,
   `cli_addr` varchar(64) DEFAULT NULL,
   `founder` varchar(64) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `clinics`
@@ -83,7 +83,7 @@ INSERT INTO `clinics` (`cli_ID`, `cli_logo`, `cli_name`, `open_date`, `cli_addr`
 CREATE TABLE `conditions` (
   `cond_ID` int(11) NOT NULL,
   `name` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `conditions`
@@ -114,7 +114,21 @@ CREATE TABLE `condition_details` (
   `diagnosis_date` date DEFAULT NULL,
   `pat_ID` int(128) DEFAULT NULL,
   `notes` tinytext DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Dumping data for table `condition_details`
+--
+
+INSERT INTO `condition_details` (`cond_detail_ID`, `cond_ID`, `result`, `severty`, `duration`, `diagnosis_date`, `pat_ID`, `notes`) VALUES
+(1, 1, 1, NULL, NULL, NULL, NULL, NULL),
+(2, 2, 0, NULL, NULL, NULL, NULL, NULL),
+(3, 4, 0, NULL, NULL, NULL, NULL, NULL),
+(4, 5, 0, NULL, NULL, NULL, NULL, NULL),
+(5, 6, 1, NULL, NULL, NULL, NULL, NULL),
+(6, 7, 0, NULL, NULL, NULL, NULL, NULL),
+(7, 8, 0, NULL, NULL, NULL, NULL, NULL),
+(8, 9, 1, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -126,7 +140,7 @@ CREATE TABLE `expenses` (
   `exp_ID` int(128) NOT NULL,
   `cli_ID` int(128) NOT NULL,
   `exp_name` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `expenses`
@@ -157,7 +171,7 @@ CREATE TABLE `expense_detail` (
   `purchase_date` date NOT NULL,
   `invoice` varchar(128) DEFAULT NULL,
   `note` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `expense_detail`
@@ -188,7 +202,7 @@ CREATE TABLE `patients` (
   `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `blood_group` varchar(12) DEFAULT NULL,
   `address` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `patients`
@@ -196,6 +210,19 @@ CREATE TABLE `patients` (
 
 INSERT INTO `patients` (`pat_ID`, `cli_ID`, `staff_ID`, `firstname`, `lastname`, `sex`, `age`, `marital_status`, `phone`, `reg_date`, `blood_group`, `address`) VALUES
 (69, 0, 17, 'مهناز', '', 'زن', 27, 'مجرد', '0781023232', '2023-10-02 07:14:26', 'نامشخص', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `patient_services`
+--
+
+CREATE TABLE `patient_services` (
+  `pat_ID` int(11) NOT NULL,
+  `ser_ID` int(11) NOT NULL,
+  `req_ID` int(11) NOT NULL,
+  `value` varchar(128) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -208,7 +235,7 @@ CREATE TABLE `selected_teeth` (
   `tooth` varchar(16) NOT NULL,
   `notes` tinytext DEFAULT NULL,
   `pat_ID` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
 
@@ -220,7 +247,7 @@ CREATE TABLE `services` (
   `ser_ID` int(128) NOT NULL,
   `ser_name` varchar(64) NOT NULL,
   `ser_fee` decimal(10,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `services`
@@ -245,6 +272,18 @@ INSERT INTO `services` (`ser_ID`, `ser_name`, `ser_fee`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `service_requirements`
+--
+
+CREATE TABLE `service_requirements` (
+  `req_ID` int(11) NOT NULL,
+  `service_ID` int(11) DEFAULT NULL,
+  `req_name` varchar(128) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `staff`
 --
 
@@ -258,7 +297,7 @@ CREATE TABLE `staff` (
   `tazkira_ID` varchar(16) DEFAULT NULL,
   `photo` mediumblob DEFAULT NULL,
   `address` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `staff`
@@ -286,7 +325,7 @@ CREATE TABLE `staff_auth` (
   `username` varchar(64) NOT NULL,
   `password` varchar(64) NOT NULL,
   `role` varchar(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `staff_auth`
@@ -308,7 +347,7 @@ CREATE TABLE `taxes` (
   `total_annual_tax` decimal(15,2) NOT NULL,
   `TIN` char(10) DEFAULT NULL,
   `tax_for_year` int(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `taxes`
@@ -340,7 +379,7 @@ CREATE TABLE `tax_payments` (
   `note` mediumtext DEFAULT NULL,
   `modified_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `docs` blob DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Indexes for dumped tables
@@ -352,7 +391,9 @@ CREATE TABLE `tax_payments` (
 ALTER TABLE `appointments`
   ADD PRIMARY KEY (`apt_ID`),
   ADD KEY `cli_ID_fk` (`cli_ID`),
-  ADD KEY `pat_ID_fk` (`pat_ID`);
+  ADD KEY `pat_ID_fk` (`pat_ID`),
+  ADD KEY `staff_apt_id_fk` (`staff_ID`),
+  ADD KEY `service_apt_id_fk` (`service_ID`);
 
 --
 -- Indexes for table `clinics`
@@ -399,6 +440,14 @@ ALTER TABLE `patients`
   ADD KEY `sdetail_ID_fk` (`staff_ID`);
 
 --
+-- Indexes for table `patient_services`
+--
+ALTER TABLE `patient_services`
+  ADD PRIMARY KEY (`pat_ID`,`ser_ID`,`req_ID`),
+  ADD KEY `ser_ID` (`ser_ID`),
+  ADD KEY `req_ID` (`req_ID`);
+
+--
 -- Indexes for table `selected_teeth`
 --
 ALTER TABLE `selected_teeth`
@@ -410,6 +459,13 @@ ALTER TABLE `selected_teeth`
 --
 ALTER TABLE `services`
   ADD PRIMARY KEY (`ser_ID`);
+
+--
+-- Indexes for table `service_requirements`
+--
+ALTER TABLE `service_requirements`
+  ADD PRIMARY KEY (`req_ID`),
+  ADD KEY `service_ID` (`service_ID`);
 
 --
 -- Indexes for table `staff`
@@ -464,7 +520,7 @@ ALTER TABLE `conditions`
 -- AUTO_INCREMENT for table `condition_details`
 --
 ALTER TABLE `condition_details`
-  MODIFY `cond_detail_ID` int(128) NOT NULL AUTO_INCREMENT;
+  MODIFY `cond_detail_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `expenses`
@@ -529,6 +585,7 @@ ALTER TABLE `tax_payments`
 --
 ALTER TABLE `appointments`
   ADD CONSTRAINT `pat_apt_id_fk` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `service_apt_id_fk` FOREIGN KEY (`service_ID`) REFERENCES `services` (`ser_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `staff_apt_id_fk` FOREIGN KEY (`staff_ID`) REFERENCES `staff` (`staff_ID`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
@@ -552,10 +609,24 @@ ALTER TABLE `patients`
   ADD CONSTRAINT `staff_pat_id_fk` FOREIGN KEY (`staff_ID`) REFERENCES `staff` (`staff_ID`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
+-- Constraints for table `patient_services`
+--
+ALTER TABLE `patient_services`
+  ADD CONSTRAINT `patient_services_ibfk_1` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`),
+  ADD CONSTRAINT `patient_services_ibfk_2` FOREIGN KEY (`ser_ID`) REFERENCES `services` (`ser_ID`),
+  ADD CONSTRAINT `patient_services_ibfk_3` FOREIGN KEY (`req_ID`) REFERENCES `service_requirements` (`req_ID`);
+
+--
 -- Constraints for table `selected_teeth`
 --
 ALTER TABLE `selected_teeth`
   ADD CONSTRAINT `selected_teeth_pat_id_fk` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `service_requirements`
+--
+ALTER TABLE `service_requirements`
+  ADD CONSTRAINT `service_requirements_ibfk_1` FOREIGN KEY (`service_ID`) REFERENCES `services` (`ser_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `staff_auth`
