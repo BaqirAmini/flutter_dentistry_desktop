@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 21, 2023 at 11:30 AM
+-- Generation Time: Nov 22, 2023 at 12:05 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
 
@@ -11,9 +11,6 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
--- Create database
-CREATE DATABASE IF NOT EXISTS dentistry_db;
-USE dentistry_db;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -277,9 +274,21 @@ INSERT INTO `services` (`ser_ID`, `ser_name`, `ser_fee`) VALUES
 
 CREATE TABLE `service_requirements` (
   `req_ID` int(11) NOT NULL,
-  `service_ID` int(11) DEFAULT NULL,
   `req_name` varchar(128) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `service_requirements`
+--
+
+INSERT INTO `service_requirements` (`req_ID`, `req_name`) VALUES
+(1, 'Teeth Selection'),
+(2, 'Description'),
+(3, 'Procedure Type'),
+(4, 'Materials'),
+(5, 'Bleaching Steps'),
+(7, 'Gum Selection'),
+(9, 'Affected Area');
 
 -- --------------------------------------------------------
 
@@ -445,7 +454,7 @@ ALTER TABLE `patients`
 ALTER TABLE `patient_services`
   ADD PRIMARY KEY (`pat_ID`,`ser_ID`,`req_ID`),
   ADD KEY `ser_ID` (`ser_ID`),
-  ADD KEY `req_ID` (`req_ID`);
+  ADD KEY `patient_services_ibfk_3` (`req_ID`);
 
 --
 -- Indexes for table `selected_teeth`
@@ -464,8 +473,7 @@ ALTER TABLE `services`
 -- Indexes for table `service_requirements`
 --
 ALTER TABLE `service_requirements`
-  ADD PRIMARY KEY (`req_ID`),
-  ADD KEY `service_ID` (`service_ID`);
+  ADD PRIMARY KEY (`req_ID`);
 
 --
 -- Indexes for table `staff`
@@ -553,6 +561,12 @@ ALTER TABLE `services`
   MODIFY `ser_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
+-- AUTO_INCREMENT for table `service_requirements`
+--
+ALTER TABLE `service_requirements`
+  MODIFY `req_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
 -- AUTO_INCREMENT for table `staff`
 --
 ALTER TABLE `staff`
@@ -614,19 +628,13 @@ ALTER TABLE `patients`
 ALTER TABLE `patient_services`
   ADD CONSTRAINT `patient_services_ibfk_1` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`),
   ADD CONSTRAINT `patient_services_ibfk_2` FOREIGN KEY (`ser_ID`) REFERENCES `services` (`ser_ID`),
-  ADD CONSTRAINT `patient_services_ibfk_3` FOREIGN KEY (`req_ID`) REFERENCES `service_requirements` (`req_ID`);
+  ADD CONSTRAINT `patient_services_ibfk_3` FOREIGN KEY (`req_ID`) REFERENCES `service_requirements` (`req_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `selected_teeth`
 --
 ALTER TABLE `selected_teeth`
   ADD CONSTRAINT `selected_teeth_pat_id_fk` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `service_requirements`
---
-ALTER TABLE `service_requirements`
-  ADD CONSTRAINT `service_requirements_ibfk_1` FOREIGN KEY (`service_ID`) REFERENCES `services` (`ser_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `staff_auth`
