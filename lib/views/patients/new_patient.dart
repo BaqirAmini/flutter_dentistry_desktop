@@ -2531,7 +2531,7 @@ class _NewPatientState extends State<NewPatient> {
       ];
 
 // Store patients' Health History into condition_details table.
-  Future<void> _storeSelectedConditions() async {
+  Future<bool> _storeSelectedConditions(int patientID) async {
     try {
       // Connect to the database
       final conn = await onConnToDb();
@@ -2541,22 +2541,39 @@ class _NewPatientState extends State<NewPatient> {
         for (var condID in _condResultGV.keys) {
           // Prepare an insert query
           var query =
-              'INSERT INTO condition_details (cond_ID, result) VALUES (?, ?)';
+              'INSERT INTO condition_details (cond_ID, result, pat_ID) VALUES (?, ?, ?)';
 
           // Get the selected value ('مثبت' or 'منفی')
           var selectedValue = _condResultGV[condID] == 1 ? 1 : 0;
 
           // Execute the query with the condition ID and the selected value
-          await ctx.query(
-              query, [condID, selectedValue.toInt()]);
+          await ctx.query(query, [condID, selectedValue.toInt(), patientID]);
         }
       });
 
       // Close the connection
       await conn.close();
-      _onShowSnack(Colors.green, 'History added.');
+      // _onShowSnack(Colors.green, 'History added.');
+      return true;
     } catch (e) {
-      _onShowSnack(Colors.red, 'Adding history faield.$e');
+      // _onShowSnack(Colors.red, 'Adding history faield.$e');
+      return false;
+    }
+  }
+
+  Future<bool> _onAddServiceReq(
+      int patientId, int serviceId, String desc) async {
+    final conn = await onConnToDb();
+    var insertPSQuery;
+    if (selectedSerId == '1') {
+      insertPSQuery = await conn.query(
+          'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value, desc_value) VALUES(?, ?, ?, ?, ?)',
+          [patientId, serviceId, 1, Tooth.selectedChildTeeth, desc]);
+    }
+    if (insertPSQuery.affectedRows! > 0) {
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -2582,10 +2599,9 @@ class _NewPatientState extends State<NewPatient> {
       setState(() {
         _currentStep = 0;
       });
-    } /* else {
-  
+    } else {
       // Firstly insert a patient into patients table
-      var queryResult = await conn.query(
+      var insertPatQuery = await conn.query(
           'INSERT INTO patients (staff_ID, firstname, lastname, sex, age, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
             staffId,
@@ -2599,63 +2615,66 @@ class _NewPatientState extends State<NewPatient> {
             addr
           ]);
 // Choose a specific patient to fetch his/here ID
-      if (queryResult.affectedRows! > 0) {
+      if (insertPatQuery.affectedRows! > 0) {
         String meetDate = _meetController.text;
         String note = _noteController.text;
-        var queryResult1 = await conn.query(
+        var fetchPatQuery = await conn.query(
             'SELECT * FROM patients WHERE firstname = ? AND sex = ? AND age = ? AND phone = ?',
             [firstName, sex, age, phone]);
-        final row = queryResult1.first;
+        final row = fetchPatQuery.first;
         final patId = row['pat_ID'];
-        double totalAmount = double.parse(_totalExpController.text);
-        double recieved = totalAmount;
-        double dueAmount = 0;
-        int installment = payTypeDropdown == 'تکمیل'
-            ? 1
-            : payTypeDropdown == 'دو قسط'
-                ? 2
-                : 3;
-        if (payTypeDropdown != 'تکمیل') {
-          recieved = double.parse(_recievableController.text);
-          dueAmount = totalAmount - recieved;
-        }
 
-        // Now add appointment of the patient
-        var queryResult2 = await conn.query(
-            'INSERT INTO appointments (pat_ID, tooth_detail_ID, service_detail_ID, installment, round, paid_amount, due_amount, meet_date, staff_ID, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [
-              patId,
-              tDetailID,
-              serviceDID,
-              installment,
-              1,
-              recieved,
-              dueAmount,
-              meetDate,
-              staffId,
-              note
-            ]);
+// Now insert patient health histories into condition_details
+        if (await _storeSelectedConditions(patId)) {
+          //Now insert service requirements and patient services into service_requirement & patient_services respectively
 
-        if (queryResult2.affectedRows! > 0) {
-          _onShowSnack(Colors.green, 'مریض موفقانه افزوده شد.');
-          _nameController.clear();
-          _lNameController.clear();
-          _phoneController.clear();
-          _addrController.clear();
-          _noteController.clear();
-          _meetController.clear();
-          _totalExpController.clear();
-          _recievableController.clear();
-          setState(() {
-            _currentStep = 0;
-          });
+          double totalAmount = double.parse(_totalExpController.text);
+          double recieved = totalAmount;
+          double dueAmount = 0;
+          int installment = _defaultInstallment != 0 ? _defaultInstallment : 1;
+          if (_defaultInstallment != 0) {
+            recieved = double.parse(_recievableController.text);
+            dueAmount = totalAmount - recieved;
+          }
+
+          // Now add appointment of the patient
+          var insertApptQuery = await conn.query(
+              'INSERT INTO appointments (pat_ID, installment, round, discount, paid_amount, due_amount, meet_date, staff_ID, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+              [
+                patId,
+                installment,
+                1,
+                _defaultDiscountRate,
+                recieved,
+                dueAmount,
+                meetDate,
+                staffId,
+                note
+              ]);
+
+          if (insertApptQuery.affectedRows! > 0) {
+            _onShowSnack(Colors.green, 'مریض موفقانه افزوده شد.');
+            _nameController.clear();
+            _lNameController.clear();
+            _phoneController.clear();
+            _addrController.clear();
+            _noteController.clear();
+            _meetController.clear();
+            _totalExpController.clear();
+            _recievableController.clear();
+            setState(() {
+              _currentStep = 0;
+            });
+          } else {
+            print('Adding appointments faield.');
+          }
         } else {
-          print('Adding appointments faield.');
+          print('Inserting patient health histories failed');
         }
       } else {
         print('Patient registration faield.');
       }
- */
+    }
   }
 
 // This is shows snackbar when called
@@ -3429,8 +3448,9 @@ class _NewPatientState extends State<NewPatient> {
                   } else {
                     if (_formKey3.currentState!.validate()) {
                       // _onFetchHealthHistory();
-                      _storeSelectedConditions();
                       // onAddNewPatient(context);
+                      print(
+                          'Selected child teeth: ${Tooth.selectedChildTeeth}');
                     }
                   }
                 }
