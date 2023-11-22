@@ -8,15 +8,15 @@ void updateSelectedTeeth(List<String> selectedTeeth) async {
 
   // Convert the list of selected teeth to a string
   var selectedTeethString = selectedTeeth.join(',');
-
+  print(selectedTeethString);
   // Update the database
-  await conn.query(
+/*   await conn.query(
     'INSERT INTO selected_teeth (tooth)',
     [selectedTeethString],
-  );
+  ); */
 
   // Close the connection
-  await conn.close();
+  // await conn.close();
 }
 
 class ChildQuadrantGrid extends StatefulWidget {
@@ -48,7 +48,7 @@ class _ChildQuadrantGrid extends State<ChildQuadrantGrid> {
                   } else {
                     _selectedTeethLetters.add(id);
                   }
-                  printSelectedTeeth();
+                  printSelectedTeeth(_selectedTeethLetters);
                 });
               },
               child: AnimatedContainer(
@@ -78,8 +78,7 @@ class _ChildQuadrantGrid extends State<ChildQuadrantGrid> {
 
   @override
   Widget build(BuildContext context) {
-    Tooth.childToothSelected =
-        _selectedTeethLetters.isEmpty ? false : true;
+    Tooth.childToothSelected = _selectedTeethLetters.isEmpty ? false : true;
     return InputDecorator(
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(20),
@@ -172,10 +171,9 @@ class _ChildQuadrantGrid extends State<ChildQuadrantGrid> {
     ));
   }
 
-  void printSelectedTeeth() {
-    print('Selected teeth:');
-    for (String id in _selectedTeethLetters) {
-      print(id);
-    }
+  void printSelectedTeeth(List<String> toothLetterSelected) {
+    var letterDelimiter = toothLetterSelected.join(',');
+    Tooth.selectedChildTeeth = letterDelimiter;
+    print(Tooth.selectedChildTeeth);
   }
 }
