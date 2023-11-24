@@ -48,7 +48,7 @@ class _ChildQuadrantGrid extends State<ChildQuadrantGrid> {
                   } else {
                     _selectedTeethLetters.add(id);
                   }
-                  printSelectedTeeth(_selectedTeethLetters);
+                  _onArrangeChildSelectedTeeth(_selectedTeethLetters);
                 });
               },
               child: AnimatedContainer(
@@ -171,9 +171,8 @@ class _ChildQuadrantGrid extends State<ChildQuadrantGrid> {
     ));
   }
 
-  void printSelectedTeeth(List<String> toothLetterSelected) {
+  void _onArrangeChildSelectedTeeth(List<String> toothLetterSelected) {
     var letterDelimiter = toothLetterSelected.join(',');
     Tooth.selectedChildTeeth = letterDelimiter;
-    print(Tooth.selectedChildTeeth);
   }
 }
