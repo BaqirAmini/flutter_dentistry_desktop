@@ -36,10 +36,6 @@ class _NewPatientState extends State<NewPatient> {
   String maritalStatusDD = 'مجرد';
   var items = ['مجرد', 'متأهل'];
 
-  // ِDeclare variables for gender dropdown
-  String genderDropDown = 'مرد';
-  var genderItems = ['مرد', 'زن'];
-
   // Blood group types
   String? bloodDropDown = 'نامعلوم';
   var bloodGroupItems = [
@@ -169,9 +165,12 @@ class _NewPatientState extends State<NewPatient> {
     });
   }
 
+// Declare variables for installment rates.
+  int _defaultInstallment = 0;
+  final List<int> _installmentItems = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+
   // This function deducts installments
   double _lastRecieved = 0;
-
   void _setInstallment(String text) {
     double recieved = text.isEmpty ? 0 : double.parse(text);
     setState(() {
@@ -179,9 +178,6 @@ class _NewPatientState extends State<NewPatient> {
       _lastRecieved = recieved;
     });
   }
-
-  int _defaultInstallment = 0;
-  final List<int> _installmentItems = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 // Global keys for forms created in this file.
   final _formKey1 = GlobalKey<FormState>();
@@ -2505,7 +2501,7 @@ class _NewPatientState extends State<NewPatient> {
                         child: InputDecorator(
                           decoration: const InputDecoration(
                               border: InputBorder.none,
-                              labelText: 'قابل دریافت',
+                              labelText: 'مبلغ باقی',
                               floatingLabelAlignment:
                                   FloatingLabelAlignment.center),
                           child: Padding(
@@ -2567,8 +2563,227 @@ class _NewPatientState extends State<NewPatient> {
     var insertPSQuery;
     if (selectedSerId == '1') {
       insertPSQuery = await conn.query(
-          'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value, desc_value) VALUES(?, ?, ?, ?, ?)',
-          [patientId, serviceId, 1, Tooth.selectedChildTeeth, desc]);
+          'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+          [
+            patientId,
+            serviceId,
+            1,
+            (Tooth.adultToothSelected)
+                ? Tooth.selectedAdultTeeth
+                : Tooth.selectedChildTeeth,
+            patientId,
+            serviceId,
+            2,
+            desc
+          ]);
+    } else if (selectedSerId == '2') {
+      insertPSQuery = await conn.query(
+          'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+          [
+            patientId,
+            serviceId,
+            1,
+            (Tooth.adultToothSelected)
+                ? Tooth.selectedAdultTeeth
+                : Tooth.selectedChildTeeth,
+            patientId,
+            serviceId,
+            2,
+            desc,
+            patientId,
+            serviceId,
+            3,
+            _fillingGroupValue,
+            patientId,
+            serviceId,
+            4,
+            defaultFilling
+          ]);
+    } else if (selectedSerId == '3') {
+      insertPSQuery = await conn.query(
+          'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+          [
+            patientId,
+            serviceId,
+            2,
+            desc,
+            patientId,
+            serviceId,
+            5,
+            _defaultBleachValue
+          ]);
+    } else if (selectedSerId == '4') {
+      insertPSQuery = await conn.query(
+          'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+          [
+            patientId,
+            serviceId,
+            2,
+            desc,
+            patientId,
+            serviceId,
+            3,
+            _spGroupValue
+          ]);
+    } else if (selectedSerId == '5') {
+      insertPSQuery = await conn.query(
+          'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+          [
+            patientId,
+            serviceId,
+            2,
+            desc,
+            patientId,
+            serviceId,
+            4,
+            _defaultOrthoType
+          ]);
+    } else if (selectedSerId == '7') {
+      if (defaultMaxillo == 'Tooth Extraction') {
+        insertPSQuery = await conn.query(
+            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+            [
+              patientId,
+              serviceId,
+              1,
+              (Tooth.adultToothSelected)
+                  ? Tooth.selectedAdultTeeth
+                  : Tooth.selectedChildTeeth,
+              patientId,
+              serviceId,
+              2,
+              desc
+            ]);
+      } else if (defaultMaxillo == 'Abscess Treatment') {
+        insertPSQuery = await conn.query(
+            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+            [
+              patientId,
+              serviceId,
+              7,
+              defaultGumAbscess,
+              patientId,
+              serviceId,
+              9,
+              _abscessTreatValue,
+              patientId,
+              serviceId,
+              2,
+              desc
+            ]);
+      } else if (defaultMaxillo == 'T.M.J') {
+        insertPSQuery = await conn.query(
+            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+            [
+              patientId,
+              serviceId,
+              9,
+              _abscessTreatValue,
+              patientId,
+              serviceId,
+              2,
+              desc
+            ]);
+      } else if (defaultMaxillo == 'Tooth Reimplantation') {
+        insertPSQuery = await conn.query(
+            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+            [
+              patientId,
+              serviceId,
+              1,
+              (Tooth.adultToothSelected)
+                  ? Tooth.selectedAdultTeeth
+                  : Tooth.selectedChildTeeth,
+              patientId,
+              serviceId,
+              2,
+              desc
+            ]);
+      } else {
+        insertPSQuery = await conn.query(
+            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?)',
+            [patientId, serviceId, 2, desc]);
+      }
+    } else if (selectedSerId == '9') {
+      if (_dentureGroupValue == 'Partial') {
+        insertPSQuery = await conn.query(
+            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+            [
+              patientId,
+              serviceId,
+              3,
+              _dentureGroupValue,
+              patientId,
+              serviceId,
+              1,
+              (Tooth.adultToothSelected)
+                  ? Tooth.selectedAdultTeeth
+                  : Tooth.selectedChildTeeth,
+              patientId,
+              serviceId,
+              2,
+              desc
+            ]);
+      } else {
+        insertPSQuery = await conn.query(
+            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+            [
+              patientId,
+              serviceId,
+              3,
+              _dentureGroupValue,
+              patientId,
+              serviceId,
+              7,
+              _defaultDentureValue,
+              patientId,
+              serviceId,
+              2,
+              desc
+            ]);
+      }
+    } else if (selectedSerId == '11') {
+      insertPSQuery = await conn.query(
+          'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+          [
+            patientId,
+            serviceId,
+            1,
+            (Tooth.adultToothSelected)
+                ? Tooth.selectedAdultTeeth
+                : Tooth.selectedChildTeeth,
+            patientId,
+            serviceId,
+            3,
+            _crownGroupValue,
+            patientId,
+            serviceId,
+            4,
+            _defaultCrown,
+            patientId,
+            serviceId,
+            2,
+            desc
+          ]);
+    } else if (selectedSerId == '15') {
+      insertPSQuery = await conn.query(
+          'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+          [
+            patientId,
+            serviceId,
+            1,
+            (Tooth.adultToothSelected)
+                ? Tooth.selectedAdultTeeth
+                : Tooth.selectedChildTeeth,
+            patientId,
+            serviceId,
+            2,
+            desc
+          ]);
+    } else {
+      insertPSQuery = await conn.query(
+          'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?)',
+          [patientId, serviceId, 2, desc]);
     }
     if (insertPSQuery.affectedRows! > 0) {
       return true;
@@ -2582,7 +2797,7 @@ class _NewPatientState extends State<NewPatient> {
     var staffId = StaffInfo.staffID;
     var firstName = _nameController.text;
     var lastName = _lNameController.text;
-    var sex = genderDropDown;
+    var sex = _sexGroupValue;
     var age = ageDropDown;
     var maritalStatus = maritalStatusDD;
     var phone = _phoneController.text;
@@ -2626,47 +2841,37 @@ class _NewPatientState extends State<NewPatient> {
 
 // Now insert patient health histories into condition_details
         if (await _storeSelectedConditions(patId)) {
-          //Now insert service requirements and patient services into service_requirement & patient_services respectively
+          if (await _onAddServiceReq(patId, int.parse(selectedSerId!), note)) {
+            double totalAmount = double.parse(_totalExpController.text);
+            double recieved = totalAmount;
+            double dueAmount = 0;
+            int installment =
+                _defaultInstallment != 0 ? _defaultInstallment : 1;
+            if (_defaultInstallment != 0) {
+              recieved = double.parse(_recievableController.text);
+              dueAmount = totalAmount - recieved;
+            }
+            // Now create appointments
+            var insertApptQuery = await conn.query(
+                'INSERT INTO appointments (pat_ID, service_ID, installment, round, discount, paid_amount, due_amount, meet_date, staff_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [
+                  patId,
+                  serviceID,
+                  installment,
+                  1,
+                  _defaultDiscountRate,
+                  recieved,
+                  dueAmount,
+                  meetDate,
+                  staffId
+                ]);
 
-          double totalAmount = double.parse(_totalExpController.text);
-          double recieved = totalAmount;
-          double dueAmount = 0;
-          int installment = _defaultInstallment != 0 ? _defaultInstallment : 1;
-          if (_defaultInstallment != 0) {
-            recieved = double.parse(_recievableController.text);
-            dueAmount = totalAmount - recieved;
-          }
-
-          // Now add appointment of the patient
-          var insertApptQuery = await conn.query(
-              'INSERT INTO appointments (pat_ID, installment, round, discount, paid_amount, due_amount, meet_date, staff_ID, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-              [
-                patId,
-                installment,
-                1,
-                _defaultDiscountRate,
-                recieved,
-                dueAmount,
-                meetDate,
-                staffId,
-                note
-              ]);
-
-          if (insertApptQuery.affectedRows! > 0) {
-            _onShowSnack(Colors.green, 'مریض موفقانه افزوده شد.');
-            _nameController.clear();
-            _lNameController.clear();
-            _phoneController.clear();
-            _addrController.clear();
-            _noteController.clear();
-            _meetController.clear();
-            _totalExpController.clear();
-            _recievableController.clear();
-            setState(() {
-              _currentStep = 0;
-            });
-          } else {
-            print('Adding appointments faield.');
+            if (insertApptQuery.affectedRows! > 0) {
+              _onShowSnack(Colors.green, 'مریض موفقانه افزوده شد.');
+              Navigator.pop(context);
+            } else {
+              print('Adding appointments faield.');
+            }
           }
         } else {
           print('Inserting patient health histories failed');
@@ -3448,9 +3653,7 @@ class _NewPatientState extends State<NewPatient> {
                   } else {
                     if (_formKey3.currentState!.validate()) {
                       // _onFetchHealthHistory();
-                      // onAddNewPatient(context);
-                      print(
-                          'Selected child teeth: ${Tooth.selectedChildTeeth}');
+                      onAddNewPatient(context);
                     }
                   }
                 }
