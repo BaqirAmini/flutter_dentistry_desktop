@@ -30,7 +30,7 @@ class _AdultQuadrantGrid extends State<AdultQuadrantGrid> {
                   } else {
                     _selectedTeethNum.add(id);
                   }
-                  printSelectedTeeth();
+                  _onArrangeAdultSelectedTeeth(_selectedTeethNum);
                 });
               },
               child: AnimatedContainer(
@@ -163,10 +163,8 @@ class _AdultQuadrantGrid extends State<AdultQuadrantGrid> {
     ));
   }
 
-  void printSelectedTeeth() {
-    print('Selected teeth:');
-    for (String id in _selectedTeethNum) {
-      print(id);
-    }
+  void _onArrangeAdultSelectedTeeth(List<String> toothNumSelected) {
+    var letterDelimiter = toothNumSelected.join(',');
+    Tooth.selectedAdultTeeth = letterDelimiter;
   }
 }
