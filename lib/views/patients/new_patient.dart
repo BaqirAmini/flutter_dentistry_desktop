@@ -149,7 +149,8 @@ class _NewPatientState extends State<NewPatient> {
   // Declare for discount.
   int _defaultDiscountRate = 0;
   final List<int> _discountItems = [2, 5, 10, 15, 20, 30, 50];
-  double _receivableAmt = 0;
+  double _feeWithDiscount = 0;
+  double _dueAmount = 0;
   void _setDiscount(String text) {
     double totalFee = _totalExpController.text.isEmpty
         ? 0
@@ -157,10 +158,10 @@ class _NewPatientState extends State<NewPatient> {
 
     setState(() {
       if (_defaultDiscountRate == 0) {
-        _receivableAmt = totalFee;
+        _feeWithDiscount = totalFee;
       } else {
-        double discountDeducted = (_defaultDiscountRate * totalFee) / 100;
-        _receivableAmt = totalFee - discountDeducted;
+        double discountAmt = (_defaultDiscountRate * totalFee) / 100;
+        _feeWithDiscount = totalFee - discountAmt;
       }
     });
   }
@@ -170,12 +171,12 @@ class _NewPatientState extends State<NewPatient> {
   final List<int> _installmentItems = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   // This function deducts installments
-  double _lastRecieved = 0;
   void _setInstallment(String text) {
-    double recieved = text.isEmpty ? 0 : double.parse(text);
+    double receivable = _recievableController.text.isEmpty
+        ? 0
+        : double.parse(_recievableController.text);
     setState(() {
-      _receivableAmt = _receivableAmt + _lastRecieved - recieved;
-      _lastRecieved = recieved;
+      _dueAmount = _feeWithDiscount - receivable;
     });
   }
 
@@ -2435,8 +2436,13 @@ class _NewPatientState extends State<NewPatient> {
                                     _defaultInstallment = newValue!;
                                     if (_defaultInstallment != 0) {
                                       _isVisibleForPayment = true;
+                                      // If change the dropdown, it should display the due amount not zero
+                                      _dueAmount = _feeWithDiscount;
                                     } else {
                                       _isVisibleForPayment = false;
+                                      // Clear the form and assign zero to _dueAmount to reset them.
+                                      _recievableController.clear();
+                                      _dueAmount = 0;
                                     }
                                   });
                                 },
@@ -2460,10 +2466,21 @@ class _NewPatientState extends State<NewPatient> {
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'مبلغ رسید نمی تواند خالی باشد.';
+                              } else if (double.parse(value) >
+                                  _feeWithDiscount) {
+                                return 'مبلغ رسید باید کمتر از مبلغ قابل دریافت باشد.';
                               }
                               return null;
                             },
-                            onChanged: _setInstallment,
+                            onChanged: (value) {
+                              setState(() {
+                                if (value.isEmpty) {
+                                  _dueAmount = _feeWithDiscount;
+                                } else {
+                                  _setInstallment(value.toString());
+                                }
+                              });
+                            },
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'مبلغ رسید',
@@ -2489,33 +2506,71 @@ class _NewPatientState extends State<NewPatient> {
                           ),
                         ),
                       ),
-                      Container(
-                        width: 450.0,
-                        decoration: const BoxDecoration(
-                            border: Border(
-                          top: BorderSide(width: 1, color: Colors.grey),
-                          bottom: BorderSide(width: 1, color: Colors.grey),
-                        )),
-                        margin: const EdgeInsets.only(
-                            left: 20.0, right: 20.0, bottom: 10.0, top: 10.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              labelText: 'مبلغ باقی',
-                              floatingLabelAlignment:
-                                  FloatingLabelAlignment.center),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: Center(
-                              child: Text(
-                                '$_receivableAmt افغانی',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blue),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 215.0,
+                            margin: const EdgeInsets.all(5),
+                            decoration: const BoxDecoration(
+                                border: Border(
+                              top: BorderSide(width: 1, color: Colors.grey),
+                              bottom: BorderSide(width: 1, color: Colors.grey),
+                            )),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  labelText: 'فیس بعد از تخفیف',
+                                  floatingLabelAlignment:
+                                      FloatingLabelAlignment.center),
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Center(
+                                  child: Text(
+                                    '$_feeWithDiscount افغانی',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.blue),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                          Container(
+                            margin: const EdgeInsets.all(5),
+                            width: 215.0,
+                            decoration: const BoxDecoration(
+                                border: Border(
+                              top: BorderSide(width: 1, color: Colors.grey),
+                              bottom: BorderSide(width: 1, color: Colors.grey),
+                            )),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                  border: InputBorder.none,
+                                  labelText: 'باقی مبلغ',
+                                  floatingLabelAlignment:
+                                      FloatingLabelAlignment.center),
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Center(
+                                  child: _defaultInstallment == 0
+                                      ? const Text(
+                                          '${0.0} افغانی',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.blue),
+                                        )
+                                      : Text(
+                                          '$_dueAmount افغانی',
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.blue),
+                                        ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -2792,6 +2847,9 @@ class _NewPatientState extends State<NewPatient> {
     }
   }
 
+  double testDue = 0;
+  double testReceived = 0;
+
 // Add a new patient
   Future<void> onAddNewPatient(BuildContext context) async {
     var staffId = StaffInfo.staffID;
@@ -2803,6 +2861,14 @@ class _NewPatientState extends State<NewPatient> {
     var phone = _phoneController.text;
     var bGrop = bloodDropDown;
     var addr = _addrController.text;
+
+/* --------------- Calculate received amount, due amount and installments ------------ */
+    double receivedAmount = _defaultInstallment != 0
+        ? double.parse(_recievableController.text)
+        : _feeWithDiscount;
+    int installment = _defaultInstallment != 0 ? _defaultInstallment : 1;
+/* ---------------/. Calculate received amount, due amount and installments ------------ */
+
     var conn = await onConnToDb();
     int serviceID = int.parse(selectedSerId!);
     // First Check the patient where it already exists
@@ -2842,15 +2908,6 @@ class _NewPatientState extends State<NewPatient> {
 // Now insert patient health histories into condition_details
         if (await _storeSelectedConditions(patId)) {
           if (await _onAddServiceReq(patId, int.parse(selectedSerId!), note)) {
-            double totalAmount = double.parse(_totalExpController.text);
-            double recieved = totalAmount;
-            double dueAmount = 0;
-            int installment =
-                _defaultInstallment != 0 ? _defaultInstallment : 1;
-            if (_defaultInstallment != 0) {
-              recieved = double.parse(_recievableController.text);
-              dueAmount = totalAmount - recieved;
-            }
             // Now create appointments
             var insertApptQuery = await conn.query(
                 'INSERT INTO appointments (pat_ID, service_ID, installment, round, discount, paid_amount, due_amount, meet_date, staff_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -2860,8 +2917,8 @@ class _NewPatientState extends State<NewPatient> {
                   installment,
                   1,
                   _defaultDiscountRate,
-                  recieved,
-                  dueAmount,
+                  receivedAmount,
+                  _dueAmount,
                   meetDate,
                   staffId
                 ]);
@@ -3652,7 +3709,6 @@ class _NewPatientState extends State<NewPatient> {
                     });
                   } else {
                     if (_formKey3.currentState!.validate()) {
-                      // _onFetchHealthHistory();
                       onAddNewPatient(context);
                     }
                   }
