@@ -3,9 +3,12 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 22, 2023 at 12:05 PM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.0.25
+-- Generation Time: Nov 25, 2023 at 05:37 PM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.1.6
+-- Create database
+CREATE DATABASE IF NOT EXISTS dentistry_db;
+USE dentistry_db;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -40,14 +43,19 @@ CREATE TABLE `appointments` (
   `meet_date` date DEFAULT NULL,
   `staff_ID` int(128) DEFAULT NULL,
   `note` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `appointments`
 --
 
 INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `service_ID`, `installment`, `round`, `discount`, `paid_amount`, `due_amount`, `meet_date`, `staff_ID`, `note`) VALUES
-(41, 0, 69, 9, 1, 1, NULL, '5000.00', '0.00', '2023-08-23', 17, '');
+(41, 0, 69, 9, 1, 1, NULL, '5000.00', '0.00', '2023-08-23', 17, ''),
+(43, 0, 72, 2, 5, 1, 5.00, '850.00', '2150.00', '2023-11-21', 17, NULL),
+(44, 0, 73, 3, 4, 1, 0.00, '500.00', '500.00', '2023-11-10', 17, NULL),
+(45, 0, 74, 7, 6, 1, 5.00, '850.00', '2000.00', '2023-11-24', 17, NULL),
+(46, 0, 75, 7, 1, 1, 0.00, '1000.00', '1000.00', '2023-11-15', 17, NULL),
+(47, 0, 76, 15, 5, 1, 10.00, '3500.00', '10000.00', '2023-11-23', 17, NULL);
 
 -- --------------------------------------------------------
 
@@ -62,7 +70,7 @@ CREATE TABLE `clinics` (
   `open_date` date DEFAULT NULL,
   `cli_addr` varchar(64) DEFAULT NULL,
   `founder` varchar(64) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `clinics`
@@ -80,7 +88,7 @@ INSERT INTO `clinics` (`cli_ID`, `cli_logo`, `cli_name`, `open_date`, `cli_addr`
 CREATE TABLE `conditions` (
   `cond_ID` int(11) NOT NULL,
   `name` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `conditions`
@@ -107,25 +115,65 @@ CREATE TABLE `condition_details` (
   `cond_ID` int(11) DEFAULT NULL,
   `result` tinyint(1) NOT NULL DEFAULT 0,
   `severty` varchar(64) DEFAULT NULL,
-  `duration` int(11) DEFAULT NULL,
+  `duration` varchar(64) DEFAULT NULL,
   `diagnosis_date` date DEFAULT NULL,
   `pat_ID` int(128) DEFAULT NULL,
   `notes` tinytext DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `condition_details`
 --
 
 INSERT INTO `condition_details` (`cond_detail_ID`, `cond_ID`, `result`, `severty`, `duration`, `diagnosis_date`, `pat_ID`, `notes`) VALUES
-(1, 1, 1, NULL, NULL, NULL, NULL, NULL),
-(2, 2, 0, NULL, NULL, NULL, NULL, NULL),
-(3, 4, 0, NULL, NULL, NULL, NULL, NULL),
-(4, 5, 0, NULL, NULL, NULL, NULL, NULL),
-(5, 6, 1, NULL, NULL, NULL, NULL, NULL),
-(6, 7, 0, NULL, NULL, NULL, NULL, NULL),
-(7, 8, 0, NULL, NULL, NULL, NULL, NULL),
-(8, 9, 1, NULL, NULL, NULL, NULL, NULL);
+(9, 1, 0, NULL, NULL, NULL, 71, NULL),
+(10, 2, 1, NULL, NULL, NULL, 71, NULL),
+(11, 4, 0, NULL, NULL, NULL, 71, NULL),
+(12, 5, 0, NULL, NULL, NULL, 71, NULL),
+(13, 6, 0, NULL, NULL, NULL, 71, NULL),
+(14, 7, 0, NULL, NULL, NULL, 71, NULL),
+(15, 8, 1, NULL, NULL, NULL, 71, NULL),
+(16, 9, 0, NULL, NULL, NULL, 71, NULL),
+(17, 1, 0, NULL, NULL, NULL, 72, NULL),
+(18, 2, 0, NULL, NULL, NULL, 72, NULL),
+(19, 4, 1, NULL, NULL, NULL, 72, NULL),
+(20, 5, 0, NULL, NULL, NULL, 72, NULL),
+(21, 6, 0, NULL, NULL, NULL, 72, NULL),
+(22, 7, 0, NULL, NULL, NULL, 72, NULL),
+(23, 8, 0, NULL, NULL, NULL, 72, NULL),
+(24, 9, 0, NULL, NULL, NULL, 72, NULL),
+(25, 1, 1, NULL, NULL, NULL, 73, NULL),
+(26, 2, 0, NULL, NULL, NULL, 73, NULL),
+(27, 4, 0, NULL, NULL, NULL, 73, NULL),
+(28, 5, 0, NULL, NULL, NULL, 73, NULL),
+(29, 6, 0, NULL, NULL, NULL, 73, NULL),
+(30, 7, 0, NULL, NULL, NULL, 73, NULL),
+(31, 8, 1, NULL, NULL, NULL, 73, NULL),
+(32, 9, 1, NULL, NULL, NULL, 73, NULL),
+(33, 1, 0, NULL, NULL, NULL, 74, NULL),
+(34, 2, 0, NULL, NULL, NULL, 74, NULL),
+(35, 4, 1, NULL, NULL, NULL, 74, NULL),
+(36, 5, 0, NULL, NULL, NULL, 74, NULL),
+(37, 6, 0, NULL, NULL, NULL, 74, NULL),
+(38, 7, 1, NULL, NULL, NULL, 74, NULL),
+(39, 8, 0, NULL, NULL, NULL, 74, NULL),
+(40, 9, 0, NULL, NULL, NULL, 74, NULL),
+(41, 1, 1, NULL, NULL, NULL, 75, NULL),
+(42, 2, 0, NULL, NULL, NULL, 75, NULL),
+(43, 4, 0, NULL, NULL, NULL, 75, NULL),
+(44, 5, 0, NULL, NULL, NULL, 75, NULL),
+(45, 6, 1, NULL, NULL, NULL, 75, NULL),
+(46, 7, 0, NULL, NULL, NULL, 75, NULL),
+(47, 8, 0, NULL, NULL, NULL, 75, NULL),
+(48, 9, 0, NULL, NULL, NULL, 75, NULL),
+(49, 1, 0, NULL, NULL, NULL, 76, NULL),
+(50, 2, 0, NULL, NULL, NULL, 76, NULL),
+(51, 4, 0, NULL, NULL, NULL, 76, NULL),
+(52, 5, 1, NULL, NULL, NULL, 76, NULL),
+(53, 6, 0, NULL, NULL, NULL, 76, NULL),
+(54, 7, 0, NULL, NULL, NULL, 76, NULL),
+(55, 8, 0, NULL, NULL, NULL, 76, NULL),
+(56, 9, 0, NULL, NULL, NULL, 76, NULL);
 
 -- --------------------------------------------------------
 
@@ -137,7 +185,7 @@ CREATE TABLE `expenses` (
   `exp_ID` int(128) NOT NULL,
   `cli_ID` int(128) NOT NULL,
   `exp_name` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `expenses`
@@ -168,7 +216,7 @@ CREATE TABLE `expense_detail` (
   `purchase_date` date NOT NULL,
   `invoice` varchar(128) DEFAULT NULL,
   `note` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `expense_detail`
@@ -199,14 +247,21 @@ CREATE TABLE `patients` (
   `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `blood_group` varchar(12) DEFAULT NULL,
   `address` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `patients`
 --
 
 INSERT INTO `patients` (`pat_ID`, `cli_ID`, `staff_ID`, `firstname`, `lastname`, `sex`, `age`, `marital_status`, `phone`, `reg_date`, `blood_group`, `address`) VALUES
-(69, 0, 17, 'مهناز', '', 'زن', 27, 'مجرد', '0781023232', '2023-10-02 07:14:26', 'نامشخص', '');
+(69, 0, 17, 'مهناز', '', 'زن', 27, 'مجرد', '0781023232', '2023-10-02 07:14:26', 'نامشخص', ''),
+(71, 0, 17, 'علی محمد', 'امیری', 'مرد', 12, 'مجرد', '0701023232', '2023-11-24 04:31:18', 'نامعلوم', 'کابل، افغانستان'),
+(72, 0, 17, 'ثریا', '', 'مرد', 10, 'مجرد', '0772020420', '2023-11-24 04:37:48', 'نامعلوم', 'Kabul, Kartiparwan'),
+(73, 0, 17, 'Fayaz', 'Muradi', 'مرد', 51, 'متأهل', '0781023230', '2023-11-24 05:04:24', 'O+', 'هرات، جبریل'),
+(74, 0, 17, 'ذکیه', 'فصیحی', 'مرد', 24, 'متأهل', '0702302201', '2023-11-24 15:23:29', 'AB-', 'کابل، دشت برچی، ناحیه سیزدهم'),
+(75, 0, 17, 'فایقه', 'رحمتی', 'زن', 22, 'مجرد', '0791022322', '2023-11-24 15:37:13', 'AB+', 'کابل، قلعه شهاده'),
+(76, 0, 17, 'زهره', 'نوروزی', 'زن', 30, 'مجرد', '0771232322', '2023-11-25 06:34:08', 'نامعلوم', ''),
+(78, 0, 17, 'بصیر', 'عسکری', 'مرد', 26, 'مجرد', '0788810232', '2023-11-25 16:35:10', 'O+', 'کابل، سرک چهل متری شهدای معارف');
 
 -- --------------------------------------------------------
 
@@ -219,7 +274,27 @@ CREATE TABLE `patient_services` (
   `ser_ID` int(11) NOT NULL,
   `req_ID` int(11) NOT NULL,
   `value` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `patient_services`
+--
+
+INSERT INTO `patient_services` (`pat_ID`, `ser_ID`, `req_ID`, `value`) VALUES
+(71, 1, 1, 'Q1-C,Q2-C,Q2-D'),
+(71, 1, 2, 'عصب کشی نیاز دارد'),
+(72, 2, 1, 'Q3-C,Q4-B,Q4-C'),
+(72, 2, 2, 'پرکاری باید طی سه جلسه انجام شود'),
+(72, 2, 3, 'Operative'),
+(72, 2, 4, 'Amalgam'),
+(73, 3, 2, 'دو مرحله بعدی هم باید به موقع انجام شود'),
+(73, 3, 5, 'یک مرحله'),
+(74, 7, 2, 'ارجاع مفصل'),
+(74, 7, 9, 'راست'),
+(75, 7, 1, 'Q3-8,Q1-8'),
+(75, 7, 2, 'دندانهای عقلی که تخریب گردیده'),
+(76, 15, 1, 'Q1-1,Q1-2,Q1-3,Q1-4,Q1-5,Q1-6,Q1-7,Q1-8,Q3-8'),
+(76, 15, 2, 'فک بالا چپ و فک پایین راست فقط دندان آخر');
 
 -- --------------------------------------------------------
 
@@ -232,7 +307,7 @@ CREATE TABLE `selected_teeth` (
   `tooth` varchar(16) NOT NULL,
   `notes` tinytext DEFAULT NULL,
   `pat_ID` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -244,7 +319,7 @@ CREATE TABLE `services` (
   `ser_ID` int(128) NOT NULL,
   `ser_name` varchar(64) NOT NULL,
   `ser_fee` decimal(10,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `services`
@@ -275,7 +350,7 @@ INSERT INTO `services` (`ser_ID`, `ser_name`, `ser_fee`) VALUES
 CREATE TABLE `service_requirements` (
   `req_ID` int(11) NOT NULL,
   `req_name` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `service_requirements`
@@ -306,7 +381,7 @@ CREATE TABLE `staff` (
   `tazkira_ID` varchar(16) DEFAULT NULL,
   `photo` mediumblob DEFAULT NULL,
   `address` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `staff`
@@ -334,7 +409,7 @@ CREATE TABLE `staff_auth` (
   `username` varchar(64) NOT NULL,
   `password` varchar(64) NOT NULL,
   `role` varchar(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `staff_auth`
@@ -356,7 +431,7 @@ CREATE TABLE `taxes` (
   `total_annual_tax` decimal(15,2) NOT NULL,
   `TIN` char(10) DEFAULT NULL,
   `tax_for_year` int(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `taxes`
@@ -388,7 +463,7 @@ CREATE TABLE `tax_payments` (
   `note` mediumtext DEFAULT NULL,
   `modified_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `docs` blob DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Indexes for dumped tables
@@ -510,7 +585,7 @@ ALTER TABLE `tax_payments`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT for table `clinics`
@@ -528,7 +603,7 @@ ALTER TABLE `conditions`
 -- AUTO_INCREMENT for table `condition_details`
 --
 ALTER TABLE `condition_details`
-  MODIFY `cond_detail_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `cond_detail_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `expenses`
@@ -546,7 +621,7 @@ ALTER TABLE `expense_detail`
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patients`
-  MODIFY `pat_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+  MODIFY `pat_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
 -- AUTO_INCREMENT for table `selected_teeth`
@@ -626,8 +701,8 @@ ALTER TABLE `patients`
 -- Constraints for table `patient_services`
 --
 ALTER TABLE `patient_services`
-  ADD CONSTRAINT `patient_services_ibfk_1` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`),
-  ADD CONSTRAINT `patient_services_ibfk_2` FOREIGN KEY (`ser_ID`) REFERENCES `services` (`ser_ID`),
+  ADD CONSTRAINT `patient_services_ibfk_1` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `patient_services_ibfk_2` FOREIGN KEY (`ser_ID`) REFERENCES `services` (`ser_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `patient_services_ibfk_3` FOREIGN KEY (`req_ID`) REFERENCES `service_requirements` (`req_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
