@@ -196,8 +196,10 @@ class _NewPatientState extends State<NewPatient> {
   String _sexGroupValue = 'مرد';
   String _spGroupValue = 'Scaling';
   String _dentureGroupValue = 'Full';
-  String _histCondGroupValue = 'نامعلوم';
-  String _durationGroupValue = 'نامعلوم';
+  final Map<int, TextEditingController> _histDiagDateController = {};
+  final Map<int, TextEditingController> _histNoteController = {};
+  final Map<int, String> _histCondGroupValue = {};
+  final Map<int, String> _durationGroupValue = {};
   // Create a Map to store the group values for each condition
   final Map<int, int> _condResultGV = {};
   // Declare a list to contain patients' info
@@ -872,22 +874,25 @@ class _NewPatientState extends State<NewPatient> {
                                             itemBuilder:
                                                 (BuildContext context) =>
                                                     <PopupMenuEntry>[
-                                              PopupMenuItem(
-                                                child: Directionality(
-                                                  textDirection:
-                                                      TextDirection.rtl,
-                                                  child: ListTile(
-                                                    leading:
-                                                        const Icon(Icons.list),
-                                                    title: const Text(
-                                                        'تکمیل تاریخچه'),
-                                                    onTap: () {
-                                                      _onAddMoreDetailsforHistory();
-                                                      Navigator.pop(context);
-                                                    },
+                                              if (_condResultGV[cond.condID] ==
+                                                  1)
+                                                PopupMenuItem(
+                                                  child: Directionality(
+                                                    textDirection:
+                                                        TextDirection.rtl,
+                                                    child: ListTile(
+                                                      leading: const Icon(
+                                                          Icons.list),
+                                                      title: const Text(
+                                                          'تکمیل تاریخچه'),
+                                                      onTap: () {
+                                                        _onAddMoreDetailsforHistory(
+                                                            cond.condID);
+                                                        Navigator.pop(context);
+                                                      },
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
                                               PopupMenuItem(
                                                 child: Directionality(
                                                   textDirection:
@@ -2625,7 +2630,7 @@ class _NewPatientState extends State<NewPatient> {
       ];
 
 // Store patients' Health History into condition_details table.
-  Future<bool> _storeSelectedConditions(int patientID) async {
+  Future<bool> _onAddPatientHistory(int patientID) async {
     try {
       // Connect to the database
       final conn = await onConnToDb();
@@ -2635,13 +2640,17 @@ class _NewPatientState extends State<NewPatient> {
         for (var condID in _condResultGV.keys) {
           // Prepare an insert query
           var query =
-              'INSERT INTO condition_details (cond_ID, result, pat_ID) VALUES (?, ?, ?)';
+              'INSERT INTO condition_details (cond_ID, result, severty, duration, diagnosis_date, pat_ID, notes) VALUES (?, ?, ?, ?, ?, ?, ?)';
 
           // Get the selected value ('مثبت' or 'منفی')
-          var selectedValue = _condResultGV[condID] == 1 ? 1 : 0;
+          var selectedResult = _condResultGV[condID] == 1 ? 1 : 0;
+          var histDate = selectedResult == 1 ? _histDiagDateController[condID]?.text : null;
+          var histSeverty = selectedResult == 1 ? _histCondGroupValue[condID] : null;
+          var histDuration = selectedResult == 1 ? _durationGroupValue[condID] : null;
+          var histNotes = selectedResult == 1 ? _histNoteController[condID]?.text : null;
 
           // Execute the query with the condition ID and the selected value
-          await ctx.query(query, [condID, selectedValue.toInt(), patientID]);
+          await ctx.query(query, [condID, selectedResult.toInt(), histSeverty, histDuration, histDate, patientID, histNotes]);
         }
       });
 
@@ -2949,7 +2958,7 @@ class _NewPatientState extends State<NewPatient> {
         final patId = row['pat_ID'];
 
 // Now insert patient health histories into condition_details
-        if (await _storeSelectedConditions(patId)) {
+        if (await _onAddPatientHistory(patId)) {
           if (await _onAddServiceReq(patId, int.parse(selectedSerId!), note)) {
             // Now create appointments
             var insertApptQuery = await conn.query(
@@ -3230,393 +3239,396 @@ class _NewPatientState extends State<NewPatient> {
     );
   }
 
-  _onAddMoreDetailsforHistory() {
-    TextEditingController healthHistoryNotes = TextEditingController();
+  _onAddMoreDetailsforHistory(int condID) {
+    // If these two radio button types are null, assign a value to them.
+    _histCondGroupValue[condID] ??= 'نامعلوم';
+    _durationGroupValue[condID] ??= 'نامعلوم';
+    _histDiagDateController[condID] ??= TextEditingController();
+    _histNoteController[condID] ??= TextEditingController();
     return showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Directionality(
-          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-          child: const Text('جزییات بیشتر راجع به تاریخچه صحی'),
-        ),
-        content: Directionality(
-          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-          child: SizedBox(
-            height: 380,
-            child: Form(
-              key: _hisDetFormKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 500.0,
-                    margin: const EdgeInsets.only(
-                        left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                    child: TextFormField(
-                      controller: _meetController,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'لطفا تاریخ مراجعه مریض را انتخاب کنید.';
-                        }
-                        return null;
-                      },
-                      onTap: () async {
-                        FocusScope.of(context).requestFocus(
-                          FocusNode(),
-                        );
-                        final DateTime? dateTime = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(1900),
-                            lastDate: DateTime(2100));
-                        if (dateTime != null) {
-                          final intl2.DateFormat formatter =
-                              intl2.DateFormat('yyyy-MM-dd');
-                          final String formattedDate =
-                              formatter.format(dateTime);
-                          _meetController.text = formattedDate;
-                        }
-                      },
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
-                      ],
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'تاریخ تشخیص / معاینه',
-                        suffixIcon: Icon(Icons.calendar_month_outlined),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50.0)),
-                            borderSide: BorderSide(color: Colors.grey)),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50.0)),
-                            borderSide: BorderSide(color: Colors.blue)),
-                        errorBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50.0)),
-                            borderSide: BorderSide(color: Colors.red)),
-                        focusedErrorBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50.0)),
-                            borderSide:
-                                BorderSide(color: Colors.red, width: 1.5)),
+      builder: (ctx) => StatefulBuilder(
+        builder: (BuildContext context, setState) {
+          return AlertDialog(
+            title: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: const Text('جزییات بیشتر راجع به تاریخچه صحی'),
+            ),
+            content: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: SizedBox(
+                height: 380,
+                child: Form(
+                  key: _hisDetFormKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 500.0,
+                        margin: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                        child: TextFormField(
+                          controller: _histDiagDateController[condID],
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'لطفا تاریخ مراجعه مریض را انتخاب کنید.';
+                            }
+                            return null;
+                          },
+                          onTap: () async {
+                            FocusScope.of(context).requestFocus(
+                              FocusNode(),
+                            );
+                            final DateTime? dateTime = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(1900),
+                                lastDate: DateTime(2100));
+                            if (dateTime != null) {
+                              final intl2.DateFormat formatter =
+                                  intl2.DateFormat('yyyy-MM-dd');
+                              final String formattedDate =
+                                  formatter.format(dateTime);
+                              _histDiagDateController[condID]!.text = formattedDate;
+                              
+                            }
+                          },
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+                          ],
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'تاریخ تشخیص / معاینه',
+                            suffixIcon: Icon(Icons.calendar_month_outlined),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.blue)),
+                            errorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.red)),
+                            focusedErrorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 1.5)),
+                          ),
+                        ),
                       ),
-                    ),
+                      Container(
+                        width: 500.0,
+                        margin: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 10.0),
+                            border: OutlineInputBorder(),
+                            labelText: 'شدت / سطح',
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(50.0),
+                              ),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(50.0),
+                              ),
+                              borderSide: BorderSide(color: Colors.blue),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: const Text(
+                                        'خفیف',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                      value: 'خفیف',
+                                      groupValue: _histCondGroupValue[condID],
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          _histCondGroupValue[condID] = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: const Text(
+                                        'متوسط',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                      value: 'متوسط',
+                                      groupValue: _histCondGroupValue[condID],
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          _histCondGroupValue[condID] = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: const Text(
+                                        'شدید',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                      value: 'شدید',
+                                      groupValue: _histCondGroupValue[condID],
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          _histCondGroupValue[condID] = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: const Text(
+                                        'نامعلوم',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                      value: 'نامعلوم',
+                                      groupValue: _histCondGroupValue[condID],
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          _histCondGroupValue[condID] = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 500.0,
+                        margin: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 10.0),
+                            border: OutlineInputBorder(),
+                            labelText: 'سابقه / مدت',
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(50.0),
+                              ),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(50.0),
+                              ),
+                              borderSide: BorderSide(color: Colors.blue),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: const Text(
+                                        '1 هفته',
+                                        style: TextStyle(fontSize: 10),
+                                      ),
+                                      value: '1 هفته',
+                                      groupValue: _durationGroupValue[condID],
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          _durationGroupValue[condID] = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: const Text(
+                                        '1 ماه',
+                                        style: TextStyle(fontSize: 10),
+                                      ),
+                                      value: '1 ماه',
+                                      groupValue: _durationGroupValue[condID],
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          _durationGroupValue[condID] = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: const Text(
+                                        '6 ماه',
+                                        style: TextStyle(fontSize: 10),
+                                      ),
+                                      value: '6 ماه',
+                                      groupValue: _durationGroupValue[condID],
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          _durationGroupValue[condID] = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: const Text(
+                                        'بیشتر',
+                                        style: TextStyle(fontSize: 10),
+                                      ),
+                                      value: 'بیشتر',
+                                      groupValue: _durationGroupValue[condID],
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          _durationGroupValue[condID] = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: const Text(
+                                        'نامعلوم',
+                                        style: TextStyle(fontSize: 10),
+                                      ),
+                                      value: 'نامعلوم',
+                                      groupValue: _durationGroupValue[condID],
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          _durationGroupValue[condID] = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 500.0,
+                        margin: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                        child: TextFormField(
+                          controller: _histNoteController[condID],
+                          validator: (value) {
+                            if (value!.isNotEmpty) {
+                              if (value.length > 40 || value.length < 10) {
+                                return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                              }
+                            }
+                            return null;
+                          },
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(_regExOnlyAbc),
+                            ),
+                          ],
+                          minLines: 1,
+                          maxLines: 2,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'توضیحات',
+                            suffixIcon: Icon(Icons.note_alt_outlined),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.grey)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.blue)),
+                            errorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide: BorderSide(color: Colors.red)),
+                            focusedErrorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 1.5)),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  Container(
-                    width: 500.0,
-                    margin: const EdgeInsets.only(
-                        left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                    child: InputDecorator(
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 10.0),
-                        border: OutlineInputBorder(),
-                        labelText: 'شدت / سصح',
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(50.0),
-                          ),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(50.0),
-                          ),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                listTileTheme: const ListTileThemeData(
-                                    horizontalTitleGap: 0.5),
-                              ),
-                              child: RadioListTile(
-                                  title: const Text(
-                                    'خفیف',
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                  value: 'خفیف',
-                                  groupValue: _histCondGroupValue,
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      _histCondGroupValue = value!;
-                                    });
-                                  }),
-                            ),
-                          ),
-                          Expanded(
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                listTileTheme: const ListTileThemeData(
-                                    horizontalTitleGap: 0.5),
-                              ),
-                              child: RadioListTile(
-                                  title: const Text(
-                                    'متوسط',
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                  value: 'متوسط',
-                                  groupValue: _histCondGroupValue,
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      _histCondGroupValue = value!;
-                                    });
-                                  }),
-                            ),
-                          ),
-                          Expanded(
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                listTileTheme: const ListTileThemeData(
-                                    horizontalTitleGap: 0.5),
-                              ),
-                              child: RadioListTile(
-                                  title: const Text(
-                                    'شدید',
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                  value: 'شدید',
-                                  groupValue: _histCondGroupValue,
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      _histCondGroupValue = value!;
-                                    });
-                                  }),
-                            ),
-                          ),
-                          Expanded(
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                listTileTheme: const ListTileThemeData(
-                                    horizontalTitleGap: 0.5),
-                              ),
-                              child: RadioListTile(
-                                  title: const Text(
-                                    'نامعلوم',
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                  value: 'نامعلوم',
-                                  groupValue: _histCondGroupValue,
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      _histCondGroupValue = value!;
-                                    });
-                                  }),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 500.0,
-                    margin: const EdgeInsets.only(
-                        left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                    child: InputDecorator(
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 10.0),
-                        border: OutlineInputBorder(),
-                        labelText: 'سابقه / مدت',
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(50.0),
-                          ),
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(50.0),
-                          ),
-                          borderSide: BorderSide(color: Colors.blue),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                listTileTheme: const ListTileThemeData(
-                                    horizontalTitleGap: 0.5),
-                              ),
-                              child: RadioListTile(
-                                  title: const Text(
-                                    '1 هفته',
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                  value: '1 هفته',
-                                  groupValue: _durationGroupValue,
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      _durationGroupValue = value!;
-                                    });
-                                  }),
-                            ),
-                          ),
-                          Expanded(
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                listTileTheme: const ListTileThemeData(
-                                    horizontalTitleGap: 0.5),
-                              ),
-                              child: RadioListTile(
-                                  title: const Text(
-                                    '1 ماه',
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                  value: '1 ماه',
-                                  groupValue: _durationGroupValue,
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      _durationGroupValue = value!;
-                                    });
-                                  }),
-                            ),
-                          ),
-                          Expanded(
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                listTileTheme: const ListTileThemeData(
-                                    horizontalTitleGap: 0.5),
-                              ),
-                              child: RadioListTile(
-                                  title: const Text(
-                                    '6 ماه',
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                  value: '6 ماه',
-                                  groupValue: _durationGroupValue,
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      _durationGroupValue = value!;
-                                    });
-                                  }),
-                            ),
-                          ),
-                          Expanded(
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                listTileTheme: const ListTileThemeData(
-                                    horizontalTitleGap: 0.5),
-                              ),
-                              child: RadioListTile(
-                                  title: const Text(
-                                    'بیشتر',
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                  value: 'بیشتر',
-                                  groupValue: _durationGroupValue,
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      _durationGroupValue = value!;
-                                    });
-                                  }),
-                            ),
-                          ),
-                          Expanded(
-                            child: Theme(
-                              data: Theme.of(context).copyWith(
-                                listTileTheme: const ListTileThemeData(
-                                    horizontalTitleGap: 0.5),
-                              ),
-                              child: RadioListTile(
-                                  title: const Text(
-                                    'نامعلوم',
-                                    style: TextStyle(fontSize: 10),
-                                  ),
-                                  value: 'نامعلوم',
-                                  groupValue: _durationGroupValue,
-                                  onChanged: (String? value) {
-                                    setState(() {
-                                      _durationGroupValue = value!;
-                                    });
-                                  }),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: 500.0,
-                    margin: const EdgeInsets.only(
-                        left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                    child: TextFormField(
-                      controller: healthHistoryNotes,
-                      validator: (value) {
-                        if (value!.isNotEmpty) {
-                          if (value.length > 40 || value.length < 10) {
-                            return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
-                          }
-                        }
-                        return null;
-                      },
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(_regExOnlyAbc),
-                        ),
-                      ],
-                      minLines: 1,
-                      maxLines: 2,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'توضیحات',
-                        suffixIcon: Icon(Icons.note_alt_outlined),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50.0)),
-                            borderSide: BorderSide(color: Colors.grey)),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50.0)),
-                            borderSide: BorderSide(color: Colors.blue)),
-                        errorBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50.0)),
-                            borderSide: BorderSide(color: Colors.red)),
-                        focusedErrorBorder: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50.0)),
-                            borderSide:
-                                BorderSide(color: Colors.red, width: 1.5)),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-              child: const Text('لغو')),
-          ElevatedButton(
-            onPressed: () async {
-              if (_hisDetFormKey.currentState!.validate()) {}
-              /*   final conn = await onConnToDb();
-              final deleteResults = await conn
-                  .query('DELETE FROM conditions WHERE cond_ID = ?', [condID]);
-              if (deleteResults.affectedRows! > 0) {
-                _onShowSnack(Colors.green, 'تاریخچه صحی موفقانه حذف گردید.');
-                setState(() {});
-              } else {
-                _onShowSnack(Colors.red, 'حذف تاریخچه صحی ناکام شد.');
-              }
-              Navigator.of(context, rootNavigator: true).pop();
-              await conn.close(); */
-            },
-            child: const Text('انجام'),
-          ),
-        ],
+            actions: [
+              TextButton(
+                  onPressed: () =>
+                      Navigator.of(context, rootNavigator: true).pop(),
+                  child: const Text('لغو')),
+              ElevatedButton(
+                onPressed: () async {
+                  if (_hisDetFormKey.currentState!.validate()) {
+                   /*  for (var pos in _histNoteController.keys) {
+                      print('Notes: ${_histNoteController[pos]?.text}');
+                    } */
+                  }
+                },
+                child: const Text('انجام'),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
