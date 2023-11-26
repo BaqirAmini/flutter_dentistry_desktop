@@ -2312,7 +2312,7 @@ class _NewPatientState extends State<NewPatient> {
                                 color: Colors.red, fontWeight: FontWeight.bold),
                           ),
                           Container(
-                            width: MediaQuery.of(context).size.width * 0.359,
+                            width: MediaQuery.of(context).size.width * 0.337,
                             margin: const EdgeInsets.only(
                                 left: 20.0,
                                 right: 10.0,
@@ -2493,7 +2493,7 @@ class _NewPatientState extends State<NewPatient> {
                                   fontWeight: FontWeight.bold),
                             ),
                             Container(
-                              width: MediaQuery.of(context).size.width * 0.359,
+                              width: MediaQuery.of(context).size.width * 0.337,
                               margin: const EdgeInsets.only(
                                   left: 20.0,
                                   right: 10.0,
@@ -2641,25 +2641,34 @@ class _NewPatientState extends State<NewPatient> {
           // Prepare an insert query
           var query =
               'INSERT INTO condition_details (cond_ID, result, severty, duration, diagnosis_date, pat_ID, notes) VALUES (?, ?, ?, ?, ?, ?, ?)';
-
           // Get the selected value ('مثبت' or 'منفی')
           var selectedResult = _condResultGV[condID] == 1 ? 1 : 0;
-          var histDate = selectedResult == 1 ? _histDiagDateController[condID]?.text : null;
-          var histSeverty = selectedResult == 1 ? _histCondGroupValue[condID] : null;
-          var histDuration = selectedResult == 1 ? _durationGroupValue[condID] : null;
-          var histNotes = selectedResult == 1 ? _histNoteController[condID]?.text : null;
+          var histDate = selectedResult == 1
+              ? _histDiagDateController[condID]?.text
+              : null;
+          var histSeverty =
+              selectedResult == 1 ? _histCondGroupValue[condID] : null;
+          var histDuration =
+              selectedResult == 1 ? _durationGroupValue[condID] : null;
+          var histNotes =
+              selectedResult == 1 ? _histNoteController[condID]?.text : null;
 
-          // Execute the query with the condition ID and the selected value
-          await ctx.query(query, [condID, selectedResult.toInt(), histSeverty, histDuration, histDate, patientID, histNotes]);
+          await conn.query(query, [
+            condID,
+            selectedResult.toInt(),
+            histSeverty,
+            histDuration,
+            histDate,
+            patientID,
+            histNotes
+          ]);
         }
       });
 
       // Close the connection
       await conn.close();
-      // _onShowSnack(Colors.green, 'History added.');
       return true;
     } catch (e) {
-      // _onShowSnack(Colors.red, 'Adding history faield.$e');
       return false;
     }
   }
@@ -2920,7 +2929,6 @@ class _NewPatientState extends State<NewPatient> {
         : _feeWithDiscount;
     int installment = _defaultInstallment != 0 ? _defaultInstallment : 1;
 /* ---------------/. Calculate received amount, due amount and installments ------------ */
-
     var conn = await onConnToDb();
     int serviceID = int.parse(selectedSerId!);
     // First Check the patient where it already exists
@@ -3290,8 +3298,8 @@ class _NewPatientState extends State<NewPatient> {
                                   intl2.DateFormat('yyyy-MM-dd');
                               final String formattedDate =
                                   formatter.format(dateTime);
-                              _histDiagDateController[condID]!.text = formattedDate;
-                              
+                              _histDiagDateController[condID]!.text =
+                                  formattedDate;
                             }
                           },
                           inputFormatters: [
@@ -3619,7 +3627,7 @@ class _NewPatientState extends State<NewPatient> {
               ElevatedButton(
                 onPressed: () async {
                   if (_hisDetFormKey.currentState!.validate()) {
-                   /*  for (var pos in _histNoteController.keys) {
+                    /*  for (var pos in _histNoteController.keys) {
                       print('Notes: ${_histNoteController[pos]?.text}');
                     } */
                   }
