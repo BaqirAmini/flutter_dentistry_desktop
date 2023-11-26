@@ -2644,14 +2644,19 @@ class _NewPatientState extends State<NewPatient> {
           // Get the selected value ('مثبت' or 'منفی')
           var selectedResult = _condResultGV[condID] == 1 ? 1 : 0;
           var histDate = selectedResult == 1
-              ? _histDiagDateController[condID]?.text
+              ? _histDiagDateController[condID]!.text.isEmpty
+                  ? null
+                  : _histDiagDateController[condID]!.text
               : null;
           var histSeverty =
               selectedResult == 1 ? _histCondGroupValue[condID] : null;
           var histDuration =
               selectedResult == 1 ? _durationGroupValue[condID] : null;
-          var histNotes =
-              selectedResult == 1 ? _histNoteController[condID]?.text : null;
+          var histNotes = selectedResult == 1
+              ? _histNoteController[condID]!.text.isNotEmpty
+                  ? _histNoteController[condID]!.text
+                  : null
+              : null;
 
           await conn.query(query, [
             condID,
@@ -3278,12 +3283,6 @@ class _NewPatientState extends State<NewPatient> {
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: TextFormField(
                           controller: _histDiagDateController[condID],
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'لطفا تاریخ مراجعه مریض را انتخاب کنید.';
-                            }
-                            return null;
-                          },
                           onTap: () async {
                             FocusScope.of(context).requestFocus(
                               FocusNode(),
@@ -3627,9 +3626,8 @@ class _NewPatientState extends State<NewPatient> {
               ElevatedButton(
                 onPressed: () async {
                   if (_hisDetFormKey.currentState!.validate()) {
-                    /*  for (var pos in _histNoteController.keys) {
-                      print('Notes: ${_histNoteController[pos]?.text}');
-                    } */
+                    Navigator.of(context, rootNavigator: true).pop();
+                    _onShowSnack(Colors.green, 'این مورد تاریخچه تکمیل گردید.');
                   }
                 },
                 child: const Text('انجام'),
