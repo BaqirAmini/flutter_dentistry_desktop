@@ -47,102 +47,6 @@ class _PatientDetailState extends State<PatientDetail> {
   // Declare a variable for payment installment
   String payTypeDropdown = 'تکمیل';
 
-  List<Map<String, dynamic>> removeTeeth = [];
-  Future<void> fetchRemoveTooth() async {
-    var conn = await onConnToDb();
-    if (selectedGumType2 != null) {
-      var results = await conn.query(
-          'SELECT td_ID, tooth FROM tooth_details WHERE (td_ID >= 35 AND td_ID <= 49) AND tooth_ID = ?',
-          [selectedGumType2]);
-
-      setState(() {
-        removeTeeth = results
-            .map(
-                (result) => {'td_ID': result[0].toString(), 'tooth': result[1]})
-            .toList();
-        selectedTooth = removeTeeth.isNotEmpty ? removeTeeth[0]['td_ID'] : null;
-      });
-    } else {
-      // Set a default value for selectedTooth using the defaultResult query
-      var defaultResult = await conn.query(
-          'SELECT td_ID, tooth FROM tooth_details WHERE td_ID >= 35 AND td_ID <= 37');
-      if (defaultResult.isNotEmpty) {
-        setState(() {
-          selectedTooth = defaultResult.first['td_ID'].toString();
-          removeTeeth = defaultResult
-              .map((result) =>
-                  {'td_ID': result['td_ID'], 'tooth': result['tooth']})
-              .toList();
-          selectedTooth = removeTeeth.isNotEmpty
-              ? removeTeeth[0]['td_ID'].toString()
-              : null;
-        });
-        // selectedTooth = removeTeeth.isNotEmpty ? removeTeeth[0]['td_ID'] : null;
-      }
-    }
-
-    await conn.close();
-  }
-
-//  سفید کردن دندان
-  String? selectedBleachStep;
-  List<Map<String, dynamic>> teethBleachings = [];
-
-  Future<void> fetchBleachings() async {
-    var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_id = 3');
-    setState(() {
-      teethBleachings = results
-          .map((result) => {
-                'ser_det_ID': result[0].toString(),
-                'service_specific_value': result[1]
-              })
-          .toList();
-    });
-    selectedBleachStep =
-        teethBleachings.isNotEmpty ? teethBleachings[0]['ser_det_ID'] : null;
-    await conn.close();
-  }
-
-  //  پروتز دندان
-  String? selectedProthesis;
-  List<Map<String, dynamic>> protheses = [];
-  Future<void> fetchProtheses() async {
-    var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_id = 9');
-    setState(() {
-      protheses = results
-          .map((result) => {
-                'ser_det_ID': result[0].toString(),
-                'service_specific_value': result[1]
-              })
-          .toList();
-    });
-    selectedProthesis =
-        protheses.isNotEmpty ? protheses[0]['ser_det_ID'] : null;
-    await conn.close();
-  }
-
-  //  پوش کردن دندان
-  String? selectedCover;
-  List<Map<String, dynamic>> coverings = [];
-  Future<void> fetchToothCover() async {
-    var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_id = 11');
-    setState(() {
-      coverings = results
-          .map((result) => {
-                'ser_det_ID': result[0].toString(),
-                'service_specific_value': result[1]
-              })
-          .toList();
-    });
-    selectedCover = coverings.isNotEmpty ? coverings[0]['ser_det_ID'] : null;
-    await conn.close();
-  }
 
 // It is for two forms of stepper
   final _ptFormKey1 = GlobalKey<FormState>();
@@ -193,14 +97,7 @@ class _PatientDetailState extends State<PatientDetail> {
   void initState() {
     super.initState();
     fetchServices();
-    onFillTeeth();
-    onChooseGum2();
-    fetchToothNum();
-    chooseGumType1();
-    fetchBleachings();
-    fetchProtheses();
-    fetchToothCover();
-    fetchRemoveTooth();
+    // fetchToothNum();
   }
 
   @override
@@ -510,7 +407,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                       ],
                                     ),
                                   ),
-                                  Container(
+                                 /*  Container(
                                     height: 100,
                                     child: SingleChildScrollView(
                                       child: Column(
@@ -776,7 +673,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                       ),
                                     ),
                                   ),
-                                ],
+ */                                ],
                               ),
                             ),
                           ),
@@ -942,7 +839,7 @@ class _PatientDetailState extends State<PatientDetail> {
                             child: SingleChildScrollView(
                               child: Column(
                                 children: [
-                                  FutureBuilder(
+                                  /* FutureBuilder(
                                       future: getAppointment(),
                                       builder: (context, snapshot) {
                                         if (snapshot.hasData) {
@@ -1139,7 +1036,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                           return const CircularProgressIndicator();
                                         }
                                       }),
-                                ],
+ */                                ],
                               ),
                             ),
                           ),
@@ -1299,147 +1196,15 @@ class _PatientDetailState extends State<PatientDetail> {
                                           );
                                         }).toList(),
                                         onChanged: (String? newValue) {
-                                          setState(() {
-                                            selectedSerId = newValue;
-                                            if (selectedSerId == '2') {
-                                              _isVisibleForFilling = true;
-                                              _isVisibleForBleaching = false;
-                                              _isVisibleForScaling = false;
-                                              _isVisibleForOrtho = false;
-                                              _isVisibleForProthesis = false;
-                                              _isVisibleForTeethRemove = false;
-                                              _isVisibleForCover = false;
-                                              _isVisibleGum = false;
-                                              _isVisibleForRoot = false;
-                                              _isVisibleMouth = false;
-                                            } else if (selectedSerId == '3') {
-                                              _isVisibleForFilling = false;
-                                              _isVisibleForBleaching = true;
-                                              _isVisibleForProthesis = false;
-                                              _isVisibleForScaling = false;
-                                              _isVisibleForTeethRemove = false;
-                                              _isVisibleForCover = false;
-                                              _isVisibleGum = false;
-                                              _isVisibleForOrtho = false;
-                                              _isVisibleForRoot = false;
-                                              _isVisibleMouth = false;
-                                            } else if (selectedSerId == '4') {
-                                              _isVisibleForScaling = true;
-                                              _isVisibleForFilling = false;
-                                              _isVisibleForBleaching = false;
-                                              _isVisibleForProthesis = false;
-                                              _isVisibleForTeethRemove = false;
-                                              _isVisibleForCover = false;
-                                              _isVisibleForOrtho = false;
-                                              _isVisibleGum = false;
-                                              _isVisibleForRoot = false;
-                                              _isVisibleMouth = false;
-                                              // Set the first dropdown value to avoid conflict
-                                              selectedGumType1 = '3';
-                                            } else if (selectedSerId == '5') {
-                                              _isVisibleForOrtho = true;
-                                              _isVisibleForFilling = false;
-                                              _isVisibleForBleaching = false;
-                                              _isVisibleForScaling = false;
-                                              _isVisibleForProthesis = false;
-                                              _isVisibleGum = false;
-                                              _isVisibleForTeethRemove = false;
-                                              _isVisibleForCover = false;
-                                              _isVisibleForRoot = false;
-                                              _isVisibleMouth = false;
-                                            } else if (selectedSerId == '9') {
-                                              _isVisibleForProthesis = true;
-                                              _isVisibleForOrtho = false;
-                                              _isVisibleForFilling = false;
-                                              _isVisibleForBleaching = false;
-                                              _isVisibleForScaling = false;
-                                              _isVisibleGum = false;
-                                              _isVisibleForTeethRemove = false;
-                                              _isVisibleForCover = false;
-                                              _isVisibleForRoot = false;
-                                              _isVisibleMouth = false;
-                                              // Set selected tooth '1'
-                                              selectedTooth2 = '1';
-                                            } else if (selectedSerId == '6') {
-                                              _isVisibleForRoot = true;
-                                              _isVisibleForProthesis = false;
-                                              _isVisibleForOrtho = false;
-                                              _isVisibleForFilling = false;
-                                              _isVisibleForBleaching = false;
-                                              _isVisibleForScaling = false;
-                                              _isVisibleGum = false;
-                                              _isVisibleForTeethRemove = false;
-                                              _isVisibleForCover = false;
-                                              _isVisibleMouth = false;
-                                              // Set selected tooth '1'
-                                              selectedTooth2 = '1';
-                                            } else if (selectedSerId == '7') {
-                                              _isVisibleGum = true;
-                                              _isVisibleForProthesis = false;
-                                              _isVisibleForOrtho = false;
-                                              _isVisibleForFilling = false;
-                                              _isVisibleForBleaching = false;
-                                              _isVisibleForScaling = false;
-                                              _isVisibleForRoot = false;
-                                              _isVisibleForTeethRemove = false;
-                                              _isVisibleForCover = false;
-                                              _isVisibleMouth = false;
-                                              selectedGumType1 = '3';
-                                            } else if (selectedSerId == '8') {
-                                              _isVisibleMouth = true;
-                                              _isVisibleForProthesis = false;
-                                              _isVisibleForOrtho = false;
-                                              _isVisibleForFilling = false;
-                                              _isVisibleForBleaching = false;
-                                              _isVisibleForScaling = false;
-                                              _isVisibleForRoot = false;
-                                              _isVisibleGum = false;
-                                              _isVisibleForTeethRemove = false;
-                                              _isVisibleForCover = false;
-                                            } else if (selectedSerId == '10') {
-                                              _isVisibleForTeethRemove = true;
-                                              _isVisibleForProthesis = false;
-                                              _isVisibleForOrtho = false;
-                                              _isVisibleForFilling = false;
-                                              _isVisibleForBleaching = false;
-                                              _isVisibleForScaling = false;
-                                              _isVisibleForRoot = false;
-                                              _isVisibleGum = false;
-                                              _isVisibleForCover = false;
-                                              _isVisibleMouth = false;
-                                            } else if (selectedSerId == '11') {
-                                              _isVisibleForCover = true;
-                                              _isVisibleForProthesis = false;
-                                              _isVisibleForOrtho = false;
-                                              _isVisibleForFilling = false;
-                                              _isVisibleForBleaching = false;
-                                              _isVisibleForScaling = false;
-                                              _isVisibleForRoot = false;
-                                              _isVisibleGum = false;
-                                              _isVisibleForTeethRemove = false;
-                                              _isVisibleMouth = false;
-                                              // Set selected tooth '1'
-                                              selectedTooth2 = '1';
-                                            } else {
-                                              _isVisibleForProthesis = false;
-                                              _isVisibleForOrtho = false;
-                                              _isVisibleForFilling = false;
-                                              _isVisibleForBleaching = false;
-                                              _isVisibleForScaling = false;
-                                              _isVisibleForRoot = false;
-                                              _isVisibleMouth = false;
-                                              _isVisibleGum = false;
-                                              _isVisibleForTeethRemove = false;
-                                              _isVisibleForCover = false;
-                                            }
-                                          });
+                                          
+                                          
                                         },
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                              Visibility(
+                          /*     Visibility(
                                 visible: _isVisibleForBleaching,
                                 child: Container(
                                   margin: const EdgeInsets.only(
@@ -1663,14 +1428,14 @@ class _PatientDetailState extends State<PatientDetail> {
                                             );
                                           }).toList(),
                                           onChanged: (String? newValue) {
-                                            setState(() {
+                                          /*   setState(() {
                                               selectedGumType2 = newValue;
                                               if (selectedSerId == '10') {
                                                 // Set this value since by changing لثه / فک below it, it should fetch the default selected value.
                                                 removedTooth = 'عقل دندان';
                                                 fetchRemoveTooth();
                                               }
-                                            });
+                                            }); */
                                           },
                                         ),
                                       ),
@@ -1952,7 +1717,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                   ),
                                 ),
                               ),
-                            ],
+ */                            ],
                           ),
                         ),
                       ),
@@ -2216,7 +1981,7 @@ class _PatientDetailState extends State<PatientDetail> {
                             reachedLastStep = false;
                           }
                         } else if (_ptFormKey2.currentState!.validate()) {
-                          onAddNewAppointment(context);
+                          // onAddNewAppointment(context);
                           Navigator.of(context, rootNavigator: true).pop();
                         }
                       });
@@ -2940,7 +2705,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                       ),
                                     ),
                                   ),
-                                  Container(
+                                 /*  Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0,
                                         right: 20.0,
@@ -3039,7 +2804,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                       ),
                                     ),
                                   ),
-                                  Container(
+ */                                  Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0,
                                         right: 20.0,
@@ -3222,7 +2987,7 @@ class _PatientDetailState extends State<PatientDetail> {
   }
 
 // Fetch appointment details
-  Future<List<Appointment>> getAppointment() async {
+  /* Future<List<Appointment>> getAppointment() async {
     final conn = await onConnToDb();
     final results = await conn.query(
         '''SELECT G.staff_ID, G.firstname, G.lastname, B.apt_ID, DATE_FORMAT(B.meet_date, "%Y-%m-%d"), B.round, B.note, D.gum, C.tooth, F.ser_name, F.ser_name, A.firstname, A.lastname, B.paid_amount, B.due_amount, B.installment FROM patients A
@@ -3254,7 +3019,7 @@ class _PatientDetailState extends State<PatientDetail> {
         .toList();
     return appoints;
   }
-
+ */
 // Create an alert dialog to confirm fields are inserted correctly.
   onConfirmForm() {
     return showDialog(
@@ -3287,7 +3052,7 @@ class _PatientDetailState extends State<PatientDetail> {
   }
 
 // Add a new appointment (visit)
-  Future<void> onAddNewAppointment(BuildContext context) async {
+ /*  Future<void> onAddNewAppointment(BuildContext context) async {
     String? meetDate = _meetController.text.isNotEmpty
         ? _meetController.text.toString()
         : null;
@@ -3422,7 +3187,7 @@ class _PatientDetailState extends State<PatientDetail> {
       print('Adding appointments faield.');
     }
   }
-
+ */
 // This is shows snackbar when called
   void _onShowSnack(Color backColor, String msg) {
     _ptGlobalKey.currentState?.showSnackBar(
@@ -3438,56 +3203,12 @@ class _PatientDetailState extends State<PatientDetail> {
     );
   }
 
-  //  لثه برای جرم گیری
-  String? selectedGumType1;
-  List<Map<String, dynamic>> gumsType1 = [];
-  Future<void> chooseGumType1() async {
-    var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT teeth_ID, gum from teeth WHERE teeth_ID IN (1, 2, 3) ORDER BY teeth_ID DESC');
-    gumsType1 = results
-        .map((result) => {'teeth_ID': result[0].toString(), 'gum': result[1]})
-        .toList();
-    selectedGumType1 = gumsType1.isNotEmpty ? gumsType1[0]['teeth_ID'] : null;
-    await conn.close();
-  }
-
-//  لثه برای استفاده متعدد
-  String? selectedGumType2;
-  List<Map<String, dynamic>> gums = [];
-
-  Future<void> onChooseGum2() async {
-    var conn = await onConnToDb();
-    var queryResult = await conn.query(
-        'SELECT teeth_ID, gum FROM teeth WHERE teeth_ID IN (4, 5, 6, 7, 1)');
-    gums = queryResult
-        .map((row) => {'teeth_ID': row[0].toString(), 'gum': row[1]})
-        .toList();
-    selectedGumType2 = gums.isNotEmpty ? gums[1]['teeth_ID'] : null;
-    await conn.close();
-  }
 
 //  پرکاری دندان
   String? selectedFilling;
   List<Map<String, dynamic>> teethFillings = [];
 
-  Future<void> onFillTeeth() async {
-    var conn = await onConnToDb();
-    var queryFill = await conn.query(
-        'SELECT ser_det_ID, service_specific_value FROM service_details WHERE ser_det_ID >= 1 AND ser_det_ID < 4');
-    teethFillings = queryFill
-        .map((result) => {
-              'ser_det_ID': result[0].toString(),
-              'service_specific_value': result[1]
-            })
-        .toList();
-
-    selectedFilling =
-        teethFillings.isNotEmpty ? teethFillings[0]['ser_det_ID'] : null;
-    await conn.close();
-  }
-
-//  تعداد دندان
+/* //  تعداد دندان
   List<Map<String, dynamic>> teeth = [];
   Future<void> fetchToothNum() async {
     String? toothId = selectedGumType2 ?? '4';
@@ -3500,7 +3221,7 @@ class _PatientDetailState extends State<PatientDetail> {
         .toList();
     selectedTooth2 = teeth.isNotEmpty ? teeth[0]['td_ID'] : null;
     await conn.close();
-  }
+  } */
 }
 
 // Create a data model to set/get appointment details
