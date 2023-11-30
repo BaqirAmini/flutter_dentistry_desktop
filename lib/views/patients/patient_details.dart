@@ -17,13 +17,15 @@ class MyApp extends StatelessWidget {
           appBar: AppBar(
             title: const Text('سوابق مریض'),
           ),
-          body: const Card(
+          body: Card(
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 200.0,
-                  child: UserProfile(),
+                  height: MediaQuery.of(context).size.height * 0.35,
+                  child: const _PatientProfile(),
                 ),
+                _SectionDetail(),
               ],
             ),
           ),
@@ -33,156 +35,66 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class UserProfile extends StatelessWidget {
-  const UserProfile({Key? key}) : super(key: key);
+class _PatientProfile extends StatelessWidget {
+  const _PatientProfile({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.2),
-            border: Border.all(color: Colors.grey, width: 0.5),
-          ),
-          margin: const EdgeInsets.all(10.0),
-          width: MediaQuery.of(context).size.width * 0.3,
-          child: Column(
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.2),
+        border: Border.all(color: Colors.grey, width: 0.5),
+      ),
+      margin: const EdgeInsets.all(10.0),
+      width: MediaQuery.of(context).size.width * 0.2,
+      height: MediaQuery.of(context).size.height * 0.4,
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 30.0,
-                    backgroundImage:
-                        AssetImage('assets/graphics/user_profile2.jpg'),
-                    backgroundColor: Colors.transparent,
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    'Hussain Ehsani',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ],
+              CircleAvatar(
+                radius: 30.0,
+                backgroundImage:
+                    AssetImage('assets/graphics/user_profile2.jpg'),
+                backgroundColor: Colors.transparent,
               ),
-              SizedBox(
-                height: 100,
-                width: 200,
-                child: ListView(
-                  children: const [
-                    ListTile(
-                      leading: const Icon(Icons.phone_android),
-                      title: Text('0744375177'),
-                      // contentPadding: EdgeInsets.all(0)
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.home),
-                      title: Text('کابل، دشت برچی'),
+              SizedBox(width: 10),
+              Text(
+                'Hussain Ehsani',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          SizedBox(height: 15),
+          SizedBox(
+            height: 100,
+            width: 200,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Icon(Icons.phone_android),
+                   Expanded(child:  Text('0744375177'),)
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Icon(Icons.home),
+                    Expanded(
+                      child: Text('، ناحیه سیسیسسسسسسسسکابل، دشت برچی'),
                     ),
                   ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        Container(
-           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.2),
-            border: Border.all(color: Colors.grey, width: 0.5),
-          ),
-          margin: const EdgeInsets.all(10.0),
-          height: 300.0,
-          width: MediaQuery.of(context).size.width * 0.5,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                    child: const Column(
-                      children: [
-                        Text(
-                          'جنسیت',
-                          style: TextStyle(color: Colors.grey, fontSize: 12.0),
-                        ),
-                        // Text('${PatientInfo.sex}'),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                    child: const Column(
-                      children: [
-                        Text('حالت مدنی',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0)),
-                        // Text('${PatientInfo.maritalStatus}'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                    child: const Column(
-                      children: [
-                        Text('سن',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0)),
-                        // Text('${PatientInfo.age} سال'),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                    child: const Column(
-                      children: [
-                        Text('گروپ خون',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0)),
-                        // Text('${PatientInfo.bloodGroup}'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                    child: const Column(
-                      children: [
-                        Text('آدرس',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0)),
-                        // Text('${PatientInfo.address}'),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                    child: const Column(
-                      children: [
-                        Text('تاریخ ثبت',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0)),
-                        // Text('${PatientInfo.regDate}'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -288,41 +200,41 @@ class ContentArea extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
-        Text('جزییات', style: Theme.of(context).textTheme.headlineMedium),
-        HoverCard(
-          title: const Row(
-            children: [
-              Icon(Icons.info_outline),
-              SizedBox(width: 10.0),
-              Text('درباره مریض'),
-            ],
-          ),
-          child: const ListTile(
-            title: Text('Connected'),
-          ),
-        ),
-        HoverCard(
-          title: const Row(
-            children: [
-              Icon(Icons.contact_phone_outlined),
-              SizedBox(width: 10.0),
-              Text('جلسات'),
-            ],
-          ),
-          child: const ListTile(
-            title: Text('Not connected'),
+        // Text('جزییات', style: Theme.of(context).textTheme.headlineMedium),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: HoverCard(
+            title: const Row(
+              children: [
+                Icon(Icons.info_outline),
+                SizedBox(width: 10.0),
+                Text('درباره مریض'),
+              ],
+            ),
           ),
         ),
-        HoverCard(
-          title: const Row(
-            children: [
-              Icon(Icons.health_and_safety_outlined),
-              SizedBox(width: 10.0),
-              Text('تاریخچه صحی مریض'),
-            ],
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: HoverCard(
+            title: const Row(
+              children: [
+                Icon(Icons.contact_phone_outlined),
+                SizedBox(width: 10.0),
+                Text('جلسات'),
+              ],
+            ),
           ),
-          child: const ListTile(
-            title: Text('Off'),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: HoverCard(
+            title: const Row(
+              children: [
+                Icon(Icons.health_and_safety_outlined),
+                SizedBox(width: 10.0),
+                Text('تاریخچه صحی مریض'),
+              ],
+            ),
           ),
         ),
         // Add more cards here for each setting
@@ -333,9 +245,8 @@ class ContentArea extends StatelessWidget {
 
 class HoverCard extends StatefulWidget {
   final Widget title;
-  final Widget child;
 
-  HoverCard({required this.title, required this.child});
+  HoverCard({required this.title});
 
   @override
   _HoverCardState createState() => _HoverCardState();
@@ -356,15 +267,140 @@ class _HoverCardState extends State<HoverCard> {
             ? Matrix4.translationValues(10, 0, 0)
             : Matrix4
                 .identity(), // Move the card to the left/right when hovering
-        child: Card(
-          child: ExpansionTile(
-            title: widget.title,
-            children: <Widget>[
-              widget.child,
-            ],
+        child: Container(
+          height: 70,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.2),
+            border: Border.all(color: Colors.grey, width: 0.5),
+          ),
+          child: Center(
+            child: ListTile(
+              title: widget.title,
+              trailing: const Icon(Icons.arrow_forward_ios_sharp),
+              onTap: () {
+                // Handle your onTap here
+              },
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _SectionDetail extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.2),
+            border: Border.all(color: Colors.grey, width: 0.5),
+          ),
+          margin: const EdgeInsets.all(10.0),
+          height: MediaQuery.of(context).size.height * 0.4,
+          width: MediaQuery.of(context).size.width * 0.3,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                    child: const Column(
+                      children: [
+                        Text(
+                          'جنسیت',
+                          style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                        ),
+                        // Text('${PatientInfo.sex}'),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                    child: const Column(
+                      children: [
+                        Text('حالت مدنی',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0)),
+                        // Text('${PatientInfo.maritalStatus}'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                    child: const Column(
+                      children: [
+                        Text('سن',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0)),
+                        // Text('${PatientInfo.age} سال'),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                    child: const Column(
+                      children: [
+                        Text('گروپ خون',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0)),
+                        // Text('${PatientInfo.bloodGroup}'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                    child: const Column(
+                      children: [
+                        Text('آدرس',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0)),
+                        // Text('${PatientInfo.address}'),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                    child: const Column(
+                      children: [
+                        Text('تاریخ ثبت',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0)),
+                        // Text('${PatientInfo.regDate}'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.2),
+            border: Border.all(color: Colors.grey, width: 0.5),
+          ),
+          margin: const EdgeInsets.all(10.0),
+          height: MediaQuery.of(context).size.height * 0.4,
+          width: MediaQuery.of(context).size.width * 0.4,
+          child: Center(child: ContentArea()),
+        ),
+      ],
     );
   }
 }
