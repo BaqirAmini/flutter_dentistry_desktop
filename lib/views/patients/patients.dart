@@ -7,7 +7,7 @@ import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
-import 'package:flutter_dentistry/views/patients/patient_detail.dart';
+import 'package:flutter_dentistry/views/patients/patient_details.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:provider/provider.dart';
 import 'patient_info.dart';
