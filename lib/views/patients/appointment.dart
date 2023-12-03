@@ -253,6 +253,7 @@ Future<List<AppointmentDataModel>> getAppointment() async {
           dueAmount: row[8],
           installment: row[5]))
       .toList();
+  await conn.close();
   return appoints;
 }
 
