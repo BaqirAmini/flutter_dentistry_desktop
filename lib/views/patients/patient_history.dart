@@ -71,71 +71,67 @@ class _HistoryContentState extends State<_HistoryContent> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final histories = snapshot.data;
-            return ListView(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    '3 نتیجه مثبت',
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                ),
-                for (var h in histories!)
-                  HoverCard(
-                    title: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                decoration: const BoxDecoration(
-                                  color: Color.fromARGB(255, 34, 145, 38),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Icon(
-                                    FontAwesomeIcons.heartPulse,
-                                    color: Colors.white,
-                                  ),
+            int positiveRecord = 0;
+            List<Widget> hcChildren = [];
+            for (var h in histories!) {
+              if (h.result == 1) {
+                positiveRecord++;
+              }
+              hcChildren.add(
+                HoverCard(
+                  title: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              decoration: const BoxDecoration(
+                                color: Color.fromARGB(255, 34, 145, 38),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Icon(
+                                  FontAwesomeIcons.heartPulse,
+                                  color: Colors.white,
                                 ),
                               ),
-                              const SizedBox(width: 10.0),
-                              Text(
-                                h.condName.toString(),
-                                style: Theme.of(context).textTheme.bodyLarge,
-                                textAlign: TextAlign.start,
+                            ),
+                            const SizedBox(width: 10.0),
+                            Text(
+                              h.condName.toString(),
+                              style: Theme.of(context).textTheme.bodyLarge,
+                              textAlign: TextAlign.start,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: h.result == 1 ? Colors.red : Colors.blue,
+                                shape: BoxShape.circle,
                               ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color:
-                                      h.result == 1 ? Colors.red : Colors.blue,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: h.result == 1
-                                      ? const Icon(
-                                          FontAwesomeIcons.plus,
-                                          color: Colors.white,
-                                          size: 14,
-                                        )
-                                      : const Icon(
-                                          FontAwesomeIcons.minus,
-                                          color: Colors.white,
-                                          size: 14,
-                                        ),
-                                ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: h.result == 1
+                                    ? const Icon(
+                                        FontAwesomeIcons.plus,
+                                        color: Colors.white,
+                                        size: 14,
+                                      )
+                                    : const Icon(
+                                        FontAwesomeIcons.minus,
+                                        color: Colors.white,
+                                        size: 14,
+                                      ),
                               ),
-                            ],
-                          ),
-                          /* SizedBox(
+                            ),
+                          ],
+                        ),
+                        /* SizedBox(
                   width: 100,
                   child: PopupMenuButton(
                     padding: EdgeInsets.zero,
@@ -165,99 +161,111 @@ class _HistoryContentState extends State<_HistoryContent> {
                   ),
                 ),
  */
-                        ],
-                      ),
-                    ),
-                    child: ListTile(
-                      title: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text('Diagnosis Date',
-                                    style:
-                                        Theme.of(context).textTheme.labelLarge),
-                                const SizedBox(width: 15.0),
-                                Expanded(
-                                  child: Text(
-                                    h.dianosisDate!,
-                                    textAlign: TextAlign.end,
-                                    style: const TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 112, 112, 112)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                Text('Severty',
-                                    style:
-                                        Theme.of(context).textTheme.labelLarge),
-                                const SizedBox(width: 15.0),
-                                Expanded(
-                                  child: Text(
-                                    h.severty!,
-                                    textAlign: TextAlign.end,
-                                    style: const TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 112, 112, 112)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                Text('Duration',
-                                    style:
-                                        Theme.of(context).textTheme.labelLarge),
-                                const SizedBox(width: 15.0),
-                                Expanded(
-                                  child: Text(
-                                    h.duration!,
-                                    textAlign: TextAlign.end,
-                                    style: const TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 112, 112, 112)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                Text('Description',
-                                    style:
-                                        Theme.of(context).textTheme.labelLarge),
-                                const SizedBox(width: 15.0),
-                                Expanded(
-                                  child: Text(
-                                    h.notes!.isEmpty || h.notes == null
-                                        ? '--'
-                                        : h.notes.toString(),
-                                    textAlign: TextAlign.end,
-                                    style: const TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 112, 112, 112)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                      ],
                     ),
                   ),
+                  child: ListTile(
+                    title: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text('Diagnosis Date',
+                                  style:
+                                      Theme.of(context).textTheme.labelLarge),
+                              const SizedBox(width: 15.0),
+                              Expanded(
+                                child: Text(
+                                  h.dianosisDate!,
+                                  textAlign: TextAlign.end,
+                                  style: const TextStyle(
+                                      color:
+                                          Color.fromARGB(255, 112, 112, 112)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Text('Severty',
+                                  style:
+                                      Theme.of(context).textTheme.labelLarge),
+                              const SizedBox(width: 15.0),
+                              Expanded(
+                                child: Text(
+                                  h.severty!,
+                                  textAlign: TextAlign.end,
+                                  style: const TextStyle(
+                                      color:
+                                          Color.fromARGB(255, 112, 112, 112)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Text('Duration',
+                                  style:
+                                      Theme.of(context).textTheme.labelLarge),
+                              const SizedBox(width: 15.0),
+                              Expanded(
+                                child: Text(
+                                  h.duration!,
+                                  textAlign: TextAlign.end,
+                                  style: const TextStyle(
+                                      color:
+                                          Color.fromARGB(255, 112, 112, 112)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Text('Description',
+                                  style:
+                                      Theme.of(context).textTheme.labelLarge),
+                              const SizedBox(width: 15.0),
+                              Expanded(
+                                child: Text(
+                                  h.notes!.isEmpty || h.notes == null
+                                      ? '--'
+                                      : h.notes.toString(),
+                                  textAlign: TextAlign.end,
+                                  style: const TextStyle(
+                                      color:
+                                          Color.fromARGB(255, 112, 112, 112)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
+            return ListView(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    '$positiveRecord نتیجه مثبت',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                ),
+                ...hcChildren
               ],
             );
           } else if (snapshot.hasError) {
