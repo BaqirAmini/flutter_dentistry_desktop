@@ -68,111 +68,137 @@ class _AppointmentContent extends StatelessWidget {
           return ListView(
             children: <Widget>[
               for (var a in appoints!)
-                HoverCard(
-                  title: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.green,
-                                shape: BoxShape.circle,
-                                border:
-                                    Border.all(color: Colors.green, width: 2.0),
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.calendar_today_outlined,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 10.0),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                FutureBuilder(
+                  future: _getServices(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final services = snapshot.data;
+                      for (var service in services!) {
+                        return HoverCard(
+                          title: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  a.service,
-                                  style: const TextStyle(fontSize: 18.0),
+                                Row(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.green,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                            color: Colors.green, width: 2.0),
+                                      ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Icon(
+                                          Icons.calendar_today_outlined,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10.0),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          service.serviceName,
+                                          style:
+                                              const TextStyle(fontSize: 18.0),
+                                        ),
+                                        Text(
+                                          a.meetDate,
+                                          style: const TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 12.0),
+                                        )
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  a.meetDate,
-                                  style: const TextStyle(
-                                      color: Colors.grey, fontSize: 12.0),
+                                Column(
+                                  children: [
+                                    Text(
+                                      'Paid: ${a.paidAmount}',
+                                      style: const TextStyle(
+                                          color: Colors.grey, fontSize: 12.0),
+                                    ),
+                                    Text(
+                                      'Due: ${a.dueAmount}',
+                                      style: const TextStyle(
+                                          color: Colors.red, fontSize: 12.0),
+                                    )
+                                  ],
                                 )
                               ],
                             ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Text(
-                              'Paid: ${a.paidAmount}',
-                              style: const TextStyle(
-                                  color: Colors.grey, fontSize: 12.0),
+                          ),
+                          child: ListTile(
+                            title: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text('Round',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelLarge),
+                                      const SizedBox(width: 15.0),
+                                      Expanded(
+                                        child: Text(
+                                          a.round.toString(),
+                                          textAlign: TextAlign.end,
+                                          style: const TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 112, 112, 112)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                for (int i = 0; i < services.length; i++)
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        Text(service.reqName,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelLarge),
+                                        const SizedBox(width: 15.0),
+                                        Expanded(
+                                          child: Text(
+                                            service.value,
+                                            textAlign: TextAlign.end,
+                                            style: const TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 112, 112, 112)),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              ],
                             ),
-                            Text(
-                              'Due: ${a.dueAmount}',
-                              style: const TextStyle(
-                                  color: Colors.red, fontSize: 12.0),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                  child: ListTile(
-                    title: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text('Round',
-                                  style:
-                                      Theme.of(context).textTheme.labelLarge),
-                              const SizedBox(width: 15.0),
-                              Expanded(
-                                child: Text(
-                                  a.round.toString(),
-                                  textAlign: TextAlign.end,
-                                  style: const TextStyle(
-                                      color:
-                                          Color.fromARGB(255, 112, 112, 112)),
-                                ),
-                              ),
-                            ],
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Text('Description',
-                                  style:
-                                      Theme.of(context).textTheme.labelLarge),
-                              const SizedBox(width: 15.0),
-                              Expanded(
-                                child: Text(
-                                  a.value,
-                                  textAlign: TextAlign.end,
-                                  style: const TextStyle(
-                                      color:
-                                          Color.fromARGB(255, 112, 112, 112)),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                        );
+                      }
+                    } else if (snapshot.hasError) {
+                      return Text('Error with service: ${snapshot.error}');
+                    } else {
+                      return const Row(
+                        children: [
+                          CircularProgressIndicator(),
+                        ],
+                      );
+                    }
+
+                    return const Text('ss');
+                  },
+                )
             ],
           );
         } else if (snapshot.hasError) {
@@ -235,41 +261,36 @@ class _HoverCardState extends State<HoverCard> {
   }
 }
 
+/* SELECT s.ser_name, sr.req_name, ps.value FROM service_requirements sr
+INNER JOIN patient_services ps ON sr.req_ID = ps.req_ID
+INNER JOIN services s ON ps.ser_ID = s.ser_ID
+WHERE ps.ser_ID = 2 AND ps.pat_ID = 72; */
 // Fetch appointment details
 Future<List<AppointmentDataModel>> getAppointment() async {
   final conn = await onConnToDb();
   final results = await conn.query(
-    '''SELECT p.firstname, p.lastname, s.ser_name, sr.req_name, ps.value, 
-        a.staff_ID, a.meet_date, a.paid_amount, a.due_amount, a.round, a.installment, a.discount, a.apt_ID, st.firstname, st.lastname
-        FROM patients p 
-        INNER JOIN patient_services ps ON p.pat_ID = ps.pat_ID
-        INNER JOIN services s ON ps.ser_ID = s.ser_ID
-        INNER JOIN service_requirements sr ON ps.req_ID = sr.req_ID
-        INNER JOIN appointments a ON a.service_ID = s.ser_ID
-        INNER JOIN staff st ON a.staff_ID = st.staff_ID WHERE p.pat_ID = ?''',
+    '''SELECT p.firstname, p.lastname, 
+        a.staff_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y"), a.paid_amount, a.due_amount, a.round, a.installment, 
+        a.discount, a.apt_ID, st.firstname, st.lastname FROM patients p 
+        INNER JOIN appointments a ON a.pat_ID = p.pat_ID
+        INNER JOIN staff st ON a.staff_ID = st.staff_ID WHERE a.pat_ID = ?''',
     [PatientInfo.patID],
   );
 
   final appoints = results
       .map((row) => AppointmentDataModel(
-          staffID: row[5],
-          staffFirstName: row[13],
-          staffLastName: row[14],
-          aptID: row[12],
-          value: row[4],
-          service: row[2],
-          meetDate: row[6].toString(),
-          round: row[9],
-          paidAmount: row[7],
-          dueAmount: row[8],
-          installment: row[10]))
+          staffID: row[2],
+          staffFirstName: row[10],
+          staffLastName: row[11],
+          aptID: row[9],
+          meetDate: row[3].toString(),
+          round: row[6],
+          paidAmount: row[4],
+          dueAmount: row[5],
+          installment: row[7]))
       .toList();
-
-// Remove duplicates
-  final uniqueAppoints = appoints.toSet().toList();
-
   await conn.close();
-  return uniqueAppoints;
+  return appoints;
 }
 
 // Create a data model to set/get appointment details
@@ -278,12 +299,8 @@ class AppointmentDataModel {
   final String staffFirstName;
   final String staffLastName;
   final int aptID;
-  final String value;
-  final String service;
   final String meetDate;
-  // final String gum;
   final int round;
-  final String? description;
   final double paidAmount;
   final double dueAmount;
   final int installment;
@@ -293,12 +310,43 @@ class AppointmentDataModel {
       required this.staffFirstName,
       required this.staffLastName,
       required this.aptID,
-      required this.value,
-      required this.service,
       required this.meetDate,
       required this.round,
-      this.description,
       required this.paidAmount,
       required this.dueAmount,
       required this.installment});
+}
+
+// Fetch services
+Future<List<ServiceDataModel>> _getServices() async {
+  final conn = await onConnToDb();
+  final results = await conn.query(
+      '''SELECT ps.pat_ID, s.ser_ID, s.ser_name, sr.req_name, ps.value 
+  FROM service_requirements sr 
+  INNER JOIN patient_services ps ON sr.req_ID = ps.req_ID 
+  INNER JOIN services s ON ps.ser_ID = s.ser_ID WHERE ps.pat_ID = ?''',
+      [PatientInfo.patID]);
+  final services = results
+      .map((row) => ServiceDataModel(
+          serviceID: row[1],
+          serviceName: row[2],
+          reqName: row[3],
+          value: row[4]))
+      .toList();
+  await conn.close();
+  return services;
+}
+
+// Create the second data model for services including (service_requirements & patient_services tables)
+class ServiceDataModel {
+  final int serviceID;
+  final String serviceName;
+  final String reqName;
+  final String value;
+
+  ServiceDataModel(
+      {required this.serviceID,
+      required this.serviceName,
+      required this.reqName,
+      required this.value});
 }
