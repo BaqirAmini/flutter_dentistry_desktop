@@ -176,12 +176,20 @@ class _AppointmentContent extends StatelessWidget {
             ],
           );
         } else if (snapshot.hasError) {
-          return const Text('No appointment');
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('No appointment found.',
+                  style: Theme.of(context).textTheme.labelLarge),
+            ],
+          );
         } else {
-          return Container(
-            width: 200,
-            height: 200,
-            child: const CircularProgressIndicator(),
+          return const Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+            ],
           );
         }
       },
@@ -231,30 +239,37 @@ class _HoverCardState extends State<HoverCard> {
 Future<List<AppointmentDataModel>> getAppointment() async {
   final conn = await onConnToDb();
   final results = await conn.query(
-      '''SELECT S.ser_name, PS.req_ID, PS.value, A.apt_ID, DATE_FORMAT(A.meet_date, "%Y-%m-%d"), A.installment, A.round, A.paid_amount,
-       A.due_amount, ST.staff_ID, ST.firstname, ST.lastname FROM services S 
-      INNER JOIN patient_services PS ON S.ser_ID = PS.ser_ID 
-      INNER JOIN appointments A ON S.ser_ID = A.service_ID 
-      INNER JOIN staff ST ON ST.staff_ID = A.staff_ID 
-      WHERE A.pat_ID = ?''', [PatientInfo.patID]);
+    '''SELECT p.firstname, p.lastname, s.ser_name, sr.req_name, ps.value, 
+        a.staff_ID, a.meet_date, a.paid_amount, a.due_amount, a.round, a.installment, a.discount, a.apt_ID, st.firstname, st.lastname
+        FROM patients p 
+        INNER JOIN patient_services ps ON p.pat_ID = ps.pat_ID
+        INNER JOIN services s ON ps.ser_ID = s.ser_ID
+        INNER JOIN service_requirements sr ON ps.req_ID = sr.req_ID
+        INNER JOIN appointments a ON a.service_ID = s.ser_ID
+        INNER JOIN staff st ON a.staff_ID = st.staff_ID WHERE p.pat_ID = ?''',
+    [PatientInfo.patID],
+  );
 
   final appoints = results
       .map((row) => AppointmentDataModel(
-          staffID: row[9],
-          staffFirstName: row[10],
-          staffLastName: row[11],
-          aptID: row[3],
-          value: row[2],
-          // tooth: row[8] == 'tooth not required' ? '' : row[8],
-          service: row[0],
-          meetDate: row[4].toString(),
-          round: row[6],
+          staffID: row[5],
+          staffFirstName: row[13],
+          staffLastName: row[14],
+          aptID: row[12],
+          value: row[4],
+          service: row[2],
+          meetDate: row[6].toString(),
+          round: row[9],
           paidAmount: row[7],
           dueAmount: row[8],
-          installment: row[5]))
+          installment: row[10]))
       .toList();
+
+// Remove duplicates
+  final uniqueAppoints = appoints.toSet().toList();
+
   await conn.close();
-  return appoints;
+  return uniqueAppoints;
 }
 
 // Create a data model to set/get appointment details
