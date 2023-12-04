@@ -258,20 +258,35 @@ class _HistoryContentState extends State<_HistoryContent> {
             }
             return ListView(
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    '$positiveRecord نتیجه مثبت',
-                    style: Theme.of(context).textTheme.labelMedium,
+                Visibility(
+                  visible: positiveRecord > 0 ? true : false,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      '$positiveRecord نتیجه مثبت',
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
                   ),
                 ),
                 ...hcChildren
               ],
             );
           } else if (snapshot.hasError) {
-            return Text('Error occured: ${snapshot.error}');
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('No patient history found.',
+                    style: Theme.of(context).textTheme.labelLarge),
+              ],
+            );
           } else {
-            return const CircularProgressIndicator();
+            return const Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+              ],
+            );
           }
         });
   }
