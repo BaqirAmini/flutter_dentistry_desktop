@@ -2762,8 +2762,12 @@ class _NewPatientState extends State<NewPatient> {
     } else if (selectedSerId == '7') {
       if (defaultMaxillo == 'Tooth Extraction') {
         insertPSQuery = await conn.query(
-            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
             [
+              patientId,
+              serviceId,
+              3,
+              defaultMaxillo,
               patientId,
               serviceId,
               1,
@@ -2777,8 +2781,12 @@ class _NewPatientState extends State<NewPatient> {
             ]);
       } else if (defaultMaxillo == 'Abscess Treatment') {
         insertPSQuery = await conn.query(
-            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
             [
+              patientId,
+              serviceId,
+              3,
+              defaultMaxillo,
               patientId,
               serviceId,
               7,
@@ -2794,8 +2802,12 @@ class _NewPatientState extends State<NewPatient> {
             ]);
       } else if (defaultMaxillo == 'T.M.J') {
         insertPSQuery = await conn.query(
-            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
             [
+              patientId,
+              serviceId,
+              3,
+              defaultMaxillo,
               patientId,
               serviceId,
               9,
@@ -2807,8 +2819,12 @@ class _NewPatientState extends State<NewPatient> {
             ]);
       } else if (defaultMaxillo == 'Tooth Reimplantation') {
         insertPSQuery = await conn.query(
-            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
             [
+              patientId,
+              serviceId,
+              3,
+              defaultMaxillo,
               patientId,
               serviceId,
               1,
