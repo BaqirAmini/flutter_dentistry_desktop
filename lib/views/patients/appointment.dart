@@ -159,19 +159,19 @@ class _AppointmentContent extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                for (int i = 0; i < services.length; i++)
+                                for (var req in service.requirements.entries)
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Row(
                                       children: [
-                                        Text(service.reqName,
+                                        Text(req.key,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .labelLarge),
                                         const SizedBox(width: 15.0),
                                         Expanded(
                                           child: Text(
-                                            service.value,
+                                            req.value,
                                             textAlign: TextAlign.end,
                                             style: const TextStyle(
                                                 color: Color.fromARGB(
@@ -317,7 +317,6 @@ class AppointmentDataModel {
       required this.installment});
 }
 
-// Fetch services
 Future<List<ServiceDataModel>> _getServices() async {
   final conn = await onConnToDb();
   final results = await conn.query(
@@ -326,13 +325,28 @@ Future<List<ServiceDataModel>> _getServices() async {
   INNER JOIN patient_services ps ON sr.req_ID = ps.req_ID 
   INNER JOIN services s ON ps.ser_ID = s.ser_ID WHERE ps.pat_ID = ?''',
       [PatientInfo.patID]);
-  final services = results
-      .map((row) => ServiceDataModel(
-          serviceID: row[1],
-          serviceName: row[2],
-          reqName: row[3],
-          value: row[4]))
-      .toList();
+
+  Map<int, ServiceDataModel> servicesMap = {};
+
+  for (var row in results) {
+    int serviceID = row[1];
+    String serviceName = row[2];
+    String reqName = row[3];
+    String value = row[4];
+
+    if (!servicesMap.containsKey(serviceID)) {
+      servicesMap[serviceID] = ServiceDataModel(
+        serviceID: serviceID,
+        serviceName: serviceName,
+        requirements: {reqName: value},
+      );
+    } else {
+      servicesMap[serviceID]!.requirements[reqName] = value;
+    }
+  }
+
+  final services = servicesMap.values.toList();
+
   await conn.close();
   return services;
 }
@@ -341,12 +355,11 @@ Future<List<ServiceDataModel>> _getServices() async {
 class ServiceDataModel {
   final int serviceID;
   final String serviceName;
-  final String reqName;
-  final String value;
+  final Map<String, String> requirements;
 
-  ServiceDataModel(
-      {required this.serviceID,
-      required this.serviceName,
-      required this.reqName,
-      required this.value});
+  ServiceDataModel({
+    required this.serviceID,
+    required this.serviceName,
+    required this.requirements,
+  });
 }
