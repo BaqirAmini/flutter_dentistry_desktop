@@ -67,6 +67,28 @@ class _AppointmentContent extends StatelessWidget {
           var appoints = snapshot.data;
           return ListView(
             children: <Widget>[
+              Tooltip(
+                message: 'افزودن جلسه جدید',
+                child: Material(
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () {},
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.blue, width: 2.0),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: Icon(
+                          Icons.add,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               for (var a in appoints!)
                 FutureBuilder(
                   future: _getServices(),
@@ -164,14 +186,22 @@ class _AppointmentContent extends StatelessWidget {
                                     padding: const EdgeInsets.all(8.0),
                                     child: Row(
                                       children: [
-                                        Text(req.key,
+                                        Text(
+                                            req.key == 'Teeth Selection'
+                                                ? 'Selection Tooth'
+                                                : req.key,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .labelLarge),
                                         const SizedBox(width: 15.0),
                                         Expanded(
                                           child: Text(
-                                            req.value,
+                                            req.key == 'Teeth Selection'
+                                                ? req.value
+                                                    .split(',')
+                                                    .map(codeToDescription)
+                                                    .join(', ')
+                                                : req.value,
                                             textAlign: TextAlign.end,
                                             style: const TextStyle(
                                                 color: Color.fromARGB(
@@ -362,4 +392,18 @@ class ServiceDataModel {
     required this.serviceName,
     required this.requirements,
   });
+}
+
+Map<String, String> quadrantDescriptions = {
+  'Q1': 'Top-Left',
+  'Q2': 'Top-Right',
+  'Q3': 'Bottom-Right',
+  'Q4': 'Bottom-Left',
+};
+// Function to convert code to description
+String codeToDescription(String code) {
+  var parts = code.split('-');
+  var quadrant = quadrantDescriptions[parts[0]];
+  var tooth = parts[1];
+  return '$quadrant, Tooth $tooth';
 }
