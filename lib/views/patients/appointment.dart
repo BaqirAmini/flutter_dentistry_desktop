@@ -164,10 +164,12 @@ class _AppointmentContent extends StatelessWidget {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
-                                      Text('Round',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelLarge),
+                                      const Text(
+                                        'Round',
+                                        style: TextStyle(
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                       const SizedBox(width: 15.0),
                                       Expanded(
                                         child: Text(
@@ -175,7 +177,8 @@ class _AppointmentContent extends StatelessWidget {
                                           textAlign: TextAlign.end,
                                           style: const TextStyle(
                                               color: Color.fromARGB(
-                                                  255, 112, 112, 112)),
+                                                  255, 112, 112, 112),
+                                              fontSize: 12.0),
                                         ),
                                       ),
                                     ],
@@ -188,11 +191,11 @@ class _AppointmentContent extends StatelessWidget {
                                       children: [
                                         Text(
                                             req.key == 'Teeth Selection'
-                                                ? 'Selection Tooth'
+                                                ? 'Teeth Selected'
                                                 : req.key,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelLarge),
+                                            style: const TextStyle(
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.bold)),
                                         const SizedBox(width: 15.0),
                                         Expanded(
                                           child: Text(
@@ -204,8 +207,10 @@ class _AppointmentContent extends StatelessWidget {
                                                 : req.value,
                                             textAlign: TextAlign.end,
                                             style: const TextStyle(
-                                                color: Color.fromARGB(
-                                                    255, 112, 112, 112)),
+                                              color: Color.fromARGB(
+                                                  255, 112, 112, 112),
+                                              fontSize: 12.0,
+                                            ),
                                           ),
                                         ),
                                       ],
