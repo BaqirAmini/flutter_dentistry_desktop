@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/adult_coordinate_system.dart';
@@ -33,7 +34,6 @@ class ServiceForm extends StatefulWidget {
 
 class _ServiceFormState extends State<ServiceForm> {
 //  پوش کردن دندان
-  String? _defaultCrown;
   final List<String> _crownItems = [
     'Porcelain',
     'Metal-Porcelain',
@@ -44,9 +44,6 @@ class _ServiceFormState extends State<ServiceForm> {
     'وسایر'
   ];
 
-  //  پرکاری دندان
-  String? defaultFilling;
-  bool _fMaterialSelected = false;
   List<String> fillingItems = [
     'Amalgam',
     'Silicate',
@@ -56,7 +53,6 @@ class _ServiceFormState extends State<ServiceForm> {
   ];
 
   // ارتودانسی
-  String? _defaultOrthoType;
   final List<String> _orthoItems = [
     'فک بالا',
     'فک پایین',
@@ -65,7 +61,6 @@ class _ServiceFormState extends State<ServiceForm> {
   ];
 
 // MaxilloFacial وجه فک
-  String? defaultMaxillo;
   List<String> maxilloItems = [
     'Tooth Extraction',
     'Abscess Treatment',
@@ -75,19 +70,14 @@ class _ServiceFormState extends State<ServiceForm> {
   ];
 
 // Gum selection for Abscess treatment
-  String? defaultGumAbscess;
   List<String> abscessItems = ['فک بالا', 'فک پایین', 'هردو'];
 
   // Bleaching
-  String? _defaultBleachValue;
-  bool _levelSelected = false;
   final List<String> _bleachingItems = ['یک مرحله', 'دو مرحله', 'سه مرحله'];
 
   // Select gums for Denture
-  String? _defaultDentureValue;
   final List<String> _dentureItems = ['فک بالا', 'فک پایین', 'هردو'];
 
-  String? selectedSerId;
   List<Map<String, dynamic>> services = [];
 
   @override
@@ -106,7 +96,8 @@ class _ServiceFormState extends State<ServiceForm> {
               {'ser_ID': result[0].toString(), 'ser_name': result[1]})
           .toList();
     });
-    selectedSerId = services.isNotEmpty ? services[0]['ser_ID'] : null;
+    ServiceInfo.selectedServiceID =
+        services.isNotEmpty ? services[0]['ser_ID'] : null;
     await conn.close();
   }
 
@@ -114,18 +105,6 @@ class _ServiceFormState extends State<ServiceForm> {
   int ageDropDown = 0;
   final _meetController = TextEditingController();
   final _noteController = TextEditingController();
-  final _regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
-  final _regExOnlydigits = "[0-9+]";
-  final _regExDecimal = "[0-9.]";
-
-  // Radio Buttons
-  String _crownGroupValue = 'R.C.T';
-  String _fillingGroupValue = 'R.C.T';
-  String _abscessTreatValue = 'راست';
-  String _tmgGroupValue = 'راست';
-  String _sexGroupValue = 'مرد';
-  String _spGroupValue = 'Scaling';
-  String _dentureGroupValue = 'Full';
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +214,7 @@ class _ServiceFormState extends State<ServiceForm> {
                             child: DropdownButton<String>(
                               isExpanded: true,
                               icon: const Icon(Icons.arrow_drop_down),
-                              value: selectedSerId,
+                              value: ServiceInfo.selectedServiceID.toString(),
                               items: services.map((service) {
                                 return DropdownMenuItem<String>(
                                   value: service['ser_ID'],
@@ -245,7 +224,8 @@ class _ServiceFormState extends State<ServiceForm> {
                               }).toList(),
                               onChanged: (String? newValue) {
                                 setState(() {
-                                  selectedSerId = newValue;
+                                  // Assign the selected service id into the static one.
+                                  ServiceInfo.selectedServiceID = int.parse(newValue!);
                                 });
                               },
                             ),
@@ -254,7 +234,9 @@ class _ServiceFormState extends State<ServiceForm> {
                       ),
                     ),
                     Visibility(
-                      visible: (selectedSerId == '11') ? true : false,
+                      visible: (ServiceInfo.selectedServiceID == 11)
+                          ? true
+                          : false,
                       child: Container(
                         width: 400.0,
                         margin: const EdgeInsets.only(
@@ -289,10 +271,10 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'R.C.T',
-                                      groupValue: _crownGroupValue,
+                                      groupValue: ServiceInfo.crownGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _crownGroupValue = value!;
+                                          ServiceInfo.crownGroupValue = value!;
                                         });
                                       }),
                                 ),
@@ -309,10 +291,10 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'Vital',
-                                      groupValue: _crownGroupValue,
+                                      groupValue: ServiceInfo.crownGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _crownGroupValue = value!;
+                                          ServiceInfo.crownGroupValue = value!;
                                         });
                                       }),
                                 ),
@@ -323,7 +305,8 @@ class _ServiceFormState extends State<ServiceForm> {
                       ),
                     ),
                     Visibility(
-                      visible: (selectedSerId == '2') ? true : false,
+                      visible:
+                          (ServiceInfo.selectedServiceID == 2) ? true : false,
                       child: Container(
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
@@ -358,10 +341,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'R.C.T',
-                                      groupValue: _fillingGroupValue,
+                                      groupValue: ServiceInfo.fillingGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _fillingGroupValue = value!;
+                                          ServiceInfo.fillingGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -378,10 +362,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'Operative',
-                                      groupValue: _fillingGroupValue,
+                                      groupValue: ServiceInfo.fillingGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _fillingGroupValue = value!;
+                                          ServiceInfo.fillingGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -392,8 +377,8 @@ class _ServiceFormState extends State<ServiceForm> {
                       ),
                     ),
                     Visibility(
-                      visible: (selectedSerId == '7' &&
-                              defaultMaxillo == 'Abscess Treatment')
+                      visible: (ServiceInfo.selectedServiceID == 7 &&
+                              ServiceInfo.defaultMaxillo == 'Abscess Treatment')
                           ? true
                           : false,
                       child: Container(
@@ -412,7 +397,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
-                            errorText: defaultGumAbscess == null
+                            errorText: ServiceInfo.defaultGumAbscess == null
                                 ? 'Please select a gum'
                                 : null,
                             errorBorder: OutlineInputBorder(
@@ -420,7 +405,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 Radius.circular(50.0),
                               ),
                               borderSide: BorderSide(
-                                  color: defaultGumAbscess == null
+                                  color: ServiceInfo.defaultGumAbscess == null
                                       ? Colors.red
                                       : Colors.grey),
                             ),
@@ -431,7 +416,7 @@ class _ServiceFormState extends State<ServiceForm> {
                               child: DropdownButton<String>(
                                 isExpanded: true,
                                 icon: const Icon(Icons.arrow_drop_down),
-                                value: defaultGumAbscess,
+                                value: ServiceInfo.defaultGumAbscess,
                                 items: [
                                   const DropdownMenuItem(
                                     value: null,
@@ -448,7 +433,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     if (newValue != null) {
-                                      defaultGumAbscess = newValue;
+                                      ServiceInfo.defaultGumAbscess = newValue;
                                     }
                                   });
                                 },
@@ -463,7 +448,8 @@ class _ServiceFormState extends State<ServiceForm> {
                 Column(
                   children: [
                     Visibility(
-                      visible: selectedSerId == '11' ? true : false,
+                      visible:
+                          ServiceInfo.selectedServiceID == 11 ? true : false,
                       child: Container(
                         width: 400.0,
                         margin: const EdgeInsets.only(
@@ -488,8 +474,9 @@ class _ServiceFormState extends State<ServiceForm> {
                               ),
                               borderSide: BorderSide(color: Colors.red),
                             ),
-                            errorText: _defaultCrown == null ||
-                                    _defaultCrown == 'Please select a material'
+                            errorText: ServiceInfo.defaultCrown == null ||
+                                    ServiceInfo.defaultCrown ==
+                                        'Please select a material'
                                 ? 'Please select a material'
                                 : null,
                           ),
@@ -499,7 +486,7 @@ class _ServiceFormState extends State<ServiceForm> {
                               child: DropdownButton<String>(
                                 isExpanded: true,
                                 icon: const Icon(Icons.arrow_drop_down),
-                                value: _defaultCrown,
+                                value: ServiceInfo.defaultCrown,
                                 items: [
                                   const DropdownMenuItem(
                                       value: null,
@@ -515,7 +502,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     if (newValue != null) {
-                                      _defaultCrown = newValue;
+                                      ServiceInfo.defaultCrown = newValue;
                                     }
                                   });
                                 },
@@ -526,7 +513,8 @@ class _ServiceFormState extends State<ServiceForm> {
                       ),
                     ),
                     Visibility(
-                      visible: (selectedSerId == '9') ? true : false,
+                      visible:
+                          (ServiceInfo.selectedServiceID == 9) ? true : false,
                       child: Container(
                         width: 400.0,
                         margin: const EdgeInsets.only(
@@ -565,10 +553,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'Full',
-                                      groupValue: _dentureGroupValue,
+                                      groupValue: ServiceInfo.dentureGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _dentureGroupValue = value!;
+                                          ServiceInfo.dentureGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -585,10 +574,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'Partial',
-                                      groupValue: _dentureGroupValue,
+                                      groupValue: ServiceInfo.dentureGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _dentureGroupValue = value!;
+                                          ServiceInfo.dentureGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -605,10 +595,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'C.C Plate',
-                                      groupValue: _dentureGroupValue,
+                                      groupValue: ServiceInfo.dentureGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _dentureGroupValue = value!;
+                                          ServiceInfo.dentureGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -620,9 +611,9 @@ class _ServiceFormState extends State<ServiceForm> {
                     ),
                     Visibility(
                       // ignore: unrelated_type_equality_checks
-                      visible: (selectedSerId == '9' &&
-                              (_dentureGroupValue == 'Full' ||
-                                  _dentureGroupValue == 'C.C Plate'))
+                      visible: (ServiceInfo.selectedServiceID == 9 &&
+                              (ServiceInfo.dentureGroupValue == 'Full' ||
+                                  ServiceInfo.dentureGroupValue == 'C.C Plate'))
                           ? true
                           : false,
                       child: Container(
@@ -641,7 +632,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
-                            errorText: _defaultDentureValue == null
+                            errorText: ServiceInfo.defaultDentureValue == null
                                 ? 'Please select a gum'
                                 : null,
                             errorBorder: OutlineInputBorder(
@@ -649,7 +640,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 Radius.circular(50.0),
                               ),
                               borderSide: BorderSide(
-                                  color: _defaultDentureValue == null
+                                  color: ServiceInfo.defaultDentureValue == null
                                       ? Colors.red
                                       : Colors.grey),
                             ),
@@ -660,7 +651,7 @@ class _ServiceFormState extends State<ServiceForm> {
                               child: DropdownButton<String>(
                                 isExpanded: true,
                                 icon: const Icon(Icons.arrow_drop_down),
-                                value: _defaultDentureValue,
+                                value: ServiceInfo.defaultDentureValue,
                                 items: [
                                   const DropdownMenuItem(
                                       value: null,
@@ -681,7 +672,8 @@ class _ServiceFormState extends State<ServiceForm> {
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     if (newValue != null) {
-                                      _defaultDentureValue = newValue;
+                                      ServiceInfo.defaultDentureValue =
+                                          newValue;
                                     }
                                   });
                                 },
@@ -693,7 +685,8 @@ class _ServiceFormState extends State<ServiceForm> {
                     ),
                     Visibility(
                       // ignore: unrelated_type_equality_checks
-                      visible: (selectedSerId == '2') ? true : false,
+                      visible:
+                          (ServiceInfo.selectedServiceID == 2) ? true : false,
                       child: Container(
                         width: 400.0,
                         margin: const EdgeInsets.only(
@@ -710,7 +703,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
-                            errorText: !_fMaterialSelected
+                            errorText: !ServiceInfo.fMaterialSelected
                                 ? 'Please select filling material'
                                 : null,
                             errorBorder: OutlineInputBorder(
@@ -718,7 +711,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 Radius.circular(50.0),
                               ),
                               borderSide: BorderSide(
-                                  color: !_fMaterialSelected
+                                  color: !ServiceInfo.fMaterialSelected
                                       ? Colors.red
                                       : Colors.grey),
                             ),
@@ -729,7 +722,7 @@ class _ServiceFormState extends State<ServiceForm> {
                               child: DropdownButton<String>(
                                 isExpanded: true,
                                 icon: const Icon(Icons.arrow_drop_down),
-                                value: defaultFilling,
+                                value: ServiceInfo.defaultFilling,
                                 items: <DropdownMenuItem<String>>[
                                   const DropdownMenuItem(
                                     value: null,
@@ -751,8 +744,8 @@ class _ServiceFormState extends State<ServiceForm> {
                                 onChanged: (String? newValue) {
                                   if (newValue != null) {
                                     setState(() {
-                                      defaultFilling = newValue;
-                                      _fMaterialSelected = true;
+                                      ServiceInfo.defaultFilling = newValue;
+                                      ServiceInfo.fMaterialSelected = true;
                                     });
                                   }
                                 },
@@ -764,7 +757,8 @@ class _ServiceFormState extends State<ServiceForm> {
                     ),
                     Visibility(
                       // ignore: unrelated_type_equality_checks
-                      visible: (selectedSerId == '5') ? true : false,
+                      visible:
+                          (ServiceInfo.selectedServiceID == 5) ? true : false,
                       child: Container(
                         width: 400.0,
                         margin: const EdgeInsets.only(
@@ -781,7 +775,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
-                            errorText: _defaultOrthoType == null
+                            errorText: ServiceInfo.defaultOrthoType == null
                                 ? 'Please select a gum'
                                 : null,
                             errorBorder: OutlineInputBorder(
@@ -789,7 +783,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 Radius.circular(50.0),
                               ),
                               borderSide: BorderSide(
-                                  color: _defaultOrthoType == null
+                                  color: ServiceInfo.defaultOrthoType == null
                                       ? Colors.red
                                       : Colors.grey),
                             ),
@@ -800,7 +794,7 @@ class _ServiceFormState extends State<ServiceForm> {
                               child: DropdownButton<String>(
                                 isExpanded: true,
                                 icon: const Icon(Icons.arrow_drop_down),
-                                value: _defaultOrthoType,
+                                value: ServiceInfo.defaultOrthoType,
                                 items: [
                                   const DropdownMenuItem(
                                     value: null,
@@ -822,7 +816,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     if (newValue != null) {
-                                      _defaultOrthoType = newValue;
+                                      ServiceInfo.defaultOrthoType = newValue;
                                     }
                                   });
                                 },
@@ -834,7 +828,8 @@ class _ServiceFormState extends State<ServiceForm> {
                     ),
                     Visibility(
                       // ignore: unrelated_type_equality_checks
-                      visible: (selectedSerId == '7') ? true : false,
+                      visible:
+                          (ServiceInfo.selectedServiceID == 7) ? true : false,
                       child: Container(
                         width: 400.0,
                         margin: const EdgeInsets.only(
@@ -851,7 +846,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
-                            errorText: defaultMaxillo == null
+                            errorText: ServiceInfo.defaultMaxillo == null
                                 ? 'Please select a type'
                                 : null,
                             errorBorder: OutlineInputBorder(
@@ -859,7 +854,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 Radius.circular(50.0),
                               ),
                               borderSide: BorderSide(
-                                  color: defaultMaxillo == null
+                                  color: ServiceInfo.defaultMaxillo == null
                                       ? Colors.red
                                       : Colors.grey),
                             ),
@@ -870,7 +865,7 @@ class _ServiceFormState extends State<ServiceForm> {
                               child: DropdownButton<String>(
                                 isExpanded: true,
                                 icon: const Icon(Icons.arrow_drop_down),
-                                value: defaultMaxillo,
+                                value: ServiceInfo.defaultMaxillo,
                                 items: [
                                   const DropdownMenuItem(
                                     value: null,
@@ -892,7 +887,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     if (newValue != null) {
-                                      defaultMaxillo = newValue;
+                                      ServiceInfo.defaultMaxillo = newValue;
                                     }
                                   });
                                 },
@@ -903,8 +898,8 @@ class _ServiceFormState extends State<ServiceForm> {
                       ),
                     ),
                     Visibility(
-                      visible: (selectedSerId == '7' &&
-                              defaultMaxillo == 'Abscess Treatment')
+                      visible: (ServiceInfo.selectedServiceID == 7 &&
+                              ServiceInfo.defaultMaxillo == 'Abscess Treatment')
                           ? true
                           : false,
                       child: Container(
@@ -945,10 +940,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'راست',
-                                      groupValue: _abscessTreatValue,
+                                      groupValue: ServiceInfo.fillingGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _abscessTreatValue = value!;
+                                          ServiceInfo.fillingGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -965,10 +961,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'چپ',
-                                      groupValue: _abscessTreatValue,
+                                      groupValue: ServiceInfo.fillingGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _abscessTreatValue = value!;
+                                          ServiceInfo.fillingGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -985,10 +982,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'هردو',
-                                      groupValue: _abscessTreatValue,
+                                      groupValue: ServiceInfo.fillingGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _abscessTreatValue = value!;
+                                          ServiceInfo.fillingGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -999,10 +997,10 @@ class _ServiceFormState extends State<ServiceForm> {
                       ),
                     ),
                     Visibility(
-                      visible:
-                          (defaultMaxillo == 'T.M.J' && selectedSerId == '7')
-                              ? true
-                              : false,
+                      visible: (ServiceInfo.defaultMaxillo == 'T.M.J' &&
+                              ServiceInfo.selectedServiceID == 7)
+                          ? true
+                          : false,
                       child: Container(
                         width: 400.0,
                         margin: const EdgeInsets.only(
@@ -1041,10 +1039,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'راست',
-                                      groupValue: _tmgGroupValue,
+                                      groupValue: ServiceInfo.fillingGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _tmgGroupValue = value!;
+                                          ServiceInfo.fillingGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -1061,10 +1060,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'چپ',
-                                      groupValue: _tmgGroupValue,
+                                      groupValue: ServiceInfo.fillingGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _tmgGroupValue = value!;
+                                          ServiceInfo.fillingGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -1081,10 +1081,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'هردو',
-                                      groupValue: _tmgGroupValue,
+                                      groupValue: ServiceInfo.fillingGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _tmgGroupValue = value!;
+                                          ServiceInfo.fillingGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -1095,7 +1096,8 @@ class _ServiceFormState extends State<ServiceForm> {
                       ),
                     ),
                     Visibility(
-                      visible: (selectedSerId == '4') ? true : false,
+                      visible:
+                          (ServiceInfo.selectedServiceID == 4) ? true : false,
                       child: Container(
                         width: 400.0,
                         margin: const EdgeInsets.only(
@@ -1134,10 +1136,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'Scaling',
-                                      groupValue: _spGroupValue,
+                                      groupValue: ServiceInfo.fillingGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _spGroupValue = value!;
+                                          ServiceInfo.fillingGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -1154,10 +1157,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'Polishing',
-                                      groupValue: _spGroupValue,
+                                      groupValue: ServiceInfo.fillingGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _spGroupValue = value!;
+                                          ServiceInfo.fillingGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -1174,10 +1178,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'Both',
-                                      groupValue: _spGroupValue,
+                                      groupValue: ServiceInfo.fillingGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          _spGroupValue = value!;
+                                          ServiceInfo.fillingGroupValue =
+                                              value!;
                                         });
                                       }),
                                 ),
@@ -1188,7 +1193,8 @@ class _ServiceFormState extends State<ServiceForm> {
                       ),
                     ),
                     Visibility(
-                      visible: selectedSerId == '3' ? true : false,
+                      visible:
+                          ServiceInfo.selectedServiceID == 3 ? true : false,
                       child: Container(
                         width: 400.0,
                         margin: const EdgeInsets.only(
@@ -1207,7 +1213,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                   BorderRadius.all(Radius.circular(50.0)),
                               borderSide: BorderSide(color: Colors.blue),
                             ),
-                            errorText: _defaultBleachValue == null
+                            errorText: ServiceInfo.defaultBleachValue == null
                                 ? 'Please select a bleaching level'
                                 : null,
                             errorBorder: OutlineInputBorder(
@@ -1215,7 +1221,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                 Radius.circular(50.0),
                               ),
                               borderSide: BorderSide(
-                                  color: _defaultBleachValue == null
+                                  color: ServiceInfo.defaultBleachValue == null
                                       ? Colors.red
                                       : Colors.grey),
                             ),
@@ -1226,7 +1232,7 @@ class _ServiceFormState extends State<ServiceForm> {
                               child: DropdownButton<String>(
                                 isExpanded: true,
                                 icon: const Icon(Icons.arrow_drop_down),
-                                value: _defaultBleachValue,
+                                value: ServiceInfo.defaultBleachValue,
                                 items: [
                                   const DropdownMenuItem(
                                     value: null,
@@ -1243,8 +1249,8 @@ class _ServiceFormState extends State<ServiceForm> {
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     if (newValue != null) {
-                                      _defaultBleachValue = newValue;
-                                      _levelSelected = true;
+                                      ServiceInfo.defaultBleachValue = newValue;
+                                      ServiceInfo.levelSelected = true;
                                     }
                                   });
                                 },
@@ -1272,7 +1278,7 @@ class _ServiceFormState extends State<ServiceForm> {
                           },
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
-                              RegExp(_regExOnlyAbc),
+                              RegExp(GlobalUsage.allowedEPChar),
                             ),
                           ],
                           minLines: 1,
@@ -1307,15 +1313,17 @@ class _ServiceFormState extends State<ServiceForm> {
               ],
             ),
             Visibility(
-              visible: (selectedSerId == '1' ||
-                      selectedSerId == '2' ||
-                      selectedSerId == '11' ||
-                      selectedSerId == '15' ||
-                      (selectedSerId == '7' &&
-                          defaultMaxillo == 'Tooth Extraction') ||
-                      (selectedSerId == '7' &&
-                          defaultMaxillo == 'Tooth Reimplantation') ||
-                      (selectedSerId == '9' && _dentureGroupValue == 'Partial'))
+              visible: (ServiceInfo.selectedServiceID == 1 ||
+                      ServiceInfo.selectedServiceID == 2 ||
+                      ServiceInfo.selectedServiceID == 11 ||
+                      ServiceInfo.selectedServiceID == 15 ||
+                      (ServiceInfo.selectedServiceID == 7 &&
+                          ServiceInfo.defaultMaxillo == 'Tooth Extraction') ||
+                      (ServiceInfo.selectedServiceID == 7 &&
+                          ServiceInfo.defaultMaxillo ==
+                              'Tooth Reimplantation') ||
+                      (ServiceInfo.selectedServiceID == 9 &&
+                          ServiceInfo.dentureGroupValue == 'Partial'))
                   ? true
                   : false,
               child: Container(
@@ -1332,4 +1340,25 @@ class _ServiceFormState extends State<ServiceForm> {
       ),
     );
   }
+}
+
+// Static class
+class ServiceInfo {
+  static int? selectedServiceID;
+  static String? defaultOrthoType;
+  static String? defaultCrown;
+  static String? defaultGumAbscess;
+  static String? defaultFilling;
+  static String? defaultMaxillo;
+  static String? defaultBleachValue;
+  static bool levelSelected = false;
+  static String? defaultDentureValue;
+  static bool fMaterialSelected = false;
+  // Radio Buttons
+  static String crownGroupValue = 'R.C.T';
+  static String fillingGroupValue = 'R.C.T';
+  static String abscessTreatValue = 'راست';
+  static String tmgGroupValue = 'راست';
+  static String spGroupValue = 'Scaling';
+  static String dentureGroupValue = 'Full';
 }
