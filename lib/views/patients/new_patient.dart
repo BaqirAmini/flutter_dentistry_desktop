@@ -8,6 +8,7 @@ import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/adult_coordinate_system.dart';
 import 'package:flutter_dentistry/views/patients/child_coordinate_system.dart';
 import 'package:flutter_dentistry/views/patients/tooth_selection_info.dart';
+import 'package:flutter_dentistry/views/services/service_related_fields.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:intl/intl.dart' as intl2;
 import 'package:provider/provider.dart';
@@ -977,7 +978,7 @@ class _NewPatientState extends State<NewPatient> {
             ),
           ),
         ),
-        Step(
+        /* Step(
           state: _currentStep <= 2 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 2,
           title: const Text('خدمات مورد نیاز'),
@@ -2289,6 +2290,13 @@ class _NewPatientState extends State<NewPatient> {
               ),
             ),
           ),
+        ),
+ */
+        Step(
+          state: _currentStep <= 2 ? StepState.editing : StepState.complete,
+          isActive: _currentStep >= 2,
+          title: const Text('خدمات مورد نیاز'),
+          content: ServiceForm(formKey: _formKey2),
         ),
         Step(
           state: _currentStep <= 3 ? StepState.editing : StepState.complete,
