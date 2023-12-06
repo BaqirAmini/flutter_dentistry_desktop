@@ -97,7 +97,7 @@ class _ServiceFormState extends State<ServiceForm> {
           .toList();
     });
     ServiceInfo.selectedServiceID =
-        services.isNotEmpty ? services[0]['ser_ID'] : null;
+        services.isNotEmpty ? int.parse(services[0]['ser_ID']) : null;
     await conn.close();
   }
 
@@ -940,10 +940,10 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'راست',
-                                      groupValue: ServiceInfo.fillingGroupValue,
+                                      groupValue: ServiceInfo.abscessTreatValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.fillingGroupValue =
+                                          ServiceInfo.abscessTreatValue =
                                               value!;
                                         });
                                       }),
@@ -961,10 +961,10 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'چپ',
-                                      groupValue: ServiceInfo.fillingGroupValue,
+                                      groupValue: ServiceInfo.abscessTreatValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.fillingGroupValue =
+                                          ServiceInfo.abscessTreatValue =
                                               value!;
                                         });
                                       }),
@@ -982,10 +982,10 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'هردو',
-                                      groupValue: ServiceInfo.fillingGroupValue,
+                                      groupValue: ServiceInfo.abscessTreatValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.fillingGroupValue =
+                                          ServiceInfo.abscessTreatValue =
                                               value!;
                                         });
                                       }),
@@ -1039,10 +1039,10 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'راست',
-                                      groupValue: ServiceInfo.fillingGroupValue,
+                                      groupValue: ServiceInfo.tmgGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.fillingGroupValue =
+                                          ServiceInfo.tmgGroupValue =
                                               value!;
                                         });
                                       }),
@@ -1060,10 +1060,10 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'چپ',
-                                      groupValue: ServiceInfo.fillingGroupValue,
+                                      groupValue: ServiceInfo.tmgGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.fillingGroupValue =
+                                          ServiceInfo.tmgGroupValue =
                                               value!;
                                         });
                                       }),
@@ -1081,10 +1081,10 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'هردو',
-                                      groupValue: ServiceInfo.fillingGroupValue,
+                                      groupValue: ServiceInfo.tmgGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.fillingGroupValue =
+                                          ServiceInfo.tmgGroupValue =
                                               value!;
                                         });
                                       }),
@@ -1136,10 +1136,10 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'Scaling',
-                                      groupValue: ServiceInfo.fillingGroupValue,
+                                      groupValue: ServiceInfo.spGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.fillingGroupValue =
+                                          ServiceInfo.spGroupValue =
                                               value!;
                                         });
                                       }),
@@ -1157,10 +1157,10 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'Polishing',
-                                      groupValue: ServiceInfo.fillingGroupValue,
+                                      groupValue: ServiceInfo.spGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.fillingGroupValue =
+                                          ServiceInfo.spGroupValue =
                                               value!;
                                         });
                                       }),
@@ -1178,10 +1178,10 @@ class _ServiceFormState extends State<ServiceForm> {
                                         style: TextStyle(fontSize: 14),
                                       ),
                                       value: 'Both',
-                                      groupValue: ServiceInfo.fillingGroupValue,
+                                      groupValue: ServiceInfo.spGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.fillingGroupValue =
+                                          ServiceInfo.spGroupValue =
                                               value!;
                                         });
                                       }),
