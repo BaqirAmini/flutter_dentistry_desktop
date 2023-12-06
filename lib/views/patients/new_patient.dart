@@ -1,12 +1,9 @@
-// ignore_for_file: use_build_context_synchronously, prefer_typing_uninitialized_variables
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
-import 'package:flutter_dentistry/views/patients/adult_coordinate_system.dart';
-import 'package:flutter_dentistry/views/patients/child_coordinate_system.dart';
 import 'package:flutter_dentistry/views/patients/tooth_selection_info.dart';
 import 'package:flutter_dentistry/views/services/service_related_fields.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
@@ -51,84 +48,6 @@ class _NewPatientState extends State<NewPatient> {
     'O-'
   ];
 
-  //  پوش کردن دندان
-  String? _defaultCrown;
-  final List<String> _crownItems = [
-    'Porcelain',
-    'Metal-Porcelain',
-    'CAD CAM',
-    'Zirconia',
-    'Mital',
-    'Gold',
-    'وسایر'
-  ];
-
-  //  پرکاری دندان
-  String? defaultFilling;
-  bool _fMaterialSelected = false;
-  List<String> fillingItems = [
-    'Amalgam',
-    'Silicate',
-    'Composite',
-    'G.C (Glass Inomir)',
-    'وسایر',
-  ];
-
-  // ارتودانسی
-  String? _defaultOrthoType;
-  final List<String> _orthoItems = [
-    'فک بالا',
-    'فک پایین',
-    'هردو فک',
-    'بستن دیاستم وسطی'
-  ];
-
-// MaxilloFacial وجه فک
-  String? defaultMaxillo;
-  List<String> maxilloItems = [
-    'Tooth Extraction',
-    'Abscess Treatment',
-    'T.M.J',
-    'Tooth Reimplantation',
-    'Jaw Fracture Fixation'
-  ];
-
-// Gum selection for Abscess treatment
-  String? defaultGumAbscess;
-  List<String> abscessItems = ['فک بالا', 'فک پایین', 'هردو'];
-
-  // Bleaching
-  String? _defaultBleachValue;
-  bool _levelSelected = false;
-  final List<String> _bleachingItems = ['یک مرحله', 'دو مرحله', 'سه مرحله'];
-
-  // Select gums for Denture
-  String? _defaultDentureValue;
-  final List<String> _dentureItems = ['فک بالا', 'فک پایین', 'هردو'];
-
-  String? selectedSerId;
-  List<Map<String, dynamic>> services = [];
-
-  @override
-  void initState() {
-    super.initState();
-    fetchServices();
-  }
-
-  Future<void> fetchServices() async {
-    var conn = await onConnToDb();
-    var queryService =
-        await conn.query('SELECT ser_ID, ser_name FROM services WHERE ser_ID');
-    setState(() {
-      services = queryService
-          .map((result) =>
-              {'ser_ID': result[0].toString(), 'ser_name': result[1]})
-          .toList();
-    });
-    selectedSerId = services.isNotEmpty ? services[0]['ser_ID'] : null;
-    await conn.close();
-  }
-
   // Declare a dropdown for ages
   int ageDropDown = 0;
   bool _ageSelected = false;
@@ -142,9 +61,6 @@ class _NewPatientState extends State<NewPatient> {
   final _recievableController = TextEditingController();
   final _meetController = TextEditingController();
   final _noteController = TextEditingController();
-  final _regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
-  final _regExOnlydigits = "[0-9+]";
-  final _regExDecimal = "[0-9.]";
 
   bool _isVisibleForPayment = false;
   // Declare for discount.
@@ -190,13 +106,7 @@ class _NewPatientState extends State<NewPatient> {
   final _hisDetFormKey = GlobalKey<FormState>();
 
   // Radio Buttons
-  String _crownGroupValue = 'R.C.T';
-  String _fillingGroupValue = 'R.C.T';
-  String _abscessTreatValue = 'راست';
-  String _tmgGroupValue = 'راست';
   String _sexGroupValue = 'مرد';
-  String _spGroupValue = 'Scaling';
-  String _dentureGroupValue = 'Full';
   final Map<int, TextEditingController> _histDiagDateController = {};
   final Map<int, TextEditingController> _histNoteController = {};
   final Map<int, String> _histCondGroupValue = {};
@@ -250,7 +160,7 @@ class _NewPatientState extends State<NewPatient> {
                                   controller: _nameController,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(
-                                      RegExp(_regExOnlyAbc),
+                                      RegExp(GlobalUsage.allowedEPChar),
                                     ),
                                   ],
                                   validator: (value) {
@@ -307,7 +217,7 @@ class _NewPatientState extends State<NewPatient> {
                               controller: _lNameController,
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
-                                  RegExp(_regExOnlyAbc),
+                                  RegExp(GlobalUsage.allowedEPChar),
                                 ),
                               ],
                               validator: (value) {
@@ -635,7 +545,7 @@ class _NewPatientState extends State<NewPatient> {
                                   controller: _phoneController,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(
-                                      RegExp(_regExOnlydigits),
+                                      RegExp(GlobalUsage.allowedDigits),
                                     ),
                                   ],
                                   validator: (value) {
@@ -707,7 +617,7 @@ class _NewPatientState extends State<NewPatient> {
                               controller: _addrController,
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
-                                  RegExp(_regExOnlyAbc),
+                                  RegExp(GlobalUsage.allowedEPChar),
                                 ),
                               ],
                               decoration: InputDecoration(
@@ -978,1320 +888,6 @@ class _NewPatientState extends State<NewPatient> {
             ),
           ),
         ),
-        /* Step(
-          state: _currentStep <= 2 ? StepState.editing : StepState.complete,
-          isActive: _currentStep >= 2,
-          title: const Text('خدمات مورد نیاز'),
-          content: SizedBox(
-            child: Center(
-              child: Form(
-                key: _formKey2,
-                child: Column(
-                  children: [
-                    const Text(
-                        'لطفاً اوضاع عمومی مریض را با دقت ارزیابی نموده و طبق خدمات را به پیش ببرید'),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          children: [
-                            Row(
-                              children: [
-                                const Text(
-                                  '*',
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Container(
-                                  width: 400.0,
-                                  margin: const EdgeInsets.only(
-                                      left: 20.0,
-                                      right: 10.0,
-                                      top: 10.0,
-                                      bottom: 10.0),
-                                  child: TextFormField(
-                                    controller: _meetController,
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'لطفا تاریخ مراجعه مریض را انتخاب کنید.';
-                                      }
-                                      return null;
-                                    },
-                                    onTap: () async {
-                                      FocusScope.of(context).requestFocus(
-                                        FocusNode(),
-                                      );
-                                      final DateTime? dateTime =
-                                          await showDatePicker(
-                                              context: context,
-                                              initialDate: DateTime.now(),
-                                              firstDate: DateTime(1900),
-                                              lastDate: DateTime(2100));
-                                      if (dateTime != null) {
-                                        final intl2.DateFormat formatter =
-                                            intl2.DateFormat('yyyy-MM-dd');
-                                        final String formattedDate =
-                                            formatter.format(dateTime);
-                                        _meetController.text = formattedDate;
-                                      }
-                                    },
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.allow(
-                                          RegExp(r'[0-9.]'))
-                                    ],
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'تاریخ اولین مراجعه',
-                                      suffixIcon:
-                                          Icon(Icons.calendar_month_outlined),
-                                      enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.grey)),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.blue)),
-                                      errorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.red)),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide: BorderSide(
-                                              color: Colors.red, width: 1.5)),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              width: 400.0,
-                              margin: const EdgeInsets.only(
-                                  left: 20.0,
-                                  right: 20.0,
-                                  top: 10.0,
-                                  bottom: 10.0),
-                              child: InputDecorator(
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'نوعیت خدمات',
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue)),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: SizedBox(
-                                    height: 26.0,
-                                    child: DropdownButton<String>(
-                                      isExpanded: true,
-                                      icon: const Icon(Icons.arrow_drop_down),
-                                      value: selectedSerId,
-                                      items: services.map((service) {
-                                        return DropdownMenuItem<String>(
-                                          value: service['ser_ID'],
-                                          alignment: Alignment.centerRight,
-                                          child: Text(service['ser_name']),
-                                        );
-                                      }).toList(),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          selectedSerId = newValue;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible: (selectedSerId == '11') ? true : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 10.0),
-                                    border: OutlineInputBorder(),
-                                    labelText: 'نوعیت',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'R.C.T',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'R.C.T',
-                                              groupValue: _crownGroupValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _crownGroupValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'Vital',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'Vital',
-                                              groupValue: _crownGroupValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _crownGroupValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible: (selectedSerId == '2') ? true : false,
-                              child: Container(
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                width: 400.0,
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 10.0),
-                                    border: OutlineInputBorder(),
-                                    labelText: 'نوعیت',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'R.C.T',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'R.C.T',
-                                              groupValue: _fillingGroupValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _fillingGroupValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'Operative',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'Operative',
-                                              groupValue: _fillingGroupValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _fillingGroupValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible: (selectedSerId == '7' &&
-                                      defaultMaxillo == 'Abscess Treatment')
-                                  ? true
-                                  : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: 'انتخاب فک',
-                                    enabledBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                    errorText: defaultGumAbscess == null
-                                        ? 'Please select a gum'
-                                        : null,
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide: BorderSide(
-                                          color: defaultGumAbscess == null
-                                              ? Colors.red
-                                              : Colors.grey),
-                                    ),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: defaultGumAbscess,
-                                        items: [
-                                          const DropdownMenuItem(
-                                            value: null,
-                                            child: Text('Please select a gum'),
-                                          ),
-                                          ...abscessItems.map((item) {
-                                            return DropdownMenuItem<String>(
-                                              value: item,
-                                              alignment: Alignment.centerRight,
-                                              child: Text(item),
-                                            );
-                                          }).toList(),
-                                        ],
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            if (newValue != null) {
-                                              defaultGumAbscess = newValue;
-                                            }
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          children: [
-                            Visibility(
-                              visible: selectedSerId == '11' ? true : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: 'نوعیت مواد پوش',
-                                    enabledBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey),
-                                    ),
-                                    focusedBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
-                                    ),
-                                    errorBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50),
-                                      ),
-                                      borderSide: BorderSide(color: Colors.red),
-                                    ),
-                                    errorText: _defaultCrown == null ||
-                                            _defaultCrown ==
-                                                'Please select a material'
-                                        ? 'Please select a material'
-                                        : null,
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: _defaultCrown,
-                                        items: [
-                                          const DropdownMenuItem(
-                                              value: null,
-                                              child: Text(
-                                                  'Please select a material')),
-                                          ..._crownItems.map((String items) {
-                                            return DropdownMenuItem<String>(
-                                              value: items,
-                                              alignment: Alignment.centerRight,
-                                              child: Text(items),
-                                            );
-                                          }).toList(),
-                                        ],
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            if (newValue != null) {
-                                              _defaultCrown = newValue;
-                                            }
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible: (selectedSerId == '9') ? true : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 10.0),
-                                    border: OutlineInputBorder(),
-                                    labelText: 'نوعیت دینچر',
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'Full',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'Full',
-                                              groupValue: _dentureGroupValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _dentureGroupValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'Partial',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'Partial',
-                                              groupValue: _dentureGroupValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _dentureGroupValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'C.C Plate',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'C.C Plate',
-                                              groupValue: _dentureGroupValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _dentureGroupValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              // ignore: unrelated_type_equality_checks
-                              visible: (selectedSerId == '9' &&
-                                      (_dentureGroupValue == 'Full' ||
-                                          _dentureGroupValue == 'C.C Plate'))
-                                  ? true
-                                  : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: 'انتخاب فک',
-                                    enabledBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                    errorText: _defaultDentureValue == null
-                                        ? 'Please select a gum'
-                                        : null,
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide: BorderSide(
-                                          color: _defaultDentureValue == null
-                                              ? Colors.red
-                                              : Colors.grey),
-                                    ),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: _defaultDentureValue,
-                                        items: [
-                                          const DropdownMenuItem(
-                                              value: null,
-                                              child:
-                                                  Text('Please select a gum')),
-                                          ..._dentureItems.map((String item) {
-                                            return DropdownMenuItem<String>(
-                                              alignment: Alignment.centerRight,
-                                              value: item,
-                                              child: Directionality(
-                                                textDirection: isEnglish
-                                                    ? TextDirection.ltr
-                                                    : TextDirection.rtl,
-                                                child: Text(item),
-                                              ),
-                                            );
-                                          }).toList(),
-                                        ],
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            if (newValue != null) {
-                                              _defaultDentureValue = newValue;
-                                            }
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              // ignore: unrelated_type_equality_checks
-                              visible: (selectedSerId == '2') ? true : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: 'نوعیت مواد',
-                                    enabledBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                    errorText: !_fMaterialSelected
-                                        ? 'Please select filling material'
-                                        : null,
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide: BorderSide(
-                                          color: !_fMaterialSelected
-                                              ? Colors.red
-                                              : Colors.grey),
-                                    ),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: defaultFilling,
-                                        items: <DropdownMenuItem<String>>[
-                                          const DropdownMenuItem(
-                                            value: null,
-                                            child:
-                                                Text('Please select an item'),
-                                          ),
-                                          ...fillingItems.map((String item) {
-                                            return DropdownMenuItem<String>(
-                                              alignment: Alignment.centerRight,
-                                              value: item,
-                                              child: Directionality(
-                                                textDirection: isEnglish
-                                                    ? TextDirection.ltr
-                                                    : TextDirection.rtl,
-                                                child: Text(item),
-                                              ),
-                                            );
-                                          }).toList(),
-                                        ],
-                                        onChanged: (String? newValue) {
-                                          if (newValue != null) {
-                                            setState(() {
-                                              defaultFilling = newValue;
-                                              _fMaterialSelected = true;
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              // ignore: unrelated_type_equality_checks
-                              visible: (selectedSerId == '5') ? true : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: 'نوعیت ارتودانسی',
-                                    enabledBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                    errorText: _defaultOrthoType == null
-                                        ? 'Please select a gum'
-                                        : null,
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide: BorderSide(
-                                          color: _defaultOrthoType == null
-                                              ? Colors.red
-                                              : Colors.grey),
-                                    ),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: _defaultOrthoType,
-                                        items: [
-                                          const DropdownMenuItem(
-                                            value: null,
-                                            child: Text('Please select a gum'),
-                                          ),
-                                          ..._orthoItems.map((String item) {
-                                            return DropdownMenuItem<String>(
-                                              alignment: Alignment.centerRight,
-                                              value: item,
-                                              child: Directionality(
-                                                textDirection: isEnglish
-                                                    ? TextDirection.ltr
-                                                    : TextDirection.rtl,
-                                                child: Text(item),
-                                              ),
-                                            );
-                                          }).toList(),
-                                        ],
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            if (newValue != null) {
-                                              _defaultOrthoType = newValue;
-                                            }
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              // ignore: unrelated_type_equality_checks
-                              visible: (selectedSerId == '7') ? true : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: 'نوعیت',
-                                    enabledBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                    errorText: defaultMaxillo == null
-                                        ? 'Please select a type'
-                                        : null,
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide: BorderSide(
-                                          color: defaultMaxillo == null
-                                              ? Colors.red
-                                              : Colors.grey),
-                                    ),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: defaultMaxillo,
-                                        items: [
-                                          const DropdownMenuItem(
-                                            value: null,
-                                            child: Text('Please select a type'),
-                                          ),
-                                          ...maxilloItems.map((String item) {
-                                            return DropdownMenuItem<String>(
-                                              alignment: Alignment.centerRight,
-                                              value: item,
-                                              child: Directionality(
-                                                textDirection: isEnglish
-                                                    ? TextDirection.ltr
-                                                    : TextDirection.rtl,
-                                                child: Text(item),
-                                              ),
-                                            );
-                                          }).toList()
-                                        ],
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            if (newValue != null) {
-                                              defaultMaxillo = newValue;
-                                            }
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible: (selectedSerId == '7' &&
-                                      defaultMaxillo == 'Abscess Treatment')
-                                  ? true
-                                  : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 10.0),
-                                    border: OutlineInputBorder(),
-                                    labelText: 'ناحیه آبسه',
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'راست',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'راست',
-                                              groupValue: _abscessTreatValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _abscessTreatValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'چپ',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'چپ',
-                                              groupValue: _abscessTreatValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _abscessTreatValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'هردو',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'هردو',
-                                              groupValue: _abscessTreatValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _abscessTreatValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible: (defaultMaxillo == 'T.M.J' &&
-                                      selectedSerId == '7')
-                                  ? true
-                                  : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 10.0),
-                                    border: OutlineInputBorder(),
-                                    labelText: 'ناحیه',
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'راست',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'راست',
-                                              groupValue: _tmgGroupValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _tmgGroupValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'چپ',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'چپ',
-                                              groupValue: _tmgGroupValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _tmgGroupValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'هردو',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'هردو',
-                                              groupValue: _tmgGroupValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _tmgGroupValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible: (selectedSerId == '4') ? true : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 10.0),
-                                    border: OutlineInputBorder(),
-                                    labelText: 'نوعیت اجرا',
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'Scaling',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'Scaling',
-                                              groupValue: _spGroupValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _spGroupValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'Polishing',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'Polishing',
-                                              groupValue: _spGroupValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _spGroupValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'Both',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'Both',
-                                              groupValue: _spGroupValue,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _spGroupValue = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible: selectedSerId == '3' ? true : false,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: 'مراحل سفید کردن',
-                                    enabledBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey),
-                                    ),
-                                    focusedBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
-                                    ),
-                                    errorText: _defaultBleachValue == null
-                                        ? 'Please select a bleaching level'
-                                        : null,
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide: BorderSide(
-                                          color: _defaultBleachValue == null
-                                              ? Colors.red
-                                              : Colors.grey),
-                                    ),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: _defaultBleachValue,
-                                        items: [
-                                          const DropdownMenuItem(
-                                            value: null,
-                                            child:
-                                                Text('Please select a level'),
-                                          ),
-                                          ..._bleachingItems.map((item) {
-                                            return DropdownMenuItem<String>(
-                                              value: item,
-                                              alignment: Alignment.centerRight,
-                                              child: Text(item),
-                                            );
-                                          }).toList(),
-                                        ],
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            if (newValue != null) {
-                                              _defaultBleachValue = newValue;
-                                              _levelSelected = true;
-                                            }
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Visibility(
-                              visible: true,
-                              child: Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: TextFormField(
-                                  controller: _noteController,
-                                  validator: (value) {
-                                    if (value!.isNotEmpty) {
-                                      if (value.length > 40 ||
-                                          value.length < 10) {
-                                        return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
-                                      }
-                                    }
-                                    return null;
-                                  },
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                      RegExp(_regExOnlyAbc),
-                                    ),
-                                  ],
-                                  minLines: 1,
-                                  maxLines: 2,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'توضیحات',
-                                    suffixIcon: Icon(Icons.note_alt_outlined),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                    errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5)),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Visibility(
-                      visible: (selectedSerId == '1' ||
-                              selectedSerId == '2' ||
-                              selectedSerId == '11' ||
-                              selectedSerId == '15' ||
-                              (selectedSerId == '7' &&
-                                  defaultMaxillo == 'Tooth Extraction') ||
-                              (selectedSerId == '7' &&
-                                  defaultMaxillo == 'Tooth Reimplantation') ||
-                              (selectedSerId == '9' &&
-                                  _dentureGroupValue == 'Partial'))
-                          ? true
-                          : false,
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        width: (ageDropDown <= 13) ? 470 : 770,
-                        height: 300,
-                        child: (ageDropDown <= 13)
-                            ? const ChildQuadrantGrid()
-                            : const AdultQuadrantGrid(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
- */
         Step(
           state: _currentStep <= 2 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 2,
@@ -2336,7 +932,7 @@ class _NewPatientState extends State<NewPatient> {
                               },
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
-                                  RegExp(_regExDecimal),
+                                  RegExp(GlobalUsage.allowedDigPeriod),
                                 ),
                               ],
                               onChanged: _setDiscount,
@@ -2511,7 +1107,7 @@ class _NewPatientState extends State<NewPatient> {
                                 controller: _recievableController,
                                 inputFormatters: [
                                   FilteringTextInputFormatter.allow(
-                                    RegExp(_regExDecimal),
+                                    RegExp(GlobalUsage.allowedDigPeriod),
                                   ),
                                 ],
                                 validator: (value) {
@@ -2690,7 +1286,7 @@ class _NewPatientState extends State<NewPatient> {
       int patientId, int serviceId, String desc) async {
     final conn = await onConnToDb();
     var insertPSQuery;
-    if (selectedSerId == '1') {
+    if (ServiceInfo.selectedServiceID == 1) {
       insertPSQuery = await conn.query(
           'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
           [
@@ -2705,7 +1301,7 @@ class _NewPatientState extends State<NewPatient> {
             2,
             desc
           ]);
-    } else if (selectedSerId == '2') {
+    } else if (ServiceInfo.selectedServiceID == 2) {
       insertPSQuery = await conn.query(
           'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
           [
@@ -2722,13 +1318,13 @@ class _NewPatientState extends State<NewPatient> {
             patientId,
             serviceId,
             3,
-            _fillingGroupValue,
+            ServiceInfo.fillingGroupValue,
             patientId,
             serviceId,
             4,
-            defaultFilling
+            ServiceInfo.defaultFilling
           ]);
-    } else if (selectedSerId == '3') {
+    } else if (ServiceInfo.selectedServiceID == 3) {
       insertPSQuery = await conn.query(
           'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
           [
@@ -2739,9 +1335,9 @@ class _NewPatientState extends State<NewPatient> {
             patientId,
             serviceId,
             5,
-            _defaultBleachValue
+            ServiceInfo.defaultBleachValue
           ]);
-    } else if (selectedSerId == '4') {
+    } else if (ServiceInfo.selectedServiceID == 4) {
       insertPSQuery = await conn.query(
           'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
           [
@@ -2752,9 +1348,9 @@ class _NewPatientState extends State<NewPatient> {
             patientId,
             serviceId,
             3,
-            _spGroupValue
+            ServiceInfo.spGroupValue
           ]);
-    } else if (selectedSerId == '5') {
+    } else if (ServiceInfo.selectedServiceID == 5) {
       insertPSQuery = await conn.query(
           'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
           [
@@ -2765,17 +1361,17 @@ class _NewPatientState extends State<NewPatient> {
             patientId,
             serviceId,
             4,
-            _defaultOrthoType
+            ServiceInfo.defaultOrthoType
           ]);
-    } else if (selectedSerId == '7') {
-      if (defaultMaxillo == 'Tooth Extraction') {
+    } else if (ServiceInfo.selectedServiceID == 7) {
+      if (ServiceInfo.defaultMaxillo == 'Tooth Extraction') {
         insertPSQuery = await conn.query(
             'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
             [
               patientId,
               serviceId,
               3,
-              defaultMaxillo,
+              ServiceInfo.defaultMaxillo,
               patientId,
               serviceId,
               1,
@@ -2787,52 +1383,52 @@ class _NewPatientState extends State<NewPatient> {
               2,
               desc
             ]);
-      } else if (defaultMaxillo == 'Abscess Treatment') {
+      } else if (ServiceInfo.defaultMaxillo == 'Abscess Treatment') {
         insertPSQuery = await conn.query(
             'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
             [
               patientId,
               serviceId,
               3,
-              defaultMaxillo,
+              ServiceInfo.defaultMaxillo,
               patientId,
               serviceId,
               7,
-              defaultGumAbscess,
+              ServiceInfo.defaultGumAbscess,
               patientId,
               serviceId,
               9,
-              _abscessTreatValue,
+              ServiceInfo.defaultOrthoType,
               patientId,
               serviceId,
               2,
               desc
             ]);
-      } else if (defaultMaxillo == 'T.M.J') {
+      } else if (ServiceInfo.defaultMaxillo == 'T.M.J') {
         insertPSQuery = await conn.query(
             'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
             [
               patientId,
               serviceId,
               3,
-              defaultMaxillo,
+              ServiceInfo.defaultMaxillo,
               patientId,
               serviceId,
               9,
-              _abscessTreatValue,
+              ServiceInfo.abscessTreatValue,
               patientId,
               serviceId,
               2,
               desc
             ]);
-      } else if (defaultMaxillo == 'Tooth Reimplantation') {
+      } else if (ServiceInfo.defaultMaxillo == 'Tooth Reimplantation') {
         insertPSQuery = await conn.query(
             'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
             [
               patientId,
               serviceId,
               3,
-              defaultMaxillo,
+              ServiceInfo.defaultMaxillo,
               patientId,
               serviceId,
               1,
@@ -2849,15 +1445,15 @@ class _NewPatientState extends State<NewPatient> {
             'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?)',
             [patientId, serviceId, 2, desc]);
       }
-    } else if (selectedSerId == '9') {
-      if (_dentureGroupValue == 'Partial') {
+    } else if (ServiceInfo.selectedServiceID == 9) {
+      if (ServiceInfo.dentureGroupValue == 'Partial') {
         insertPSQuery = await conn.query(
             'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
             [
               patientId,
               serviceId,
               3,
-              _dentureGroupValue,
+              ServiceInfo.dentureGroupValue,
               patientId,
               serviceId,
               1,
@@ -2876,18 +1472,18 @@ class _NewPatientState extends State<NewPatient> {
               patientId,
               serviceId,
               3,
-              _dentureGroupValue,
+              ServiceInfo.dentureGroupValue,
               patientId,
               serviceId,
               7,
-              _defaultDentureValue,
+              ServiceInfo.defaultDentureValue,
               patientId,
               serviceId,
               2,
               desc
             ]);
       }
-    } else if (selectedSerId == '11') {
+    } else if (ServiceInfo.selectedServiceID == 11) {
       insertPSQuery = await conn.query(
           'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
           [
@@ -2900,17 +1496,17 @@ class _NewPatientState extends State<NewPatient> {
             patientId,
             serviceId,
             3,
-            _crownGroupValue,
+            ServiceInfo.crownGroupValue,
             patientId,
             serviceId,
             4,
-            _defaultCrown,
+            ServiceInfo.defaultCrown,
             patientId,
             serviceId,
             2,
             desc
           ]);
-    } else if (selectedSerId == '15') {
+    } else if (ServiceInfo.selectedServiceID == 15) {
       insertPSQuery = await conn.query(
           'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
           [
@@ -2959,7 +1555,7 @@ class _NewPatientState extends State<NewPatient> {
     int installment = _defaultInstallment != 0 ? _defaultInstallment : 1;
 /* ---------------/. Calculate received amount, due amount and installments ------------ */
     var conn = await onConnToDb();
-    int serviceID = int.parse(selectedSerId!);
+    int? serviceID = ServiceInfo.selectedServiceID;
     // First Check the patient where it already exists
     var queryCheck = await conn
         .query('SELECT pat_ID, phone FROM patients WHERE phone = ?', [phone]);
@@ -2996,7 +1592,8 @@ class _NewPatientState extends State<NewPatient> {
 
 // Now insert patient health histories into condition_details
         if (await _onAddPatientHistory(patId)) {
-          if (await _onAddServiceReq(patId, int.parse(selectedSerId!), note)) {
+          if (await _onAddServiceReq(
+              patId, ServiceInfo.selectedServiceID!, note)) {
             // Now create appointments
             var insertApptQuery = await conn.query(
                 'INSERT INTO appointments (pat_ID, service_ID, installment, round, discount, paid_amount, due_amount, meet_date, staff_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -3608,7 +2205,7 @@ class _NewPatientState extends State<NewPatient> {
                           },
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
-                              RegExp(_regExOnlyAbc),
+                              RegExp(GlobalUsage.allowedEPChar),
                             ),
                           ],
                           minLines: 1,
@@ -3707,19 +2304,19 @@ class _NewPatientState extends State<NewPatient> {
                     setState(() {
                       if (_currentStep == 2) {
                         if (_formKey2.currentState!.validate()) {
-                          if (selectedSerId == '2') {
+                          if (ServiceInfo.selectedServiceID == 2) {
                             if (ageDropDown > 13) {
-                              if (_fMaterialSelected &&
+                              if (ServiceInfo.fMaterialSelected &&
                                   Tooth.adultToothSelected) {
                                 _currentStep++;
                               }
                             } else {
-                              if (_fMaterialSelected &&
+                              if (ServiceInfo.fMaterialSelected &&
                                   Tooth.childToothSelected) {
                                 _currentStep++;
                               }
                             }
-                          } else if (selectedSerId == '1') {
+                          } else if (ServiceInfo.selectedServiceID == 1) {
                             if (ageDropDown > 13) {
                               if (Tooth.adultToothSelected) {
                                 _currentStep++;
@@ -3729,18 +2326,20 @@ class _NewPatientState extends State<NewPatient> {
                                 _currentStep++;
                               }
                             }
-                          } else if (selectedSerId == '3') {
-                            if (_levelSelected) {
+                          } else if (ServiceInfo.selectedServiceID == 3) {
+                            if (ServiceInfo.levelSelected) {
                               _currentStep++;
                             }
-                          } else if (selectedSerId == '5') {
-                            if (_defaultOrthoType != null) {
+                          } else if (ServiceInfo.selectedServiceID == 5) {
+                            if (ServiceInfo.defaultOrthoType != null) {
                               _currentStep++;
                             }
-                          } else if (selectedSerId == '7') {
-                            if (defaultMaxillo != null) {
-                              if (defaultMaxillo == 'Tooth Extraction' ||
-                                  defaultMaxillo == 'Tooth Reimplantation') {
+                          } else if (ServiceInfo.selectedServiceID == 7) {
+                            if (ServiceInfo.defaultMaxillo != null) {
+                              if (ServiceInfo.defaultMaxillo ==
+                                      'Tooth Extraction' ||
+                                  ServiceInfo.defaultMaxillo ==
+                                      'Tooth Reimplantation') {
                                 if (ageDropDown > 13) {
                                   if (Tooth.adultToothSelected) {
                                     _currentStep++;
@@ -3750,21 +2349,21 @@ class _NewPatientState extends State<NewPatient> {
                                     _currentStep++;
                                   }
                                 }
-                              } else if (defaultMaxillo ==
+                              } else if (ServiceInfo.defaultMaxillo ==
                                   'Abscess Treatment') {
-                                if (defaultGumAbscess != null) {
+                                if (ServiceInfo.defaultGumAbscess != null) {
                                   _currentStep++;
                                 }
                               } else {
                                 _currentStep++;
                               }
                             }
-                          } else if (selectedSerId == '9') {
-                            if (_defaultDentureValue != null) {
+                          } else if (ServiceInfo.selectedServiceID == 9) {
+                            if (ServiceInfo.defaultDentureValue != null) {
                               _currentStep++;
                             }
-                          } else if (selectedSerId == '11' &&
-                              _defaultCrown != null) {
+                          } else if (ServiceInfo.selectedServiceID == 11 &&
+                              ServiceInfo.defaultCrown != null) {
                             if (ageDropDown > 13) {
                               if (Tooth.adultToothSelected) {
                                 _currentStep++;
@@ -3774,7 +2373,7 @@ class _NewPatientState extends State<NewPatient> {
                                 _currentStep++;
                               }
                             }
-                          } else if (selectedSerId == '15') {
+                          } else if (ServiceInfo.selectedServiceID == 15) {
                             if (ageDropDown > 13) {
                               if (Tooth.adultToothSelected) {
                                 _currentStep++;
