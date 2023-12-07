@@ -8,8 +8,6 @@ import 'package:flutter_dentistry/views/patients/child_coordinate_system.dart';
 import 'package:intl/intl.dart' as intl2;
 import 'package:provider/provider.dart';
 
-void main() => runApp(const CustomForm());
-
 // Set global variables which are needed later.
 var selectedLanguage;
 bool isEnglish = false;
