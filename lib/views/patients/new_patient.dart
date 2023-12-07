@@ -59,8 +59,6 @@ class _NewPatientState extends State<NewPatient> {
   final _addrController = TextEditingController();
   final _totalExpController = TextEditingController();
   final _recievableController = TextEditingController();
-  final _meetController = TextEditingController();
-  final _noteController = TextEditingController();
 
   bool _isVisibleForPayment = false;
   // Declare for discount.
@@ -1283,7 +1281,7 @@ class _NewPatientState extends State<NewPatient> {
   }
 
   Future<bool> _onAddServiceReq(
-      int patientId, int serviceId, String desc) async {
+      int patientId, int serviceId, String? desc) async {
     final conn = await onConnToDb();
     var insertPSQuery;
     if (ServiceInfo.selectedServiceID == 1) {
@@ -1582,8 +1580,8 @@ class _NewPatientState extends State<NewPatient> {
           ]);
 // Choose a specific patient to fetch his/here ID
       if (insertPatQuery.affectedRows! > 0) {
-        String meetDate = _meetController.text;
-        String note = _noteController.text;
+        String? meetDate = ServiceInfo.meetingDate;
+        String? note = ServiceInfo.serviceNote;
         var fetchPatQuery = await conn.query(
             'SELECT * FROM patients WHERE firstname = ? AND sex = ? AND age = ? AND phone = ?',
             [firstName, sex, age, phone]);
