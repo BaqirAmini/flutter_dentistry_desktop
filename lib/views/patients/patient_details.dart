@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dentistry/views/patients/appointment.dart';
+import 'package:flutter_dentistry/views/patients/appointments.dart';
 import 'package:flutter_dentistry/views/patients/patient_history.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
