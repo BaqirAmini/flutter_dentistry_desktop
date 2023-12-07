@@ -112,6 +112,8 @@ class _ServiceFormState extends State<ServiceForm> {
     /*  var languageProvider = Provider.of<LanguageProvider>(context);
     selectedLanguage = languageProvider.selectedLanguage;
     isEnglish = selectedLanguage == 'English'; */
+    ServiceInfo.serviceNote = _noteController.text;
+    ServiceInfo.meetingDate = _meetController.text.toString();
     return Form(
       key: widget.formKey,
       child: Center(
@@ -225,7 +227,8 @@ class _ServiceFormState extends State<ServiceForm> {
                               onChanged: (String? newValue) {
                                 setState(() {
                                   // Assign the selected service id into the static one.
-                                  ServiceInfo.selectedServiceID = int.parse(newValue!);
+                                  ServiceInfo.selectedServiceID =
+                                      int.parse(newValue!);
                                 });
                               },
                             ),
@@ -234,9 +237,8 @@ class _ServiceFormState extends State<ServiceForm> {
                       ),
                     ),
                     Visibility(
-                      visible: (ServiceInfo.selectedServiceID == 11)
-                          ? true
-                          : false,
+                      visible:
+                          (ServiceInfo.selectedServiceID == 11) ? true : false,
                       child: Container(
                         width: 400.0,
                         margin: const EdgeInsets.only(
@@ -1042,8 +1044,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                       groupValue: ServiceInfo.tmgGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.tmgGroupValue =
-                                              value!;
+                                          ServiceInfo.tmgGroupValue = value!;
                                         });
                                       }),
                                 ),
@@ -1063,8 +1064,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                       groupValue: ServiceInfo.tmgGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.tmgGroupValue =
-                                              value!;
+                                          ServiceInfo.tmgGroupValue = value!;
                                         });
                                       }),
                                 ),
@@ -1084,8 +1084,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                       groupValue: ServiceInfo.tmgGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.tmgGroupValue =
-                                              value!;
+                                          ServiceInfo.tmgGroupValue = value!;
                                         });
                                       }),
                                 ),
@@ -1139,8 +1138,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                       groupValue: ServiceInfo.spGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.spGroupValue =
-                                              value!;
+                                          ServiceInfo.spGroupValue = value!;
                                         });
                                       }),
                                 ),
@@ -1160,8 +1158,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                       groupValue: ServiceInfo.spGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.spGroupValue =
-                                              value!;
+                                          ServiceInfo.spGroupValue = value!;
                                         });
                                       }),
                                 ),
@@ -1181,8 +1178,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                       groupValue: ServiceInfo.spGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
-                                          ServiceInfo.spGroupValue =
-                                              value!;
+                                          ServiceInfo.spGroupValue = value!;
                                         });
                                       }),
                                 ),
@@ -1361,4 +1357,7 @@ class ServiceInfo {
   static String tmgGroupValue = 'راست';
   static String spGroupValue = 'Scaling';
   static String dentureGroupValue = 'Full';
+  // Text Fields
+  static String? meetingDate;
+  static String? serviceNote;
 }
