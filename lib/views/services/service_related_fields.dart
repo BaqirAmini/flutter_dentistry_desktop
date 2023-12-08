@@ -99,8 +99,7 @@ class _ServiceFormState extends State<ServiceForm> {
     await conn.close();
   }
 
-  // Declare a dropdown for ages
-  int ageDropDown = 0;
+  // Set controllers for textfields
   final _meetController = TextEditingController();
   final _noteController = TextEditingController();
 
@@ -1322,9 +1321,9 @@ class _ServiceFormState extends State<ServiceForm> {
                   : false,
               child: Container(
                 margin: const EdgeInsets.only(top: 20),
-                width: (ageDropDown <= 13) ? 470 : 770,
+                width: (ServiceInfo.patAge <= 13) ? 470 : 770,
                 height: 300,
-                child: (ageDropDown <= 13)
+                child: (ServiceInfo.patAge <= 13)
                     ? const ChildQuadrantGrid()
                     : const AdultQuadrantGrid(),
               ),
@@ -1339,6 +1338,8 @@ class _ServiceFormState extends State<ServiceForm> {
 // Static class
 class ServiceInfo {
   static int? selectedServiceID;
+  // This age is essential for teeth selection chart switch
+  static int patAge = 1;
   static String? defaultOrthoType;
   static String? defaultCrown;
   static String? defaultGumAbscess;
