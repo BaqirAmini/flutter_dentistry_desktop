@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/patients/new_appointment.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_dentistry/views/patients/tooth_selection_info.dart';
 import 'package:flutter_dentistry/views/services/service_related_fields.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 void main() {
   runApp(const Appointment());
@@ -87,7 +87,7 @@ class _AppointmentContent extends StatelessWidget {
                 child: Material(
                   child: InkWell(
                     customBorder: const CircleBorder(),
-                    onTap: () => onAddNewAppointment(context),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => NewAppointment())),
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
