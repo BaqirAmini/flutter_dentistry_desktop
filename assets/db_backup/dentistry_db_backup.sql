@@ -3,12 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 25, 2023 at 05:37 PM
+-- Generation Time: Dec 09, 2023 at 06:49 PM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
--- Create database
-CREATE DATABASE IF NOT EXISTS dentistry_db;
-USE dentistry_db;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -50,12 +47,22 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `service_ID`, `installment`, `round`, `discount`, `paid_amount`, `due_amount`, `meet_date`, `staff_ID`, `note`) VALUES
-(41, 0, 69, 9, 1, 1, NULL, '5000.00', '0.00', '2023-08-23', 17, ''),
 (43, 0, 72, 2, 5, 1, 5.00, '850.00', '2150.00', '2023-11-21', 17, NULL),
-(44, 0, 73, 3, 4, 1, 0.00, '500.00', '500.00', '2023-11-10', 17, NULL),
-(45, 0, 74, 7, 6, 1, 5.00, '850.00', '2000.00', '2023-11-24', 17, NULL),
 (46, 0, 75, 7, 1, 1, 0.00, '1000.00', '1000.00', '2023-11-15', 17, NULL),
-(47, 0, 76, 15, 5, 1, 10.00, '3500.00', '10000.00', '2023-11-23', 17, NULL);
+(47, 0, 76, 15, 5, 1, 10.00, '3500.00', '10000.00', '2023-11-23', 17, NULL),
+(48, 0, 79, 7, 1, 1, 0.00, '1500.00', '0.00', '2023-11-25', 17, NULL),
+(49, 0, 80, 9, 6, 1, 15.00, '500.00', '1625.00', '2023-11-01', 17, NULL),
+(50, 0, 81, 12, 1, 1, 5.00, '950.00', '0.00', '2023-11-09', 17, NULL),
+(51, 0, 82, 7, 6, 1, 0.00, '1200.00', '8800.00', '2023-12-04', 17, NULL),
+(52, 0, 84, 5, 1, 1, 5.00, '1425.00', '0.00', '0000-00-00', 17, NULL),
+(54, 0, 86, 15, 3, 1, 0.00, '1000.00', '2000.00', '2023-12-07', 17, NULL),
+(55, 0, 86, 3, 0, 1, 0.00, '0.00', '0.00', '2023-12-08', 17, NULL),
+(56, 0, 84, 11, 0, 1, 5.00, '1900.00', '0.00', '2023-12-06', 17, NULL),
+(57, 0, 84, 1, 2, 1, 2.00, '600.00', '184.00', '2023-12-08', 17, NULL),
+(58, 0, 80, 3, 0, 1, 0.00, '1000.00', '0.00', '2023-12-08', 17, NULL),
+(59, 0, 80, 8, 0, 1, 0.00, '500.00', '0.00', '2023-12-08', 17, NULL),
+(60, 0, 81, 13, 2, 1, 0.00, '500.00', '500.00', '2023-12-07', 17, NULL),
+(61, 0, 82, 12, 2, 1, 0.00, '600.00', '600.00', '2023-12-09', 17, NULL);
 
 -- --------------------------------------------------------
 
@@ -126,14 +133,6 @@ CREATE TABLE `condition_details` (
 --
 
 INSERT INTO `condition_details` (`cond_detail_ID`, `cond_ID`, `result`, `severty`, `duration`, `diagnosis_date`, `pat_ID`, `notes`) VALUES
-(9, 1, 0, NULL, NULL, NULL, 71, NULL),
-(10, 2, 1, NULL, NULL, NULL, 71, NULL),
-(11, 4, 0, NULL, NULL, NULL, 71, NULL),
-(12, 5, 0, NULL, NULL, NULL, 71, NULL),
-(13, 6, 0, NULL, NULL, NULL, 71, NULL),
-(14, 7, 0, NULL, NULL, NULL, 71, NULL),
-(15, 8, 1, NULL, NULL, NULL, 71, NULL),
-(16, 9, 0, NULL, NULL, NULL, 71, NULL),
 (17, 1, 0, NULL, NULL, NULL, 72, NULL),
 (18, 2, 0, NULL, NULL, NULL, 72, NULL),
 (19, 4, 1, NULL, NULL, NULL, 72, NULL),
@@ -142,22 +141,6 @@ INSERT INTO `condition_details` (`cond_detail_ID`, `cond_ID`, `result`, `severty
 (22, 7, 0, NULL, NULL, NULL, 72, NULL),
 (23, 8, 0, NULL, NULL, NULL, 72, NULL),
 (24, 9, 0, NULL, NULL, NULL, 72, NULL),
-(25, 1, 1, NULL, NULL, NULL, 73, NULL),
-(26, 2, 0, NULL, NULL, NULL, 73, NULL),
-(27, 4, 0, NULL, NULL, NULL, 73, NULL),
-(28, 5, 0, NULL, NULL, NULL, 73, NULL),
-(29, 6, 0, NULL, NULL, NULL, 73, NULL),
-(30, 7, 0, NULL, NULL, NULL, 73, NULL),
-(31, 8, 1, NULL, NULL, NULL, 73, NULL),
-(32, 9, 1, NULL, NULL, NULL, 73, NULL),
-(33, 1, 0, NULL, NULL, NULL, 74, NULL),
-(34, 2, 0, NULL, NULL, NULL, 74, NULL),
-(35, 4, 1, NULL, NULL, NULL, 74, NULL),
-(36, 5, 0, NULL, NULL, NULL, 74, NULL),
-(37, 6, 0, NULL, NULL, NULL, 74, NULL),
-(38, 7, 1, NULL, NULL, NULL, 74, NULL),
-(39, 8, 0, NULL, NULL, NULL, 74, NULL),
-(40, 9, 0, NULL, NULL, NULL, 74, NULL),
 (41, 1, 1, NULL, NULL, NULL, 75, NULL),
 (42, 2, 0, NULL, NULL, NULL, 75, NULL),
 (43, 4, 0, NULL, NULL, NULL, 75, NULL),
@@ -173,7 +156,55 @@ INSERT INTO `condition_details` (`cond_detail_ID`, `cond_ID`, `result`, `severty
 (53, 6, 0, NULL, NULL, NULL, 76, NULL),
 (54, 7, 0, NULL, NULL, NULL, 76, NULL),
 (55, 8, 0, NULL, NULL, NULL, 76, NULL),
-(56, 9, 0, NULL, NULL, NULL, 76, NULL);
+(56, 9, 0, NULL, NULL, NULL, 76, NULL),
+(57, 1, 0, NULL, NULL, NULL, 79, NULL),
+(58, 2, 0, NULL, NULL, NULL, 79, NULL),
+(59, 4, 1, 'شدید', 'بیشتر', '2022-10-19', 79, 'بعضی خوراکها مثل غله جات بیشترش میکند'),
+(60, 5, 0, NULL, NULL, NULL, 79, NULL),
+(61, 6, 0, NULL, NULL, NULL, 79, NULL),
+(62, 7, 0, NULL, NULL, NULL, 79, NULL),
+(63, 8, 1, 'نامعلوم', 'نامعلوم', '0000-00-00', 79, ''),
+(64, 9, 0, NULL, NULL, NULL, 79, NULL),
+(65, 1, 0, NULL, NULL, NULL, 80, NULL),
+(66, 2, 1, 'نامعلوم', '1 ماه', '2023-11-22', 80, 'سییییسیشسشس'),
+(67, 4, 0, NULL, NULL, NULL, 80, NULL),
+(68, 5, 1, 'شدید', '6 ماه', '2023-11-29', 80, ''),
+(69, 6, 0, NULL, NULL, NULL, 80, NULL),
+(70, 7, 1, 'خفیف', '1 هفته', '2023-11-03', 80, 'سسسسسسسسسسسسسسسسسببب'),
+(71, 8, 0, NULL, NULL, NULL, 80, NULL),
+(72, 9, 0, NULL, NULL, NULL, 80, NULL),
+(73, 1, 1, 'شدید', 'نامعلوم', NULL, 81, 'فقط فشار خون بالا دارد'),
+(74, 2, 0, NULL, NULL, NULL, 81, NULL),
+(75, 4, 0, NULL, NULL, NULL, 81, NULL),
+(76, 5, 0, NULL, NULL, NULL, 81, NULL),
+(77, 6, 1, 'متوسط', '1 ماه', NULL, 81, NULL),
+(78, 7, 0, NULL, NULL, NULL, 81, NULL),
+(79, 8, 0, NULL, NULL, NULL, 81, NULL),
+(80, 9, 0, NULL, NULL, NULL, 81, NULL),
+(81, 1, 0, NULL, NULL, NULL, 82, NULL),
+(82, 2, 0, NULL, NULL, NULL, 82, NULL),
+(83, 4, 1, 'شدید', '1 ماه', NULL, 82, NULL),
+(84, 5, 0, NULL, NULL, NULL, 82, NULL),
+(85, 6, 0, NULL, NULL, NULL, 82, NULL),
+(86, 7, 0, NULL, NULL, NULL, 82, NULL),
+(87, 8, 1, 'شدید', 'بیشتر', '2020-12-25', 82, 'بیشتر از سه سال'),
+(88, 9, 0, NULL, NULL, NULL, 82, NULL),
+(95, 1, 0, NULL, NULL, NULL, 84, NULL),
+(96, 2, 0, NULL, NULL, NULL, 84, NULL),
+(97, 4, 0, NULL, NULL, NULL, 84, NULL),
+(98, 5, 0, NULL, NULL, NULL, 84, NULL),
+(99, 6, 1, 'خفیف', '1 ماه', NULL, 84, NULL),
+(100, 7, 0, NULL, NULL, NULL, 84, NULL),
+(101, 8, 0, NULL, NULL, NULL, 84, NULL),
+(102, 9, 0, NULL, NULL, NULL, 84, NULL),
+(111, 1, 0, NULL, NULL, NULL, 86, NULL),
+(112, 2, 0, NULL, NULL, NULL, 86, NULL),
+(113, 4, 0, NULL, NULL, NULL, 86, NULL),
+(114, 5, 0, NULL, NULL, NULL, 86, NULL),
+(115, 6, 0, NULL, NULL, NULL, 86, NULL),
+(116, 7, 0, NULL, NULL, NULL, 86, NULL),
+(117, 8, 0, NULL, NULL, NULL, 86, NULL),
+(118, 9, 1, 'متوسط', 'نامعلوم', '2018-12-05', 86, 'خیلی وقت پیش داشت');
 
 -- --------------------------------------------------------
 
@@ -254,14 +285,15 @@ CREATE TABLE `patients` (
 --
 
 INSERT INTO `patients` (`pat_ID`, `cli_ID`, `staff_ID`, `firstname`, `lastname`, `sex`, `age`, `marital_status`, `phone`, `reg_date`, `blood_group`, `address`) VALUES
-(69, 0, 17, 'مهناز', '', 'زن', 27, 'مجرد', '0781023232', '2023-10-02 07:14:26', 'نامشخص', ''),
-(71, 0, 17, 'علی محمد', 'امیری', 'مرد', 12, 'مجرد', '0701023232', '2023-11-24 04:31:18', 'نامعلوم', 'کابل، افغانستان'),
 (72, 0, 17, 'ثریا', '', 'مرد', 10, 'مجرد', '0772020420', '2023-11-24 04:37:48', 'نامعلوم', 'Kabul, Kartiparwan'),
-(73, 0, 17, 'Fayaz', 'Muradi', 'مرد', 51, 'متأهل', '0781023230', '2023-11-24 05:04:24', 'O+', 'هرات، جبریل'),
-(74, 0, 17, 'ذکیه', 'فصیحی', 'مرد', 24, 'متأهل', '0702302201', '2023-11-24 15:23:29', 'AB-', 'کابل، دشت برچی، ناحیه سیزدهم'),
 (75, 0, 17, 'فایقه', 'رحمتی', 'زن', 22, 'مجرد', '0791022322', '2023-11-24 15:37:13', 'AB+', 'کابل، قلعه شهاده'),
 (76, 0, 17, 'زهره', 'نوروزی', 'زن', 30, 'مجرد', '0771232322', '2023-11-25 06:34:08', 'نامعلوم', ''),
-(78, 0, 17, 'بصیر', 'عسکری', 'مرد', 26, 'مجرد', '0788810232', '2023-11-25 16:35:10', 'O+', 'کابل، سرک چهل متری شهدای معارف');
+(79, 0, 17, 'حسین', 'احسانی', 'مرد', 24, 'متأهل', '0701010203', '2023-11-26 15:55:20', 'O-', 'کابل، کارته سه'),
+(80, 0, 17, 'ملیحه', '', 'زن', 27, 'متأهل', '0791023232', '2023-11-26 16:19:04', 'نامعلوم', ''),
+(81, 0, 17, 'Fatima', 'Rahimi', 'زن', 38, 'متأهل', '0702020232', '2023-11-26 16:28:49', 'AB+', ''),
+(82, 0, 17, 'میرزاحسین', 'فیضی', 'مرد', 27, 'متأهل', '0700010232', '2023-12-05 16:15:47', 'نامعلوم', ''),
+(84, 0, 17, 'Rahim', 'Nasimi', 'مرد', 26, 'مجرد', '0771023232', '2023-12-06 16:23:38', 'نامعلوم', ''),
+(86, 0, 17, 'علی مامد', 'امیری', 'مرد', 26, 'متأهل', '0772737310', '2023-12-08 06:47:24', 'نامعلوم', 'کابل، برچی سنتر');
 
 -- --------------------------------------------------------
 
@@ -281,33 +313,40 @@ CREATE TABLE `patient_services` (
 --
 
 INSERT INTO `patient_services` (`pat_ID`, `ser_ID`, `req_ID`, `value`) VALUES
-(71, 1, 1, 'Q1-C,Q2-C,Q2-D'),
-(71, 1, 2, 'عصب کشی نیاز دارد'),
 (72, 2, 1, 'Q3-C,Q4-B,Q4-C'),
 (72, 2, 2, 'پرکاری باید طی سه جلسه انجام شود'),
 (72, 2, 3, 'Operative'),
 (72, 2, 4, 'Amalgam'),
-(73, 3, 2, 'دو مرحله بعدی هم باید به موقع انجام شود'),
-(73, 3, 5, 'یک مرحله'),
-(74, 7, 2, 'ارجاع مفصل'),
-(74, 7, 9, 'راست'),
 (75, 7, 1, 'Q3-8,Q1-8'),
 (75, 7, 2, 'دندانهای عقلی که تخریب گردیده'),
 (76, 15, 1, 'Q1-1,Q1-2,Q1-3,Q1-4,Q1-5,Q1-6,Q1-7,Q1-8,Q3-8'),
-(76, 15, 2, 'فک بالا چپ و فک پایین راست فقط دندان آخر');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `selected_teeth`
---
-
-CREATE TABLE `selected_teeth` (
-  `ST_ID` int(11) NOT NULL,
-  `tooth` varchar(16) NOT NULL,
-  `notes` tinytext DEFAULT NULL,
-  `pat_ID` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+(76, 15, 2, 'فک بالا چپ و فک پایین راست فقط دندان آخر'),
+(79, 7, 2, ''),
+(79, 7, 7, 'فک بالا'),
+(79, 7, 9, 'هردو'),
+(80, 3, 2, 'سفید کردن دندان'),
+(80, 3, 5, 'یک مرحله'),
+(80, 8, 2, ''),
+(80, 9, 1, 'Q3-8,Q2-5'),
+(80, 9, 2, 'فقط این دو دندان نیاز به پوش دارد'),
+(80, 9, 3, 'Partial'),
+(81, 12, 2, 'فقط برای تست'),
+(81, 13, 2, 'sdddddddddddssss'),
+(82, 7, 1, 'Q2-5,Q2-6,Q3-4,Q4-1'),
+(82, 7, 2, 'این دندانها نیاز به ترمیم دارد'),
+(82, 7, 3, 'Tooth Reimplantation'),
+(82, 12, 2, 'ssdsdssssssssssssssssssssss'),
+(84, 1, 1, 'Q3-4'),
+(84, 1, 2, 'عصب کشی باید انجام شود'),
+(84, 5, 2, ''),
+(84, 11, 1, 'Q1-4'),
+(84, 11, 2, ''),
+(84, 11, 3, 'Vital'),
+(84, 11, 4, 'Zirconia'),
+(86, 3, 2, 'مرحله سفید کردن دندان'),
+(86, 3, 5, 'یک مرحله'),
+(86, 15, 1, 'Q2-5,Q3-1'),
+(86, 15, 2, 'فقط دو دندان شانده شود');
 
 -- --------------------------------------------------------
 
@@ -532,13 +571,6 @@ ALTER TABLE `patient_services`
   ADD KEY `patient_services_ibfk_3` (`req_ID`);
 
 --
--- Indexes for table `selected_teeth`
---
-ALTER TABLE `selected_teeth`
-  ADD PRIMARY KEY (`ST_ID`),
-  ADD KEY `selected_teeth_pat_id_fk` (`pat_ID`);
-
---
 -- Indexes for table `services`
 --
 ALTER TABLE `services`
@@ -585,7 +617,7 @@ ALTER TABLE `tax_payments`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT for table `clinics`
@@ -603,7 +635,7 @@ ALTER TABLE `conditions`
 -- AUTO_INCREMENT for table `condition_details`
 --
 ALTER TABLE `condition_details`
-  MODIFY `cond_detail_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
+  MODIFY `cond_detail_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
 
 --
 -- AUTO_INCREMENT for table `expenses`
@@ -621,13 +653,7 @@ ALTER TABLE `expense_detail`
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patients`
-  MODIFY `pat_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
-
---
--- AUTO_INCREMENT for table `selected_teeth`
---
-ALTER TABLE `selected_teeth`
-  MODIFY `ST_ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `pat_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
 
 --
 -- AUTO_INCREMENT for table `services`
@@ -704,12 +730,6 @@ ALTER TABLE `patient_services`
   ADD CONSTRAINT `patient_services_ibfk_1` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `patient_services_ibfk_2` FOREIGN KEY (`ser_ID`) REFERENCES `services` (`ser_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `patient_services_ibfk_3` FOREIGN KEY (`req_ID`) REFERENCES `service_requirements` (`req_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `selected_teeth`
---
-ALTER TABLE `selected_teeth`
-  ADD CONSTRAINT `selected_teeth_pat_id_fk` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `staff_auth`
