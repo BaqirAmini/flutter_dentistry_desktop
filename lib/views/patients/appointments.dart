@@ -87,7 +87,11 @@ class _AppointmentContent extends StatelessWidget {
                 child: Material(
                   child: InkWell(
                     customBorder: const CircleBorder(),
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => NewAppointment())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const NewAppointment()),
+                    ),
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
@@ -105,212 +109,155 @@ class _AppointmentContent extends StatelessWidget {
                 ),
               ),
               for (var a in appoints!)
-                FutureBuilder(
-                  future: _getServices(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      final services = snapshot.data;
-                      for (var service in services!) {
-                        return HoverCard(
-                          title: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Column(
+                  children: [
+                    HoverCard(
+                      title: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
                               children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.green,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                            color: Colors.green, width: 2.0),
-                                      ),
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Icon(
-                                          Icons.calendar_today_outlined,
-                                          color: Colors.white,
-                                        ),
-                                      ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.green,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        color: Colors.green, width: 2.0),
+                                  ),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.calendar_today_outlined,
+                                      color: Colors.white,
                                     ),
-                                    const SizedBox(width: 10.0),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          service.serviceName,
-                                          style:
-                                              const TextStyle(fontSize: 18.0),
-                                        ),
-                                        Text(
-                                          a.meetDate,
-                                          style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 12.0),
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                IconButton(
-                                    onPressed: () {},
-                                    icon:
-                                        const Icon(FontAwesomeIcons.houseMedicalCircleCheck)),
-                                Column(
-                                  children: [
-                                    Text(
-                                      'Paid: ${a.paidAmount}',
-                                      style: const TextStyle(
-                                          color: Colors.grey, fontSize: 12.0),
-                                    ),
-                                    Text(
-                                      'Due: ${a.dueAmount}',
-                                      style: const TextStyle(
-                                          color: Colors.red, fontSize: 12.0),
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                          child: ListTile(
-                            title: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Round',
-                                        style: TextStyle(
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      const SizedBox(width: 15.0),
-                                      Expanded(
-                                        child: Text(
-                                          a.round.toString(),
-                                          textAlign: TextAlign.end,
-                                          style: const TextStyle(
-                                              color: Color.fromARGB(
-                                                  255, 112, 112, 112),
-                                              fontSize: 12.0),
-                                        ),
-                                      ),
-                                    ],
                                   ),
                                 ),
-                                for (var req in service.requirements.entries)
+                                const SizedBox(width: 10.0),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      a.serviceName,
+                                      style: const TextStyle(fontSize: 18.0),
+                                    ),
+                                    Text(
+                                      a.meetDate,
+                                      style: const TextStyle(
+                                          color: Colors.grey, fontSize: 12.0),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                            IconButton(
+                                onPressed: () {},
+                                icon: const Icon(
+                                    FontAwesomeIcons.houseMedicalCircleCheck)),
+                            Column(
+                              children: [
+                                Text(
+                                  'Paid: ${a.paidAmount}',
+                                  style: const TextStyle(
+                                      color: Colors.grey, fontSize: 12.0),
+                                ),
+                                Text(
+                                  'Due: ${a.dueAmount}',
+                                  style: const TextStyle(
+                                      color: Colors.red, fontSize: 12.0),
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                      child: FutureBuilder(
+                        future: _getServices(a.serviceID),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            var services = snapshot.data;
+                            for (var service in services!) {
+                              return ListTile(
+                                title: Column(children: [
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                            req.key == 'Teeth Selection'
-                                                ? 'Teeth Selected'
-                                                : req.key,
-                                            style: const TextStyle(
-                                                fontSize: 12.0,
-                                                fontWeight: FontWeight.bold)),
-                                        const SizedBox(width: 15.0),
-                                        Expanded(
-                                          child: Text(
-                                            req.key == 'Teeth Selection'
-                                                ? req.value
-                                                    .split(',')
-                                                    .map(codeToDescription)
-                                                    .join(', ')
-                                                : req.value,
-                                            textAlign: TextAlign.end,
-                                            style: const TextStyle(
-                                              color: Color.fromARGB(
-                                                  255, 112, 112, 112),
+                                        const Text(
+                                          'Service Name',
+                                          style: TextStyle(
                                               fontSize: 12.0,
-                                            ),
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          a.serviceName,
+                                          style: const TextStyle(
+                                            color: Color.fromARGB(
+                                                255, 112, 112, 112),
+                                            fontSize: 12.0,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-                    } else if (snapshot.hasError) {
-                      return Text('Error with service: ${snapshot.error}');
-                    } else {
-                      return const Row(
-                        children: [
-                          CircularProgressIndicator(),
-                        ],
-                      );
-                    }
-
-                    return const Text('ss');
-                  },
-                )
-            ],
-          );
-        } else if (snapshot.hasError) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('No appointment found.',
-                  style: Theme.of(context).textTheme.labelLarge),
+                                  for (var req in service.requirements.entries)
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                              req.key == 'Teeth Selection'
+                                                  ? 'Teeth Selected'
+                                                  : req.key,
+                                              style: const TextStyle(
+                                                  fontSize: 12.0,
+                                                  fontWeight: FontWeight.bold)),
+                                          const SizedBox(width: 15.0),
+                                          Expanded(
+                                            child: Text(
+                                              req.key == 'Teeth Selection'
+                                                  ? req.value
+                                                      .split(',')
+                                                      .map(codeToDescription)
+                                                      .join(', ')
+                                                  : req.value,
+                                              textAlign: TextAlign.end,
+                                              style: const TextStyle(
+                                                color: Color.fromARGB(
+                                                    255, 112, 112, 112),
+                                                fontSize: 12.0,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ] // return FutureBuilder(future: service., builder: builder)                                ],
+                                    ),
+                              );
+                            }
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          return Text('ssss');
+                        },
+                      ),
+                    ),
+                  ],
+                ),
             ],
           );
         } else {
-          return const Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-            ],
-          );
+          return const Center(child: CircularProgressIndicator());
         }
       },
-    );
-  }
-
-  void onAddNewAppointment(BuildContext context) {
-    final serviceFormKey = GlobalKey<FormState>();
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Directionality(
-            textDirection: TextDirection.rtl,
-            child: Text('افزودن جلسه جدید',
-                style: Theme.of(context).textTheme.headlineMedium)),
-        content: Directionality(
-          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-          child: Expanded(
-            child: ServiceForm(formKey: serviceFormKey),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-            child: ElevatedButton(
-                onPressed: () {
-                  if (serviceFormKey.currentState!.validate()) {
-                    print('Wow! it is OKAY now.');
-                  }
-                },
-                child: const Text('افزودن جلسه')),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context, rootNavigator: true).pop();
-            },
-            child: Text(
-                translations[selectedLanguage]?['ConfirmBtn'] ?? ''.toString()),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -353,19 +300,17 @@ class _HoverCardState extends State<HoverCard> {
   }
 }
 
-/* SELECT s.ser_name, sr.req_name, ps.value FROM service_requirements sr
-INNER JOIN patient_services ps ON sr.req_ID = ps.req_ID
-INNER JOIN services s ON ps.ser_ID = s.ser_ID
-WHERE ps.ser_ID = 2 AND ps.pat_ID = 72; */
 // Fetch appointment details
 Future<List<AppointmentDataModel>> getAppointment() async {
   final conn = await onConnToDb();
   final results = await conn.query(
     '''SELECT p.firstname, p.lastname, 
         a.staff_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y"), a.paid_amount, a.due_amount, a.round, a.installment, 
-        a.discount, a.apt_ID, st.firstname, st.lastname FROM patients p 
+        a.discount, a.apt_ID, st.firstname, st.lastname, s.ser_name, s.ser_ID FROM patients p 
         INNER JOIN appointments a ON a.pat_ID = p.pat_ID
-        INNER JOIN staff st ON a.staff_ID = st.staff_ID WHERE a.pat_ID = ?''',
+        INNER JOIN staff st ON a.staff_ID = st.staff_ID
+        INNER JOIN services s ON s.ser_ID = a.service_ID
+         WHERE a.pat_ID = ?''',
     [PatientInfo.patID],
   );
 
@@ -374,6 +319,8 @@ Future<List<AppointmentDataModel>> getAppointment() async {
           staffID: row[2],
           staffFirstName: row[10],
           staffLastName: row[11],
+          serviceName: row[12],
+          serviceID: row[13],
           aptID: row[9],
           meetDate: row[3].toString(),
           round: row[6],
@@ -388,8 +335,10 @@ Future<List<AppointmentDataModel>> getAppointment() async {
 // Create a data model to set/get appointment details
 class AppointmentDataModel {
   final int staffID;
+  final int serviceID;
   final String staffFirstName;
   final String staffLastName;
+  final String serviceName;
   final int aptID;
   final String meetDate;
   final int round;
@@ -399,8 +348,10 @@ class AppointmentDataModel {
 
   AppointmentDataModel(
       {required this.staffID,
+      required this.serviceID,
       required this.staffFirstName,
       required this.staffLastName,
+      required this.serviceName,
       required this.aptID,
       required this.meetDate,
       required this.round,
@@ -409,27 +360,25 @@ class AppointmentDataModel {
       required this.installment});
 }
 
-Future<List<ServiceDataModel>> _getServices() async {
+Future<List<ServiceDataModel>> _getServices(int serID) async {
   final conn = await onConnToDb();
   final results = await conn.query(
-      '''SELECT ps.pat_ID, s.ser_ID, s.ser_name, sr.req_name, ps.value 
-  FROM service_requirements sr 
+      '''SELECT s.ser_ID, ps.pat_ID, sr.req_name, ps.value FROM service_requirements sr 
   INNER JOIN patient_services ps ON sr.req_ID = ps.req_ID 
-  INNER JOIN services s ON ps.ser_ID = s.ser_ID WHERE ps.pat_ID = ?''',
-      [PatientInfo.patID]);
+  INNER JOIN services s ON s.ser_ID = ps.ser_ID 
+  INNER JOIN patients p ON p.pat_ID = ps.pat_ID 
+  WHERE ps.pat_ID = ? AND s.ser_ID = ?''', [PatientInfo.patID, serID]);
 
   Map<int, ServiceDataModel> servicesMap = {};
 
   for (var row in results) {
-    int serviceID = row[1];
-    String serviceName = row[2];
-    String reqName = row[3];
-    String value = row[4];
+    int serviceID = row[0];
+    String reqName = row[2];
+    String value = row[3];
 
     if (!servicesMap.containsKey(serviceID)) {
       servicesMap[serviceID] = ServiceDataModel(
         serviceID: serviceID,
-        serviceName: serviceName,
         requirements: {reqName: value},
       );
     } else {
@@ -446,12 +395,10 @@ Future<List<ServiceDataModel>> _getServices() async {
 // Create the second data model for services including (service_requirements & patient_services tables)
 class ServiceDataModel {
   final int serviceID;
-  final String serviceName;
   final Map<String, String> requirements;
 
   ServiceDataModel({
     required this.serviceID,
-    required this.serviceName,
     required this.requirements,
   });
 }
