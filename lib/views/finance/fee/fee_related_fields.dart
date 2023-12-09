@@ -68,9 +68,12 @@ class _FeeFormState extends State<FeeForm> {
     FeeInfo.dueAmount = _dueAmount;
     FeeInfo.discountRate = _defaultDiscountRate;
     FeeInfo.installment = _defaultInstallment;
-    FeeInfo.receivedAmount = _recievableController.text.isEmpty
-        ? 0
-        : double.parse(_recievableController.text);
+    // _defaultInstallment == 0 means whole fee is paid by a patient. So, no due amount is remaining.
+    FeeInfo.receivedAmount = (_defaultInstallment == 0)
+        ? _feeWithDiscount
+        : _recievableController.text.isEmpty
+            ? 0
+            : double.parse(_recievableController.text);
 
     return Form(
       key: widget.formKey,
