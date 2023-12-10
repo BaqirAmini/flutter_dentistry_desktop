@@ -36,13 +36,33 @@ class _AppointmentState extends State<Appointment> {
       home: Directionality(
         textDirection: TextDirection.ltr,
         child: Scaffold(
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {},
+            tooltip: 'افزودن جلسه جدید',
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NewAppointment()),
+              ).then((_) {
+                setState(() {});
+              }),
+              child: const Padding(
+                padding: EdgeInsets.all(5.0),
+                child: Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
           appBar: AppBar(
             title: const Text('Appointment'),
             leading: IconButton(
                 onPressed: () => Navigator.pop(context),
                 icon: const BackButtonIcon()),
             actions: [
-              Tooltip(
+              /* Tooltip(
                 message: 'افزودن جلسه جدید',
                 child: InkWell(
                   onTap: () {},
@@ -60,7 +80,7 @@ class _AppointmentState extends State<Appointment> {
                     ),
                   ),
                 ),
-              ),
+              ), */
               const SizedBox(width: 15)
             ],
           ),
@@ -70,34 +90,6 @@ class _AppointmentState extends State<Appointment> {
               width: MediaQuery.of(context).size.width * 0.9,
               child: Column(
                 children: [
-                  Tooltip(
-                    message: 'افزودن جلسه جدید',
-                    child: Material(
-                      child: InkWell(
-                        customBorder: const CircleBorder(),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const NewAppointment()),
-                        ).then((_) {
-                          setState(() {});
-                        }),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.blue, width: 2.0),
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(5.0),
-                            child: Icon(
-                              Icons.add,
-                              color: Colors.blue,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
                   Expanded(
                     child: _AppointmentContent(),
                   ),
