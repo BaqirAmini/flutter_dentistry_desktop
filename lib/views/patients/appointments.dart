@@ -124,7 +124,7 @@ class _AppointmentContent extends StatelessWidget {
               for (var a in appoints!)
                 Column(
                   children: [
-                    HoverCard(
+                    ExpandableCard(
                       title: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
@@ -275,39 +275,19 @@ class _AppointmentContent extends StatelessWidget {
   }
 }
 
-class HoverCard extends StatefulWidget {
+class ExpandableCard extends StatelessWidget {
   final Widget title;
   final Widget child;
-
-  HoverCard({required this.title, required this.child});
-
-  @override
-  _HoverCardState createState() => _HoverCardState();
-}
-
-class _HoverCardState extends State<HoverCard> {
-  bool _isHovering = false;
+  const ExpandableCard({super.key, required this.title, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (event) => setState(() => _isHovering = true),
-      onExit: (event) => setState(() => _isHovering = false),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeIn,
-        transform: _isHovering
-            ? Matrix4.translationValues(10, 0, 0)
-            : Matrix4
-                .identity(), // Move the card to the left/right when hovering
-        child: Card(
-          child: ExpansionTile(
-            title: widget.title,
-            children: <Widget>[
-              widget.child,
-            ],
-          ),
-        ),
+    return Card(
+      child: ExpansionTile(
+        title: title,
+        children: <Widget>[
+          child,
+        ],
       ),
     );
   }
