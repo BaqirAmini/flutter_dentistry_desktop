@@ -72,7 +72,12 @@ class Appointment extends StatelessWidget {
   }
 }
 
-class _AppointmentContent extends StatelessWidget {
+class _AppointmentContent extends StatefulWidget {
+  @override
+  State<_AppointmentContent> createState() => _AppointmentContentState();
+}
+
+class _AppointmentContentState extends State<_AppointmentContent> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -91,7 +96,9 @@ class _AppointmentContent extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) => const NewAppointment()),
-                    ),
+                    ).then((_) {
+                      setState(() {});
+                    }),
                     child: Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
