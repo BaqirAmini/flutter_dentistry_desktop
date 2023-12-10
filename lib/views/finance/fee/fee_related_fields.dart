@@ -78,7 +78,7 @@ class _FeeFormState extends State<FeeForm> {
     return Form(
       key: widget.formKey,
       child: SizedBox(
-        width: 500.0,
+        width: 440.0,
         child: Column(
           children: [
             const Text('لطفاً هزینه و اقساط را در خانه های ذیل انتخاب نمایید.'),
@@ -90,7 +90,7 @@ class _FeeFormState extends State<FeeForm> {
                       TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
                 ),
                 Container(
-                  width: MediaQuery.of(context).size.width * 0.360,
+                  width: 400,
                   margin: const EdgeInsets.only(
                       left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                   child: TextFormField(
@@ -130,6 +130,7 @@ class _FeeFormState extends State<FeeForm> {
               ],
             ),
             Container(
+              width: 400,
               margin: const EdgeInsets.only(
                   left: 20.0, right: 15.0, top: 10.0, bottom: 10.0),
               child: InputDecorator(
@@ -180,6 +181,7 @@ class _FeeFormState extends State<FeeForm> {
               ),
             ),
             Container(
+              width: 400,
               margin: const EdgeInsets.only(
                   left: 20.0, right: 15.0, top: 10.0, bottom: 10.0),
               child: InputDecorator(
@@ -248,7 +250,7 @@ class _FeeFormState extends State<FeeForm> {
                         color: Colors.red, fontWeight: FontWeight.bold),
                   ),
                   Container(
-                    width: MediaQuery.of(context).size.width * 0.360,
+                    width: 400,
                     margin: const EdgeInsets.only(
                         left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                     child: TextFormField(
@@ -306,7 +308,7 @@ class _FeeFormState extends State<FeeForm> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 215.0,
+                  width: 180.0,
                   margin: const EdgeInsets.all(5),
                   decoration: const BoxDecoration(
                       border: Border(
@@ -332,7 +334,7 @@ class _FeeFormState extends State<FeeForm> {
                 ),
                 Container(
                   margin: const EdgeInsets.all(5),
-                  width: 215.0,
+                  width: 180.0,
                   decoration: const BoxDecoration(
                       border: Border(
                     top: BorderSide(width: 1, color: Colors.grey),
