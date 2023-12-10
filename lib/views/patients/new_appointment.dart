@@ -24,12 +24,12 @@ class _NewAppointmentState extends State<NewAppointment> {
         Step(
             state: _currentStep <= 0 ? StepState.editing : StepState.complete,
             isActive: _currentStep >= 0,
-            title: const Text('خدمات مورد نیاز مریض'),
+            title: const Text('خدمات مورد نیاز'),
             content: Center(child: ServiceForm(formKey: _serviceFormKey))),
         Step(
           state: _currentStep <= 1 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 1,
-          title: const Text('هزینه ها / فیس'),
+          title: const Text('فیس'),
           content: SizedBox(
             child: Center(
               child: FeeForm(formKey: _feeFormKey),
