@@ -284,15 +284,44 @@ class _AppointmentContent extends StatelessWidget {
                   Card(
                     child: Column(
                       children: [
-                        Container(
-                          width: double.infinity,
-                          color: Colors
-                              .grey[200], // Change this to your desired color
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            a.meetDate,
-                            style: TextStyle(fontSize: 18.0),
-                          ),
+                        Stack(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              color: Colors.grey[
+                                  200], // Change this to your desired color
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                a.serviceName,
+                                style: const TextStyle(fontSize: 18.0),
+                              ),
+                            ),
+                            Positioned(
+                              top: 2.0,
+                              right: 8.0,
+                              child: Material(
+                                color: Colors.grey[200],
+                                shape: CircleBorder(),
+                                child: PopupMenuButton(
+                                  icon: const Icon(Icons.more_horiz,
+                                      color: Colors.grey),
+                                  itemBuilder: (BuildContext context) =>
+                                      <PopupMenuEntry>[
+                                    PopupMenuItem(
+                                      child: ListTile(
+                                        minVerticalPadding: 0,
+                                          contentPadding: EdgeInsets.zero,
+                                          leading: const Icon(Icons.delete),
+                                          title: const Text('حذف کردن'),
+                                          onTap: () {
+                                            Navigator.pop(context);
+                                          }),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         ExpandableCard(
                           title: Padding(
@@ -323,7 +352,7 @@ class _AppointmentContent extends StatelessWidget {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          a.serviceName,
+                                          'Round: ${a.round}',
                                           style:
                                               const TextStyle(fontSize: 18.0),
                                         ),
@@ -426,11 +455,11 @@ class _AppointmentContent extends StatelessWidget {
                               } else if (snapshot.hasError) {
                                 return Text('Error: ${snapshot.error}');
                               } else {
-                                return Center(
+                                return const Center(
                                   child: CircularProgressIndicator(),
                                 );
                               }
-                              return Text('ssss');
+                              return const Text('ssss');
                             },
                           ),
                         ),
