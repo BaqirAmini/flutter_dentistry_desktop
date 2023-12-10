@@ -7,6 +7,10 @@
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
+-- Create database
+CREATE DATABASE IF NOT EXISTS dentistry_db;
+USE dentistry_db;
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
