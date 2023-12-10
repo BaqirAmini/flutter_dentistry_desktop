@@ -152,7 +152,10 @@ class _NewAppointmentState extends State<NewAppointment> {
                         }
                       } else if (ServiceInfo.defaultMaxillo ==
                           'Abscess Treatment') {
-                        if (ServiceInfo.defaultGumAbscess != null) {
+                        if (ServiceInfo.defaultGumAbscess != null &&
+                            ServiceInfo.defaultGumAbscess
+                                .toString()
+                                .isNotEmpty) {
                           setState(() {
                             _currentStep++;
                           });
@@ -164,25 +167,45 @@ class _NewAppointmentState extends State<NewAppointment> {
                       }
                     }
                   } else if (ServiceInfo.selectedServiceID == 9) {
-                    if (ServiceInfo.defaultDentureValue != null) {
-                      setState(() {
-                        _currentStep++;
-                      });
-                    }
-                  } else if (ServiceInfo.selectedServiceID == 11 &&
-                      (ServiceInfo.defaultCrown != null ||
-                          ServiceInfo.defaultCrown.toString().isNotEmpty)) {
-                    if (PatientInfo.age! > 13) {
-                      if (Tooth.adultToothSelected) {
+                    if (ServiceInfo.dentureGroupValue == 'Partial') {
+                      if (PatientInfo.age! > 13) {
+                        if (Tooth.adultToothSelected) {
+                          setState(() {
+                            _currentStep++;
+                          });
+                        }
+                      } else {
+                        if (Tooth.childToothSelected) {
+                          setState(() {
+                            _currentStep++;
+                          });
+                        }
+                      }
+                    } else {
+                      if (ServiceInfo.defaultDentureValue != null &&
+                          ServiceInfo.defaultDentureValue
+                              .toString()
+                              .isNotEmpty) {
                         setState(() {
                           _currentStep++;
                         });
                       }
-                    } else {
-                      if (Tooth.childToothSelected) {
-                        setState(() {
-                          _currentStep++;
-                        });
+                    }
+                  } else if (ServiceInfo.selectedServiceID == 11) {
+                    if (ServiceInfo.defaultCrown != null &&
+                        ServiceInfo.defaultCrown.toString().isNotEmpty) {
+                      if (PatientInfo.age! > 13) {
+                        if (Tooth.adultToothSelected) {
+                          setState(() {
+                            _currentStep++;
+                          });
+                        }
+                      } else {
+                        if (Tooth.childToothSelected) {
+                          setState(() {
+                            _currentStep++;
+                          });
+                        }
                       }
                     }
                   } else if (ServiceInfo.selectedServiceID == 15) {
