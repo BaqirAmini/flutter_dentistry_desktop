@@ -17,9 +17,14 @@ void main() {
 var selectedLanguage;
 var isEnglish;
 
-class Appointment extends StatelessWidget {
+class Appointment extends StatefulWidget {
   const Appointment({super.key});
 
+  @override
+  State<Appointment> createState() => _AppointmentState();
+}
+
+class _AppointmentState extends State<Appointment> {
   @override
   Widget build(BuildContext context) {
     // Fetch translations keys based on the selected language.
@@ -63,7 +68,41 @@ class Appointment extends StatelessWidget {
             child: Container(
               margin: const EdgeInsets.only(top: 15),
               width: MediaQuery.of(context).size.width * 0.9,
-              child: _AppointmentContent(),
+              child: Column(
+                children: [
+                  Tooltip(
+                    message: 'افزودن جلسه جدید',
+                    child: Material(
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const NewAppointment()),
+                        ).then((_) {
+                          setState(() {});
+                        }),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.blue, width: 2.0),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(5.0),
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: _AppointmentContent(),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -72,12 +111,7 @@ class Appointment extends StatelessWidget {
   }
 }
 
-class _AppointmentContent extends StatefulWidget {
-  @override
-  State<_AppointmentContent> createState() => _AppointmentContentState();
-}
-
-class _AppointmentContentState extends State<_AppointmentContent> {
+class _AppointmentContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -87,34 +121,6 @@ class _AppointmentContentState extends State<_AppointmentContent> {
           var appoints = snapshot.data;
           return ListView(
             children: <Widget>[
-              Tooltip(
-                message: 'افزودن جلسه جدید',
-                child: Material(
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const NewAppointment()),
-                    ).then((_) {
-                      setState(() {});
-                    }),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.blue, width: 2.0),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(5.0),
-                        child: Icon(
-                          Icons.add,
-                          color: Colors.blue,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               for (var a in appoints!)
                 Column(
                   children: [
