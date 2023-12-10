@@ -8,6 +8,7 @@ import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_details.dart';
+import 'package:flutter_dentistry/views/services/service_related_fields.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:provider/provider.dart';
 import 'patient_info.dart';
@@ -1659,7 +1660,10 @@ class PatientDataSource extends DataTableSource {
               PatientInfo.lastName = data[index].lastName;
               PatientInfo.phone = data[index].phone;
               PatientInfo.sex = data[index].sex;
+              // Set age which is used to display patient details
               PatientInfo.age = int.parse(data[index].age);
+              // Set age which is used when a new appointment is create for an existing patient
+              ServiceInfo.patAge = int.parse(data[index].age);
               PatientInfo.regDate = data[index].regDate;
               PatientInfo.bloodGroup = data[index].bloodGroup;
               PatientInfo.address = data[index].address;
