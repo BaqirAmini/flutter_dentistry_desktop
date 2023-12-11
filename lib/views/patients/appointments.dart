@@ -281,161 +281,247 @@ class _AppointmentContent extends StatelessWidget {
             children: <Widget>[
               for (var entry in appoints!.entries)
                 for (var a in entry.value)
-                  Card(
-                    child: Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          color: Colors
-                              .grey[200], // Change this to your desired color
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            a.meetDate,
-                            style: TextStyle(fontSize: 18.0),
-                          ),
-                        ),
-                        ExpandableCard(
-                          title: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
+                  Stack(
+                    children: [
+                      Card(
+                        child: Column(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              color: Colors.grey[
+                                  200], // Change this to your desired color
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                a.serviceName,
+                                style: const TextStyle(fontSize: 18.0),
+                              ),
+                            ),
+                            ExpandableCard(
+                              title: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.green,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                            color: Colors.green, width: 2.0),
-                                      ),
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Icon(
-                                          Icons.calendar_today_outlined,
-                                          color: Colors.white,
+                                    Row(
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.green,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Colors.green,
+                                                width: 2.0),
+                                          ),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Icon(
+                                              Icons.calendar_today_outlined,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                         ),
-                                      ),
+                                        const SizedBox(width: 10.0),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Round: ${a.round}',
+                                              style: const TextStyle(
+                                                  fontSize: 18.0),
+                                            ),
+                                            Text(
+                                              a.meetDate,
+                                              style: const TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 12.0),
+                                            )
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(width: 10.0),
                                     Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          a.serviceName,
-                                          style:
-                                              const TextStyle(fontSize: 18.0),
-                                        ),
-                                        Text(
-                                          a.meetDate,
+                                          'Paid: ${a.paidAmount}',
                                           style: const TextStyle(
                                               color: Colors.grey,
                                               fontSize: 12.0),
+                                        ),
+                                        Text(
+                                          'Due: ${a.dueAmount}',
+                                          style: const TextStyle(
+                                              color: Colors.red,
+                                              fontSize: 12.0),
                                         )
                                       ],
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  children: [
-                                    Text(
-                                      'Paid: ${a.paidAmount}',
-                                      style: const TextStyle(
-                                          color: Colors.grey, fontSize: 12.0),
-                                    ),
-                                    Text(
-                                      'Due: ${a.dueAmount}',
-                                      style: const TextStyle(
-                                          color: Colors.red, fontSize: 12.0),
                                     )
                                   ],
-                                )
-                              ],
-                            ),
-                          ),
-                          child: FutureBuilder(
-                            future: _getServices(a.serviceID),
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                var services = snapshot.data;
-                                for (var service in services!) {
-                                  return ListTile(
-                                    title: Column(children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            const Text(
-                                              'Service Name',
-                                              style: TextStyle(
-                                                  fontSize: 12.0,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            Text(
-                                              a.serviceName,
-                                              style: const TextStyle(
-                                                color: Color.fromARGB(
-                                                    255, 112, 112, 112),
-                                                fontSize: 12.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      for (var req
-                                          in service.requirements.entries)
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                  req.key == 'Teeth Selection'
-                                                      ? 'Teeth Selected'
-                                                      : req.key,
-                                                  style: const TextStyle(
+                                ),
+                              ),
+                              child: FutureBuilder(
+                                future: _getServices(a.serviceID),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    var services = snapshot.data;
+                                    for (var service in services!) {
+                                      return ListTile(
+                                        title: Column(children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                const Text(
+                                                  'Service Name',
+                                                  style: TextStyle(
                                                       fontSize: 12.0,
                                                       fontWeight:
-                                                          FontWeight.bold)),
-                                              const SizedBox(width: 15.0),
-                                              Expanded(
-                                                child: Text(
-                                                  req.key == 'Teeth Selection'
-                                                      ? req.value
-                                                          .split(',')
-                                                          .map(
-                                                              codeToDescription)
-                                                          .join(', ')
-                                                      : req.value,
-                                                  textAlign: TextAlign.end,
+                                                          FontWeight.bold),
+                                                ),
+                                                Text(
+                                                  a.serviceName,
                                                   style: const TextStyle(
                                                     color: Color.fromARGB(
                                                         255, 112, 112, 112),
                                                     fontSize: 12.0,
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                    ]),
-                                  );
-                                }
-                              } else if (snapshot.hasError) {
-                                return Text('Error: ${snapshot.error}');
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                              return Text('ssss');
-                            },
+                                          for (var req
+                                              in service.requirements.entries)
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                      req.key ==
+                                                              'Teeth Selection'
+                                                          ? 'Teeth Selected'
+                                                          : req.key,
+                                                      style: const TextStyle(
+                                                          fontSize: 12.0,
+                                                          fontWeight:
+                                                              FontWeight.bold)),
+                                                  const SizedBox(width: 15.0),
+                                                  Expanded(
+                                                    child: Text(
+                                                      req.key ==
+                                                              'Teeth Selection'
+                                                          ? req.value
+                                                              .split(',')
+                                                              .map(
+                                                                  codeToDescription)
+                                                              .join(', ')
+                                                          : req.value,
+                                                      textAlign: TextAlign.end,
+                                                      style: const TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 112, 112, 112),
+                                                        fontSize: 12.0,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                        ]),
+                                      );
+                                    }
+                                  } else if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  } else {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  return const Text('ssss');
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        top: 3.0,
+                        right: 8.0,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              customBorder: const CircleBorder(),
+                              onTap: () {}, // needed
+                              child: PopupMenuButton<String>(
+                                icon: const Icon(Icons.more_horiz,
+                                    color: Colors.grey),
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry<String>>[
+                                  PopupMenuItem<String>(
+                                    onTap: () {
+                                      print('Round added.');
+                                    },
+                                    value: 'Round',
+                                    child: const Row(
+                                      children: <Widget>[
+                                        Icon(Icons.access_time,
+                                            color: Colors.grey),
+                                        SizedBox(
+                                            width:
+                                                8.0), // You can adjust this value for desired spacing
+                                        Text('Add Round'),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem<String>(
+                                    onTap: () {
+                                      print('Deleted');
+                                    },
+                                    value: 'Delete',
+                                    child: const Row(
+                                      children: <Widget>[
+                                        Icon(Icons.delete_outline,
+                                            color: Colors.grey),
+                                        SizedBox(
+                                            width:
+                                                8.0), // You can adjust this value for desired spacing
+                                        Text('Delete'),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem<String>(
+                                    onTap: () {
+                                      print('Edited');
+                                    },
+                                    value: 'Edit',
+                                    child: const Row(
+                                      children: <Widget>[
+                                        Icon(Icons.edit_calendar_outlined,
+                                            color: Colors.grey),
+                                        SizedBox(
+                                            width:
+                                                8.0), // You can adjust this value for desired spacing
+                                        Text('Add Round'),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                                onSelected: (String value) {
+                                  // Handle your logic here
+                                  print('You selected: $value');
+                                },
+                              ),
+                            ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
             ],
           );
