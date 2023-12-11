@@ -319,9 +319,7 @@ class _AppointmentContent extends StatelessWidget {
                               itemBuilder: (BuildContext context) =>
                                   <PopupMenuEntry<String>>[
                                 PopupMenuItem<String>(
-                                  onTap: () {
-                                    print('Round added.');
-                                  },
+                                  onTap: () => onAddRoundforService(context, serviceName, int.parse(rounds.first.round.toString())),
                                   value: 'Round',
                                   child: const Row(
                                     children: <Widget>[
@@ -533,4 +531,52 @@ String codeToDescription(String code) {
   var quadrant = quadrantDescriptions[parts[0]];
   var tooth = parts[1];
   return '$quadrant, Tooth $tooth';
+}
+
+
+// This is to display an alert dialog to delete a patient
+onAddRoundforService(BuildContext context, /* Function onDelete */ String service, int oldRound) {
+  int? patientId = PatientInfo.patID;
+  String? fName = PatientInfo.firstName;
+  String? lName = PatientInfo.lastName;
+
+  return showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Directionality(
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+        child:
+            Text('Adding Rounds for $service with $oldRound'),
+      ),
+      content: Directionality(
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+        child: Text('Contents'),
+      ),
+      actions: [
+        SizedBox(
+          width: double.infinity,
+          child: Row(
+            mainAxisAlignment:
+                !isEnglish ? MainAxisAlignment.start : MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
+                child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
+              ),
+              TextButton(
+                onPressed: () async {
+                  
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context, rootNavigator: true).pop();
+                  
+                },
+                child: Text('لغو'),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }
