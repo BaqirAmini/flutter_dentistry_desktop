@@ -103,200 +103,36 @@ class _AppointmentState extends State<Appointment> {
   }
 }
 
-/* class _AppointmentContent extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getAppointment(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          var appoints = snapshot.data;
-          return ListView(
-            children: <Widget>[
-              for (var a in appoints!)
-                Column(
-                  children: [
-                    ExpandableCard(
-                      title: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.green,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: Colors.green, width: 2.0),
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Icon(
-                                      Icons.calendar_today_outlined,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 10.0),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      a.serviceName,
-                                      style: const TextStyle(fontSize: 18.0),
-                                    ),
-                                    Text(
-                                      a.meetDate,
-                                      style: const TextStyle(
-                                          color: Colors.grey, fontSize: 12.0),
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                            IconButton(
-                                onPressed: () {},
-                                icon: const Icon(
-                                    FontAwesomeIcons.houseMedicalCircleCheck)),
-                            Column(
-                              children: [
-                                Text(
-                                  'Paid: ${a.paidAmount}',
-                                  style: const TextStyle(
-                                      color: Colors.grey, fontSize: 12.0),
-                                ),
-                                Text(
-                                  'Due: ${a.dueAmount}',
-                                  style: const TextStyle(
-                                      color: Colors.red, fontSize: 12.0),
-                                )
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                      child: FutureBuilder(
-                        future: _getServices(a.serviceID),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            var services = snapshot.data;
-                            for (var service in services!) {
-                              return ListTile(
-                                title: Column(children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text(
-                                          'Service Name',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          a.serviceName,
-                                          style: const TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 112, 112, 112),
-                                            fontSize: 12.0,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  for (var req in service.requirements.entries)
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                              req.key == 'Teeth Selection'
-                                                  ? 'Teeth Selected'
-                                                  : req.key,
-                                              style: const TextStyle(
-                                                  fontSize: 12.0,
-                                                  fontWeight: FontWeight.bold)),
-                                          const SizedBox(width: 15.0),
-                                          Expanded(
-                                            child: Text(
-                                              req.key == 'Teeth Selection'
-                                                  ? req.value
-                                                      .split(',')
-                                                      .map(codeToDescription)
-                                                      .join(', ')
-                                                  : req.value,
-                                              textAlign: TextAlign.end,
-                                              style: const TextStyle(
-                                                color: Color.fromARGB(
-                                                    255, 112, 112, 112),
-                                                fontSize: 12.0,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                ] // return FutureBuilder(future: service., builder: builder)                                ],
-                                    ),
-                              );
-                            }
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            return Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          return Text('ssss');
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-            ],
-          );
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      },
-    );
-  }
-}
- */
-
+// This widget contains all appointment records and details using loop
 class _AppointmentContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getAppointment(),
+      future: _getAppointment(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          // var appoints = snapshot.data;
           Map<String, List<AppointmentDataModel>>? appoints = snapshot.data;
           return ListView(
-            children: <Widget>[
-              for (var entry in appoints!.entries)
-                for (var a in entry.value)
-                  Stack(
-                    children: [
-                      Card(
-                        child: Column(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              color: Colors.grey[
-                                  200], // Change this to your desired color
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                a.serviceName,
-                                style: const TextStyle(fontSize: 18.0),
-                              ),
-                            ),
-                            ExpandableCard(
+            children: appoints!.entries.map((entry) {
+              var serviceName = entry.key;
+              var rounds = entry.value;
+              return Card(
+                child: Stack(
+                  children: [
+                    Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          color: Colors.grey[200],
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            serviceName,
+                            style: const TextStyle(fontSize: 18.0),
+                          ),
+                        ),
+                        Column(
+                          children: rounds.map((a) {
+                            return ExpandableCard(
                               title: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
@@ -401,15 +237,14 @@ class _AppointmentContent extends StatelessWidget {
                                               child: Row(
                                                 children: [
                                                   Text(
-                                                      req.key ==
-                                                              'Teeth Selection'
-                                                          ? 'Teeth Selected'
-                                                          : req.key,
-                                                      style: const TextStyle(
-                                                          fontSize: 12.0,
-                                                          fontWeight:
-                                                              FontWeight.bold)),
-                                                  const SizedBox(width: 15.0),
+                                                    req.key == 'Teeth Selection'
+                                                        ? 'Teeth Selected'
+                                                        : req.key,
+                                                    style: const TextStyle(
+                                                        fontSize: 12.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
                                                   Expanded(
                                                     child: Text(
                                                       req.key ==
@@ -444,86 +279,88 @@ class _AppointmentContent extends StatelessWidget {
                                   return const Text('ssss');
                                 },
                               ),
-                            ),
-                          ],
+                            );
+                          }).toList(),
                         ),
-                      ),
-                      Positioned(
-                        top: 3.0,
-                        right: 8.0,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              customBorder: const CircleBorder(),
-                              onTap: () {}, // needed
-                              child: PopupMenuButton<String>(
-                                icon: const Icon(Icons.more_horiz,
-                                    color: Colors.grey),
-                                itemBuilder: (BuildContext context) =>
-                                    <PopupMenuEntry<String>>[
-                                  PopupMenuItem<String>(
-                                    onTap: () {
-                                      print('Round added.');
-                                    },
-                                    value: 'Round',
-                                    child: const Row(
-                                      children: <Widget>[
-                                        Icon(Icons.access_time,
-                                            color: Colors.grey),
-                                        SizedBox(
-                                            width:
-                                                8.0), // You can adjust this value for desired spacing
-                                        Text('Add Round'),
-                                      ],
-                                    ),
+                      ],
+                    ),
+                    Positioned(
+                      top: 3.0,
+                      right: 8.0,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: () {}, // needed
+                            child: PopupMenuButton<String>(
+                              icon: const Icon(Icons.more_horiz,
+                                  color: Colors.grey),
+                              itemBuilder: (BuildContext context) =>
+                                  <PopupMenuEntry<String>>[
+                                PopupMenuItem<String>(
+                                  onTap: () {
+                                    print('Round added.');
+                                  },
+                                  value: 'Round',
+                                  child: const Row(
+                                    children: <Widget>[
+                                      Icon(Icons.access_time,
+                                          color: Colors.grey),
+                                      SizedBox(
+                                          width:
+                                              8.0), // You can adjust this value for desired spacing
+                                      Text('Add Round'),
+                                    ],
                                   ),
-                                  PopupMenuItem<String>(
-                                    onTap: () {
-                                      print('Deleted');
-                                    },
-                                    value: 'Delete',
-                                    child: const Row(
-                                      children: <Widget>[
-                                        Icon(Icons.delete_outline,
-                                            color: Colors.grey),
-                                        SizedBox(
-                                            width:
-                                                8.0), // You can adjust this value for desired spacing
-                                        Text('Delete'),
-                                      ],
-                                    ),
+                                ),
+                                PopupMenuItem<String>(
+                                  onTap: () {
+                                    print('Deleted');
+                                  },
+                                  value: 'Delete',
+                                  child: const Row(
+                                    children: <Widget>[
+                                      Icon(Icons.delete_outline,
+                                          color: Colors.grey),
+                                      SizedBox(
+                                          width:
+                                              8.0), // You can adjust this value for desired spacing
+                                      Text('Delete'),
+                                    ],
                                   ),
-                                  PopupMenuItem<String>(
-                                    onTap: () {
-                                      print('Edited');
-                                    },
-                                    value: 'Edit',
-                                    child: const Row(
-                                      children: <Widget>[
-                                        Icon(Icons.edit_calendar_outlined,
-                                            color: Colors.grey),
-                                        SizedBox(
-                                            width:
-                                                8.0), // You can adjust this value for desired spacing
-                                        Text('Add Round'),
-                                      ],
-                                    ),
+                                ),
+                                PopupMenuItem<String>(
+                                  onTap: () {
+                                    print('Edited');
+                                  },
+                                  value: 'Edit',
+                                  child: const Row(
+                                    children: <Widget>[
+                                      Icon(Icons.edit_calendar_outlined,
+                                          color: Colors.grey),
+                                      SizedBox(
+                                          width:
+                                              8.0), // You can adjust this value for desired spacing
+                                      Text('Add Round'),
+                                    ],
                                   ),
-                                ],
-                                onSelected: (String value) {
-                                  // Handle your logic here
-                                  print('You selected: $value');
-                                },
-                              ),
+                                ),
+                              ],
+                              onSelected: (String value) {
+                                // Handle your logic here
+                                print('You selected: $value');
+                              },
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
-            ],
+                    ),
+                  ],
+                ),
+              );
+            }).toList(), // Convert Iterable to List
           );
         } else {
           return const Center(child: CircularProgressIndicator());
@@ -533,6 +370,7 @@ class _AppointmentContent extends StatelessWidget {
   }
 }
 
+// This widget shapes the expandable area of the card when clicked.
 class ExpandableCard extends StatelessWidget {
   final Widget title;
   final Widget child;
@@ -549,40 +387,8 @@ class ExpandableCard extends StatelessWidget {
   }
 }
 
-// Fetch appointment details
-/* Future<List<AppointmentDataModel>> getAppointment() async {
-  final conn = await onConnToDb();
-  final results = await conn.query(
-    '''SELECT p.firstname, p.lastname, 
-        a.staff_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y"), a.paid_amount, a.due_amount, a.round, a.installment, 
-        a.discount, a.apt_ID, st.firstname, st.lastname, s.ser_name, s.ser_ID FROM patients p 
-        INNER JOIN appointments a ON a.pat_ID = p.pat_ID
-        INNER JOIN staff st ON a.staff_ID = st.staff_ID
-        INNER JOIN services s ON s.ser_ID = a.service_ID
-         WHERE a.pat_ID = ?''',
-    [PatientInfo.patID],
-  );
-
-  final appoints = results
-      .map((row) => AppointmentDataModel(
-          staffID: row[2],
-          staffFirstName: row[10],
-          staffLastName: row[11],
-          serviceName: row[12],
-          serviceID: row[13],
-          aptID: row[9],
-          meetDate: row[3].toString(),
-          round: row[6],
-          paidAmount: row[4],
-          dueAmount: row[5],
-          installment: row[7]))
-      .toList();
-  await conn.close();
-  return appoints;
-}
- */
-
-Future<Map<String, List<AppointmentDataModel>>> getAppointment() async {
+// This function fetches records of patients, appointments, staff and services using JOIN
+Future<Map<String, List<AppointmentDataModel>>> _getAppointment() async {
   final conn = await onConnToDb();
   final results = await conn.query(
     '''SELECT p.firstname, p.lastname, 
@@ -598,24 +404,24 @@ Future<Map<String, List<AppointmentDataModel>>> getAppointment() async {
   Map<String, List<AppointmentDataModel>> appoints = {};
 
   for (var row in results) {
-    String meetDate = row[3].toString();
+    String serName = row[12];
     var appointment = AppointmentDataModel(
       staffID: row[2],
       staffFirstName: row[10],
       staffLastName: row[11],
-      serviceName: row[12],
+      serviceName: serName,
       serviceID: row[13],
       aptID: row[9],
-      meetDate: meetDate,
+      meetDate: row[3].toString(),
       round: row[6],
       paidAmount: row[4],
       dueAmount: row[5],
       installment: row[7],
     );
-    if (appoints.containsKey(meetDate)) {
-      appoints[meetDate]!.add(appointment);
+    if (appoints.containsKey(serName)) {
+      appoints[serName]!.add(appointment);
     } else {
-      appoints[meetDate] = [appointment];
+      appoints[serName] = [appointment];
     }
   }
 
@@ -651,6 +457,7 @@ class AppointmentDataModel {
       required this.installment});
 }
 
+// This function fetches records from service_requirments, patient_services, services and patients using JOIN
 Future<List<ServiceDataModel>> _getServices(int serID) async {
   final conn = await onConnToDb();
   final results = await conn.query(
@@ -694,6 +501,7 @@ class ServiceDataModel {
   });
 }
 
+// This function makes name structure using the four qoudrants (Q1, Q2, Q3 & Q4)
 Map<String, String> quadrantDescriptions = {
   'Q1': 'Top-Left',
   'Q2': 'Top-Right',
