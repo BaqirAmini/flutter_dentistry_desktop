@@ -1358,7 +1358,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
   Future<void> _fetchData() async {
     final conn = await onConnToDb();
     final queryResult = await conn.query(
-        'SELECT firstname, lastname, age, sex, marital_status, phone, pat_ID, DATE_FORMAT(reg_date, "%Y-%m-%d"), blood_group, address FROM patients');
+        'SELECT firstname, lastname, age, sex, marital_status, phone, pat_ID, DATE_FORMAT(reg_date, "%Y-%m-%d"), blood_group, address FROM patients ORDER BY reg_date DESC');
     conn.close();
 
     _data = queryResult.map((row) {

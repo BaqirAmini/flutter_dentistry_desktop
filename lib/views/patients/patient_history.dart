@@ -334,7 +334,7 @@ Future<List<HistoryDataModel>> _getHistory() async {
   final conn = await onConnToDb();
   final results = await conn.query('''
 SELECT d.cond_detail_ID, c.name, d.result, d.severty, d.duration, DATE_FORMAT(d.diagnosis_date, '%Y-%m-%d'), d.notes FROM conditions c 
-INNER JOIN condition_details d ON c.cond_ID = d.cond_ID WHERE d.pat_ID = ?''',
+INNER JOIN condition_details d ON c.cond_ID = d.cond_ID WHERE d.pat_ID = ? ORDER BY d.cond_detail_ID DESC''',
       [PatientInfo.patID]);
 
   final histories = results
