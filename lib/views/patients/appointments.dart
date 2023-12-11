@@ -131,161 +131,180 @@ class _AppointmentContent extends StatelessWidget {
                           ),
                         ),
                         Column(
-                          children: rounds.map((a) {
-                            return ExpandableCard(
-                              title: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
+                          children: rounds.asMap().entries.map((roundEntry) {
+                            var a = roundEntry.value;
+                            var isLastRound =
+                                roundEntry.key == rounds.length - 1;
+                            return Column(
+                              children: [
+                                ExpandableCard(
+                                  title: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.green,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
+                                        Row(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
                                                 color: Colors.green,
-                                                width: 2.0),
-                                          ),
-                                          child: const Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Icon(
-                                              Icons.calendar_today_outlined,
-                                              color: Colors.white,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                    color: Colors.green,
+                                                    width: 2.0),
+                                              ),
+                                              child: const Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Icon(
+                                                  Icons.calendar_today_outlined,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                            const SizedBox(width: 10.0),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Round: ${a.round}',
+                                                  style: const TextStyle(
+                                                      fontSize: 18.0),
+                                                ),
+                                                Text(
+                                                  a.meetDate,
+                                                  style: const TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 12.0),
+                                                )
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(width: 10.0),
                                         Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              'Round: ${a.round}',
-                                              style: const TextStyle(
-                                                  fontSize: 18.0),
-                                            ),
-                                            Text(
-                                              a.meetDate,
+                                              'Paid: ${a.paidAmount}',
                                               style: const TextStyle(
                                                   color: Colors.grey,
                                                   fontSize: 12.0),
+                                            ),
+                                            Text(
+                                              'Due: ${a.dueAmount}',
+                                              style: const TextStyle(
+                                                  color: Colors.red,
+                                                  fontSize: 12.0),
                                             )
                                           ],
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          'Paid: ${a.paidAmount}',
-                                          style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 12.0),
-                                        ),
-                                        Text(
-                                          'Due: ${a.dueAmount}',
-                                          style: const TextStyle(
-                                              color: Colors.red,
-                                              fontSize: 12.0),
                                         )
                                       ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                              child: FutureBuilder(
-                                future: _getServices(a.serviceID),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    var services = snapshot.data;
-                                    for (var service in services!) {
-                                      return ListTile(
-                                        title: Column(children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                const Text(
-                                                  'Service Name',
-                                                  style: TextStyle(
-                                                      fontSize: 12.0,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(
-                                                  a.serviceName,
-                                                  style: const TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 112, 112, 112),
-                                                    fontSize: 12.0,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          for (var req
-                                              in service.requirements.entries)
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Row(
-                                                children: [
-                                                  Text(
-                                                    req.key == 'Teeth Selection'
-                                                        ? 'Teeth Selected'
-                                                        : req.key,
-                                                    style: const TextStyle(
-                                                        fontSize: 12.0,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  Expanded(
-                                                    child: Text(
-                                                      req.key ==
-                                                              'Teeth Selection'
-                                                          ? req.value
-                                                              .split(',')
-                                                              .map(
-                                                                  codeToDescription)
-                                                              .join(', ')
-                                                          : req.value,
-                                                      textAlign: TextAlign.end,
+                                    ),
+                                  ),
+                                  child: FutureBuilder(
+                                    future: _getServices(a.serviceID),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.hasData) {
+                                        var services = snapshot.data;
+                                        for (var service in services!) {
+                                          return ListTile(
+                                            title: Column(children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Text(
+                                                      'Service Name',
+                                                      style: TextStyle(
+                                                          fontSize: 12.0,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    Text(
+                                                      a.serviceName,
                                                       style: const TextStyle(
                                                         color: Color.fromARGB(
                                                             255, 112, 112, 112),
                                                         fontSize: 12.0,
                                                       ),
                                                     ),
-                                                  ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                        ]),
-                                      );
-                                    }
-                                  } else if (snapshot.hasError) {
-                                    return Text('Error: ${snapshot.error}');
-                                  } else {
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
-                                  }
-                                  return const Text('ssss');
-                                },
-                              ),
+                                              for (var req in service
+                                                  .requirements.entries)
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        req.key ==
+                                                                'Teeth Selection'
+                                                            ? 'Teeth Selected'
+                                                            : req.key,
+                                                        style: const TextStyle(
+                                                            fontSize: 12.0,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Expanded(
+                                                        child: Text(
+                                                          req.key ==
+                                                                  'Teeth Selection'
+                                                              ? req.value
+                                                                  .split(',')
+                                                                  .map(
+                                                                      codeToDescription)
+                                                                  .join(', ')
+                                                              : req.value,
+                                                          textAlign:
+                                                              TextAlign.end,
+                                                          style:
+                                                              const TextStyle(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    112,
+                                                                    112,
+                                                                    112),
+                                                            fontSize: 12.0,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                            ]),
+                                          );
+                                        }
+                                      } else if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      } else {
+                                        return const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      }
+                                      return const Text('ssss');
+                                    },
+                                  ),
+                                ),
+                                if (!isLastRound)
+                                  const Divider(
+                                      color: Colors.grey, thickness: 0.5, height: 0.0),
+                              ],
                             );
                           }).toList(),
                         ),
                       ],
                     ),
                     Positioned(
-                      top: 3.0,
+                      top: 1.0,
                       right: 8.0,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(50),
@@ -296,7 +315,7 @@ class _AppointmentContent extends StatelessWidget {
                             onTap: () {}, // needed
                             child: PopupMenuButton<String>(
                               icon: const Icon(Icons.more_horiz,
-                                  color: Colors.grey),
+                                  color: Colors.grey, size: 18.5),
                               itemBuilder: (BuildContext context) =>
                                   <PopupMenuEntry<String>>[
                                 PopupMenuItem<String>(
@@ -343,7 +362,7 @@ class _AppointmentContent extends StatelessWidget {
                                       SizedBox(
                                           width:
                                               8.0), // You can adjust this value for desired spacing
-                                      Text('Add Round'),
+                                      Text('Edit'),
                                     ],
                                   ),
                                 ),
