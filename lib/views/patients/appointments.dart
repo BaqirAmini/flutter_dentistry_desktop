@@ -114,7 +114,7 @@ class _AppointmentContent extends StatelessWidget {
           Map<String, List<AppointmentDataModel>>? appoints = snapshot.data;
           return ListView(
             children: appoints!.entries.map((entry) {
-              var serviceName = entry.key;
+              var visitDate = entry.key;
               var rounds = entry.value;
               return Card(
                 child: Stack(
@@ -124,10 +124,31 @@ class _AppointmentContent extends StatelessWidget {
                         Container(
                           width: double.infinity,
                           color: Colors.grey[200],
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            serviceName,
-                            style: const TextStyle(fontSize: 18.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Text(
+                                visitDate,
+                                style: const TextStyle(fontSize: 18.0),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.symmetric(horizontal: 400.0),
+                                child: Card(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(30.0)),
+                                    elevation: 0,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Text(
+                                          'Round: ${rounds.first.round.toString()}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelSmall),
+                                    )),
+                              )
+                            ],
                           ),
                         ),
                         Column(
@@ -168,12 +189,12 @@ class _AppointmentContent extends StatelessWidget {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  'Round: ${a.round}',
+                                                  a.serviceName,
                                                   style: const TextStyle(
                                                       fontSize: 18.0),
                                                 ),
                                                 Text(
-                                                  a.meetDate,
+                                                  'تحت نظر: ${a.staffFirstName} ${a.staffLastName}',
                                                   style: const TextStyle(
                                                       color: Colors.grey,
                                                       fontSize: 12.0),
@@ -296,7 +317,9 @@ class _AppointmentContent extends StatelessWidget {
                                 ),
                                 if (!isLastRound)
                                   const Divider(
-                                      color: Colors.grey, thickness: 0.5, height: 0.0),
+                                      color: Colors.grey,
+                                      thickness: 0.5,
+                                      height: 0.0),
                               ],
                             );
                           }).toList(),
@@ -319,7 +342,10 @@ class _AppointmentContent extends StatelessWidget {
                               itemBuilder: (BuildContext context) =>
                                   <PopupMenuEntry<String>>[
                                 PopupMenuItem<String>(
-                                  onTap: () => onAddRoundforService(context, serviceName, int.parse(rounds.first.round.toString())),
+                                  onTap: () => onAddRoundforService(
+                                      context,
+                                      visitDate,
+                                      int.parse(rounds.first.round.toString())),
                                   value: 'Round',
                                   child: const Row(
                                     children: <Widget>[
@@ -409,7 +435,7 @@ Future<Map<String, List<AppointmentDataModel>>> _getAppointment() async {
   final conn = await onConnToDb();
   final results = await conn.query(
     '''SELECT p.firstname, p.lastname, 
-        a.staff_ID, DATE_FORMAT(a.meet_date, "%Y-%m-%d"), a.paid_amount, a.due_amount, a.round, a.installment, 
+        a.staff_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y"), a.paid_amount, a.due_amount, a.round, a.installment, 
         a.discount, a.apt_ID, st.firstname, st.lastname, s.ser_name, s.ser_ID, a.round, a.installment, a.discount FROM patients p 
         INNER JOIN appointments a ON a.pat_ID = p.pat_ID
         INNER JOIN staff st ON a.staff_ID = st.staff_ID
@@ -421,24 +447,24 @@ Future<Map<String, List<AppointmentDataModel>>> _getAppointment() async {
   Map<String, List<AppointmentDataModel>> appoints = {};
 
   for (var row in results) {
-    String serName = row[12];
+    String visitDate = row[3].toString();
     var appointment = AppointmentDataModel(
       staffID: row[2],
       staffFirstName: row[10],
       staffLastName: row[11],
-      serviceName: serName,
+      serviceName: row[12],
       serviceID: row[13],
       aptID: row[9],
-      meetDate: row[3].toString(),
+      meetDate: visitDate,
       round: row[6],
       paidAmount: row[4],
       dueAmount: row[5],
       installment: row[7],
     );
-    if (appoints.containsKey(serName)) {
-      appoints[serName]!.add(appointment);
+    if (appoints.containsKey(visitDate)) {
+      appoints[visitDate]!.add(appointment);
     } else {
-      appoints[serName] = [appointment];
+      appoints[visitDate] = [appointment];
     }
   }
 
@@ -533,9 +559,9 @@ String codeToDescription(String code) {
   return '$quadrant, Tooth $tooth';
 }
 
-
 // This is to display an alert dialog to delete a patient
-onAddRoundforService(BuildContext context, /* Function onDelete */ String service, int oldRound) {
+onAddRoundforService(BuildContext context,
+    /* Function onDelete */ String service, int oldRound) {
   int? patientId = PatientInfo.patID;
   String? fName = PatientInfo.firstName;
   String? lName = PatientInfo.lastName;
@@ -545,12 +571,11 @@ onAddRoundforService(BuildContext context, /* Function onDelete */ String servic
     builder: (ctx) => AlertDialog(
       title: Directionality(
         textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-        child:
-            Text('Adding Rounds for $service with $oldRound'),
+        child: Text('Adding Rounds for $service with $oldRound'),
       ),
       content: Directionality(
         textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-        child: Text('Contents'),
+        child: const Text('Contents'),
       ),
       actions: [
         SizedBox(
@@ -566,12 +591,10 @@ onAddRoundforService(BuildContext context, /* Function onDelete */ String servic
               ),
               TextButton(
                 onPressed: () async {
-                  
-                    // ignore: use_build_context_synchronously
-                    Navigator.of(context, rootNavigator: true).pop();
-                  
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context, rootNavigator: true).pop();
                 },
-                child: Text('لغو'),
+                child: const Text('لغو'),
               ),
             ],
           ),
