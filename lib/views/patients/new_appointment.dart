@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/finance/fee/fee_related_fields.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_dentistry/views/patients/tooth_selection_info.dart';
 import 'package:flutter_dentistry/views/services/service_related_fields.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
+import 'package:galileo_mysql/src/results/row.dart';
+
+// Declare this to assign round.
+int _round = 0;
 
 class NewAppointment extends StatefulWidget {
   const NewAppointment({super.key});
@@ -22,10 +27,13 @@ class _NewAppointmentState extends State<NewAppointment> {
 /* ----------- New appointments step lists ----------- */
   List<Step> newApptStepList() => [
         Step(
-            state: _currentStep <= 0 ? StepState.editing : StepState.complete,
-            isActive: _currentStep >= 0,
-            title: const Text('خدمات مورد نیاز'),
-            content: Center(child: ServiceForm(formKey: _serviceFormKey))),
+          state: _currentStep <= 0 ? StepState.editing : StepState.complete,
+          isActive: _currentStep >= 0,
+          title: const Text('خدمات مورد نیاز'),
+          content: Center(
+            child: ServiceForm(formKey: _serviceFormKey),
+          ),
+        ),
         Step(
           state: _currentStep <= 1 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 1,
@@ -38,6 +46,19 @@ class _NewAppointmentState extends State<NewAppointment> {
         ),
       ];
 
+// Fetch round
+  Future<int> fetchRound() async {
+    final conn = await onConnToDb();
+    final roundResults = await conn.query(
+        'SELECT round FROM appointments WHERE pat_ID = ? ORDER BY meet_date DESC',
+        [PatientInfo.patID]);
+    if (roundResults.isNotEmpty) {
+      await conn.close();
+      return roundResults.first['round'] as int;
+    } else {
+      throw Exception('No rounds for this patient.');
+    }
+  }
 /* -----------/. New appointments step lists ----------- */
 
   @override
@@ -55,7 +76,53 @@ class _NewAppointmentState extends State<NewAppointment> {
               },
             ),
           ),
-          title: const Text('New Appointment'),
+          title: Row(
+            children: [
+              const Text('New Appointment'),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.3),
+              FutureBuilder<int>(
+                future: fetchRound(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator(
+                      strokeWidth: 2, // Reduce the thickness of the spinner
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors
+                          .white), // Change the color to white to match the AppBar text color
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    _round = snapshot.data! + 1;
+                    return Text('Round $_round');
+                  }
+                },
+              ),
+            ],
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.people_outline),
+              tooltip: 'Patients',
+              padding: const EdgeInsets.all(3.0),
+              splashRadius: 30.0,
+            ),
+            const SizedBox(width: 15.0),
+            IconButton(
+              onPressed: () {},
+              /* onPressed: () => Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => Dashboard()),
+                (Route<dynamic> route) =>
+                    false, // this ensures all previous routes are removed
+              ), */
+              icon: const Icon(Icons.home_outlined),
+              tooltip: 'Dashboard',
+              padding: const EdgeInsets.all(3.0),
+              splashRadius: 30.0,
+            ),
+            const SizedBox(width: 15.0)
+          ],
         ),
         body: Directionality(
           textDirection: TextDirection.rtl,
@@ -517,7 +584,7 @@ class AppointmentFunction {
             patient,
             service,
             FeeInfo.installment,
-            1,
+            _round,
             FeeInfo.discountRate,
             FeeInfo.receivedAmount,
             FeeInfo.dueAmount,
