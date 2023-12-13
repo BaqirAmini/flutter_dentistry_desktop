@@ -116,8 +116,10 @@ class _ServiceFormState extends State<ServiceForm> {
       child: Center(
         child: Column(
           children: [
-            const Text(
-                'لطفاً اوضاع عمومی مریض را با دقت ارزیابی نموده و طبق خدمات را به پیش ببرید'),
+            Text(
+              'لطفاً با دقت سرویس ها (خدمات) زیر را انتخاب نموده و طبق آن معلومات مرتبط آنرا به خانه های زیر درج نمایید.',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
