@@ -14,6 +14,25 @@ void main() {
   runApp(const Appointment());
 }
 
+// Create the global key at the top level of your Dart file
+final GlobalKey<ScaffoldMessengerState> _globalKey4Appt =
+    GlobalKey<ScaffoldMessengerState>();
+
+// This is shows snackbar when called
+void _onShowSnack(Color backColor, String msg) {
+  _globalKey4Appt.currentState?.showSnackBar(
+    SnackBar(
+      backgroundColor: backColor,
+      content: SizedBox(
+        height: 20.0,
+        child: Center(
+          child: Text(msg),
+        ),
+      ),
+    ),
+  );
+}
+
 // Set global variables which are needed later.
 var selectedLanguage;
 var isEnglish;
@@ -26,6 +45,54 @@ class Appointment extends StatefulWidget {
 }
 
 class _AppointmentState extends State<Appointment> {
+// This function deletes an appointment after opening a dialog box.
+  static onDeleteAppointment(BuildContext context, int id) {
+    return showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: const Text('Delete an appointment'),
+            ),
+            content: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: const Text(
+                  'Are you sure you want to delete this appointment'),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
+                child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final conn = await onConnToDb();
+                  final deleteResult = await conn
+                      .query('DELETE FROM appointments WHERE apt_ID = ?', [id]);
+                  if (deleteResult.affectedRows! > 0) {
+                    _onShowSnack(Colors.green, 'Deleted');
+                    setState(
+                      () {
+                        _getAppointment();
+                      },
+                    );
+                  }
+                  await conn.close();
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
+                child: Text(translations[selectedLanguage]?['Delete'] ?? ''),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Fetch translations keys based on the selected language.
@@ -36,39 +103,41 @@ class _AppointmentState extends State<Appointment> {
       debugShowCheckedModeBanner: false,
       home: Directionality(
         textDirection: TextDirection.ltr,
-        child: Scaffold(
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {},
-            tooltip: 'افزودن جلسه جدید',
-            child: InkWell(
-              customBorder: const CircleBorder(),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const NewAppointment()),
-                ).then((_) {
-                  setState(() {});
-                });
-                // This is assigned to identify appointments.round i.e., if it is true round is stored '1' otherwise increamented by 1
-                GlobalUsage.newPatientCreated = false;
-              },
-              child: const Padding(
-                padding: EdgeInsets.all(5.0),
-                child: Icon(
-                  Icons.add,
-                  color: Colors.white,
+        child: ScaffoldMessenger(
+          key: _globalKey4Appt,
+          child: Scaffold(
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {},
+              tooltip: 'افزودن جلسه جدید',
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const NewAppointment()),
+                  ).then((_) {
+                    setState(() {});
+                  });
+                  // This is assigned to identify appointments.round i.e., if it is true round is stored '1' otherwise increamented by 1
+                  GlobalUsage.newPatientCreated = false;
+                },
+                child: const Padding(
+                  padding: EdgeInsets.all(5.0),
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
-          ),
-          appBar: AppBar(
-            title: const Text('Appointment'),
-            leading: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const BackButtonIcon()),
-            actions: [
-              /* Tooltip(
+            appBar: AppBar(
+              title: const Text('Appointment'),
+              leading: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const BackButtonIcon()),
+              actions: [
+                /* Tooltip(
                 message: 'افزودن جلسه جدید',
                 child: InkWell(
                   onTap: () {},
@@ -87,19 +156,20 @@ class _AppointmentState extends State<Appointment> {
                   ),
                 ),
               ), */
-              const SizedBox(width: 15)
-            ],
-          ),
-          body: Center(
-            child: Container(
-              margin: const EdgeInsets.only(top: 15),
-              width: MediaQuery.of(context).size.width * 0.9,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: _AppointmentContent(),
-                  ),
-                ],
+                const SizedBox(width: 15)
+              ],
+            ),
+            body: Center(
+              child: Container(
+                margin: const EdgeInsets.only(top: 15),
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: _AppointmentContent(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -123,295 +193,242 @@ class _AppointmentContent extends StatelessWidget {
               var visitDate = entry.key;
               var rounds = entry.value;
               return Card(
-                child: Stack(
+                child: Column(
                   children: [
-                    Column(
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          color: Colors.grey[200],
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 5.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              Text(
-                                visitDate,
-                                style: const TextStyle(fontSize: 18.0),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 400.0),
-                                child: Card(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(30.0)),
-                                    elevation: 0,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: Text(
-                                          'Round: ${rounds.first.round.toString()}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelSmall),
-                                    )),
-                              )
-                            ],
+                    Container(
+                      width: double.infinity,
+                      color: Colors.grey[200],
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 5.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Text(
+                            visitDate,
+                            style: const TextStyle(fontSize: 18.0),
                           ),
-                        ),
-                        Column(
-                          children: rounds.asMap().entries.map((roundEntry) {
-                            var a = roundEntry.value;
-                            var isLastRound =
-                                roundEntry.key == rounds.length - 1;
-                            return Column(
-                              children: [
-                                ExpandableCard(
-                                  title: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                          Container(
+                            margin:
+                                const EdgeInsets.symmetric(horizontal: 400.0),
+                            child: Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0)),
+                                elevation: 0,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Text(
+                                      'Round: ${rounds.first.round.toString()}',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall),
+                                )),
+                          )
+                        ],
+                      ),
+                    ),
+                    Column(
+                      children: rounds.asMap().entries.map((roundEntry) {
+                        var a = roundEntry.value;
+                        var isLastRound = roundEntry.key == rounds.length - 1;
+                        return Column(
+                          children: [
+                            ExpandableCard(
+                              title: Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
                                       children: [
-                                        Row(
-                                          children: [
-                                            Container(
-                                              decoration: BoxDecoration(
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.green,
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
                                                 color: Colors.green,
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                    color: Colors.green,
-                                                    width: 2.0),
-                                              ),
-                                              child: const Padding(
-                                                padding: EdgeInsets.all(8.0),
-                                                child: Icon(
-                                                  Icons.calendar_today_outlined,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
+                                                width: 2.0),
+                                          ),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Icon(
+                                              Icons.calendar_today_outlined,
+                                              color: Colors.white,
                                             ),
-                                            const SizedBox(width: 10.0),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  a.serviceName,
-                                                  style: const TextStyle(
-                                                      fontSize: 18.0),
-                                                ),
-                                                Text(
-                                                  'تحت نظر: ${a.staffFirstName} ${a.staffLastName}',
-                                                  style: const TextStyle(
-                                                      color: Colors.grey,
-                                                      fontSize: 12.0),
-                                                )
-                                              ],
-                                            ),
-                                          ],
+                                          ),
                                         ),
+                                        const SizedBox(width: 10.0),
                                         Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              'Paid: ${a.paidAmount}',
+                                              a.serviceName,
+                                              style: const TextStyle(
+                                                  fontSize: 18.0),
+                                            ),
+                                            Text(
+                                              'تحت نظر: ${a.staffFirstName} ${a.staffLastName}',
                                               style: const TextStyle(
                                                   color: Colors.grey,
                                                   fontSize: 12.0),
-                                            ),
-                                            Text(
-                                              'Due: ${a.dueAmount}',
-                                              style: const TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 12.0),
                                             )
                                           ],
-                                        )
+                                        ),
                                       ],
                                     ),
-                                  ),
-                                  child: FutureBuilder(
-                                    future: _getServices(a.serviceID),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.hasData) {
-                                        var services = snapshot.data;
-                                        for (var service in services!) {
-                                          return ListTile(
-                                            title: Column(children: [
+                                    Column(
+                                      children: [
+                                        Text(
+                                          'Paid: ${a.paidAmount}',
+                                          style: const TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 12.0),
+                                        ),
+                                        Text(
+                                          'Due: ${a.dueAmount}',
+                                          style: const TextStyle(
+                                              color: Colors.red,
+                                              fontSize: 12.0),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                              child: FutureBuilder(
+                                future: _getServices(a.serviceID),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    var services = snapshot.data;
+                                    for (var service in services!) {
+                                      return ListTile(
+                                        title: Column(
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  const Text(
+                                                    'Service Name',
+                                                    style: TextStyle(
+                                                        fontSize: 12.0,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                    a.serviceName,
+                                                    style: const TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 112, 112, 112),
+                                                      fontSize: 12.0,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            for (var req
+                                                in service.requirements.entries)
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.all(8.0),
                                                 child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
                                                   children: [
-                                                    const Text(
-                                                      'Service Name',
-                                                      style: TextStyle(
+                                                    Text(
+                                                      req.key ==
+                                                              'Teeth Selection'
+                                                          ? 'Teeth Selected'
+                                                          : req.key,
+                                                      style: const TextStyle(
                                                           fontSize: 12.0,
                                                           fontWeight:
                                                               FontWeight.bold),
                                                     ),
-                                                    Text(
-                                                      a.serviceName,
-                                                      style: const TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 112, 112, 112),
-                                                        fontSize: 12.0,
+                                                    Expanded(
+                                                      child: Text(
+                                                        req.key ==
+                                                                'Teeth Selection'
+                                                            ? req.value
+                                                                .split(',')
+                                                                .map(
+                                                                    codeToDescription)
+                                                                .join(', ')
+                                                            : req.value,
+                                                        textAlign:
+                                                            TextAlign.end,
+                                                        style: const TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              112,
+                                                              112,
+                                                              112),
+                                                          fontSize: 12.0,
+                                                        ),
                                                       ),
                                                     ),
                                                   ],
                                                 ),
                                               ),
-                                              for (var req in service
-                                                  .requirements.entries)
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        req.key ==
-                                                                'Teeth Selection'
-                                                            ? 'Teeth Selected'
-                                                            : req.key,
-                                                        style: const TextStyle(
-                                                            fontSize: 12.0,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                      Expanded(
-                                                        child: Text(
-                                                          req.key ==
-                                                                  'Teeth Selection'
-                                                              ? req.value
-                                                                  .split(',')
-                                                                  .map(
-                                                                      codeToDescription)
-                                                                  .join(', ')
-                                                              : req.value,
-                                                          textAlign:
-                                                              TextAlign.end,
-                                                          style:
-                                                              const TextStyle(
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    112,
-                                                                    112,
-                                                                    112),
-                                                            fontSize: 12.0,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
+                                            SizedBox(
+                                              width: 200,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  IconButton(
+                                                    splashRadius: 23,
+                                                    onPressed: () {},
+                                                    icon: const Icon(Icons.edit,
+                                                        size: 16.0),
                                                   ),
-                                                ),
-                                            ]),
-                                          );
-                                        }
-                                      } else if (snapshot.hasError) {
-                                        return Text('Error: ${snapshot.error}');
-                                      } else {
-                                        return const Center(
-                                          child: CircularProgressIndicator(),
-                                        );
-                                      }
-                                      return const Padding(
-                                        padding:
-                                            EdgeInsets.symmetric(vertical: 8.0),
-                                        child: Text(
-                                            'No description found for this service.'),
+                                                  IconButton(
+                                                    splashRadius: 23,
+                                                    onPressed: () =>
+                                                        _AppointmentState
+                                                            .onDeleteAppointment(
+                                                                context,
+                                                                a.aptID),
+                                                    icon: const Icon(
+                                                        Icons
+                                                            .delete_forever_outlined,
+                                                        size: 16.0),
+                                                  )
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
                                       );
-                                    },
-                                  ),
-                                ),
-                                if (!isLastRound)
-                                  const Divider(
-                                      color: Colors.grey,
-                                      thickness: 0.5,
-                                      height: 0.0),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                    Positioned(
-                      top: 1.0,
-                      right: 8.0,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(50),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            customBorder: const CircleBorder(),
-                            onTap: () {}, // needed
-                            child: PopupMenuButton<String>(
-                              icon: const Icon(Icons.more_horiz,
-                                  color: Colors.grey, size: 18.5),
-                              itemBuilder: (BuildContext context) =>
-                                  <PopupMenuEntry<String>>[
-                                PopupMenuItem<String>(
-                                  onTap: () => onAddRoundforService(
-                                      context,
-                                      visitDate,
-                                      int.parse(rounds.first.round.toString())),
-                                  value: 'Round',
-                                  child: const Row(
-                                    children: <Widget>[
-                                      Icon(Icons.access_time,
-                                          color: Colors.grey),
-                                      SizedBox(
-                                          width:
-                                              8.0), // You can adjust this value for desired spacing
-                                      Text('Add Round'),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem<String>(
-                                  onTap: () {
-                                    print('Deleted');
-                                  },
-                                  value: 'Delete',
-                                  child: const Row(
-                                    children: <Widget>[
-                                      Icon(Icons.delete_outline,
-                                          color: Colors.grey),
-                                      SizedBox(
-                                          width:
-                                              8.0), // You can adjust this value for desired spacing
-                                      Text('Delete'),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem<String>(
-                                  onTap: () {
-                                    print('Edited');
-                                  },
-                                  value: 'Edit',
-                                  child: const Row(
-                                    children: <Widget>[
-                                      Icon(Icons.edit_calendar_outlined,
-                                          color: Colors.grey),
-                                      SizedBox(
-                                          width:
-                                              8.0), // You can adjust this value for desired spacing
-                                      Text('Edit'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                              onSelected: (String value) {
-                                // Handle your logic here
-                                print('You selected: $value');
-                              },
+                                    }
+                                  } else if (snapshot.hasError) {
+                                    return Text('Error: ${snapshot.error}');
+                                  } else {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  return const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Text(
+                                        'No description found for this service.'),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
+                            if (!isLastRound)
+                              const Divider(
+                                  color: Colors.grey,
+                                  thickness: 0.5,
+                                  height: 0.0),
+                          ],
+                        );
+                      }).toList(),
                     ),
                   ],
                 ),
