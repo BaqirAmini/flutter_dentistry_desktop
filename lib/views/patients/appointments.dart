@@ -45,54 +45,6 @@ class Appointment extends StatefulWidget {
 }
 
 class _AppointmentState extends State<Appointment> {
-// This function deletes an appointment after opening a dialog box.
-  static onDeleteAppointment(BuildContext context, int id) {
-    return showDialog(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          return AlertDialog(
-            title: Directionality(
-              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text('Delete an appointment'),
-            ),
-            content: Directionality(
-              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text(
-                  'Are you sure you want to delete this appointment'),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () =>
-                    Navigator.of(context, rootNavigator: true).pop(),
-                child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
-              ),
-              TextButton(
-                onPressed: () async {
-                  final conn = await onConnToDb();
-                  final deleteResult = await conn
-                      .query('DELETE FROM appointments WHERE apt_ID = ?', [id]);
-                  if (deleteResult.affectedRows! > 0) {
-                    _onShowSnack(Colors.green, 'Deleted');
-                    setState(
-                      () {
-                        _getAppointment();
-                      },
-                    );
-                  }
-                  await conn.close();
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context, rootNavigator: true).pop();
-                },
-                child: Text(translations[selectedLanguage]?['Delete'] ?? ''),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     // Fetch translations keys based on the selected language.
@@ -180,7 +132,56 @@ class _AppointmentState extends State<Appointment> {
 }
 
 // This widget contains all appointment records and details using loop
-class _AppointmentContent extends StatelessWidget {
+class _AppointmentContent extends StatefulWidget {
+  @override
+  State<_AppointmentContent> createState() => _AppointmentContentState();
+}
+
+class _AppointmentContentState extends State<_AppointmentContent> {
+// This function deletes an appointment after opening a dialog box.
+  onDeleteAppointment(BuildContext context, int id, Function refresh) {
+    return showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: const Text('Delete an appointment'),
+            ),
+            content: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: const Text(
+                  'Are you sure you want to delete this appointment'),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
+                child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final conn = await onConnToDb();
+                  final deleteResult = await conn
+                      .query('DELETE FROM appointments WHERE apt_ID = ?', [id]);
+                  if (deleteResult.affectedRows! > 0) {
+                    _onShowSnack(Colors.green, 'Deleted');
+                    refresh();
+                  }
+                  await conn.close();
+                  // ignore: use_build_context_synchronously
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
+                child: Text(translations[selectedLanguage]?['Delete'] ?? ''),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -389,10 +390,11 @@ class _AppointmentContent extends StatelessWidget {
                                                   IconButton(
                                                     splashRadius: 23,
                                                     onPressed: () =>
-                                                        _AppointmentState
-                                                            .onDeleteAppointment(
-                                                                context,
-                                                                a.aptID),
+                                                        onDeleteAppointment(
+                                                            context, a.aptID,
+                                                            () {
+                                                      setState(() {});
+                                                    }),
                                                     icon: const Icon(
                                                         Icons
                                                             .delete_forever_outlined,
