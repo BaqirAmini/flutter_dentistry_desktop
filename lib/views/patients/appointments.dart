@@ -59,28 +59,21 @@ class _AppointmentState extends State<Appointment> {
           key: _globalKey4Appt,
           child: Scaffold(
             floatingActionButton: FloatingActionButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NewAppointment()),
+                ).then((_) {
+                  setState(() {});
+                });
+                // This is assigned to identify appointments.round i.e., if it is true round is stored '1' otherwise increamented by 1
+                GlobalUsage.newPatientCreated = false;
+              },
               tooltip: 'افزودن جلسه جدید',
-              child: InkWell(
-                customBorder: const CircleBorder(),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const NewAppointment()),
-                  ).then((_) {
-                    setState(() {});
-                  });
-                  // This is assigned to identify appointments.round i.e., if it is true round is stored '1' otherwise increamented by 1
-                  GlobalUsage.newPatientCreated = false;
-                },
-                child: const Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.white,
-                  ),
-                ),
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
               ),
             ),
             appBar: AppBar(
@@ -182,6 +175,157 @@ class _AppointmentContentState extends State<_AppointmentContent> {
     );
   }
 
+// This function edits an appointment
+  /* onEditAppointment(BuildContext context, int id, String date, double paidAmount, double dueAmount) {
+// The global for the form
+    final formKey = GlobalKey<FormState>();
+// The text editing controllers for the TextFormFields
+    final dateController = TextEditingController();
+    final paidController = TextEditingController();
+    final dueController = TextEditingController();
+
+  
+
+    return showDialog(
+      context: context,
+      builder: ((context) {
+        return AlertDialog(
+          title: const Directionality(
+            textDirection: TextDirection.rtl,
+            child: Text(
+              'تغییر سرویس',
+              style: TextStyle(color: Colors.blue),
+            ),
+          ),
+          content: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Form(
+              key: formKey,
+              child: SizedBox(
+                width: 500.0,
+                height: 190.0,
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.all(15.0),
+                      child: TextFormField(
+                        controller: nameController,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'نام سرویس الزامی میباشد.';
+                          } else if (value.length < 5 || value.length > 30) {
+                            return 'نام سرویس باید 5 الی 30 حرف شد.';
+                          }
+                        },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(regExOnlyAbc),
+                          ),
+                        ],
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'نام سرویس (خدمات)',
+                          suffixIcon: Icon(Icons.medical_services_sharp),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
+                          errorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.red)),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 1.5)),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(15.0),
+                      child: TextFormField(
+                        controller: feeController,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+                        ],
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'فیس تعیین شده',
+                          suffixIcon: Icon(Icons.money),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.grey)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
+                          errorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.red)),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 1.5)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            Directionality(
+              textDirection: TextDirection.rtl,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('لغو')),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (formKey.currentState!.validate()) {
+                        String serName = nameController.text;
+                        double serFee = feeController.text.isNotEmpty
+                            ? double.parse(feeController.text)
+                            : 0;
+                        final conn = await onConnToDb();
+                        final results = await conn.query(
+                            'UPDATE services SET ser_name = ?, ser_fee = ? WHERE ser_ID = ?',
+                            [serName, serFee, serviceId]);
+                        if (results.affectedRows! > 0) {
+                          _onShowSnack(
+                              Colors.green, 'سرویس موفقانه تغییر کرد.');
+                          setState(() {});
+                        } else {
+                          _onShowSnack(Colors.red,
+                              'شما هیچ تغییراتی به این سرویس نیاوردید.');
+                        }
+                        // ignore: use_build_context_synchronously
+                        Navigator.of(context, rootNavigator: true).pop();
+                        await conn.close();
+                      }
+                    },
+                    child: const Text(' تغییر دادن'),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      }),
+    );
+  }
+ */
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -382,12 +526,14 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                         .spaceEvenly,
                                                 children: [
                                                   IconButton(
+                                                    tooltip: 'Edit',
                                                     splashRadius: 23,
                                                     onPressed: () {},
                                                     icon: const Icon(Icons.edit,
                                                         size: 16.0),
                                                   ),
                                                   IconButton(
+                                                    tooltip: 'Delete',
                                                     splashRadius: 23,
                                                     onPressed: () =>
                                                         onDeleteAppointment(
