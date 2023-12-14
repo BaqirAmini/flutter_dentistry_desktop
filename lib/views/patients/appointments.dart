@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
@@ -41,12 +42,17 @@ class _AppointmentState extends State<Appointment> {
             tooltip: 'افزودن جلسه جدید',
             child: InkWell(
               customBorder: const CircleBorder(),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const NewAppointment()),
-              ).then((_) {
-                setState(() {});
-              }),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const NewAppointment()),
+                ).then((_) {
+                  setState(() {});
+                });
+                // This is assigned to identify appointments.round i.e., if it is true round is stored '1' otherwise increamented by 1
+                GlobalUsage.newPatientCreated = false;
+              },
               child: const Padding(
                 padding: EdgeInsets.all(5.0),
                 child: Icon(
@@ -124,7 +130,8 @@ class _AppointmentContent extends StatelessWidget {
                         Container(
                           width: double.infinity,
                           color: Colors.grey[200],
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 5.0),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
                             children: [
@@ -133,7 +140,8 @@ class _AppointmentContent extends StatelessWidget {
                                 style: const TextStyle(fontSize: 18.0),
                               ),
                               Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 400.0),
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 400.0),
                                 child: Card(
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
@@ -312,8 +320,10 @@ class _AppointmentContent extends StatelessWidget {
                                         );
                                       }
                                       return const Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 8.0),
-                                        child: Text('No description found for this service.'),
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 8.0),
+                                        child: Text(
+                                            'No description found for this service.'),
                                       );
                                     },
                                   ),

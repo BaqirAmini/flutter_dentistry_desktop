@@ -22,4 +22,7 @@ class GlobalUsage {
   static const allowedDigPeriod = "[0-9.]";
   /* -------------------/. CHARACTERS/DIGITS ALLOWED ---------------- */
  
+//  This static variable specifies whether the appointment 
+//is created with creating a new patient or an existing patient (true = new patient created, false = patient already existing)
+ static bool newPatientCreated = true;
 }

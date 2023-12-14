@@ -1281,8 +1281,8 @@ onDeletePatient(BuildContext context, Function onDelete) {
     builder: (ctx) => AlertDialog(
       title: Directionality(
         textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-        child:
-            Text('${translations[selectedLanguage]?['DeletePatientTitle'] ?? ''} $fName $lName'),
+        child: Text(
+            '${translations[selectedLanguage]?['DeletePatientTitle'] ?? ''} $fName $lName'),
       ),
       content: Directionality(
         textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
@@ -1467,6 +1467,8 @@ class _PatientDataTableState extends State<PatientDataTable> {
                         .then((_) {
                       _fetchData();
                     });
+                    // This is assigned to identify appointments.round i.e., if it is true round is stored '1' otherwise increamented by 1
+                    GlobalUsage.newPatientCreated = true;
                   },
                   child: Text(
                       translations[selectedLanguage]?['AddNewPatient'] ?? ''),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/finance/fee/fee_related_fields.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
@@ -584,7 +585,7 @@ class AppointmentFunction {
             patient,
             service,
             FeeInfo.installment,
-            _round,
+            GlobalUsage.newPatientCreated ? 1 : _round,
             FeeInfo.discountRate,
             FeeInfo.receivedAmount,
             FeeInfo.dueAmount,
