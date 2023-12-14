@@ -3,12 +3,11 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 09, 2023 at 06:49 PM
+-- Generation Time: Dec 14, 2023 at 03:05 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
-
 -- Create database
-CREATE DATABASE IF NOT EXISTS dentistry_db;
+CREATE DATBASE IF NOT EXISTS dentistry_db;
 USE dentistry_db;
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -66,7 +65,16 @@ INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `service_ID`, `install
 (58, 0, 80, 3, 0, 1, 0.00, '1000.00', '0.00', '2023-12-08', 17, NULL),
 (59, 0, 80, 8, 0, 1, 0.00, '500.00', '0.00', '2023-12-08', 17, NULL),
 (60, 0, 81, 13, 2, 1, 0.00, '500.00', '500.00', '2023-12-07', 17, NULL),
-(61, 0, 82, 12, 2, 1, 0.00, '600.00', '600.00', '2023-12-09', 17, NULL);
+(61, 0, 82, 12, 2, 1, 0.00, '600.00', '600.00', '2023-12-09', 17, NULL),
+(62, 0, 86, 1, 0, 1, 5.00, '665.00', '0.00', '2023-12-07', 17, NULL),
+(63, 0, 86, 3, 1, 2, 5.00, '500.00', '200.00', '2023-12-11', 17, NULL),
+(64, 0, 86, 2, 4, 1, 0.00, '1000.00', '3000.00', '2023-12-07', 17, NULL),
+(65, 0, 86, 15, 0, 3, 2.00, '980.00', '0.00', '2023-12-13', 17, NULL),
+(66, 0, 86, 1, 0, 4, 0.00, '800.00', '0.00', '2021-10-18', 17, NULL),
+(67, 0, 86, 15, 2, 4, 2.00, '500.00', '676.00', '2023-12-13', 17, NULL),
+(68, 0, 84, 11, 0, 2, 0.00, '3000.00', '0.00', '2023-12-14', 17, NULL),
+(69, 0, 84, 1, 0, 3, 0.00, '500.00', '0.00', '2023-12-14', 17, NULL),
+(70, 0, 87, 14, 0, 5, 0.00, '1500.00', '0.00', '2023-12-14', 17, NULL);
 
 -- --------------------------------------------------------
 
@@ -208,7 +216,15 @@ INSERT INTO `condition_details` (`cond_detail_ID`, `cond_ID`, `result`, `severty
 (115, 6, 0, NULL, NULL, NULL, 86, NULL),
 (116, 7, 0, NULL, NULL, NULL, 86, NULL),
 (117, 8, 0, NULL, NULL, NULL, 86, NULL),
-(118, 9, 1, 'متوسط', 'نامعلوم', '2018-12-05', 86, 'خیلی وقت پیش داشت');
+(118, 9, 1, 'متوسط', 'نامعلوم', '2018-12-05', 86, 'خیلی وقت پیش داشت'),
+(119, 1, 0, NULL, NULL, NULL, 87, NULL),
+(120, 2, 0, NULL, NULL, NULL, 87, NULL),
+(121, 4, 0, NULL, NULL, NULL, 87, NULL),
+(122, 5, 0, NULL, NULL, NULL, 87, NULL),
+(123, 6, 1, 'خفیف', '1 ماه', '2023-10-01', 87, 'موقع روز بیشتر است'),
+(124, 7, 0, NULL, NULL, NULL, 87, NULL),
+(125, 8, 0, NULL, NULL, NULL, 87, NULL),
+(126, 9, 0, NULL, NULL, NULL, 87, NULL);
 
 -- --------------------------------------------------------
 
@@ -297,7 +313,8 @@ INSERT INTO `patients` (`pat_ID`, `cli_ID`, `staff_ID`, `firstname`, `lastname`,
 (81, 0, 17, 'Fatima', 'Rahimi', 'زن', 38, 'متأهل', '0702020232', '2023-11-26 16:28:49', 'AB+', ''),
 (82, 0, 17, 'میرزاحسین', 'فیضی', 'مرد', 27, 'متأهل', '0700010232', '2023-12-05 16:15:47', 'نامعلوم', ''),
 (84, 0, 17, 'Rahim', 'Nasimi', 'مرد', 26, 'مجرد', '0771023232', '2023-12-06 16:23:38', 'نامعلوم', ''),
-(86, 0, 17, 'علی مامد', 'امیری', 'مرد', 26, 'متأهل', '0772737310', '2023-12-08 06:47:24', 'نامعلوم', 'کابل، برچی سنتر');
+(86, 0, 17, 'علی مامد', 'امیری', 'مرد', 26, 'متأهل', '0772737310', '2023-12-08 06:47:24', 'نامعلوم', 'کابل، برچی سنتر'),
+(87, 0, 17, 'عالیه', 'فخری', 'زن', 10, 'مجرد', '0777234320', '2023-12-14 01:58:57', 'O-', 'کابل، افشار سیلو');
 
 -- --------------------------------------------------------
 
@@ -306,6 +323,7 @@ INSERT INTO `patients` (`pat_ID`, `cli_ID`, `staff_ID`, `firstname`, `lastname`,
 --
 
 CREATE TABLE `patient_services` (
+  `ps_ID` int(11) NOT NULL,
   `pat_ID` int(11) NOT NULL,
   `ser_ID` int(11) NOT NULL,
   `req_ID` int(11) NOT NULL,
@@ -316,41 +334,20 @@ CREATE TABLE `patient_services` (
 -- Dumping data for table `patient_services`
 --
 
-INSERT INTO `patient_services` (`pat_ID`, `ser_ID`, `req_ID`, `value`) VALUES
-(72, 2, 1, 'Q3-C,Q4-B,Q4-C'),
-(72, 2, 2, 'پرکاری باید طی سه جلسه انجام شود'),
-(72, 2, 3, 'Operative'),
-(72, 2, 4, 'Amalgam'),
-(75, 7, 1, 'Q3-8,Q1-8'),
-(75, 7, 2, 'دندانهای عقلی که تخریب گردیده'),
-(76, 15, 1, 'Q1-1,Q1-2,Q1-3,Q1-4,Q1-5,Q1-6,Q1-7,Q1-8,Q3-8'),
-(76, 15, 2, 'فک بالا چپ و فک پایین راست فقط دندان آخر'),
-(79, 7, 2, ''),
-(79, 7, 7, 'فک بالا'),
-(79, 7, 9, 'هردو'),
-(80, 3, 2, 'سفید کردن دندان'),
-(80, 3, 5, 'یک مرحله'),
-(80, 8, 2, ''),
-(80, 9, 1, 'Q3-8,Q2-5'),
-(80, 9, 2, 'فقط این دو دندان نیاز به پوش دارد'),
-(80, 9, 3, 'Partial'),
-(81, 12, 2, 'فقط برای تست'),
-(81, 13, 2, 'sdddddddddddssss'),
-(82, 7, 1, 'Q2-5,Q2-6,Q3-4,Q4-1'),
-(82, 7, 2, 'این دندانها نیاز به ترمیم دارد'),
-(82, 7, 3, 'Tooth Reimplantation'),
-(82, 12, 2, 'ssdsdssssssssssssssssssssss'),
-(84, 1, 1, 'Q3-4'),
-(84, 1, 2, 'عصب کشی باید انجام شود'),
-(84, 5, 2, ''),
-(84, 11, 1, 'Q1-4'),
-(84, 11, 2, ''),
-(84, 11, 3, 'Vital'),
-(84, 11, 4, 'Zirconia'),
-(86, 3, 2, 'مرحله سفید کردن دندان'),
-(86, 3, 5, 'یک مرحله'),
-(86, 15, 1, 'Q2-5,Q3-1'),
-(86, 15, 2, 'فقط دو دندان شانده شود');
+INSERT INTO `patient_services` (`ps_ID`, `pat_ID`, `ser_ID`, `req_ID`, `value`) VALUES
+(1, 86, 1, 1, 'Q3-6'),
+(2, 86, 1, 2, 'توضیحات مربوط به implant'),
+(3, 86, 15, 1, 'Q4-3'),
+(4, 86, 15, 2, 'Testing implant description'),
+(5, 86, 15, 1, 'Q3-3'),
+(6, 86, 15, 2, 'Doing implant service '),
+(7, 84, 11, 1, 'Q1-3,Q1-2'),
+(8, 84, 11, 3, 'R.C.T'),
+(9, 84, 11, 4, 'Metal-Porcelain'),
+(10, 84, 11, 2, 'این دو دندان نیاز به پوش دارد'),
+(11, 84, 1, 1, 'Q3-5'),
+(12, 84, 1, 2, 'عصب کشی دندان پنجم پایین راست'),
+(13, 87, 14, 2, 'اصلاح طرح لبخند شود');
 
 -- --------------------------------------------------------
 
@@ -570,9 +567,10 @@ ALTER TABLE `patients`
 -- Indexes for table `patient_services`
 --
 ALTER TABLE `patient_services`
-  ADD PRIMARY KEY (`pat_ID`,`ser_ID`,`req_ID`),
+  ADD PRIMARY KEY (`ps_ID`,`pat_ID`,`ser_ID`,`req_ID`),
+  ADD KEY `pat_ID` (`pat_ID`),
   ADD KEY `ser_ID` (`ser_ID`),
-  ADD KEY `patient_services_ibfk_3` (`req_ID`);
+  ADD KEY `req_ID` (`req_ID`);
 
 --
 -- Indexes for table `services`
@@ -621,7 +619,7 @@ ALTER TABLE `tax_payments`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
 
 --
 -- AUTO_INCREMENT for table `clinics`
@@ -639,7 +637,7 @@ ALTER TABLE `conditions`
 -- AUTO_INCREMENT for table `condition_details`
 --
 ALTER TABLE `condition_details`
-  MODIFY `cond_detail_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
+  MODIFY `cond_detail_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
 -- AUTO_INCREMENT for table `expenses`
@@ -657,7 +655,13 @@ ALTER TABLE `expense_detail`
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patients`
-  MODIFY `pat_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
+  MODIFY `pat_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
+
+--
+-- AUTO_INCREMENT for table `patient_services`
+--
+ALTER TABLE `patient_services`
+  MODIFY `ps_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `services`
@@ -731,9 +735,9 @@ ALTER TABLE `patients`
 -- Constraints for table `patient_services`
 --
 ALTER TABLE `patient_services`
-  ADD CONSTRAINT `patient_services_ibfk_1` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `patient_services_ibfk_2` FOREIGN KEY (`ser_ID`) REFERENCES `services` (`ser_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `patient_services_ibfk_3` FOREIGN KEY (`req_ID`) REFERENCES `service_requirements` (`req_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `pat_ser_pat_id_fk` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `pat_ser_ser_id_fk` FOREIGN KEY (`ser_ID`) REFERENCES `services` (`ser_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `pat_ser_ser_req_fk` FOREIGN KEY (`req_ID`) REFERENCES `service_requirements` (`req_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `staff_auth`
