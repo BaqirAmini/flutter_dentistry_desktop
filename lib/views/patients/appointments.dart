@@ -311,7 +311,10 @@ class _AppointmentContent extends StatelessWidget {
                                           child: CircularProgressIndicator(),
                                         );
                                       }
-                                      return const Text('ssss');
+                                      return const Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                                        child: Text('No description found for this service.'),
+                                      );
                                     },
                                   ),
                                 ),
@@ -440,7 +443,7 @@ Future<Map<String, List<AppointmentDataModel>>> _getAppointment() async {
         INNER JOIN appointments a ON a.pat_ID = p.pat_ID
         INNER JOIN staff st ON a.staff_ID = st.staff_ID
         INNER JOIN services s ON s.ser_ID = a.service_ID
-         WHERE a.pat_ID = ? ORDER BY a.round DESC, a.meet_date DESC''',
+         WHERE a.pat_ID = ? ORDER BY round DESC, a.meet_date DESC''',
     [PatientInfo.patID],
   );
 

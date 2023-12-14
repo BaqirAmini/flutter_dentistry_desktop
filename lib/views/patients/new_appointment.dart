@@ -50,7 +50,7 @@ class _NewAppointmentState extends State<NewAppointment> {
   Future<int> fetchRound() async {
     final conn = await onConnToDb();
     final roundResults = await conn.query(
-        'SELECT round FROM appointments WHERE pat_ID = ? ORDER BY meet_date DESC',
+        'SELECT round FROM appointments WHERE pat_ID = ? ORDER BY round DESC',
         [PatientInfo.patID]);
     if (roundResults.isNotEmpty) {
       await conn.close();
