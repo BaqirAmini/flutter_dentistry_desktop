@@ -57,7 +57,7 @@ class _NewAppointmentState extends State<NewAppointment> {
       await conn.close();
       return roundResults.first['round'] as int;
     } else {
-      throw Exception('No rounds for this patient.');
+      return 0;
     }
   }
 /* -----------/. New appointments step lists ----------- */
