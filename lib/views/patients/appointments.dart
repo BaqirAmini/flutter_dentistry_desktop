@@ -348,310 +348,323 @@ class _AppointmentContentState extends State<_AppointmentContent> {
     return FutureBuilder(
       future: _getAppointment(),
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          Map<String, List<AppointmentDataModel>>? appoints = snapshot.data;
-          return ListView(
-            children: appoints!.entries.map((entry) {
-              var visitDate = entry.key;
-              var rounds = entry.value;
-              return Card(
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      color: Colors.grey[200],
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0, vertical: 5.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Text(
-                            visitDate,
-                            style: const TextStyle(fontSize: 18.0),
-                          ),
-                          Container(
-                            margin:
-                                const EdgeInsets.symmetric(horizontal: 400.0),
-                            child: Card(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0)),
-                                elevation: 0,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: Text(
-                                      'Round: ${rounds.first.round.toString()}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall),
-                                )),
-                          )
-                        ],
-                      ),
-                    ),
-                    Column(
-                      children: rounds.asMap().entries.map((roundEntry) {
-                        var a = roundEntry.value;
-                        var isLastRound = roundEntry.key == rounds.length - 1;
-                        return Column(
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+            ],
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+              child: Text('Error loading appointments. ${snapshot.error}'));
+        } else {
+          if (snapshot.data!.isEmpty) {
+            return const Center(
+              child: Text('No appointment found.'),
+            );
+          } else {
+            Map<String, List<AppointmentDataModel>>? appoints = snapshot.data;
+            return ListView(
+              children: appoints!.entries.map((entry) {
+                var visitDate = entry.key;
+                var rounds = entry.value;
+                return Card(
+                  child: Column(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        color: Colors.grey[200],
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0, vertical: 5.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
                           children: [
-                            ExpandableCard(
-                              title: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.green,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                                color: Colors.green,
-                                                width: 2.0),
-                                          ),
-                                          child: const Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Icon(
-                                              Icons.calendar_today_outlined,
-                                              color: Colors.white,
+                            Text(
+                              visitDate,
+                              style: const TextStyle(fontSize: 18.0),
+                            ),
+                            Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 400.0),
+                              child: Card(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(30.0)),
+                                  elevation: 0,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5.0),
+                                    child: Text(
+                                        'Round: ${rounds.first.round.toString()}',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelSmall),
+                                  )),
+                            )
+                          ],
+                        ),
+                      ),
+                      Column(
+                        children: rounds.asMap().entries.map((roundEntry) {
+                          var a = roundEntry.value;
+                          var isLastRound = roundEntry.key == rounds.length - 1;
+                          return Column(
+                            children: [
+                              ExpandableCard(
+                                title: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.green,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                  color: Colors.green,
+                                                  width: 2.0),
                                             ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              a.serviceName,
-                                              style: const TextStyle(
-                                                  fontSize: 18.0),
-                                            ),
-                                            Text(
-                                              'تحت نظر: ${a.staffFirstName} ${a.staffLastName}',
-                                              style: const TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 12.0),
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
-                                      children: [
-                                        Text(
-                                          'Paid: ${a.paidAmount}',
-                                          style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 12.0),
-                                        ),
-                                        Text(
-                                          'Due: ${a.dueAmount}',
-                                          style: const TextStyle(
-                                              color: Colors.red,
-                                              fontSize: 12.0),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ),
-                              child: FutureBuilder(
-                                future: _getServices(a.serviceID),
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    var services = snapshot.data;
-                                    for (var service in services!) {
-                                      return ListTile(
-                                        title: Column(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  const Text(
-                                                    'Service Name',
-                                                    style: TextStyle(
-                                                        fontSize: 12.0,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  Text(
-                                                    a.serviceName,
-                                                    style: const TextStyle(
-                                                      color: Color.fromARGB(
-                                                          255, 112, 112, 112),
-                                                      fontSize: 12.0,
-                                                    ),
-                                                  ),
-                                                ],
+                                            child: const Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: Icon(
+                                                Icons.calendar_today_outlined,
+                                                color: Colors.white,
                                               ),
                                             ),
-                                            for (var req
-                                                in service.requirements.entries)
+                                          ),
+                                          const SizedBox(width: 10.0),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                a.serviceName,
+                                                style: const TextStyle(
+                                                    fontSize: 18.0),
+                                              ),
+                                              Text(
+                                                'تحت نظر: ${a.staffFirstName} ${a.staffLastName}',
+                                                style: const TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 12.0),
+                                              )
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            'Paid: ${a.paidAmount}',
+                                            style: const TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 12.0),
+                                          ),
+                                          Text(
+                                            'Due: ${a.dueAmount}',
+                                            style: const TextStyle(
+                                                color: Colors.red,
+                                                fontSize: 12.0),
+                                          )
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                child: FutureBuilder(
+                                  future: _getServices(a.serviceID),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasData) {
+                                      var services = snapshot.data;
+                                      for (var service in services!) {
+                                        return ListTile(
+                                          title: Column(
+                                            children: [
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.all(8.0),
                                                 child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
-                                                    Text(
-                                                      req.key ==
-                                                              'Teeth Selection'
-                                                          ? 'Teeth Selected'
-                                                          : req.key,
-                                                      style: const TextStyle(
+                                                    const Text(
+                                                      'Service Name',
+                                                      style: TextStyle(
                                                           fontSize: 12.0,
                                                           fontWeight:
                                                               FontWeight.bold),
                                                     ),
-                                                    Expanded(
-                                                      child: Text(
-                                                        req.key ==
-                                                                'Teeth Selection'
-                                                            ? req.value
-                                                                .split(',')
-                                                                .map(
-                                                                    codeToDescription)
-                                                                .join(', ')
-                                                            : req.value,
-                                                        textAlign:
-                                                            TextAlign.end,
-                                                        style: const TextStyle(
-                                                          color: Color.fromARGB(
-                                                              255,
-                                                              112,
-                                                              112,
-                                                              112),
-                                                          fontSize: 12.0,
-                                                        ),
+                                                    Text(
+                                                      a.serviceName,
+                                                      style: const TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 112, 112, 112),
+                                                        fontSize: 12.0,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
                                               ),
-                                            SizedBox(
-                                              width: 200,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  IconButton(
-                                                    tooltip: 'Edit',
-                                                    splashRadius: 23,
-                                                    onPressed: () {},
-                                                    icon: const Icon(Icons.edit,
-                                                        size: 16.0),
+                                              for (var req in service
+                                                  .requirements.entries)
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        req.key ==
+                                                                'Teeth Selection'
+                                                            ? 'Teeth Selected'
+                                                            : req.key,
+                                                        style: const TextStyle(
+                                                            fontSize: 12.0,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Expanded(
+                                                        child: Text(
+                                                          req.key ==
+                                                                  'Teeth Selection'
+                                                              ? req.value
+                                                                  .split(',')
+                                                                  .map(
+                                                                      codeToDescription)
+                                                                  .join(', ')
+                                                              : req.value,
+                                                          textAlign:
+                                                              TextAlign.end,
+                                                          style:
+                                                              const TextStyle(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    112,
+                                                                    112,
+                                                                    112),
+                                                            fontSize: 12.0,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
-                                                  IconButton(
-                                                    tooltip: 'Delete',
-                                                    splashRadius: 23,
-                                                    onPressed: () =>
-                                                        onDeleteAppointment(
-                                                            context, a.aptID,
-                                                            () {
-                                                      setState(() {});
-                                                    }),
-                                                    icon: const Icon(
-                                                        Icons
-                                                            .delete_forever_outlined,
-                                                        size: 16.0),
-                                                  )
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    }
-                                  } else if (snapshot.hasError) {
-                                    return Text('Error: ${snapshot.error}');
-                                  } else {
-                                    return const Row(children: [
-                                      CircularProgressIndicator(),
-                                    ]);
-                                  }
-                                  return Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 8.0),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                            'No description found for this service.',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall),
-                                        SizedBox(height: 10.0),
-                                        SizedBox(
-                                          width: 200,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              IconButton(
-                                                tooltip: 'Edit',
-                                                splashRadius: 23,
-                                                onPressed: () {},
-                                                icon: const Icon(
-                                                  Icons.edit,
-                                                  size: 16.0,
-                                                  color: Color.fromARGB(
-                                                      255, 112, 112, 112),
                                                 ),
-                                              ),
-                                              IconButton(
-                                                tooltip: 'Delete',
-                                                splashRadius: 23,
-                                                onPressed: () =>
-                                                    onDeleteAppointment(
-                                                        context, a.aptID, () {
-                                                  setState(() {});
-                                                }),
-                                                icon: const Icon(
-                                                  Icons.delete_forever_outlined,
-                                                  size: 16.0,
-                                                  color: Color.fromARGB(
-                                                      255, 112, 112, 112),
+                                              SizedBox(
+                                                width: 200,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    IconButton(
+                                                      tooltip: 'Edit',
+                                                      splashRadius: 23,
+                                                      onPressed: () {},
+                                                      icon: const Icon(
+                                                          Icons.edit,
+                                                          size: 16.0),
+                                                    ),
+                                                    IconButton(
+                                                      tooltip: 'Delete',
+                                                      splashRadius: 23,
+                                                      onPressed: () =>
+                                                          onDeleteAppointment(
+                                                              context, a.aptID,
+                                                              () {
+                                                        setState(() {});
+                                                      }),
+                                                      icon: const Icon(
+                                                          Icons
+                                                              .delete_forever_outlined,
+                                                          size: 16.0),
+                                                    )
+                                                  ],
                                                 ),
                                               )
                                             ],
                                           ),
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                },
+                                        );
+                                      }
+                                    } else if (snapshot.hasError) {
+                                      return Text('Error: ${snapshot.error}');
+                                    } else {
+                                      return const Row(children: [
+                                        CircularProgressIndicator(),
+                                      ]);
+                                    }
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                              'No description found for this service.',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall),
+                                          const SizedBox(height: 10.0),
+                                          SizedBox(
+                                            width: 200,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                IconButton(
+                                                  tooltip: 'Edit',
+                                                  splashRadius: 23,
+                                                  onPressed: () {},
+                                                  icon: const Icon(
+                                                    Icons.edit,
+                                                    size: 16.0,
+                                                    color: Color.fromARGB(
+                                                        255, 112, 112, 112),
+                                                  ),
+                                                ),
+                                                IconButton(
+                                                  tooltip: 'Delete',
+                                                  splashRadius: 23,
+                                                  onPressed: () =>
+                                                      onDeleteAppointment(
+                                                          context, a.aptID, () {
+                                                    setState(() {});
+                                                  }),
+                                                  icon: const Icon(
+                                                    Icons
+                                                        .delete_forever_outlined,
+                                                    size: 16.0,
+                                                    color: Color.fromARGB(
+                                                        255, 112, 112, 112),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                            if (!isLastRound)
-                              const Divider(
-                                  color: Colors.grey,
-                                  thickness: 0.5,
-                                  height: 0.0),
-                          ],
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(), // Convert Iterable to List
-          );
-        } else if (snapshot.hasData.toString().isEmpty) {
-          return Center(
-              child: Text('Error loading appointment ${snapshot.error}.'));
-        } else {
-          return Row(
-            children: [
-              CircularProgressIndicator(),
-            ],
-          );
+                              if (!isLastRound)
+                                const Divider(
+                                    color: Colors.grey,
+                                    thickness: 0.5,
+                                    height: 0.0),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(), // Convert Iterable to List
+            );
+          }
         }
       },
     );
