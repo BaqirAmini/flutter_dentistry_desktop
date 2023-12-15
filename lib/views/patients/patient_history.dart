@@ -184,15 +184,17 @@ class _HistoryContentState extends State<_HistoryContent> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               const Text('Diagnosis Date',
-                                  style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold)),
+                                  style: TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold)),
                               const SizedBox(width: 15.0),
                               Expanded(
                                 child: Text(
                                   h.dianosisDate!,
                                   textAlign: TextAlign.end,
                                   style: const TextStyle(
-                                      color:
-                                          Color.fromARGB(255, 112, 112, 112), fontSize: 12.0),
+                                      color: Color.fromARGB(255, 112, 112, 112),
+                                      fontSize: 12.0),
                                 ),
                               ),
                             ],
@@ -212,8 +214,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                   h.severty!,
                                   textAlign: TextAlign.end,
                                   style: const TextStyle(
-                                      color:
-                                          Color.fromARGB(255, 112, 112, 112), fontSize: 12.0),
+                                      color: Color.fromARGB(255, 112, 112, 112),
+                                      fontSize: 12.0),
                                 ),
                               ),
                             ],
@@ -233,8 +235,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                   h.duration!,
                                   textAlign: TextAlign.end,
                                   style: const TextStyle(
-                                      color:
-                                          Color.fromARGB(255, 112, 112, 112), fontSize: 12.0),
+                                      color: Color.fromARGB(255, 112, 112, 112),
+                                      fontSize: 12.0),
                                 ),
                               ),
                             ],
@@ -256,8 +258,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                       : h.notes.toString(),
                                   textAlign: TextAlign.end,
                                   style: const TextStyle(
-                                      color:
-                                          Color.fromARGB(255, 112, 112, 112), fontSize: 12.0),
+                                      color: Color.fromARGB(255, 112, 112, 112),
+                                      fontSize: 12.0),
                                 ),
                               ),
                             ],
@@ -269,8 +271,9 @@ class _HistoryContentState extends State<_HistoryContent> {
                 ),
               );
             }
-            return ListView(
-              children: <Widget>[
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 Visibility(
                   visible: positiveRecord > 0 ? true : false,
                   child: Padding(
@@ -281,7 +284,11 @@ class _HistoryContentState extends State<_HistoryContent> {
                     ),
                   ),
                 ),
-                ...hcChildren
+                Expanded(
+                  child: ListView(
+                    children: <Widget>[...hcChildren],
+                  ),
+                )
               ],
             );
           } else if (snapshot.hasError) {
