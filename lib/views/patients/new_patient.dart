@@ -879,35 +879,34 @@ class _NewPatientState extends State<NewPatient> {
       // Start a transaction
       await conn.transaction((ctx) async {
         for (var condID in _condResultGV.keys) {
-          // Prepare an insert query
-          var query =
-              'INSERT INTO condition_details (cond_ID, result, severty, duration, diagnosis_date, pat_ID, notes) VALUES (?, ?, ?, ?, ?, ?, ?)';
-          // Get the selected value ('مثبت' or 'منفی')
-          var selectedResult = _condResultGV[condID] == 1 ? 1 : 0;
-          var histDate = selectedResult == 1
-              ? _histDiagDateController[condID]!.text.isEmpty
-                  ? null
-                  : _histDiagDateController[condID]!.text
-              : null;
-          var histSeverty =
-              selectedResult == 1 ? _histCondGroupValue[condID] : null;
-          var histDuration =
-              selectedResult == 1 ? _durationGroupValue[condID] : null;
-          var histNotes = selectedResult == 1
-              ? _histNoteController[condID]!.text.isNotEmpty
-                  ? _histNoteController[condID]!.text
-                  : null
-              : null;
+          try {
+            // Prepare an insert query
+            var query =
+                'INSERT INTO condition_details (cond_ID, result, severty, duration, diagnosis_date, pat_ID, notes) VALUES (?, ?, ?, ?, ?, ?, ?)';
+            // Get the selected value ('مثبت' or 'منفی')
+            var selectedResult = _condResultGV[condID] == 1 ? 1 : 0;
+            var histDate = selectedResult == 1
+                ? _histDiagDateController[condID]?.text
+                : null;
+            var histSeverty =
+                selectedResult == 1 ? _histCondGroupValue[condID] : null;
+            var histDuration =
+                selectedResult == 1 ? _durationGroupValue[condID] : null;
+            var histNotes =
+                selectedResult == 1 ? _histNoteController[condID]?.text : null;
 
-          await conn.query(query, [
-            condID,
-            selectedResult.toInt(),
-            histSeverty,
-            histDuration,
-            histDate,
-            patientID,
-            histNotes
-          ]);
+            await conn.query(query, [
+              condID,
+              selectedResult.toInt(),
+              histSeverty,
+              histDuration,
+              histDate,
+              patientID,
+              histNotes
+            ]);
+          } catch (e) {
+            print('Error occured while inserting histories: $e');
+          }
         }
       });
 
@@ -921,6 +920,7 @@ class _NewPatientState extends State<NewPatient> {
 
 // Add a new patient
   Future<void> onAddNewPatient(BuildContext context) async {
+    _onAddPatientHistory(86);
     var staffId = StaffInfo.staffID;
     var firstName = _nameController.text;
     var lastName = _lNameController.text;
