@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
+import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() {
@@ -23,26 +25,35 @@ class PatientHistory extends StatelessWidget {
                 onPressed: () => Navigator.pop(context),
                 icon: const BackButtonIcon()),
             actions: [
-              Tooltip(
-                message: 'افزودن جلسه جدید',
-                child: InkWell(
-                  onTap: () {},
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2.0),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
+              /*  IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.health_and_safety_outlined),
+                tooltip: 'New History',
+                padding: const EdgeInsets.all(3.0),
+                splashRadius: 30.0,
+              ), */
+
+              IconButton(
+                onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const Patient()),
+                    (route) => route.settings.name == 'Patient'),
+                icon: const Icon(Icons.people_outline),
+                tooltip: 'Patients',
+                padding: const EdgeInsets.all(3.0),
+                splashRadius: 30.0,
               ),
-              const SizedBox(width: 15)
+              const SizedBox(width: 15.0),
+              IconButton(
+                // This routing approach removes all middle routes from the stack which are between dashboard and this page.
+                onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const Dashboard()),
+                    (route) => route.settings.name == 'Dashboard'),
+                icon: const Icon(Icons.home_outlined),
+                tooltip: 'Dashboard',
+                padding: const EdgeInsets.all(3.0),
+                splashRadius: 30.0,
+              ),
+              const SizedBox(width: 15.0)
             ],
           ),
           body: Center(
