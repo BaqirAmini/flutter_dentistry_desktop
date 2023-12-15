@@ -183,9 +183,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Text('Diagnosis Date',
-                                  style:
-                                      Theme.of(context).textTheme.labelLarge),
+                              const Text('Diagnosis Date',
+                                  style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold)),
                               const SizedBox(width: 15.0),
                               Expanded(
                                 child: Text(
@@ -193,7 +192,7 @@ class _HistoryContentState extends State<_HistoryContent> {
                                   textAlign: TextAlign.end,
                                   style: const TextStyle(
                                       color:
-                                          Color.fromARGB(255, 112, 112, 112)),
+                                          Color.fromARGB(255, 112, 112, 112), fontSize: 12.0),
                                 ),
                               ),
                             ],
@@ -203,9 +202,10 @@ class _HistoryContentState extends State<_HistoryContent> {
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: [
-                              Text('Severty',
-                                  style:
-                                      Theme.of(context).textTheme.labelLarge),
+                              const Text('Severty',
+                                  style: TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold)),
                               const SizedBox(width: 15.0),
                               Expanded(
                                 child: Text(
@@ -213,7 +213,7 @@ class _HistoryContentState extends State<_HistoryContent> {
                                   textAlign: TextAlign.end,
                                   style: const TextStyle(
                                       color:
-                                          Color.fromARGB(255, 112, 112, 112)),
+                                          Color.fromARGB(255, 112, 112, 112), fontSize: 12.0),
                                 ),
                               ),
                             ],
@@ -223,9 +223,10 @@ class _HistoryContentState extends State<_HistoryContent> {
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: [
-                              Text('Duration',
-                                  style:
-                                      Theme.of(context).textTheme.labelLarge),
+                              const Text('Duration',
+                                  style: TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold)),
                               const SizedBox(width: 15.0),
                               Expanded(
                                 child: Text(
@@ -233,7 +234,7 @@ class _HistoryContentState extends State<_HistoryContent> {
                                   textAlign: TextAlign.end,
                                   style: const TextStyle(
                                       color:
-                                          Color.fromARGB(255, 112, 112, 112)),
+                                          Color.fromARGB(255, 112, 112, 112), fontSize: 12.0),
                                 ),
                               ),
                             ],
@@ -243,9 +244,10 @@ class _HistoryContentState extends State<_HistoryContent> {
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
                             children: [
-                              Text('Description',
-                                  style:
-                                      Theme.of(context).textTheme.labelLarge),
+                              const Text('Description',
+                                  style: TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold)),
                               const SizedBox(width: 15.0),
                               Expanded(
                                 child: Text(
@@ -255,7 +257,7 @@ class _HistoryContentState extends State<_HistoryContent> {
                                   textAlign: TextAlign.end,
                                   style: const TextStyle(
                                       color:
-                                          Color.fromARGB(255, 112, 112, 112)),
+                                          Color.fromARGB(255, 112, 112, 112), fontSize: 12.0),
                                 ),
                               ),
                             ],
@@ -356,7 +358,7 @@ INNER JOIN condition_details d ON c.cond_ID = d.cond_ID WHERE d.pat_ID = ? ORDER
             result: row[2],
             severty: row[3] ?? "--",
             duration: row[4] ?? "--",
-            dianosisDate: row[5].toString().isEmpty || row[5] == null
+            dianosisDate: row[5].toString() == '0000-00-00' || row[5] == null
                 ? '--'
                 : row[5].toString(),
             notes: row[6].toString().isEmpty || row[6] == null
