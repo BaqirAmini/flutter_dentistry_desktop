@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
@@ -1155,23 +1155,22 @@ String reverseString(String input) {
   return input.split('').reversed.join('');
 }
 
-// Create the global key at the top level of your Dart file
-final GlobalKey<ScaffoldMessengerState> _globalKeyPDelete =
-    GlobalKey<ScaffoldMessengerState>();
-
 // This is shows snackbar when called
-void _onShowSnack(Color backColor, String msg) {
-  _globalKeyPDelete.currentState?.showSnackBar(
-    SnackBar(
-      backgroundColor: backColor,
-      content: SizedBox(
-        height: 20.0,
-        child: Center(
-          child: Text(msg),
-        ),
+void _onShowSnack(Color backColor, String msg, BuildContext context) {
+  Flushbar(
+    backgroundColor: backColor,
+    flushbarStyle: FlushbarStyle.GROUNDED,
+    flushbarPosition: FlushbarPosition.BOTTOM,
+    messageText: Directionality(
+      textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+      child: Text(
+        msg,
+        textAlign: TextAlign.center,
+        style: const TextStyle(color: Colors.white),
       ),
     ),
-  );
+    duration: const Duration(seconds: 3),
+  ).show(context);
 }
 
 class Patient extends StatefulWidget {
@@ -1242,28 +1241,23 @@ class _PatientState extends State<Patient> {
     fetchPatients();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ScaffoldMessenger(
-        key: _globalKeyPDelete,
-        child: Scaffold(
-          body: Directionality(
-            textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-            child: Scaffold(
-                appBar: AppBar(
-                  leading: Tooltip(
-                    message: 'رفتن به داشبورد',
-                    child: IconButton(
-                      icon: const Icon(Icons.home_outlined),
-                      onPressed: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Dashboard())),
-                    ),
+      home: Scaffold(
+        body: Directionality(
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+          child: Scaffold(
+              appBar: AppBar(
+                leading: Tooltip(
+                  message: 'رفتن به داشبورد',
+                  child: IconButton(
+                    icon: const Icon(Icons.home_outlined),
+                    onPressed: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => const Dashboard())),
                   ),
-                  title: Text(
-                      translations[selectedLanguage]?['AllPatients'] ?? ''),
                 ),
-                body: const PatientDataTable()),
-          ),
+                title:
+                    Text(translations[selectedLanguage]?['AllPatients'] ?? ''),
+              ),
+              body: const PatientDataTable()),
         ),
       ),
     );
@@ -1307,13 +1301,17 @@ onDeletePatient(BuildContext context, Function onDelete) {
                     final results = await conn.query(
                         'DELETE FROM patients WHERE pat_ID = ?', [patientId]);
                     if (results.affectedRows! > 0) {
+                      // ignore: use_build_context_synchronously
                       _onShowSnack(
                           Colors.green,
                           translations[selectedLanguage]?['DeleteSuccess'] ??
-                              '');
+                              '',
+                          context);
                       onDelete();
                     } else {
-                      _onShowSnack(Colors.red, 'متاسفم، مریض حذف نشد.');
+                      // ignore: use_build_context_synchronously
+                      _onShowSnack(
+                          Colors.red, 'متاسفم، مریض حذف نشد.', context);
                     }
                     await conn.close();
                   } catch (e) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/appointments.dart';
 import 'package:flutter_dentistry/views/patients/patient_history.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,9 +8,6 @@ import 'package:flutter_dentistry/views/patients/patient_info.dart';
 void main() {
   runApp(const PatientDetail());
 }
-
-// Create the global key at the top level of your Dart file
-final GlobalKey _myKey = GlobalKey();
 
 class PatientDetail extends StatelessWidget {
   const PatientDetail({Key? key}) : super(key: key);
@@ -27,6 +25,19 @@ class PatientDetail extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
               icon: const BackButtonIcon(),
             ),
+            actions: [
+              IconButton(
+                // onPressed: () {},
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => Dashboard(),
+                )),
+                icon: const Icon(Icons.home_outlined),
+                tooltip: 'Dashboard',
+                padding: const EdgeInsets.all(3.0),
+                splashRadius: 30.0,
+              ),
+              const SizedBox(width: 15.0)
+            ],
           ),
           body: SizedBox(
             height: MediaQuery.of(context).size.height,

@@ -1,41 +1,40 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/new_appointment.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
-import 'package:flutter_dentistry/views/patients/tooth_selection_info.dart';
-import 'package:flutter_dentistry/views/services/service_related_fields.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(const Appointment());
 }
 
-// Create the global key at the top level of your Dart file
-final GlobalKey<ScaffoldMessengerState> _globalKey4Appt =
-    GlobalKey<ScaffoldMessengerState>();
-
-// This is shows snackbar when called
-void _onShowSnack(Color backColor, String msg) {
-  _globalKey4Appt.currentState?.showSnackBar(
-    SnackBar(
-      backgroundColor: backColor,
-      content: SizedBox(
-        height: 20.0,
-        child: Center(
-          child: Text(msg),
-        ),
-      ),
-    ),
-  );
-}
-
 // Set global variables which are needed later.
 var selectedLanguage;
 var isEnglish;
+
+// This is to show a snackbar message.
+void _onShowSnack(Color backColor, String msg, BuildContext context) {
+  Flushbar(
+    backgroundColor: backColor,
+    flushbarStyle: FlushbarStyle.GROUNDED,
+    flushbarPosition: FlushbarPosition.BOTTOM,
+    messageText: Directionality(
+      textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+      child: Text(
+        msg,
+        textAlign: TextAlign.center,
+        style: const TextStyle(color: Colors.white),
+      ),
+    ),
+    duration: const Duration(seconds: 3),
+  ).show(context);
+}
 
 class Appointment extends StatefulWidget {
   const Appointment({super.key});
@@ -55,66 +54,83 @@ class _AppointmentState extends State<Appointment> {
       debugShowCheckedModeBanner: false,
       home: Directionality(
         textDirection: TextDirection.ltr,
-        child: ScaffoldMessenger(
-          key: _globalKey4Appt,
-          child: Scaffold(
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const NewAppointment()),
-                ).then((_) {
-                  setState(() {});
-                });
-                // This is assigned to identify appointments.round i.e., if it is true round is stored '1' otherwise increamented by 1
-                GlobalUsage.newPatientCreated = false;
-              },
-              tooltip: 'افزودن جلسه جدید',
-              child: const Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
+        child: Scaffold(
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NewAppointment()),
+              ).then((_) {
+                setState(() {});
+              });
+              // This is assigned to identify appointments.round i.e., if it is true round is stored '1' otherwise increamented by 1
+              GlobalUsage.newPatientCreated = false;
+            },
+            tooltip: 'افزودن جلسه جدید',
+            child: const Icon(
+              Icons.add,
+              color: Colors.white,
             ),
-            appBar: AppBar(
-              title: const Text('Appointment'),
-              leading: IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const BackButtonIcon()),
-              actions: [
-                /* Tooltip(
-                message: 'افزودن جلسه جدید',
-                child: InkWell(
-                  onTap: () {},
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2.0),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
+          ),
+          appBar: AppBar(
+            title: const Text('Appointment'),
+            leading: IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const BackButtonIcon()),
+            actions: [
+              IconButton(
+                onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const Patient()),
+                    (route) => route.settings.name == 'Patient'),
+                icon: const Icon(Icons.people_outline),
+                tooltip: 'Patients',
+                padding: const EdgeInsets.all(3.0),
+                splashRadius: 30.0,
+              ),
+              const SizedBox(width: 15.0),
+              IconButton(
+                // This routing approach removes all middle routes from the stack which are between dashboard and this page.
+                onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const Dashboard()),
+                    (route) => route.settings.name == 'Dashboard'),
+                icon: const Icon(Icons.home_outlined),
+                tooltip: 'Dashboard',
+                padding: const EdgeInsets.all(3.0),
+                splashRadius: 30.0,
+              ),
+              const SizedBox(width: 15.0)
+
+              /* Tooltip(
+              message: 'افزودن جلسه جدید',
+              child: InkWell(
+                onTap: () {},
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2.0),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.white,
                     ),
                   ),
                 ),
-              ), */
-                const SizedBox(width: 15)
-              ],
-            ),
-            body: Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: 15),
-                width: MediaQuery.of(context).size.width * 0.9,
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: _AppointmentContent(),
-                    ),
-                  ],
-                ),
+              ),
+            ), */
+            ],
+          ),
+          body: Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 15),
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: _AppointmentContent(),
+                  ),
+                ],
               ),
             ),
           ),
@@ -134,6 +150,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
 // This function deletes an appointment after opening a dialog box.
   onDeleteAppointment(BuildContext context, int id, Function refresh) {
     return showDialog(
+      useRootNavigator: true,
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
@@ -149,8 +166,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
             ),
             actions: [
               TextButton(
-                onPressed: () =>
-                    Navigator.of(context, rootNavigator: true).pop(),
+                onPressed: () => Navigator.of(context).pop(),
                 child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
               ),
               TextButton(
@@ -159,12 +175,13 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                   final deleteResult = await conn
                       .query('DELETE FROM appointments WHERE apt_ID = ?', [id]);
                   if (deleteResult.affectedRows! > 0) {
-                    _onShowSnack(Colors.green, 'Deleted');
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context).pop();
+                    // ignore: use_build_context_synchronously
+                    _onShowSnack(Colors.green, 'جلسه مریض حذف گردید.', context);
                     refresh();
                   }
                   await conn.close();
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context, rootNavigator: true).pop();
                 },
                 child: Text(translations[selectedLanguage]?['Delete'] ?? ''),
               ),
@@ -556,15 +573,58 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                   } else if (snapshot.hasError) {
                                     return Text('Error: ${snapshot.error}');
                                   } else {
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
+                                    return const Row(children: [
+                                      CircularProgressIndicator(),
+                                    ]);
                                   }
-                                  return const Padding(
+                                  return Padding(
                                     padding:
                                         EdgeInsets.symmetric(vertical: 8.0),
-                                    child: Text(
-                                        'No description found for this service.'),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                            'No description found for this service.',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall),
+                                        SizedBox(height: 10.0),
+                                        SizedBox(
+                                          width: 200,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              IconButton(
+                                                tooltip: 'Edit',
+                                                splashRadius: 23,
+                                                onPressed: () {},
+                                                icon: const Icon(
+                                                  Icons.edit,
+                                                  size: 16.0,
+                                                  color: Color.fromARGB(
+                                                      255, 112, 112, 112),
+                                                ),
+                                              ),
+                                              IconButton(
+                                                tooltip: 'Delete',
+                                                splashRadius: 23,
+                                                onPressed: () =>
+                                                    onDeleteAppointment(
+                                                        context, a.aptID, () {
+                                                  setState(() {});
+                                                }),
+                                                icon: const Icon(
+                                                  Icons.delete_forever_outlined,
+                                                  size: 16.0,
+                                                  color: Color.fromARGB(
+                                                      255, 112, 112, 112),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   );
                                 },
                               ),
@@ -583,8 +643,15 @@ class _AppointmentContentState extends State<_AppointmentContent> {
               );
             }).toList(), // Convert Iterable to List
           );
+        } else if (snapshot.hasData.toString().isEmpty) {
+          return Center(
+              child: Text('Error loading appointment ${snapshot.error}.'));
         } else {
-          return const Center(child: CircularProgressIndicator());
+          return Row(
+            children: [
+              CircularProgressIndicator(),
+            ],
+          );
         }
       },
     );

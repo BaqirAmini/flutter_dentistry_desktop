@@ -4,6 +4,7 @@ import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/finance/fee/fee_related_fields.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
+import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:flutter_dentistry/views/patients/tooth_selection_info.dart';
 import 'package:flutter_dentistry/views/services/service_related_fields.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
@@ -100,30 +101,7 @@ class _NewAppointmentState extends State<NewAppointment> {
               ),
             ],
           ),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.people_outline),
-              tooltip: 'Patients',
-              padding: const EdgeInsets.all(3.0),
-              splashRadius: 30.0,
-            ),
-            const SizedBox(width: 15.0),
-            IconButton(
-              onPressed: () {},
-              /* onPressed: () => Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => Dashboard()),
-                (Route<dynamic> route) =>
-                    false, // this ensures all previous routes are removed
-              ), */
-              icon: const Icon(Icons.home_outlined),
-              tooltip: 'Dashboard',
-              padding: const EdgeInsets.all(3.0),
-              splashRadius: 30.0,
-            ),
-            const SizedBox(width: 15.0)
-          ],
+          actions: [],
         ),
         body: Directionality(
           textDirection: TextDirection.rtl,
