@@ -355,7 +355,40 @@ class _HoverCardState extends State<HoverCard> {
   }
 }
 
-class _PatientMoreDetail extends StatelessWidget {
+class _PatientMoreDetail extends StatefulWidget {
+  @override
+  State<_PatientMoreDetail> createState() => _PatientMoreDetailState();
+}
+
+class _PatientMoreDetailState extends State<_PatientMoreDetail> {
+// This function edits patient's personal info
+  onEditPatientInfo(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Directionality(
+          textDirection: TextDirection.rtl,
+          child: Text('تغییر معلومات شخصی مریض'),
+        ),
+        content: const Directionality(
+          textDirection: TextDirection.rtl,
+          child: Text('آیا کاملاً مطمیین هستید در قسمت خانه پری این صفحه؟'),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+              child: const Text('لغو')),
+          ElevatedButton(
+              onPressed: () {
+                setState(() {});
+                Navigator.of(context, rootNavigator: true).pop();
+              },
+              child: const Text('تغییر')),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -474,7 +507,7 @@ class _PatientMoreDetail extends StatelessWidget {
                   child: Icon(Icons.edit,
                       size: 16.0, color: Color.fromARGB(255, 123, 123, 123)),
                 ),
-                onTap: () {},
+                onTap: () => onEditPatientInfo(context),
               )),
         ),
       ],
