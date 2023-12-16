@@ -29,7 +29,7 @@ class PatientDetail extends StatelessWidget {
               IconButton(
                 // onPressed: () {},
                 onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => Dashboard(),
+                  builder: (context) => const Dashboard(),
                 )),
                 icon: const Icon(Icons.home_outlined),
                 tooltip: 'Dashboard',
@@ -48,36 +48,10 @@ class PatientDetail extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Stack(
-                      children: [
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.3,
-                          width: MediaQuery.of(context).size.height * 0.5,
-                          child: const _PatientProfile(),
-                        ),
-                        Positioned(
-                          top: 8.0,
-                          left: 8.0,
-                          child: PopupMenuButton(
-                            surfaceTintColor: Colors.white,
-                            color: Colors.grey,
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry>[
-                              PopupMenuItem(
-                                child: Directionality(
-                                  textDirection: TextDirection.rtl,
-                                  child: ListTile(
-                                      leading: const Icon(Icons.delete),
-                                      title: const Text('حذف کردن'),
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      }),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.3,
+                      width: MediaQuery.of(context).size.height * 0.5,
+                      child: const _PatientProfile(),
                     ),
                     _PatientMoreDetail(),
                   ],
@@ -114,34 +88,64 @@ class _PatientProfile extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircleAvatar(
-                radius: 30.0,
-                backgroundImage:
-                    AssetImage('assets/graphics/user_profile2.jpg'),
-                backgroundColor: Colors.transparent,
+              Stack(
+                children: [
+                  const CircleAvatar(
+                    radius: 30.0,
+                    backgroundImage:
+                        AssetImage('assets/graphics/user_profile2.jpg'),
+                    backgroundColor: Colors.transparent,
+                  ),
+                  Positioned(
+                    top: -5.0,
+                    right: -5.0,
+                    child: SizedBox(
+                      width: 30.0,
+                      height: 30.0,
+                      child: Card(
+                        shape: const CircleBorder(),
+                        child: Center(
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            child: const Padding(
+                              padding: EdgeInsets.all(5.0),
+                              child: Icon(Icons.edit,
+                                  size: 12.0,
+                                  color: Color.fromARGB(255, 123, 123, 123)),
+                            ),
+                            onTap: () {},
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(width: 10),
               SizedBox(
-                width: 130,
+                width: 150,
                 child: Column(
                   children: [
                     Text('${PatientInfo.firstName} ${PatientInfo.lastName}',
                         style: Theme.of(context).textTheme.headlineSmall),
-                    SizedBox(height: 5.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.phone_android,
-                            color: Colors.grey, size: 14),
-                        SizedBox(width: 5.0),
-                        Expanded(
-                          child: Text(
-                            '${PatientInfo.phone}',
-                            style: const TextStyle(
-                                color: Colors.grey, fontSize: 14.0),
-                          ),
-                        )
-                      ],
+                    const SizedBox(height: 5.0),
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.phone_android,
+                              color: Colors.grey, size: 14),
+                          const SizedBox(width: 5.0),
+                          Expanded(
+                            child: Text(
+                              '${PatientInfo.phone}',
+                              style: const TextStyle(
+                                  color: Colors.grey, fontSize: 14.0),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -330,13 +334,15 @@ class _HoverCardState extends State<HoverCard> {
               trailing: const Icon(Icons.arrow_forward_ios_sharp),
               onTap: () {
                 if (widget.indexNum == 100) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Appointment()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Appointment()));
                 } else if (widget.indexNum == 102) {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => PatientHistory()));
+                          builder: (context) => const PatientHistory()));
                 } else {
                   print('Other cards clicked.');
                 }
@@ -458,23 +464,18 @@ class _PatientMoreDetail extends StatelessWidget {
         Positioned(
           top: 8.0,
           left: 8.0,
-          child: PopupMenuButton(
-            surfaceTintColor: Colors.white,
-            color: Colors.grey,
-            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-              PopupMenuItem(
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: ListTile(
-                      leading: const Icon(Icons.delete),
-                      title: const Text('حذف کردن'),
-                      onTap: () {
-                        Navigator.pop(context);
-                      }),
+          child: Material(
+              color: Colors.transparent,
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(Icons.edit,
+                      size: 16.0, color: Color.fromARGB(255, 123, 123, 123)),
                 ),
-              ),
-            ],
-          ),
+                onTap: () {},
+              )),
         ),
       ],
     );
