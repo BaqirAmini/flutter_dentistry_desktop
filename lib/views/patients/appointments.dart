@@ -769,7 +769,7 @@ Future<List<ServiceDataModel>> _getServices(int serID) async {
   WHERE ps.pat_ID = ? AND s.ser_ID = ?''', [PatientInfo.patID, serID]);
 
   Map<int, ServiceDataModel> servicesMap = {};
-
+  var services;
   for (var row in results) {
     int serviceID = row[0];
     String reqName = row[2];
@@ -783,9 +783,10 @@ Future<List<ServiceDataModel>> _getServices(int serID) async {
     } else {
       servicesMap[serviceID]!.requirements[reqName] = value;
     }
+     services = servicesMap.values.toList();
+    // Print the services to the console
+    print(services);
   }
-
-  final services = servicesMap.values.toList();
 
   await conn.close();
   return services;
@@ -800,6 +801,11 @@ class ServiceDataModel {
     required this.serviceID,
     required this.requirements,
   });
+
+  @override
+  String toString() {
+    return 'ServiceDataModel: {serviceID: $serviceID, requirements: $requirements}';
+  }
 }
 
 // This function makes name structure using the four qoudrants (Q1, Q2, Q3 & Q4)
