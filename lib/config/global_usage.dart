@@ -15,7 +15,7 @@ class GlobalUsage {
 
   /* ------------------- CHARACTERS/DIGITS ALLOWED ---------------- */
   // 0-9 and + are allowed
-   static const allowedDigits = "[0-9+]";
+   static const allowedDigits = "[0-9+۰-۹]";
   //  alphabetical letters both in English & Persian allowed including comma
   static const allowedEPChar = "[a-zA-Z,، \u0600-\u06FFF]";
   // 0-9 and period(.) are allowed

@@ -198,21 +198,19 @@ class _NewAppointmentState extends State<NewAppointment> {
                         }
                       } else if (ServiceInfo.defaultMaxillo ==
                           'Abscess Treatment') {
-                        
-                          if (PatientInfo.age! > 13) {
-                            if (Tooth.adultToothSelected) {
-                              setState(() {
-                                _currentStep++;
-                              });
-                            }
-                          } else {
-                            if (Tooth.childToothSelected) {
-                              setState(() {
-                                _currentStep++;
-                              });
-                            }
+                        if (PatientInfo.age! > 13) {
+                          if (Tooth.adultToothSelected) {
+                            setState(() {
+                              _currentStep++;
+                            });
                           }
-                        
+                        } else {
+                          if (Tooth.childToothSelected) {
+                            setState(() {
+                              _currentStep++;
+                            });
+                          }
+                        }
                       } else {
                         setState(() {
                           _currentStep++;
@@ -410,7 +408,7 @@ class AppointmentFunction {
               ]);
         } else if (ServiceInfo.defaultMaxillo == 'Abscess Treatment') {
           await conn.query(
-              'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+              'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
               [
                 patientId,
                 serviceId,
@@ -422,10 +420,6 @@ class AppointmentFunction {
                 (Tooth.adultToothSelected)
                     ? Tooth.selectedAdultTeeth
                     : Tooth.selectedChildTeeth,
-                patientId,
-                serviceId,
-                9,
-                ServiceInfo.abscessTreatValue,
                 patientId,
                 serviceId,
                 2,
@@ -442,7 +436,7 @@ class AppointmentFunction {
                 patientId,
                 serviceId,
                 9,
-                ServiceInfo.abscessTreatValue,
+                ServiceInfo.tmgGroupValue,
                 patientId,
                 serviceId,
                 2,

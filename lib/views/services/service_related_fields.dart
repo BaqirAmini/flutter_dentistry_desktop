@@ -832,105 +832,6 @@ class _ServiceFormState extends State<ServiceForm> {
                       ),
                     ),
                     Visibility(
-                      visible: (ServiceInfo.selectedServiceID == 7 &&
-                              ServiceInfo.defaultMaxillo == 'Abscess Treatment')
-                          ? true
-                          : false,
-                      child: Container(
-                        width: 400.0,
-                        margin: const EdgeInsets.only(
-                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 10.0, horizontal: 10.0),
-                            border: OutlineInputBorder(),
-                            labelText: 'ناحیه آبسه',
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(50.0),
-                              ),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(50.0),
-                              ),
-                              borderSide: BorderSide(color: Colors.blue),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(
-                                    listTileTheme: const ListTileThemeData(
-                                        horizontalTitleGap: 0.5),
-                                  ),
-                                  child: RadioListTile(
-                                      title: const Text(
-                                        'راست',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      value: 'راست',
-                                      groupValue: ServiceInfo.abscessTreatValue,
-                                      onChanged: (String? value) {
-                                        setState(() {
-                                          ServiceInfo.abscessTreatValue =
-                                              value!;
-                                        });
-                                      }),
-                                ),
-                              ),
-                              Expanded(
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(
-                                    listTileTheme: const ListTileThemeData(
-                                        horizontalTitleGap: 0.5),
-                                  ),
-                                  child: RadioListTile(
-                                      title: const Text(
-                                        'چپ',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      value: 'چپ',
-                                      groupValue: ServiceInfo.abscessTreatValue,
-                                      onChanged: (String? value) {
-                                        setState(() {
-                                          ServiceInfo.abscessTreatValue =
-                                              value!;
-                                        });
-                                      }),
-                                ),
-                              ),
-                              Expanded(
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(
-                                    listTileTheme: const ListTileThemeData(
-                                        horizontalTitleGap: 0.5),
-                                  ),
-                                  child: RadioListTile(
-                                      title: const Text(
-                                        'هردو',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      value: 'هردو',
-                                      groupValue: ServiceInfo.abscessTreatValue,
-                                      onChanged: (String? value) {
-                                        setState(() {
-                                          ServiceInfo.abscessTreatValue =
-                                              value!;
-                                        });
-                                      }),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Visibility(
                       visible: (ServiceInfo.defaultMaxillo == 'T.M.J' &&
                               ServiceInfo.selectedServiceID == 7)
                           ? true
@@ -1289,7 +1190,6 @@ class ServiceInfo {
   // Radio Buttons
   static String crownGroupValue = 'R.C.T';
   static String fillingGroupValue = 'R.C.T';
-  static String abscessTreatValue = 'راست';
   static String tmgGroupValue = 'راست';
   static String spGroupValue = 'Scaling';
   static String dentureGroupValue = 'Full';

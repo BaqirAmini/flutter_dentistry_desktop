@@ -517,14 +517,16 @@ class _NewPatientState extends State<NewPatient> {
                                       return translations[selectedLanguage]
                                               ?['PhoneRequired'] ??
                                           '';
-                                    } else if (value.startsWith('07')) {
+                                    } else if (value.startsWith('07') ||
+                                        value.startsWith('۰۷')) {
                                       if (value.length < 10 ||
                                           value.length > 10) {
                                         return translations[selectedLanguage]
                                                 ?['Phone10'] ??
                                             '';
                                       }
-                                    } else if (value.startsWith('+93')) {
+                                    } else if (value.startsWith('+93') ||
+                                        value.startsWith('+۹۳')) {
                                       if (value.length < 12 ||
                                           value.length > 12) {
                                         return translations[selectedLanguage]
@@ -1713,8 +1715,14 @@ class _NewPatientState extends State<NewPatient> {
                                 }
                               } else if (ServiceInfo.defaultMaxillo ==
                                   'Abscess Treatment') {
-                                if (ServiceInfo.defaultGumAbscess != null) {
-                                  _currentStep++;
+                                if (ageDropDown > 13) {
+                                  if (Tooth.adultToothSelected) {
+                                    _currentStep++;
+                                  }
+                                } else {
+                                  if (Tooth.childToothSelected) {
+                                    _currentStep++;
+                                  }
                                 }
                               } else {
                                 _currentStep++;
