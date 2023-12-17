@@ -377,73 +377,6 @@ class _ServiceFormState extends State<ServiceForm> {
                         ),
                       ),
                     ),
-                    Visibility(
-                      visible: (ServiceInfo.selectedServiceID == 7 &&
-                              ServiceInfo.defaultMaxillo == 'Abscess Treatment')
-                          ? true
-                          : false,
-                      child: Container(
-                        width: 400.0,
-                        margin: const EdgeInsets.only(
-                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                        child: InputDecorator(
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            labelText: 'انتخاب فک',
-                            enabledBorder: const OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: const OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                            errorText: ServiceInfo.defaultGumAbscess == null
-                                ? 'Please select a gum'
-                                : null,
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(50.0),
-                              ),
-                              borderSide: BorderSide(
-                                  color: ServiceInfo.defaultGumAbscess == null
-                                      ? Colors.red
-                                      : Colors.grey),
-                            ),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: SizedBox(
-                              height: 26.0,
-                              child: DropdownButton<String>(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: ServiceInfo.defaultGumAbscess,
-                                items: [
-                                  const DropdownMenuItem(
-                                    value: null,
-                                    child: Text('Please select a gum'),
-                                  ),
-                                  ...abscessItems.map((item) {
-                                    return DropdownMenuItem<String>(
-                                      value: item,
-                                      alignment: Alignment.centerRight,
-                                      child: Text(item),
-                                    );
-                                  }).toList(),
-                                ],
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    if (newValue != null) {
-                                      ServiceInfo.defaultGumAbscess = newValue;
-                                    }
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
                 Column(
@@ -1314,6 +1247,8 @@ class _ServiceFormState extends State<ServiceForm> {
                       ServiceInfo.selectedServiceID == 15 ||
                       (ServiceInfo.selectedServiceID == 7 &&
                           ServiceInfo.defaultMaxillo == 'Tooth Extraction') ||
+                      (ServiceInfo.selectedServiceID == 7 &&
+                          ServiceInfo.defaultMaxillo == 'Abscess Treatment') ||
                       (ServiceInfo.selectedServiceID == 7 &&
                           ServiceInfo.defaultMaxillo ==
                               'Tooth Reimplantation') ||

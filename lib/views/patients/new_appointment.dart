@@ -198,14 +198,21 @@ class _NewAppointmentState extends State<NewAppointment> {
                         }
                       } else if (ServiceInfo.defaultMaxillo ==
                           'Abscess Treatment') {
-                        if (ServiceInfo.defaultGumAbscess != null &&
-                            ServiceInfo.defaultGumAbscess
-                                .toString()
-                                .isNotEmpty) {
-                          setState(() {
-                            _currentStep++;
-                          });
-                        }
+                        
+                          if (PatientInfo.age! > 13) {
+                            if (Tooth.adultToothSelected) {
+                              setState(() {
+                                _currentStep++;
+                              });
+                            }
+                          } else {
+                            if (Tooth.childToothSelected) {
+                              setState(() {
+                                _currentStep++;
+                              });
+                            }
+                          }
+                        
                       } else {
                         setState(() {
                           _currentStep++;
@@ -411,12 +418,14 @@ class AppointmentFunction {
                 ServiceInfo.defaultMaxillo,
                 patientId,
                 serviceId,
-                7,
-                ServiceInfo.defaultGumAbscess,
+                1,
+                (Tooth.adultToothSelected)
+                    ? Tooth.selectedAdultTeeth
+                    : Tooth.selectedChildTeeth,
                 patientId,
                 serviceId,
                 9,
-                ServiceInfo.defaultOrthoType,
+                ServiceInfo.abscessTreatValue,
                 patientId,
                 serviceId,
                 2,
