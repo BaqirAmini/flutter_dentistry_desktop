@@ -182,22 +182,8 @@ class _NewAppointmentState extends State<NewAppointment> {
                     if (ServiceInfo.defaultMaxillo != null) {
                       if (ServiceInfo.defaultMaxillo == 'Tooth Extraction' ||
                           ServiceInfo.defaultMaxillo ==
-                              'Tooth Reimplantation') {
-                        if (PatientInfo.age! > 13) {
-                          if (Tooth.adultToothSelected) {
-                            setState(() {
-                              _currentStep++;
-                            });
-                          }
-                        } else {
-                          if (Tooth.childToothSelected) {
-                            setState(() {
-                              _currentStep++;
-                            });
-                          }
-                        }
-                      } else if (ServiceInfo.defaultMaxillo ==
-                          'Abscess Treatment') {
+                              'Tooth Reimplantation' ||
+                          ServiceInfo.defaultMaxillo == 'Abscess Treatment') {
                         if (PatientInfo.age! > 13) {
                           if (Tooth.adultToothSelected) {
                             setState(() {

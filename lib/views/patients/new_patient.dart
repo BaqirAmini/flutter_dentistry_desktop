@@ -1703,18 +1703,9 @@ class _NewPatientState extends State<NewPatient> {
                               if (ServiceInfo.defaultMaxillo ==
                                       'Tooth Extraction' ||
                                   ServiceInfo.defaultMaxillo ==
-                                      'Tooth Reimplantation') {
-                                if (ageDropDown > 13) {
-                                  if (Tooth.adultToothSelected) {
-                                    _currentStep++;
-                                  }
-                                } else {
-                                  if (Tooth.childToothSelected) {
-                                    _currentStep++;
-                                  }
-                                }
-                              } else if (ServiceInfo.defaultMaxillo ==
-                                  'Abscess Treatment') {
+                                      'Tooth Reimplantation' ||
+                                  ServiceInfo.defaultMaxillo ==
+                                      'Abscess Treatment') {
                                 if (ageDropDown > 13) {
                                   if (Tooth.adultToothSelected) {
                                     _currentStep++;
