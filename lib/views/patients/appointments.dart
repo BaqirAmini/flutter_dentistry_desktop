@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
@@ -532,11 +534,11 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                           req.key ==
                                                                   'Teeth Selection'
                                                               ? req.value
-                                                                  .split(',')
                                                                   .map(
                                                                       codeToDescription)
                                                                   .join(', ')
-                                                              : req.value,
+                                                              : req.value.join(
+                                                                  ', '), // Join the items in the list into a single string
                                                           textAlign:
                                                               TextAlign.end,
                                                           style:
@@ -762,32 +764,38 @@ class AppointmentDataModel {
 Future<List<ServiceDataModel>> _getServices(int serID) async {
   final conn = await onConnToDb();
   final results = await conn.query(
-      '''SELECT s.ser_ID, ps.pat_ID, sr.req_name, ps.value FROM service_requirements sr 
+      '''SELECT DISTINCT s.ser_ID, ps.pat_ID, sr.req_name, ps.value FROM service_requirements sr 
   INNER JOIN patient_services ps ON sr.req_ID = ps.req_ID 
   INNER JOIN services s ON s.ser_ID = ps.ser_ID 
   INNER JOIN patients p ON p.pat_ID = ps.pat_ID 
   WHERE ps.pat_ID = ? AND s.ser_ID = ?''', [PatientInfo.patID, serID]);
 
+  // print('Query Results: $results');
   Map<int, ServiceDataModel> servicesMap = {};
-  var services;
   for (var row in results) {
     int serviceID = row[0];
     String reqName = row[2];
-    String value = row[3];
+    List<int> valueBytes = row[3]; // Convert the Blob to a List<int>
+    String value = utf8.decode(valueBytes);
 
     if (!servicesMap.containsKey(serviceID)) {
       servicesMap[serviceID] = ServiceDataModel(
         serviceID: serviceID,
-        requirements: {reqName: value},
+        requirements: {
+          reqName: {value}
+        },
       );
     } else {
-      servicesMap[serviceID]!.requirements[reqName] = value;
+      servicesMap[serviceID]!
+          .requirements
+          .putIfAbsent(reqName, () => {})
+          .add(value);
     }
-     services = servicesMap.values.toList();
-    // Print the services to the console
-    print(services);
+    print(
+        'Processing - serviceID: $serviceID, reqName: $reqName, value: $value');
   }
 
+  var services = servicesMap.values.toList();
   await conn.close();
   return services;
 }
@@ -795,12 +803,9 @@ Future<List<ServiceDataModel>> _getServices(int serID) async {
 // Create the second data model for services including (service_requirements & patient_services tables)
 class ServiceDataModel {
   final int serviceID;
-  final Map<String, String> requirements;
+  final Map<String, Set<String>> requirements;
 
-  ServiceDataModel({
-    required this.serviceID,
-    required this.requirements,
-  });
+  ServiceDataModel({required this.serviceID, required this.requirements});
 
   @override
   String toString() {
