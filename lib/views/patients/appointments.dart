@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
@@ -345,8 +343,65 @@ class _AppointmentContentState extends State<_AppointmentContent> {
     );
   }
  */
+
+/* ------------------------------------------ ONLY FOR DEBUG -------------------------------- */
+  /*  late Future<List<ServiceDataModel>> servicesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    servicesFuture = _getServices(7); // replace with your service ID
+  } 
+
+
+    @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<ServiceDataModel>>(
+      future: servicesFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              // replace with your widget
+              return ListTile(
+                  title: Text('Service ${snapshot.data![index].serviceID}'));
+            },
+          );
+        }
+      },
+    );
+  } */
+/* ------------------------------------------/. ONLY FOR DEBUG -------------------------------- */
+
+// Declare a Map to store the Future for each serviceID
+  final Map<int, Future> _servicesFutures = {};
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the appointments and initialize the _servicesFutures Map
+    _getAppointment().then((appointments) {
+      for (var entry in appointments.entries) {
+        var appointmentList = entry.value;
+        for (var appointment in appointmentList) {
+          // Only create a new Future if it doesn't exist in the Map
+          if (!_servicesFutures.containsKey(appointment.serviceID)) {
+            _servicesFutures[appointment.serviceID] =
+                _getServices(appointment.serviceID);
+          }
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('Widget rebuilt');
     return FutureBuilder(
       future: _getAppointment(),
       builder: (context, snapshot) {
@@ -477,121 +532,136 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                   ),
                                 ),
                                 child: FutureBuilder(
-                                  future: _getServices(a.serviceID),
+                                  future: _servicesFutures[a.serviceID],
                                   builder: (context, snapshot) {
                                     if (snapshot.hasData) {
                                       var services = snapshot.data;
-                                      for (var service in services!) {
-                                        return ListTile(
-                                          title: Column(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    const Text(
-                                                      'Service Name',
-                                                      style: TextStyle(
-                                                          fontSize: 12.0,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                    Text(
-                                                      a.serviceName,
-                                                      style: const TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 112, 112, 112),
-                                                        fontSize: 12.0,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              for (var req in service
-                                                  .requirements.entries)
+                                      print('Services: $services');
+
+                                      return Column(
+                                        children:
+                                            services.map<Widget>((service) {
+                                          var uniqueEntries = service
+                                              .requirements.entries
+                                              .toSet()
+                                              .toList();
+
+                                          return ListTile(
+                                            title: Column(
+                                              children: [
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.all(8.0),
                                                   child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
                                                     children: [
-                                                      Text(
-                                                        req.key ==
-                                                                'Teeth Selection'
-                                                            ? 'Teeth Selected'
-                                                            : req.key,
-                                                        style: const TextStyle(
+                                                      const Text(
+                                                        'Service Name',
+                                                        style: TextStyle(
                                                             fontSize: 12.0,
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold),
                                                       ),
-                                                      Expanded(
-                                                        child: Text(
-                                                          req.key ==
-                                                                  'Teeth Selection'
-                                                              ? req.value
-                                                                  .map(
-                                                                      codeToDescription)
-                                                                  .join(', ')
-                                                              : req.value.join(
-                                                                  ', '), // Join the items in the list into a single string
-                                                          textAlign:
-                                                              TextAlign.end,
-                                                          style:
-                                                              const TextStyle(
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    112,
-                                                                    112,
-                                                                    112),
-                                                            fontSize: 12.0,
-                                                          ),
+                                                      Text(
+                                                        a.serviceName,
+                                                        style: const TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              112,
+                                                              112,
+                                                              112),
+                                                          fontSize: 12.0,
                                                         ),
                                                       ),
                                                     ],
                                                   ),
                                                 ),
-                                              SizedBox(
-                                                width: 200,
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    IconButton(
-                                                      tooltip: 'Edit',
-                                                      splashRadius: 23,
-                                                      onPressed: () {},
-                                                      icon: const Icon(
-                                                          Icons.edit,
-                                                          size: 16.0),
-                                                    ),
-                                                    IconButton(
-                                                      tooltip: 'Delete',
-                                                      splashRadius: 23,
-                                                      onPressed: () =>
-                                                          onDeleteAppointment(
-                                                              context, a.aptID,
-                                                              () {
-                                                        setState(() {});
-                                                      }),
-                                                      icon: const Icon(
-                                                          Icons
-                                                              .delete_forever_outlined,
-                                                          size: 16.0),
-                                                    )
-                                                  ],
+                                                ...uniqueEntries.map((req) =>
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: Row(
+                                                        children: [
+                                                          Text(
+                                                            req.key ==
+                                                                    'Teeth Selection'
+                                                                ? 'Teeth Selected'
+                                                                : req.key,
+                                                            style: const TextStyle(
+                                                                fontSize: 12.0,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                          ),
+                                                          Expanded(
+                                                            child: Text(
+                                                              req.key ==
+                                                                      'Teeth Selection'
+                                                                  ? req.value
+                                                                      .map(
+                                                                          codeToDescription)
+                                                                      .join(
+                                                                          ', ')
+                                                                  : req.value.join(
+                                                                      ', '), // Join the items in the list into a single string
+                                                              textAlign:
+                                                                  TextAlign.end,
+                                                              style:
+                                                                  const TextStyle(
+                                                                color: Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        112,
+                                                                        112,
+                                                                        112),
+                                                                fontSize: 12.0,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    )),
+                                                SizedBox(
+                                                  width: 200,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      IconButton(
+                                                        tooltip: 'Edit',
+                                                        splashRadius: 23,
+                                                        onPressed: () {},
+                                                        icon: const Icon(
+                                                            Icons.edit,
+                                                            size: 16.0),
+                                                      ),
+                                                      IconButton(
+                                                        tooltip: 'Delete',
+                                                        splashRadius: 23,
+                                                        onPressed: () =>
+                                                            onDeleteAppointment(
+                                                                context,
+                                                                a.aptID, () {
+                                                          setState(() {});
+                                                        }),
+                                                        icon: const Icon(
+                                                            Icons
+                                                                .delete_forever_outlined,
+                                                            size: 16.0),
+                                                      )
+                                                    ],
+                                                  ),
                                                 ),
-                                              )
-                                            ],
-                                          ),
-                                        );
-                                      }
+                                              ],
+                                            ),
+                                          );
+                                        }).toList(),
+                                      );
                                     } else if (snapshot.hasError) {
                                       return Text('Error: ${snapshot.error}');
                                     } else {
@@ -599,56 +669,6 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                         CircularProgressIndicator(),
                                       ]);
                                     }
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                              'No description found for this service.',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall),
-                                          const SizedBox(height: 10.0),
-                                          SizedBox(
-                                            width: 200,
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                IconButton(
-                                                  tooltip: 'Edit',
-                                                  splashRadius: 23,
-                                                  onPressed: () {},
-                                                  icon: const Icon(
-                                                    Icons.edit,
-                                                    size: 16.0,
-                                                    color: Color.fromARGB(
-                                                        255, 112, 112, 112),
-                                                  ),
-                                                ),
-                                                IconButton(
-                                                  tooltip: 'Delete',
-                                                  splashRadius: 23,
-                                                  onPressed: () =>
-                                                      onDeleteAppointment(
-                                                          context, a.aptID, () {
-                                                    setState(() {});
-                                                  }),
-                                                  icon: const Icon(
-                                                    Icons
-                                                        .delete_forever_outlined,
-                                                    size: 16.0,
-                                                    color: Color.fromARGB(
-                                                        255, 112, 112, 112),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    );
                                   },
                                 ),
                               ),
@@ -764,19 +784,18 @@ class AppointmentDataModel {
 Future<List<ServiceDataModel>> _getServices(int serID) async {
   final conn = await onConnToDb();
   final results = await conn.query(
-      '''SELECT DISTINCT s.ser_ID, ps.pat_ID, sr.req_name, ps.value FROM service_requirements sr 
-  INNER JOIN patient_services ps ON sr.req_ID = ps.req_ID 
-  INNER JOIN services s ON s.ser_ID = ps.ser_ID 
-  INNER JOIN patients p ON p.pat_ID = ps.pat_ID 
-  WHERE ps.pat_ID = ? AND s.ser_ID = ?''', [PatientInfo.patID, serID]);
+      '''SELECT s.ser_ID, ps.pat_ID, sr.req_name, ps.value FROM service_requirements sr 
+    INNER JOIN patient_services ps ON sr.req_ID = ps.req_ID 
+    INNER JOIN services s ON s.ser_ID = ps.ser_ID 
+    INNER JOIN patients p ON p.pat_ID = ps.pat_ID 
+    WHERE ps.pat_ID = ? AND s.ser_ID = ?''', [PatientInfo.patID, serID]);
 
   // print('Query Results: $results');
   Map<int, ServiceDataModel> servicesMap = {};
   for (var row in results) {
     int serviceID = row[0];
     String reqName = row[2];
-    List<int> valueBytes = row[3]; // Convert the Blob to a List<int>
-    String value = utf8.decode(valueBytes);
+    String value = row[3];
 
     if (!servicesMap.containsKey(serviceID)) {
       servicesMap[serviceID] = ServiceDataModel(
@@ -796,6 +815,7 @@ Future<List<ServiceDataModel>> _getServices(int serID) async {
   }
 
   var services = servicesMap.values.toList();
+  print('Services from _getServices: $services');
   await conn.close();
   return services;
 }
