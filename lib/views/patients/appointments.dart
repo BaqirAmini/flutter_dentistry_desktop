@@ -149,6 +149,7 @@ class _AppointmentContent extends StatefulWidget {
 }
 
 class _AppointmentContentState extends State<_AppointmentContent> {
+  
 // This function deletes an appointment after opening a dialog box.
   onDeleteAppointment(BuildContext context, int id, Function refresh) {
     return showDialog(
@@ -529,11 +530,16 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                 FontWeight
                                                                     .bold),
                                                       ),
-                                                      for (var test in req.value)
-  Expanded(
+                                                      Expanded(
                                                         child: Text(
-                                                          test,
-                                                                  
+                                                          req.key ==
+                                                                  'Teeth Selection'
+                                                              ? req.value
+                                                                  .map(
+                                                                      codeToDescription)
+                                                                  .join(', ')
+                                                              : req.value
+                                                                  .join(', '),
                                                           textAlign:
                                                               TextAlign.end,
                                                           style:
