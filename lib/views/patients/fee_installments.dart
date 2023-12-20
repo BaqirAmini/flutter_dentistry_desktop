@@ -49,49 +49,60 @@ class _FeeContentState extends State<FeeContent> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 15.0, vertical: 5.0),
                     child: Row(
-                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
                           'Crown',
                           style: TextStyle(fontSize: 18.0),
                         ),
                         Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 400.0),
+                          margin: EdgeInsets.only(right: 90.0),
                           child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30.0)),
-                              elevation: 0,
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Text('Installments: 1/6',
-                                    style:
-                                        Theme.of(context).textTheme.labelSmall),
-                              )),
-                        )
+                            
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0)),
+                            elevation: 0,
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text('Installments: 5',
+                                  style: Theme.of(context).textTheme.labelSmall),
+                            ),
+                          ),
+                        ),
+                        
                       ],
                     ),
                   ),
                   Positioned(
-                    top: 3.0,
+                    top: 0.0,
                     right: 8.0,
                     child: Material(
-                      shadowColor: Colors.transparent,
                       color: Colors.transparent,
                       shape: const CircleBorder(),
                       child: InkWell(
-                        customBorder:
-                            CircleBorder(), // This makes the hover effect circular
-
-                        onTap: () {},
+                        customBorder: const CircleBorder(),
+                        onTap: () {}, // This makes the hover effect circular
                         child: PopupMenuButton<String>(
                           onSelected: (String result) {
                             print('You selected: $result');
                           },
                           itemBuilder: (BuildContext context) =>
                               <PopupMenuEntry<String>>[
-                            const PopupMenuItem<String>(
+                            PopupMenuItem<String>(
                               value: 'Option 1',
-                              child: Text('Option 1'),
+                              child: const Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Icon(Icons.payments_outlined,
+                                      color: Colors.grey),
+                                  Text('Earn Payment',
+                                      style: TextStyle(
+                                          color: Color.fromRGBO(
+                                              86, 85, 85, 0.765))),
+                                ],
+                              ),
+                              onTap: () {},
                             ),
                             const PopupMenuItem<String>(
                               value: 'Option 2',
@@ -104,70 +115,113 @@ class _FeeContentState extends State<FeeContent> {
                   ),
                 ],
               ),
-              Column(
-                children: [
-                  NonExpandableCard(
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              NonExpandableCard(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
                       children: [
-                        Row(
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.green[400],
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(
+                              Icons.currency_exchange,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10.0),
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.green[400],
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(
-                                  Icons.currency_exchange,
-                                  color: Colors.white,
-                                ),
-                              ),
+                            Text(
+                              'Dec 15, 2023',
+                              style: TextStyle(fontSize: 18.0),
                             ),
-                            const SizedBox(width: 10.0),
-                            const Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Dec 15, 2023',
-                                  style: TextStyle(fontSize: 18.0),
-                                ),
-                                Text(
-                                  'تحت نظر: ',
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 12.0),
-                                )
-                              ],
-                            ),
+                            Text(
+                              'تحت نظر: ',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 12.0),
+                            )
                           ],
                         ),
-                        SizedBox(
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const SizedBox(width: 15.0),
+                        Container(
                           width: 100.0,
-                          height: 100.0,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              right: BorderSide(width: 0.5, color: Colors.grey),
+                            ),
+                          ),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                labelText: 'Installment',
+                                labelStyle: TextStyle(color: Colors.grey),
+                                floatingLabelAlignment:
+                                    FloatingLabelAlignment.center),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 5.0),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  child: Container(
+                                    color: const Color.fromARGB(
+                                        255, 104, 166, 106),
+                                    child: const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 5.0, vertical: 2.0),
+                                      child: Text('1 / 6',
+                                          style: TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.white)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 15.0),
+                        SizedBox(
+                          width: 70.0,
+                          height: 70.0,
                           child: SfCircularChart(
+                            margin: EdgeInsets.zero,
                             tooltipBehavior: TooltipBehavior(enable: true),
                             series: <PieSeries<FeeData, String>>[
                               PieSeries<FeeData, String>(
-                                dataSource: <FeeData>[
-                                  FeeData('Paid', 1000, Colors.green),
-                                  FeeData('Due', 3700, Colors.red),
-                                ],
-                                xValueMapper: (FeeData data, _) =>
-                                    data.category,
-                                yValueMapper: (FeeData data, _) => data.amount,
-                                dataLabelSettings: const DataLabelSettings(
-                                  isVisible: true,
-                                  textStyle: TextStyle(fontSize: 8.0),
-                                ),
-                              ),
+                                  dataSource: <FeeData>[
+                                    FeeData('Paid', 1000, Colors.blueGrey),
+                                    FeeData('Due', 3700, Colors.brown),
+                                  ],
+                                  xValueMapper: (FeeData data, _) =>
+                                      data.category,
+                                  pointColorMapper: (FeeData data, _) =>
+                                      data.color,
+                                  yValueMapper: (FeeData data, _) =>
+                                      data.amount,
+                                  dataLabelSettings: const DataLabelSettings(
+                                    isVisible: true,
+                                    textStyle: TextStyle(fontSize: 8.0),
+                                  ),
+                                  selectionBehavior: SelectionBehavior(
+                                      enable: true, selectedBorderWidth: 2.0)),
                             ],
                           ),
-                        )
+                        ),
                       ],
-                    ),
-                  ),
-                ],
+                    )
+                  ],
+                ),
               ),
             ],
           ),
@@ -192,7 +246,8 @@ class NonExpandableCard extends StatelessWidget {
 }
 
 class FeeData {
-  FeeData(this.category, this.amount, [MaterialColor? green]);
+  FeeData(this.category, this.amount, this.color);
   final String category;
   final double amount;
+  final Color color;
 }
