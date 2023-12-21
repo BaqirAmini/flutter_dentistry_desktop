@@ -56,20 +56,19 @@ class _FeeContentState extends State<FeeContent> {
                           style: TextStyle(fontSize: 18.0),
                         ),
                         Container(
-                          margin: EdgeInsets.only(right: 90.0),
+                          margin: const EdgeInsets.only(right: 90.0),
                           child: Card(
-                            
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30.0)),
                             elevation: 0,
                             child: Padding(
                               padding: const EdgeInsets.all(5.0),
                               child: Text('Installments: 5',
-                                  style: Theme.of(context).textTheme.labelSmall),
+                                  style:
+                                      Theme.of(context).textTheme.labelSmall),
                             ),
                           ),
                         ),
-                        
                       ],
                     ),
                   ),
@@ -79,37 +78,50 @@ class _FeeContentState extends State<FeeContent> {
                     child: Material(
                       color: Colors.transparent,
                       shape: const CircleBorder(),
-                      child: InkWell(
-                        customBorder: const CircleBorder(),
-                        onTap: () {}, // This makes the hover effect circular
-                        child: PopupMenuButton<String>(
-                          onSelected: (String result) {
-                            print('You selected: $result');
-                          },
-                          itemBuilder: (BuildContext context) =>
-                              <PopupMenuEntry<String>>[
-                            PopupMenuItem<String>(
-                              value: 'Option 1',
-                              child: const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Icon(Icons.payments_outlined,
-                                      color: Colors.grey),
-                                  Text('Earn Payment',
-                                      style: TextStyle(
-                                          color: Color.fromRGBO(
-                                              86, 85, 85, 0.765))),
-                                ],
-                              ),
-                              onTap: () {},
+                      child: PopupMenuButton<String>(
+                        onSelected: (String result) {
+                          print('You selected: $result');
+                        },
+                        itemBuilder: (BuildContext context) =>
+                            <PopupMenuEntry<String>>[
+                          const PopupMenuItem<String>(
+                            value: 'Option 1',
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(Icons.payments_outlined,
+                                    color: Colors.grey),
+                                SizedBox(width: 10.0),
+                                Text(
+                                  'Earn Payment',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(86, 85, 85, 0.765),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const PopupMenuItem<String>(
-                              value: 'Option 2',
-                              child: Text('Option 2'),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'Option 2',
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(Icons.delete_forever_outlined,
+                                    color: Colors.grey),
+                                SizedBox(width: 10.0),
+                                Text(
+                                  'Delete',
+                                  style: TextStyle(
+                                    color: Color.fromRGBO(86, 85, 85, 0.765),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
+                        icon: const Icon(Icons.more_vert, color: Color.fromARGB(255, 148, 147, 147)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
                       ),
                     ),
                   ),
