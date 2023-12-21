@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:intl/intl.dart' as intl2;
 
 void main() => runApp(const FeeRecord());
 
@@ -34,6 +39,341 @@ class FeeContent extends StatefulWidget {
 }
 
 class _FeeContentState extends State<FeeContent> {
+  // Assign default selected staff
+  String? defaultSelectedStaff;
+  List<Map<String, dynamic>> staffList = [];
+  final _formKey4Payment = GlobalKey<FormState>();
+  final TextEditingController _payDateController = TextEditingController();
+  final TextEditingController _recievableController = TextEditingController();
+  
+// This is to add payment made by a patient
+  _onMakePayment(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: const Directionality(
+                textDirection: TextDirection.rtl,
+                child: Text('دریافت اقساط فیس'),
+              ),
+              content: Directionality(
+                textDirection: TextDirection.rtl,
+                child: Column(
+                  children: [
+                    const Text(
+                        'لطفاً قیمت های مربوطه را در خانه های ذیل با دقت پر کنید.'),
+                    Form(
+                      key: _formKey4Payment,
+                      child: SizedBox(
+                        width: 500.0,
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(top: 20.0),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  top: 30.0, left: 20, right: 20),
+                              child: TextFormField(
+                                controller: _payDateController,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'تاریخ خرید نمی تواند خالی باشد.';
+                                  }
+                                },
+                                onTap: () async {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  final DateTime? dateTime =
+                                      await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime(1900),
+                                          lastDate: DateTime(2100));
+                                  if (dateTime != null) {
+                                    final intl2.DateFormat formatter =
+                                        intl2.DateFormat('yyyy-MM-dd');
+                                    final String formattedDate =
+                                        formatter.format(dateTime);
+                                    _payDateController.text = formattedDate;
+                                  }
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9.]'))
+                                ],
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'تاریخ خرید جنس',
+                                  suffixIcon:
+                                      Icon(Icons.calendar_month_outlined),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: 400.0,
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 10.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'انتخاب داکتر',
+                                  labelStyle:
+                                      TextStyle(color: Colors.blueAccent),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: Container(
+                                    height: 18.0,
+                                    padding: EdgeInsets.zero,
+                                    child: DropdownButton(
+                                      isExpanded: true,
+                                      icon: const Icon(Icons.arrow_drop_down),
+                                      value: defaultSelectedStaff,
+                                      style: const TextStyle(
+                                          fontSize: 12, color: Colors.black),
+                                      items: staffList.map((staff) {
+                                        return DropdownMenuItem<String>(
+                                          value: staff['staff_ID'],
+                                          alignment: Alignment.centerRight,
+                                          child: Text(staff['firstname'] +
+                                              ' ' +
+                                              staff['lastname']),
+                                        );
+                                      }).toList(),
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          defaultSelectedStaff = newValue;
+                                          staffID = int.parse(newValue!);
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                const Text(
+                                  '*',
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Container(
+                                  width: 400,
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 10.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: TextFormField(
+                                    controller: _recievableController,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                        RegExp(GlobalUsage.allowedDigPeriod),
+                                      ),
+                                    ],
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return 'مبلغ رسید نمی تواند خالی باشد.';
+                                      } /* else if (double.parse(value) >
+                                          _feeWithDiscount) {
+                                        return 'مبلغ رسید باید کمتر از مبلغ قابل دریافت باشد.';
+                                      } */
+                                      return null;
+                                    },
+                                   /*  onChanged: (value) {
+                                      setState(() {
+                                        if (value.isEmpty) {
+                                          _dueAmount = _feeWithDiscount;
+                                        } else {
+                                          _setInstallment(value.toString());
+                                        }
+                                      });
+                                    }, */
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'مبلغ رسید',
+                                      suffixIcon: Icon(Icons.money_rounded),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.red)),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide: BorderSide(
+                                              color: Colors.red, width: 1.5)),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Text(
+                                  '*',
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Container(
+                                  width: 400,
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 10.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: TextFormField(
+                                    controller: _recievableController,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                        RegExp(GlobalUsage.allowedDigPeriod),
+                                      ),
+                                    ],
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return 'مبلغ رسید نمی تواند خالی باشد.';
+                                      } /* else if (double.parse(value) >
+                                          _feeWithDiscount) {
+                                        return 'مبلغ رسید باید کمتر از مبلغ قابل دریافت باشد.';
+                                      } */
+                                      return null;
+                                    },
+                                   /*  onChanged: (value) {
+                                      setState(() {
+                                        if (value.isEmpty) {
+                                          _dueAmount = _feeWithDiscount;
+                                        } else {
+                                          _setInstallment(value.toString());
+                                        }
+                                      });
+                                    }, */
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'مبلغ باقی',
+                                      suffixIcon: Icon(Icons.money_rounded),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.red)),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide: BorderSide(
+                                              color: Colors.red, width: 1.5)),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () =>
+                        Navigator.of(context, rootNavigator: true).pop(),
+                    child: const Text('لغو')),
+                TextButton(
+                  onPressed: () async {
+                    /*  final conn = await onConnToDb();
+                  var results = await conn.query(
+                      'DELETE FROM expense_detail WHERE exp_detail_ID = ?',
+                      [ExpenseInfo.exp_detail_ID]);
+                  if (results.affectedRows! > 0) {
+                    _onShowSnack(Colors.green, 'جنس مورد مصرف موفقانه حذف شد.');
+                    onDelete();
+                    await conn.close();
+                  } else {
+                    _onShowSnack(Colors.red, 'متاسفم، حذف انجام نشد.');
+                  }
+                  Navigator.of(context, rootNavigator: true).pop(); */
+                  },
+                  child: const Text('ثبت'),
+                ),
+              ],
+            ));
+  }
+
+  // Fetch staff which will be needed later.
+  Future<void> fetchStaff() async {
+    // Fetch staff for purchased by fields
+    var conn = await onConnToDb();
+    var results =
+        await conn.query('SELECT staff_ID, firstname, lastname FROM staff');
+    defaultSelectedStaff =
+        staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
+    // setState(() {
+    staffList = results
+        .map((result) => {
+              'staff_ID': result[0].toString(),
+              'firstname': result[1],
+              'lastname': result[2]
+            })
+        .toList();
+    // });
+    await conn.close();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -84,9 +424,10 @@ class _FeeContentState extends State<FeeContent> {
                         },
                         itemBuilder: (BuildContext context) =>
                             <PopupMenuEntry<String>>[
-                          const PopupMenuItem<String>(
+                          PopupMenuItem<String>(
                             value: 'Option 1',
-                            child: Row(
+                            onTap: () => _onMakePayment(context),
+                            child: const Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Icon(Icons.payments_outlined,
@@ -119,7 +460,8 @@ class _FeeContentState extends State<FeeContent> {
                             ),
                           ),
                         ],
-                        icon: const Icon(Icons.more_vert, color: Color.fromARGB(255, 148, 147, 147)),
+                        icon: const Icon(Icons.more_vert,
+                            color: Color.fromARGB(255, 148, 147, 147)),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0)),
                       ),
