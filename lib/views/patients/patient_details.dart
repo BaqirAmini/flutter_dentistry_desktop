@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/appointments.dart';
+import 'package:flutter_dentistry/views/patients/fee_installments.dart';
 import 'package:flutter_dentistry/views/patients/patient_history.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
@@ -343,8 +344,15 @@ class _HoverCardState extends State<HoverCard> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => const PatientHistory()));
+                } else if (widget.indexNum == 101) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FeeRecord(),
+                    ),
+                  );
                 } else {
-                  print('Other cards clicked.');
+                  print('X-Ray selected');
                 }
               },
             ),
