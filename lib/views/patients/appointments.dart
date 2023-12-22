@@ -149,7 +149,6 @@ class _AppointmentContent extends StatefulWidget {
 }
 
 class _AppointmentContentState extends State<_AppointmentContent> {
-  
 // This function deletes an appointment after opening a dialog box.
   onDeleteAppointment(BuildContext context, int id, Function refresh) {
     return showDialog(
@@ -458,7 +457,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                           ),
                                         ],
                                       ),
-                                      Column(
+                                     /*  Column(
                                         children: [
                                           Text(
                                             'Paid: ${a.paidAmount}',
@@ -473,7 +472,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                 fontSize: 12.0),
                                           )
                                         ],
-                                      )
+                                      ) */
                                     ],
                                   ),
                                 ),
@@ -696,8 +695,8 @@ Future<Map<String, List<AppointmentDataModel>>> _getAppointment() async {
   final conn = await onConnToDb();
   final results = await conn.query(
     '''SELECT p.firstname, p.lastname, 
-        a.staff_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y"), a.paid_amount, a.due_amount, a.round, a.installment, 
-        a.discount, a.apt_ID, st.firstname, st.lastname, s.ser_name, s.ser_ID, a.round, a.installment, a.discount FROM patients p 
+        a.staff_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y"), a.round, a.installment, 
+        a.discount, a.apt_ID, st.firstname, st.lastname, s.ser_name, s.ser_ID FROM patients p 
         INNER JOIN appointments a ON a.pat_ID = p.pat_ID
         INNER JOIN staff st ON a.staff_ID = st.staff_ID
         INNER JOIN services s ON s.ser_ID = a.service_ID
@@ -711,16 +710,16 @@ Future<Map<String, List<AppointmentDataModel>>> _getAppointment() async {
     String visitDate = row[3].toString();
     var appointment = AppointmentDataModel(
       staffID: row[2],
-      staffFirstName: row[10],
-      staffLastName: row[11],
-      serviceName: row[12],
-      serviceID: row[13],
-      aptID: row[9],
+      staffFirstName: row[8],
+      staffLastName: row[9],
+      serviceName: row[10],
+      serviceID: row[11],
+      aptID: row[7],
       meetDate: visitDate,
-      round: row[6],
-      paidAmount: row[4],
-      dueAmount: row[5],
-      installment: row[7],
+      round: row[4],
+      /*  paidAmount: row[4], 
+      dueAmount: row[4], */
+      installment: row[5],
     );
     if (appoints.containsKey(visitDate)) {
       appoints[visitDate]!.add(appointment);
@@ -743,8 +742,8 @@ class AppointmentDataModel {
   final int aptID;
   final String meetDate;
   final int round;
-  final double paidAmount;
-  final double dueAmount;
+ /*  final double paidAmount;
+  final double dueAmount; */
   final int installment;
 
   AppointmentDataModel(
@@ -756,8 +755,6 @@ class AppointmentDataModel {
       required this.aptID,
       required this.meetDate,
       required this.round,
-      required this.paidAmount,
-      required this.dueAmount,
       required this.installment});
 }
 
