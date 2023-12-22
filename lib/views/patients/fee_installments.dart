@@ -18,6 +18,10 @@ class FeeRecord extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Fee Management'),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const BackButtonIcon(),
+          ),
         ),
         body: Center(
           child: Container(
@@ -45,7 +49,7 @@ class _FeeContentState extends State<FeeContent> {
   final _formKey4Payment = GlobalKey<FormState>();
   final TextEditingController _payDateController = TextEditingController();
   final TextEditingController _recievableController = TextEditingController();
-  
+
 // This is to add payment made by a patient
   _onMakePayment(BuildContext context) {
     return showDialog(
@@ -214,7 +218,7 @@ class _FeeContentState extends State<FeeContent> {
                                       } */
                                       return null;
                                     },
-                                   /*  onChanged: (value) {
+                                    /*  onChanged: (value) {
                                       setState(() {
                                         if (value.isEmpty) {
                                           _dueAmount = _feeWithDiscount;
@@ -283,7 +287,7 @@ class _FeeContentState extends State<FeeContent> {
                                       } */
                                       return null;
                                     },
-                                   /*  onChanged: (value) {
+                                    /*  onChanged: (value) {
                                       setState(() {
                                         if (value.isEmpty) {
                                           _dueAmount = _feeWithDiscount;
