@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart' as intl2;
@@ -378,213 +379,307 @@ class _FeeContentState extends State<FeeContent> {
     await conn.close();
   }
 
+// Fetch appointments-related fields & fee
+  Future<List<ApptFeeDataModel>> _fetchApptFee() async {
+    final conn = await onConnToDb();
+    final results = await conn.query(
+        '''SELECT s.ser_name, a.installment, a.total_fee, a.round, fp.payment_ID, 
+            fp.installment_counter, DATE_FORMAT(fp.payment_date, '%M %d, %Y'), fp.paid_amount, fp.due_amount, fp.whole_fee_paid, fp.apt_ID
+            FROM services s 
+            INNER JOIN appointments a ON s.ser_ID = a.service_ID
+            INNER JOIN fee_payments fp ON fp.apt_ID = a.apt_ID WHERE a.pat_ID = ?''',
+        [PatientInfo.patID]);
+
+    final apptFees = results
+        .map((row) => ApptFeeDataModel(
+            serviceName: row[0],
+            totalInstallment: row[1] == 0 ? 1 : row[1],
+            totalFee: row[2],
+            round: row[3],
+            paymentID: row[4],
+            instCounter: row[5],
+            paymentDate: row[6].toString(),
+            paidAmount: row[7],
+            dueAmount: row[8],
+            isWholePaid: row[9],
+            apptID: row[10]))
+        .toList();
+
+    await conn.close();
+    return apptFees;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        Card(
-          child: Column(
-            children: [
-              Stack(
+    return FutureBuilder(
+      future: _fetchApptFee(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {
+          if (snapshot.data!.isEmpty) {
+            return const Center(child: Text('No Fee and Installments found.'));
+          } else {
+            final apptFee = snapshot.data;
+            for (var af in apptFee!) {
+              return ListView(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    color: Colors.grey[200],
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 15.0, vertical: 5.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Card(
+                    child: Column(
                       children: [
-                        const Text(
-                          'Crown',
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(right: 90.0),
-                          child: Card(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0)),
-                            elevation: 0,
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Text('Installments: 5',
-                                  style:
-                                      Theme.of(context).textTheme.labelSmall),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                    top: 0.0,
-                    right: 8.0,
-                    child: Material(
-                      color: Colors.transparent,
-                      shape: const CircleBorder(),
-                      child: PopupMenuButton<String>(
-                        onSelected: (String result) {
-                          print('You selected: $result');
-                        },
-                        itemBuilder: (BuildContext context) =>
-                            <PopupMenuEntry<String>>[
-                          PopupMenuItem<String>(
-                            value: 'Option 1',
-                            onTap: () => _onMakePayment(context),
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Icon(Icons.payments_outlined,
-                                    color: Colors.grey),
-                                SizedBox(width: 10.0),
-                                Text(
-                                  'Earn Payment',
-                                  style: TextStyle(
-                                    color: Color.fromRGBO(86, 85, 85, 0.765),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const PopupMenuItem<String>(
-                            value: 'Option 2',
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Icon(Icons.delete_forever_outlined,
-                                    color: Colors.grey),
-                                SizedBox(width: 10.0),
-                                Text(
-                                  'Delete',
-                                  style: TextStyle(
-                                    color: Color.fromRGBO(86, 85, 85, 0.765),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                        icon: const Icon(Icons.more_vert,
-                            color: Color.fromARGB(255, 148, 147, 147)),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              NonExpandableCard(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.green[400],
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Icon(
-                              Icons.currency_exchange,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10.0),
-                        const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Stack(
                           children: [
-                            Text(
-                              'Dec 15, 2023',
-                              style: TextStyle(fontSize: 18.0),
-                            ),
-                            Text(
-                              'تحت نظر: ',
-                              style:
-                                  TextStyle(color: Colors.grey, fontSize: 12.0),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        const SizedBox(width: 15.0),
-                        Container(
-                          width: 100.0,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              right: BorderSide(width: 0.5, color: Colors.grey),
-                            ),
-                          ),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                                border: InputBorder.none,
-                                labelText: 'Installment',
-                                labelStyle: TextStyle(color: Colors.grey),
-                                floatingLabelAlignment:
-                                    FloatingLabelAlignment.center),
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 5.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  child: Container(
-                                    color: const Color.fromARGB(
-                                        255, 104, 166, 106),
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 5.0, vertical: 2.0),
-                                      child: Text('1 / 6',
-                                          style: TextStyle(
-                                              fontSize: 12.0,
-                                              color: Colors.white)),
+                            Container(
+                              width: double.infinity,
+                              color: Colors.grey[200],
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 15.0, vertical: 5.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    af.serviceName,
+                                    style: const TextStyle(fontSize: 18.0),
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(right: 90.0),
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30.0)),
+                                      elevation: 0,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: Text(
+                                            'Installments: ${af.totalInstallment}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelSmall),
+                                      ),
                                     ),
                                   ),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              top: 0.0,
+                              right: 8.0,
+                              child: Material(
+                                color: Colors.transparent,
+                                shape: const CircleBorder(),
+                                child: PopupMenuButton<String>(
+                                  onSelected: (String result) {
+                                    print('You selected: $result');
+                                  },
+                                  itemBuilder: (BuildContext context) =>
+                                      <PopupMenuEntry<String>>[
+                                    PopupMenuItem<String>(
+                                      value: 'Option 1',
+                                      onTap: () => _onMakePayment(context),
+                                      child: const Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Icon(Icons.payments_outlined,
+                                              color: Colors.grey),
+                                          SizedBox(width: 10.0),
+                                          Text(
+                                            'Earn Payment',
+                                            style: TextStyle(
+                                              color: Color.fromRGBO(
+                                                  86, 85, 85, 0.765),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const PopupMenuItem<String>(
+                                      value: 'Option 2',
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Icon(Icons.delete_forever_outlined,
+                                              color: Colors.grey),
+                                          SizedBox(width: 10.0),
+                                          Text(
+                                            'Delete',
+                                            style: TextStyle(
+                                              color: Color.fromRGBO(
+                                                  86, 85, 85, 0.765),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                  icon: const Icon(Icons.more_vert,
+                                      color:
+                                          Color.fromARGB(255, 148, 147, 147)),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(10.0)),
                                 ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                        const SizedBox(width: 15.0),
-                        SizedBox(
-                          width: 70.0,
-                          height: 70.0,
-                          child: SfCircularChart(
-                            margin: EdgeInsets.zero,
-                            tooltipBehavior: TooltipBehavior(enable: true),
-                            series: <PieSeries<FeeData, String>>[
-                              PieSeries<FeeData, String>(
-                                  dataSource: <FeeData>[
-                                    FeeData('Paid', 1000, Colors.blueGrey),
-                                    FeeData('Due', 3700, Colors.brown),
-                                  ],
-                                  xValueMapper: (FeeData data, _) =>
-                                      data.category,
-                                  pointColorMapper: (FeeData data, _) =>
-                                      data.color,
-                                  yValueMapper: (FeeData data, _) =>
-                                      data.amount,
-                                  dataLabelSettings: const DataLabelSettings(
-                                    isVisible: true,
-                                    textStyle: TextStyle(fontSize: 8.0),
+                        NonExpandableCard(
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.green[400],
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Icons.currency_exchange,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                                   ),
-                                  selectionBehavior: SelectionBehavior(
-                                      enable: true, selectedBorderWidth: 2.0)),
+                                  const SizedBox(width: 10.0),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        af.paymentDate,
+                                        style: const TextStyle(fontSize: 18.0),
+                                      ),
+                                      const Text(
+                                        'تحت نظر: ',
+                                        style: TextStyle(
+                                            color: Colors.grey, fontSize: 12.0),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  const SizedBox(width: 15.0),
+                                  Container(
+                                    width: 100.0,
+                                    decoration: const BoxDecoration(
+                                      border: Border(
+                                        right: BorderSide(
+                                            width: 0.5, color: Colors.grey),
+                                      ),
+                                    ),
+                                    child: InputDecorator(
+                                      decoration: const InputDecoration(
+                                          border: InputBorder.none,
+                                          labelText: 'Installment',
+                                          labelStyle:
+                                              TextStyle(color: Colors.grey),
+                                          floatingLabelAlignment:
+                                              FloatingLabelAlignment.center),
+                                      child: Center(
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 5.0),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                            child: Container(
+                                              color: const Color.fromARGB(
+                                                  255, 104, 166, 106),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 5.0,
+                                                        vertical: 2.0),
+                                                child: Text(
+                                                  '${af.instCounter.toString()} / ${af.totalInstallment.toString()}',
+                                                  style: const TextStyle(
+                                                      fontSize: 12.0,
+                                                      color: Colors.white),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 15.0),
+                                  SizedBox(
+                                    width: 100.0,
+                                    height: 100.0,
+                                    child: SfCircularChart(
+                                      margin: EdgeInsets.zero,
+                                      tooltipBehavior: TooltipBehavior(
+                                        color: Color.fromARGB(255, 106, 105, 105),
+                                        textStyle: TextStyle(fontSize: 8.0),
+                                        enable: true,
+                                        format: 'point.x: point.y افغانی',
+                                      ),
+                                      annotations: [
+                                        CircularChartAnnotation(
+                                          widget: Text(
+                                            '${af.totalFee} افغانی',
+                                            style: const TextStyle(
+                                                fontSize: 8.0,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ],
+                                      series: <DoughnutSeries<FeeDoughnutData,
+                                          String>>[
+                                        DoughnutSeries<FeeDoughnutData, String>(
+                                            innerRadius: '70%',
+                                            dataSource: <FeeDoughnutData>[
+                                              FeeDoughnutData('Paid',
+                                                  af.paidAmount, Colors.green),
+                                              FeeDoughnutData('Due',
+                                                  af.dueAmount, Colors.pink),
+                                            ],
+                                            xValueMapper:
+                                                (FeeDoughnutData data, _) =>
+                                                    data.feePaid,
+                                            pointColorMapper:
+                                                (FeeDoughnutData data, _) =>
+                                                    data.color,
+                                            yValueMapper:
+                                                (FeeDoughnutData data, _) =>
+                                                    data.feeDue,
+                                            dataLabelSettings:
+                                                const DataLabelSettings(
+                                              isVisible: false,
+                                              textStyle:
+                                                  TextStyle(fontSize: 8.0),
+                                            ),
+                                            selectionBehavior:
+                                                SelectionBehavior(
+                                                    enable: true,
+                                                    selectedBorderWidth: 2.0)),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              )
                             ],
                           ),
                         ),
                       ],
-                    )
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+            return const Text('');
+          }
+        }
+      },
     );
   }
 }
@@ -603,9 +698,37 @@ class NonExpandableCard extends StatelessWidget {
   }
 }
 
-class FeeData {
-  FeeData(this.category, this.amount, this.color);
-  final String category;
-  final double amount;
+class FeeDoughnutData {
+  FeeDoughnutData(this.feePaid, this.feeDue, this.color);
+  final String feePaid;
+  final double feeDue;
   final Color color;
+}
+
+// Create data model to assign appointments-related, services-related and fee-payments-related fields
+class ApptFeeDataModel {
+  final String serviceName;
+  final int totalInstallment;
+  final double totalFee;
+  final int round;
+  final int paymentID;
+  final int instCounter;
+  final String paymentDate;
+  final double paidAmount;
+  final double dueAmount;
+  final int isWholePaid;
+  final int apptID;
+
+  ApptFeeDataModel(
+      {required this.serviceName,
+      required this.totalInstallment,
+      required this.totalFee,
+      required this.round,
+      required this.paymentID,
+      required this.instCounter,
+      required this.paymentDate,
+      required this.paidAmount,
+      required this.dueAmount,
+      required this.isWholePaid,
+      required this.apptID});
 }
