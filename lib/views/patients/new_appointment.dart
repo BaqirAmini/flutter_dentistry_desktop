@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/finance/fee/fee_related_fields.dart';
-import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
-import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:flutter_dentistry/views/patients/tooth_selection_info.dart';
 import 'package:flutter_dentistry/views/services/service_related_fields.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
-import 'package:galileo_mysql/src/results/row.dart';
 
 // Declare this to assign round.
 int _round = 0;
@@ -533,6 +530,7 @@ class AppointmentFunction {
             'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?)',
             [patientId, serviceId, 2, desc]);
       }
+      await conn.close();
       return true;
     } catch (e) {
       print('Inserting into patient_services field since: $e');
@@ -547,21 +545,44 @@ class AppointmentFunction {
       final conn = await onConnToDb();
       // Now create appointments
       await conn.query(
-          'INSERT INTO appointments (pat_ID, service_ID, installment, round, discount, paid_amount, due_amount, meet_date, staff_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          'INSERT INTO appointments (pat_ID, service_ID, installment, round, discount, total_fee, meet_date, staff_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
           [
             patient,
             service,
             FeeInfo.installment,
             GlobalUsage.newPatientCreated ? 1 : _round,
             FeeInfo.discountRate,
-            FeeInfo.receivedAmount,
-            FeeInfo.dueAmount,
+            FeeInfo.fee,
             meetDate,
             staff
           ]);
+      await conn.close();
       return true;
     } catch (e) {
       print('The data failed to insert into appointments since: $e');
+      return false;
+    }
+  }
+
+// Now create appointment-related fee into fee_payments table
+  static Future<bool> onAddFeePayment(
+      String payDate, int staff, int appointment) async {
+    try {
+      final conn = await onConnToDb();
+      await conn.query(
+          '''INSERT INTO fee_payments (payment_date, paid_amount, due_amount, staff_ID, apt_ID)
+    VALUES (?, ?, ?, ?, ?)''',
+          [
+            payDate,
+            FeeInfo.receivedAmount,
+            FeeInfo.dueAmount,
+            staff,
+            appointment
+          ]);
+      await conn.close();
+      return true;
+    } catch (e) {
+      print('Inserting into fee_payments failed since $e');
       return false;
     }
   }
