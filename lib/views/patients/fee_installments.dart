@@ -50,317 +50,443 @@ class _FeeContentState extends State<FeeContent> {
   final _formKey4Payment = GlobalKey<FormState>();
   final TextEditingController _payDateController = TextEditingController();
   final TextEditingController _recievableController = TextEditingController();
+  final TextEditingController _installmentController = TextEditingController();
 
+  // Declare variables for installment rates.
+  int _defaultInstallment = 0;
+  final List<int> _installmentItems = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  // This function deducts installments
+  void _setInstallment(String text) {
+    double receivable = _recievableController.text.isEmpty
+        ? 0
+        : double.parse(_recievableController.text);
+    setState(() {
+      _dueAmount = _feeWithDiscount - receivable;
+    });
+  }
+
+  // Declare for discount.
+  bool _isVisibleForPayment = false;
+  int _defaultDiscountRate = 0;
+  final List<int> _discountItems = [2, 5, 10, 15, 20, 30, 50];
+  double _feeWithDiscount = 0;
+  double _dueAmount = 0;
+  // Create a function for setting discount
+  void _setDiscount(String text) {
+    double totalFee = _recievableController.text.isEmpty
+        ? 0
+        : double.parse(_recievableController.text);
+
+    setState(() {
+      if (_defaultDiscountRate == 0) {
+        _feeWithDiscount = totalFee;
+      } else {
+        double discountAmt = (_defaultDiscountRate * totalFee) / 100;
+        _feeWithDiscount = totalFee - discountAmt;
+      }
+    });
+  }
+
+
+String? _errorMessage;
 // This is to add payment made by a patient
-  _onMakePayment(BuildContext context) {
+  _onMakePayment(BuildContext context, int instCounter, int totalInstallment,
+      double totalFee, double dueAmount, int apptID) {
+    // Any time a payment is made, installment should be incremented.
+    int instIncrement = ++instCounter;
+    _installmentController.text = '$instIncrement / $totalInstallment';
+    double totalAmount = totalFee;
+    double due = dueAmount;
+    double receivedAmount = _recievableController.text.isEmpty
+        ? 0
+        : double.parse(_recievableController.text);
+
     return showDialog(
         context: context,
-        builder: (ctx) => AlertDialog(
-              title: const Directionality(
-                textDirection: TextDirection.rtl,
-                child: Text('دریافت اقساط فیس'),
-              ),
-              content: Directionality(
-                textDirection: TextDirection.rtl,
-                child: Column(
-                  children: [
-                    const Text(
-                        'لطفاً قیمت های مربوطه را در خانه های ذیل با دقت پر کنید.'),
-                    Form(
-                      key: _formKey4Payment,
-                      child: SizedBox(
-                        width: 500.0,
-                        child: Column(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(top: 20.0),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(
-                                  top: 30.0, left: 20, right: 20),
-                              child: TextFormField(
-                                controller: _payDateController,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'تاریخ خرید نمی تواند خالی باشد.';
-                                  }
-                                },
-                                onTap: () async {
-                                  FocusScope.of(context)
-                                      .requestFocus(FocusNode());
-                                  final DateTime? dateTime =
-                                      await showDatePicker(
-                                          context: context,
-                                          initialDate: DateTime.now(),
-                                          firstDate: DateTime(1900),
-                                          lastDate: DateTime(2100));
-                                  if (dateTime != null) {
-                                    final intl2.DateFormat formatter =
-                                        intl2.DateFormat('yyyy-MM-dd');
-                                    final String formattedDate =
-                                        formatter.format(dateTime);
-                                    _payDateController.text = formattedDate;
-                                  }
-                                },
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.allow(
-                                      RegExp(r'[0-9.]'))
+        builder: (ctx) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                title: const Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Text('دریافت فیس مریض'),
+                ),
+                content: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: SizedBox(
+                    height: 450.0,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text(
+                            'لطفاً قیمت های مربوطه را در خانه های ذیل با دقت پر کنید.'),
+                        Form(
+                          key: _formKey4Payment,
+                          child: SizedBox(
+                            width: 500.0,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        '*',
+                                        style: TextStyle(
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Container(
+                                        width: 450,
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 20.0, vertical: 10.0),
+                                        child: TextFormField(
+                                          controller: _payDateController,
+                                          onChanged: (value) async {
+                                            if (value.isEmpty) {
+                                              _errorMessage =
+                                                  'تاریخ دریافت فیس نمی تواند خالی باشد.';
+                                            } else if (await _fetchPaidDate(
+                                                value, apptID)) {
+                                              _errorMessage =
+                                                  'Date should be newer.';
+                                            } else {
+                                              _errorMessage = null;
+                                            }
+                                          },
+                                          validator: (value) {
+                                            return _errorMessage;
+                                          },
+                                          onTap: () async {
+                                            FocusScope.of(context)
+                                                .requestFocus(FocusNode());
+                                            final DateTime? dateTime =
+                                                await showDatePicker(
+                                                    context: context,
+                                                    initialDate: DateTime.now(),
+                                                    firstDate: DateTime(1900),
+                                                    lastDate: DateTime(2100));
+                                            if (dateTime != null) {
+                                              final intl2.DateFormat formatter =
+                                                  intl2.DateFormat(
+                                                      'yyyy-MM-dd');
+                                              final String formattedDate =
+                                                  formatter.format(dateTime);
+                                              _payDateController.text =
+                                                  formattedDate;
+                                            }
+                                          },
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.allow(
+                                                RegExp(r'[0-9.]'))
+                                          ],
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: 'تاریخ دریافت فیس',
+                                            suffixIcon: Icon(
+                                                Icons.calendar_month_outlined),
+                                            enabledBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(50.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey)),
+                                            focusedBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(50.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.blue)),
+                                            errorBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(50.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.red)),
+                                            focusedErrorBorder:
+                                                OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.red,
+                                                        width: 1.5)),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    width: 500.0,
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 20.0, vertical: 10.0),
+                                    child: InputDecorator(
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'داکتر مربوطه',
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                      ),
+                                      child: DropdownButtonHideUnderline(
+                                        child: Container(
+                                          height: 18.0,
+                                          padding: EdgeInsets.zero,
+                                          child: DropdownButton(
+                                            isExpanded: true,
+                                            icon: const Icon(
+                                                Icons.arrow_drop_down),
+                                            value: defaultSelectedStaff,
+                                            style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.black),
+                                            items: staffList.map((staff) {
+                                              return DropdownMenuItem<String>(
+                                                value: staff['staff_ID'],
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                child: Text(staff['firstname'] +
+                                                    ' ' +
+                                                    staff['lastname']),
+                                              );
+                                            }).toList(),
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                defaultSelectedStaff = newValue;
+                                                staffID = int.parse(newValue!);
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 450.0,
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 20.0, vertical: 10.0),
+                                    child: TextFormField(
+                                      controller: _installmentController,
+                                      readOnly: true,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                          RegExp(GlobalUsage.allowedDigPeriod),
+                                        ),
+                                      ],
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'قسط دریافت',
+                                        suffixIcon: Icon(Icons.money_rounded),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                        errorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.red)),
+                                        focusedErrorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        '*',
+                                        style: TextStyle(
+                                            color: Colors.red,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Container(
+                                        width: 450.0,
+                                        margin: const EdgeInsets.symmetric(
+                                            horizontal: 20.0, vertical: 10.0),
+                                        child: TextFormField(
+                                          controller: _recievableController,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.allow(
+                                              RegExp(
+                                                  GlobalUsage.allowedDigPeriod),
+                                            ),
+                                          ],
+                                          validator: (value) {
+                                            double receivedAmount =
+                                                value!.isEmpty
+                                                    ? 0
+                                                    : double.parse(value);
+                                            if (value.isEmpty) {
+                                              return 'مبلغ رسید نمی تواند خالی باشد.';
+                                            } else if (receivedAmount >
+                                                totalAmount) {
+                                              return 'مبلغ رسید باید کمتر از مبلغ قابل دریافت باشد.';
+                                            } else {
+                                              return null;
+                                            }
+                                          },
+                                          /*  onChanged: (value) {
+                                          setState(() {
+                                            if (value.isEmpty) {
+                                              _dueAmount = _feeWithDiscount;
+                                            } else {
+                                              _setInstallment(value.toString());
+                                            }
+                                          });
+                                        }, */
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: 'مبلغ رسید',
+                                            suffixIcon:
+                                                Icon(Icons.money_rounded),
+                                            enabledBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(50.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.grey)),
+                                            focusedBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(50.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.blue)),
+                                            errorBorder: OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(50.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.red)),
+                                            focusedErrorBorder:
+                                                OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.red,
+                                                        width: 1.5)),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 180.0,
+                                        margin: const EdgeInsets.all(5),
+                                        decoration: const BoxDecoration(
+                                            border: Border(
+                                          top: BorderSide(
+                                              width: 1, color: Colors.grey),
+                                          bottom: BorderSide(
+                                              width: 1, color: Colors.grey),
+                                        )),
+                                        child: InputDecorator(
+                                          decoration: const InputDecoration(
+                                              border: InputBorder.none,
+                                              labelText: 'مجموع فیس',
+                                              floatingLabelAlignment:
+                                                  FloatingLabelAlignment
+                                                      .center),
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 8.0),
+                                            child: Center(
+                                              child: Text(
+                                                '$totalAmount افغانی',
+                                                style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.blue),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.all(5),
+                                        width: 180.0,
+                                        decoration: const BoxDecoration(
+                                            border: Border(
+                                          top: BorderSide(
+                                              width: 1, color: Colors.grey),
+                                          bottom: BorderSide(
+                                              width: 1, color: Colors.grey),
+                                        )),
+                                        child: InputDecorator(
+                                          decoration: const InputDecoration(
+                                              border: InputBorder.none,
+                                              labelText: 'باقی مبلغ',
+                                              floatingLabelAlignment:
+                                                  FloatingLabelAlignment
+                                                      .center),
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 8.0),
+                                            child: Center(
+                                              child: Text(
+                                                '$due افغانی',
+                                                style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.blue),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ],
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'تاریخ خرید جنس',
-                                  suffixIcon:
-                                      Icon(Icons.calendar_month_outlined),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue)),
-                                  errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide: BorderSide(
-                                          color: Colors.red, width: 1.5)),
-                                ),
                               ),
                             ),
-                            Container(
-                              width: 400.0,
-                              margin: const EdgeInsets.only(
-                                  left: 20.0,
-                                  right: 10.0,
-                                  top: 10.0,
-                                  bottom: 10.0),
-                              child: InputDecorator(
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'انتخاب داکتر',
-                                  labelStyle:
-                                      TextStyle(color: Colors.blueAccent),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue)),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: Container(
-                                    height: 18.0,
-                                    padding: EdgeInsets.zero,
-                                    child: DropdownButton(
-                                      isExpanded: true,
-                                      icon: const Icon(Icons.arrow_drop_down),
-                                      value: defaultSelectedStaff,
-                                      style: const TextStyle(
-                                          fontSize: 12, color: Colors.black),
-                                      items: staffList.map((staff) {
-                                        return DropdownMenuItem<String>(
-                                          value: staff['staff_ID'],
-                                          alignment: Alignment.centerRight,
-                                          child: Text(staff['firstname'] +
-                                              ' ' +
-                                              staff['lastname']),
-                                        );
-                                      }).toList(),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          defaultSelectedStaff = newValue;
-                                          staffID = int.parse(newValue!);
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                const Text(
-                                  '*',
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Container(
-                                  width: 400,
-                                  margin: const EdgeInsets.only(
-                                      left: 20.0,
-                                      right: 10.0,
-                                      top: 10.0,
-                                      bottom: 10.0),
-                                  child: TextFormField(
-                                    controller: _recievableController,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.allow(
-                                        RegExp(GlobalUsage.allowedDigPeriod),
-                                      ),
-                                    ],
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'مبلغ رسید نمی تواند خالی باشد.';
-                                      } /* else if (double.parse(value) >
-                                          _feeWithDiscount) {
-                                        return 'مبلغ رسید باید کمتر از مبلغ قابل دریافت باشد.';
-                                      } */
-                                      return null;
-                                    },
-                                    /*  onChanged: (value) {
-                                      setState(() {
-                                        if (value.isEmpty) {
-                                          _dueAmount = _feeWithDiscount;
-                                        } else {
-                                          _setInstallment(value.toString());
-                                        }
-                                      });
-                                    }, */
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'مبلغ رسید',
-                                      suffixIcon: Icon(Icons.money_rounded),
-                                      enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.grey)),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.blue)),
-                                      errorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.red)),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide: BorderSide(
-                                              color: Colors.red, width: 1.5)),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                const Text(
-                                  '*',
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Container(
-                                  width: 400,
-                                  margin: const EdgeInsets.only(
-                                      left: 20.0,
-                                      right: 10.0,
-                                      top: 10.0,
-                                      bottom: 10.0),
-                                  child: TextFormField(
-                                    controller: _recievableController,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.allow(
-                                        RegExp(GlobalUsage.allowedDigPeriod),
-                                      ),
-                                    ],
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return 'مبلغ رسید نمی تواند خالی باشد.';
-                                      } /* else if (double.parse(value) >
-                                          _feeWithDiscount) {
-                                        return 'مبلغ رسید باید کمتر از مبلغ قابل دریافت باشد.';
-                                      } */
-                                      return null;
-                                    },
-                                    /*  onChanged: (value) {
-                                      setState(() {
-                                        if (value.isEmpty) {
-                                          _dueAmount = _feeWithDiscount;
-                                        } else {
-                                          _setInstallment(value.toString());
-                                        }
-                                      });
-                                    }, */
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'مبلغ باقی',
-                                      suffixIcon: Icon(Icons.money_rounded),
-                                      enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.grey)),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.blue)),
-                                      errorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.red)),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide: BorderSide(
-                                              color: Colors.red, width: 1.5)),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-              actions: [
-                TextButton(
-                    onPressed: () =>
-                        Navigator.of(context, rootNavigator: true).pop(),
-                    child: const Text('لغو')),
-                TextButton(
-                  onPressed: () async {
-                    /*  final conn = await onConnToDb();
-                  var results = await conn.query(
-                      'DELETE FROM expense_detail WHERE exp_detail_ID = ?',
-                      [ExpenseInfo.exp_detail_ID]);
-                  if (results.affectedRows! > 0) {
-                    _onShowSnack(Colors.green, 'جنس مورد مصرف موفقانه حذف شد.');
-                    onDelete();
-                    await conn.close();
-                  } else {
-                    _onShowSnack(Colors.red, 'متاسفم، حذف انجام نشد.');
-                  }
-                  Navigator.of(context, rootNavigator: true).pop(); */
-                  },
-                  child: const Text('ثبت'),
-                ),
-              ],
-            ));
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      TextButton(
+                          onPressed: () =>
+                              Navigator.of(context, rootNavigator: true).pop(),
+                          child: const Text('لغو')),
+                      ElevatedButton(
+                          onPressed: () {
+                            if (_formKey4Payment.currentState!.validate()) {
+                              print('Validated');
+                            }
+                          },
+                          child: const Text('ثبت')),
+                    ],
+                  ),
+                ],
+              );
+            },
+          );
+        });
   }
 
   // Fetch staff which will be needed later.
-  Future<void> fetchStaff() async {
+  Future<void> _fetchStaff() async {
     // Fetch staff for purchased by fields
     var conn = await onConnToDb();
     var results =
@@ -377,6 +503,23 @@ class _FeeContentState extends State<FeeContent> {
         .toList();
     // });
     await conn.close();
+  }
+
+  Future<bool> _fetchPaidDate(String date, int aptID) async {
+    try {
+      final conn = await onConnToDb();
+      final results = await conn.query(
+          'SELECT payment_date FROM fee_payments WHERE apt_ID = ? AND payment_date <= ?',
+          [aptID, date]);
+      if (results.isNotEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Date error: $e');
+      return false;
+    }
   }
 
 // Fetch appointments-related fields & fee
@@ -407,6 +550,12 @@ class _FeeContentState extends State<FeeContent> {
 
     await conn.close();
     return apptFees;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchStaff();
   }
 
   @override
@@ -477,18 +626,31 @@ class _FeeContentState extends State<FeeContent> {
                                   itemBuilder: (BuildContext context) =>
                                       <PopupMenuEntry<String>>[
                                     PopupMenuItem<String>(
+                                      enabled:
+                                          af.instCounter == af.totalInstallment
+                                              ? false
+                                              : true,
                                       value: 'Option 1',
-                                      onTap: () => _onMakePayment(context),
-                                      child: const Row(
+                                      onTap: () => _onMakePayment(
+                                          context,
+                                          af.instCounter,
+                                          af.totalInstallment,
+                                          af.totalFee,
+                                          af.dueAmount,
+                                          af.apptID),
+                                      child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.start,
                                         children: [
-                                          Icon(Icons.payments_outlined,
+                                          const Icon(Icons.payments_outlined,
                                               color: Colors.grey),
-                                          SizedBox(width: 10.0),
+                                          const SizedBox(width: 10.0),
                                           Text(
-                                            'Earn Payment',
-                                            style: TextStyle(
+                                            af.instCounter ==
+                                                    af.totalInstallment
+                                                ? 'Whole Fee Paid'
+                                                : 'Earn Payment',
+                                            style: const TextStyle(
                                               color: Color.fromRGBO(
                                                   86, 85, 85, 0.765),
                                             ),
@@ -618,8 +780,10 @@ class _FeeContentState extends State<FeeContent> {
                                     child: SfCircularChart(
                                       margin: EdgeInsets.zero,
                                       tooltipBehavior: TooltipBehavior(
-                                        color: Color.fromARGB(255, 106, 105, 105),
-                                        textStyle: TextStyle(fontSize: 8.0),
+                                        color: const Color.fromARGB(
+                                            255, 106, 105, 105),
+                                        textStyle:
+                                            const TextStyle(fontSize: 8.0),
                                         enable: true,
                                         format: 'point.x: point.y افغانی',
                                       ),
