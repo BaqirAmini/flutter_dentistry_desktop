@@ -52,43 +52,6 @@ class _FeeContentState extends State<FeeContent> {
   final TextEditingController _recievableController = TextEditingController();
   final TextEditingController _installmentController = TextEditingController();
 
-  // Declare variables for installment rates.
-  int _defaultInstallment = 0;
-  final List<int> _installmentItems = [2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-  // This function deducts installments
-  void _setInstallment(String text) {
-    double receivable = _recievableController.text.isEmpty
-        ? 0
-        : double.parse(_recievableController.text);
-    setState(() {
-      _dueAmount = _feeWithDiscount - receivable;
-    });
-  }
-
-  // Declare for discount.
-  bool _isVisibleForPayment = false;
-  int _defaultDiscountRate = 0;
-  final List<int> _discountItems = [2, 5, 10, 15, 20, 30, 50];
-  double _feeWithDiscount = 0;
-  double _dueAmount = 0;
-  // Create a function for setting discount
-  void _setDiscount(String text) {
-    double totalFee = _recievableController.text.isEmpty
-        ? 0
-        : double.parse(_recievableController.text);
-
-    setState(() {
-      if (_defaultDiscountRate == 0) {
-        _feeWithDiscount = totalFee;
-      } else {
-        double discountAmt = (_defaultDiscountRate * totalFee) / 100;
-        _feeWithDiscount = totalFee - discountAmt;
-      }
-    });
-  }
-
-  String? _errorMessage;
 // This is to add payment made by a patient
   _onMakePayment(BuildContext context, int instCounter, int totalInstallment,
       double totalFee, double dueAmount, int apptID) {
@@ -101,6 +64,19 @@ class _FeeContentState extends State<FeeContent> {
         builder: (ctx) {
           return StatefulBuilder(
             builder: (context, setState) {
+              String? errorMessage;
+              // This function deducts installments
+              void deductDueAmount(String text) {
+                double receivable = _recievableController.text.isEmpty ||
+                        double.parse(_recievableController.text) > dueAmount
+                    ? 0
+                    : double.parse(_recievableController.text);
+
+                setState(() {
+                  dueAmount = dueAmount - receivable;
+                });
+              }
+
               return AlertDialog(
                 title: const Directionality(
                   textDirection: TextDirection.rtl,
@@ -143,7 +119,8 @@ class _FeeContentState extends State<FeeContent> {
                                             if (value == null ||
                                                 value.isEmpty) {
                                               return 'تاریخ دریافت فیس نمی تواند خالی باشد.';
-                                            } return _errorMessage;
+                                            }
+                                            return errorMessage;
                                           },
                                           onTap: () async {
                                             FocusScope.of(context)
@@ -321,21 +298,15 @@ class _FeeContentState extends State<FeeContent> {
                                             if (value.isEmpty) {
                                               return 'مبلغ رسید نمی تواند خالی باشد.';
                                             } else if (receivedAmount >
-                                                totalFee) {
+                                                dueAmount) {
                                               return 'مبلغ رسید باید کمتر از مبلغ قابل دریافت باشد.';
                                             } else {
                                               return null;
                                             }
                                           },
-                                          /*  onChanged: (value) {
-                                          setState(() {
-                                            if (value.isEmpty) {
-                                              _dueAmount = _feeWithDiscount;
-                                            } else {
-                                              _setInstallment(value.toString());
-                                            }
-                                          });
-                                        }, */
+                                          onFieldSubmitted: (value) {
+                                            deductDueAmount(value.toString());
+                                          },
                                           decoration: const InputDecoration(
                                             border: OutlineInputBorder(),
                                             labelText: 'مبلغ رسید',
@@ -455,12 +426,23 @@ class _FeeContentState extends State<FeeContent> {
                               Navigator.of(context, rootNavigator: true).pop(),
                           child: const Text('لغو')),
                       ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey4Payment.currentState!.validate()) {
-                              setState(() async {
-                                _errorMessage = await showMessage(_payDateController.text, apptID);
-                              },);
+                              bool dateResult = await _fetchPaidDate(
+                                  _payDateController.text, apptID);
+                              setState(
+                                () {
+                                  if (dateResult) {
+                                    errorMessage = null;
+                                    print('Okay!!!');
+                                  } else {
+                                    errorMessage =
+                                        'تاریخ باید بزرگتر یا مساوی به تاریخ پرداخت قبلی باشد.';
+                                  }
+                                },
+                              );
                             }
+                            _formKey4Payment.currentState!.validate();
                           },
                           child: const Text('ثبت')),
                     ],
@@ -506,14 +488,6 @@ class _FeeContentState extends State<FeeContent> {
     } catch (e) {
       print('Date error: $e');
       return false;
-    }
-  }
-
-  Future<String> showMessage(String date, int ID) async {
-    if (await _fetchPaidDate(date, ID)) {
-      return '';
-    } else {
-      return 'Old date';
     }
   }
 
