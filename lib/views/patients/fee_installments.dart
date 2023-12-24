@@ -88,19 +88,13 @@ class _FeeContentState extends State<FeeContent> {
     });
   }
 
-
-String? _errorMessage;
+  String? _errorMessage;
 // This is to add payment made by a patient
   _onMakePayment(BuildContext context, int instCounter, int totalInstallment,
       double totalFee, double dueAmount, int apptID) {
     // Any time a payment is made, installment should be incremented.
     int instIncrement = ++instCounter;
     _installmentController.text = '$instIncrement / $totalInstallment';
-    double totalAmount = totalFee;
-    double due = dueAmount;
-    double receivedAmount = _recievableController.text.isEmpty
-        ? 0
-        : double.parse(_recievableController.text);
 
     return showDialog(
         context: context,
@@ -145,20 +139,11 @@ String? _errorMessage;
                                             horizontal: 20.0, vertical: 10.0),
                                         child: TextFormField(
                                           controller: _payDateController,
-                                          onChanged: (value) async {
-                                            if (value.isEmpty) {
-                                              _errorMessage =
-                                                  'تاریخ دریافت فیس نمی تواند خالی باشد.';
-                                            } else if (await _fetchPaidDate(
-                                                value, apptID)) {
-                                              _errorMessage =
-                                                  'Date should be newer.';
-                                            } else {
-                                              _errorMessage = null;
-                                            }
-                                          },
                                           validator: (value) {
-                                            return _errorMessage;
+                                            if (value == null ||
+                                                value.isEmpty) {
+                                              return 'تاریخ دریافت فیس نمی تواند خالی باشد.';
+                                            } return _errorMessage;
                                           },
                                           onTap: () async {
                                             FocusScope.of(context)
@@ -336,7 +321,7 @@ String? _errorMessage;
                                             if (value.isEmpty) {
                                               return 'مبلغ رسید نمی تواند خالی باشد.';
                                             } else if (receivedAmount >
-                                                totalAmount) {
+                                                totalFee) {
                                               return 'مبلغ رسید باید کمتر از مبلغ قابل دریافت باشد.';
                                             } else {
                                               return null;
@@ -410,7 +395,7 @@ String? _errorMessage;
                                                 const EdgeInsets.only(top: 8.0),
                                             child: Center(
                                               child: Text(
-                                                '$totalAmount افغانی',
+                                                '$totalFee افغانی',
                                                 style: const TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.blue),
@@ -441,7 +426,7 @@ String? _errorMessage;
                                                 const EdgeInsets.only(top: 8.0),
                                             child: Center(
                                               child: Text(
-                                                '$due افغانی',
+                                                '$dueAmount افغانی',
                                                 style: const TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.blue),
@@ -472,7 +457,9 @@ String? _errorMessage;
                       ElevatedButton(
                           onPressed: () {
                             if (_formKey4Payment.currentState!.validate()) {
-                              print('Validated');
+                              setState(() async {
+                                _errorMessage = await showMessage(_payDateController.text, apptID);
+                              },);
                             }
                           },
                           child: const Text('ثبت')),
@@ -519,6 +506,14 @@ String? _errorMessage;
     } catch (e) {
       print('Date error: $e');
       return false;
+    }
+  }
+
+  Future<String> showMessage(String date, int ID) async {
+    if (await _fetchPaidDate(date, ID)) {
+      return '';
+    } else {
+      return 'Old date';
     }
   }
 
