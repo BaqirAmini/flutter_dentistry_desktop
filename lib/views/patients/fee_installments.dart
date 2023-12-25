@@ -59,21 +59,37 @@ class _FeeContentState extends State<FeeContent> {
     int instIncrement = ++instCounter;
     _installmentController.text = '$instIncrement / $totalInstallment';
 
+// Call to fetch dentists
+    _fetchStaff();
+
     return showDialog(
         context: context,
         builder: (ctx) {
+          double displayedDueAmount = dueAmount;
+          double lastEnteredAmount = 0;
+          double receivable = 0;
           return StatefulBuilder(
             builder: (context, setState) {
               String? errorMessage;
-              // This function deducts installments
+              // This function deducts from due amount
+
               void deductDueAmount(String text) {
-                double receivable = _recievableController.text.isEmpty ||
-                        double.parse(_recievableController.text) > dueAmount
+                receivable = text.isEmpty || double.parse(text) > dueAmount
                     ? 0
-                    : double.parse(_recievableController.text);
+                    : double.parse(text);
 
                 setState(() {
-                  dueAmount = dueAmount - receivable;
+                  // If text is empty or greater than dueAmount, reset lastEnteredAmount
+                  if (text.isEmpty || double.parse(text) > dueAmount) {
+                    displayedDueAmount +=
+                        lastEnteredAmount; // Add the last entered amount back
+                    lastEnteredAmount = 0; // Reset last entered amount
+                  } else {
+                    displayedDueAmount += lastEnteredAmount -
+                        receivable; // Deduct the new amount from the last entered amount
+                    lastEnteredAmount =
+                        receivable; // Update the last entered amount
+                  }
                 });
               }
 
@@ -300,12 +316,19 @@ class _FeeContentState extends State<FeeContent> {
                                             } else if (receivedAmount >
                                                 dueAmount) {
                                               return 'مبلغ رسید باید کمتر از مبلغ قابل دریافت باشد.';
+                                            } else if (instCounter ==
+                                                totalInstallment) {
+                                              if (receivedAmount <
+                                                  displayedDueAmount) {
+                                                return 'آخرین قسط است باید همه فیس باقیمانده پرداخته شود.';
+                                              }
+                                              return null;
                                             } else {
                                               return null;
                                             }
                                           },
-                                          onFieldSubmitted: (value) {
-                                            deductDueAmount(value.toString());
+                                          onChanged: (text) {
+                                            deductDueAmount(text);
                                           },
                                           decoration: const InputDecoration(
                                             border: OutlineInputBorder(),
@@ -397,7 +420,7 @@ class _FeeContentState extends State<FeeContent> {
                                                 const EdgeInsets.only(top: 8.0),
                                             child: Center(
                                               child: Text(
-                                                '$dueAmount افغانی',
+                                                '$displayedDueAmount افغانی',
                                                 style: const TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.blue),
@@ -427,20 +450,40 @@ class _FeeContentState extends State<FeeContent> {
                           child: const Text('لغو')),
                       ElevatedButton(
                           onPressed: () async {
+                            final conn = await onConnToDb();
                             if (_formKey4Payment.currentState!.validate()) {
                               bool dateResult = await _fetchPaidDate(
                                   _payDateController.text, apptID);
-                              setState(
-                                () {
-                                  if (dateResult) {
-                                    errorMessage = null;
-                                    print('Okay!!!');
-                                  } else {
-                                    errorMessage =
-                                        'تاریخ باید بزرگتر یا مساوی به تاریخ پرداخت قبلی باشد.';
-                                  }
-                                },
-                              );
+
+                              if (dateResult) {
+                                errorMessage = null;
+
+                                try {
+                                  await conn.query(
+                                      '''INSERT INTO fee_payments (installment_counter, payment_date, paid_amount, due_amount, whole_fee_paid, staff_ID, apt_ID)
+                                    VALUES (?, ?, ?, ?, ?, ?, ?)''',
+                                      [
+                                        instCounter,
+                                        _payDateController.text,
+                                        receivable,
+                                        displayedDueAmount,
+                                        displayedDueAmount == 0 ? 1 : 0,
+                                        defaultSelectedStaff,
+                                        apptID
+                                      ]);
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop();
+                                  setState(
+                                    () {},
+                                  );
+                                } catch (e) {
+                                  print('Error with inserting payment: $e');
+                                }
+                                await conn.close();
+                              } else {
+                                errorMessage =
+                                    'تاریخ باید بزرگتر یا مساوی به تاریخ پرداخت قبلی باشد.';
+                              }
                             }
                             _formKey4Payment.currentState!.validate();
                           },
@@ -499,7 +542,7 @@ class _FeeContentState extends State<FeeContent> {
             fp.installment_counter, DATE_FORMAT(fp.payment_date, '%M %d, %Y'), fp.paid_amount, fp.due_amount, fp.whole_fee_paid, fp.apt_ID
             FROM services s 
             INNER JOIN appointments a ON s.ser_ID = a.service_ID
-            INNER JOIN fee_payments fp ON fp.apt_ID = a.apt_ID WHERE a.pat_ID = ?''',
+            INNER JOIN fee_payments fp ON fp.apt_ID = a.apt_ID WHERE a.pat_ID = ? ORDER BY fp.payment_date DESC''',
         [PatientInfo.patID]);
 
     final apptFees = results
