@@ -542,7 +542,7 @@ class _FeeContentState extends State<FeeContent> {
             fp.installment_counter, DATE_FORMAT(fp.payment_date, '%M %d, %Y'), fp.paid_amount, fp.due_amount, fp.whole_fee_paid, fp.apt_ID
             FROM services s 
             INNER JOIN appointments a ON s.ser_ID = a.service_ID
-            INNER JOIN fee_payments fp ON fp.apt_ID = a.apt_ID WHERE a.pat_ID = ? ORDER BY fp.payment_date DESC''',
+            INNER JOIN fee_payments fp ON fp.apt_ID = a.apt_ID WHERE a.pat_ID = ? ORDER BY fp.payment_date DESC, fp.installment_counter DESC ''',
         [PatientInfo.patID]);
 
     final apptFees = results
@@ -571,6 +571,7 @@ class _FeeContentState extends State<FeeContent> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
       future: _fetchApptFee(),
@@ -584,275 +585,317 @@ class _FeeContentState extends State<FeeContent> {
             return const Center(child: Text('No Fee and Installments found.'));
           } else {
             final apptFee = snapshot.data;
+            final Map<String, List<ApptFeeDataModel>> groupedApptFees = {};
+
             for (var af in apptFee!) {
-              return ListView(
-                children: [
-                  Card(
-                    child: Column(
-                      children: [
-                        Stack(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              color: Colors.grey[200],
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 15.0, vertical: 5.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    af.serviceName,
-                                    style: const TextStyle(fontSize: 18.0),
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.only(right: 90.0),
-                                    child: Card(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(30.0)),
-                                      elevation: 0,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(5.0),
-                                        child: Text(
-                                            'Installments: ${af.totalInstallment}',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelSmall),
-                                      ),
+              if (!groupedApptFees.containsKey(af.serviceName)) {
+                groupedApptFees[af.serviceName] = [];
+              }
+              groupedApptFees[af.serviceName]!.add(af);
+            }
+
+            return ListView(
+              children: groupedApptFees.entries.map<Widget>((entry) {
+                final serviceName = entry.key;
+                final payments = entry.value;
+
+                return Stack(
+                  children: [
+                    Card(
+                      child: Column(
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            color: Colors.grey[200],
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15.0, vertical: 5.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  serviceName,
+                                  style: const TextStyle(fontSize: 18.0),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(right: 90.0),
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(30.0)),
+                                    elevation: 0,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Text(
+                                          'Installments: ${payments.length}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelSmall),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                            Positioned(
-                              top: 0.0,
-                              right: 8.0,
-                              child: Material(
-                                color: Colors.transparent,
-                                shape: const CircleBorder(),
-                                child: PopupMenuButton<String>(
-                                  onSelected: (String result) {
-                                    print('You selected: $result');
-                                  },
-                                  itemBuilder: (BuildContext context) =>
-                                      <PopupMenuEntry<String>>[
-                                    PopupMenuItem<String>(
-                                      enabled:
-                                          af.instCounter == af.totalInstallment
-                                              ? false
-                                              : true,
-                                      value: 'Option 1',
-                                      onTap: () => _onMakePayment(
-                                          context,
-                                          af.instCounter,
-                                          af.totalInstallment,
-                                          af.totalFee,
-                                          af.dueAmount,
-                                          af.apptID),
-                                      child: Row(
+                          ),
+                          for (var payment in payments)
+                            Column(
+                              children: [
+                                Divider(color: Colors.grey),
+                                Stack(
+                                  children: [
+                                    NonExpandableCard(
+                                      title: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.start,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          const Icon(Icons.payments_outlined,
-                                              color: Colors.grey),
-                                          const SizedBox(width: 10.0),
-                                          Text(
-                                            af.instCounter ==
-                                                    af.totalInstallment
-                                                ? 'Whole Fee Paid'
-                                                : 'Earn Payment',
-                                            style: const TextStyle(
-                                              color: Color.fromRGBO(
-                                                  86, 85, 85, 0.765),
-                                            ),
+                                          Row(
+                                            children: [
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.green[400],
+                                                  shape: BoxShape.circle,
+                                                ),
+                                                child: const Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Icon(
+                                                    Icons.currency_exchange,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10.0),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    payment.paymentDate,
+                                                    style: const TextStyle(
+                                                        fontSize: 18.0),
+                                                  ),
+                                                  const Text(
+                                                    'تحت نظر: ',
+                                                    style: TextStyle(
+                                                        color: Colors.grey,
+                                                        fontSize: 12.0),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                    ),
-                                    const PopupMenuItem<String>(
-                                      value: 'Option 2',
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Icon(Icons.delete_forever_outlined,
-                                              color: Colors.grey),
-                                          SizedBox(width: 10.0),
-                                          Text(
-                                            'Delete',
-                                            style: TextStyle(
-                                              color: Color.fromRGBO(
-                                                  86, 85, 85, 0.765),
-                                            ),
+                                          Row(
+                                            children: [
+                                              const SizedBox(width: 15.0),
+                                              Container(
+                                                width: 100.0,
+                                                decoration: const BoxDecoration(
+                                                  border: Border(
+                                                    right: BorderSide(
+                                                        width: 0.5,
+                                                        color: Colors.grey),
+                                                  ),
+                                                ),
+                                                child: InputDecorator(
+                                                  decoration: const InputDecoration(
+                                                      border: InputBorder.none,
+                                                      labelText: 'Installment',
+                                                      labelStyle: TextStyle(
+                                                          color: Colors.grey),
+                                                      floatingLabelAlignment:
+                                                          FloatingLabelAlignment
+                                                              .center),
+                                                  child: Center(
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 5.0),
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(15.0),
+                                                        child: Container(
+                                                          color: const Color
+                                                              .fromARGB(255,
+                                                              104, 166, 106),
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    horizontal:
+                                                                        5.0,
+                                                                    vertical:
+                                                                        2.0),
+                                                            child: Text(
+                                                              '${payment.instCounter.toString()} / ${payment.totalInstallment.toString()}',
+                                                              style: const TextStyle(
+                                                                  fontSize:
+                                                                      12.0,
+                                                                  color: Colors
+                                                                      .white),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 15.0),
+                                              SizedBox(
+                                                width: 100.0,
+                                                height: 100.0,
+                                                child: SfCircularChart(
+                                                  margin: EdgeInsets.zero,
+                                                  tooltipBehavior:
+                                                      TooltipBehavior(
+                                                    color: const Color.fromARGB(
+                                                        255, 106, 105, 105),
+                                                    textStyle: const TextStyle(
+                                                        fontSize: 8.0),
+                                                    enable: true,
+                                                    format:
+                                                        'point.x: point.y افغانی',
+                                                  ),
+                                                  annotations: [
+                                                    CircularChartAnnotation(
+                                                      widget: Text(
+                                                        '${payment.totalFee} افغانی',
+                                                        style: const TextStyle(
+                                                            fontSize: 8.0,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  series: <DoughnutSeries<
+                                                      FeeDoughnutData, String>>[
+                                                    DoughnutSeries<
+                                                        FeeDoughnutData,
+                                                        String>(
+                                                      innerRadius: '70%',
+                                                      dataSource: <FeeDoughnutData>[
+                                                        FeeDoughnutData(
+                                                            'Paid',
+                                                            payment.paidAmount,
+                                                            Colors.green),
+                                                        FeeDoughnutData(
+                                                            'Due',
+                                                            payment.dueAmount,
+                                                            Colors.pink),
+                                                      ],
+                                                      xValueMapper:
+                                                          (FeeDoughnutData data,
+                                                                  _) =>
+                                                              data.feePaid,
+                                                      pointColorMapper:
+                                                          (FeeDoughnutData data,
+                                                                  _) =>
+                                                              data.color,
+                                                      yValueMapper:
+                                                          (FeeDoughnutData data,
+                                                                  _) =>
+                                                              data.feeDue,
+                                                      dataLabelSettings:
+                                                          const DataLabelSettings(
+                                                        isVisible: false,
+                                                        textStyle: TextStyle(
+                                                            fontSize: 8.0),
+                                                      ),
+                                                      selectionBehavior:
+                                                          SelectionBehavior(
+                                                              enable: true,
+                                                              selectedBorderWidth:
+                                                                  2.0),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
                                     ),
                                   ],
-                                  icon: const Icon(Icons.more_vert,
-                                      color:
-                                          Color.fromARGB(255, 148, 147, 147)),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(10.0)),
                                 ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      top: 0.0,
+                      right: 8.0,
+                      child: Material(
+                        color: Colors.transparent,
+                        shape: const CircleBorder(),
+                        child: PopupMenuButton<String>(
+                          onSelected: (String result) {
+                            print('You selected: $result');
+                          },
+                          itemBuilder: (BuildContext context) =>
+                              <PopupMenuEntry<String>>[
+                            for (var payment in payments)
+                              PopupMenuItem<String>(
+                                enabled: payment.instCounter ==
+                                        payment.totalInstallment
+                                    ? false
+                                    : true,
+                                value: 'Option 1',
+                                onTap: () => _onMakePayment(
+                                    context,
+                                    payment.instCounter,
+                                    payment.totalInstallment,
+                                    payment.totalFee,
+                                    payment.dueAmount,
+                                    payment.apptID),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const Icon(Icons.payments_outlined,
+                                        color: Colors.grey),
+                                    const SizedBox(width: 10.0),
+                                    Text(
+                                      payment.instCounter ==
+                                              payment.totalInstallment
+                                          ? 'Whole Fee Paid'
+                                          : 'Earn Payment',
+                                      style: const TextStyle(
+                                        color:
+                                            Color.fromRGBO(86, 85, 85, 0.765),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            const PopupMenuItem<String>(
+                              value: 'Option 2',
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.delete_forever_outlined,
+                                      color: Colors.grey),
+                                  SizedBox(width: 10.0),
+                                  Text(
+                                    'Delete',
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(86, 85, 85, 0.765),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
+                          icon: const Icon(Icons.more_vert,
+                              color: Color.fromARGB(255, 148, 147, 147)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15.0)),
                         ),
-                        NonExpandableCard(
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.green[400],
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Icon(
-                                        Icons.currency_exchange,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10.0),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        af.paymentDate,
-                                        style: const TextStyle(fontSize: 18.0),
-                                      ),
-                                      const Text(
-                                        'تحت نظر: ',
-                                        style: TextStyle(
-                                            color: Colors.grey, fontSize: 12.0),
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  const SizedBox(width: 15.0),
-                                  Container(
-                                    width: 100.0,
-                                    decoration: const BoxDecoration(
-                                      border: Border(
-                                        right: BorderSide(
-                                            width: 0.5, color: Colors.grey),
-                                      ),
-                                    ),
-                                    child: InputDecorator(
-                                      decoration: const InputDecoration(
-                                          border: InputBorder.none,
-                                          labelText: 'Installment',
-                                          labelStyle:
-                                              TextStyle(color: Colors.grey),
-                                          floatingLabelAlignment:
-                                              FloatingLabelAlignment.center),
-                                      child: Center(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 5.0),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(15.0),
-                                            child: Container(
-                                              color: const Color.fromARGB(
-                                                  255, 104, 166, 106),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 5.0,
-                                                        vertical: 2.0),
-                                                child: Text(
-                                                  '${af.instCounter.toString()} / ${af.totalInstallment.toString()}',
-                                                  style: const TextStyle(
-                                                      fontSize: 12.0,
-                                                      color: Colors.white),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 15.0),
-                                  SizedBox(
-                                    width: 100.0,
-                                    height: 100.0,
-                                    child: SfCircularChart(
-                                      margin: EdgeInsets.zero,
-                                      tooltipBehavior: TooltipBehavior(
-                                        color: const Color.fromARGB(
-                                            255, 106, 105, 105),
-                                        textStyle:
-                                            const TextStyle(fontSize: 8.0),
-                                        enable: true,
-                                        format: 'point.x: point.y افغانی',
-                                      ),
-                                      annotations: [
-                                        CircularChartAnnotation(
-                                          widget: Text(
-                                            '${af.totalFee} افغانی',
-                                            style: const TextStyle(
-                                                fontSize: 8.0,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                      ],
-                                      series: <DoughnutSeries<FeeDoughnutData,
-                                          String>>[
-                                        DoughnutSeries<FeeDoughnutData, String>(
-                                            innerRadius: '70%',
-                                            dataSource: <FeeDoughnutData>[
-                                              FeeDoughnutData('Paid',
-                                                  af.paidAmount, Colors.green),
-                                              FeeDoughnutData('Due',
-                                                  af.dueAmount, Colors.pink),
-                                            ],
-                                            xValueMapper:
-                                                (FeeDoughnutData data, _) =>
-                                                    data.feePaid,
-                                            pointColorMapper:
-                                                (FeeDoughnutData data, _) =>
-                                                    data.color,
-                                            yValueMapper:
-                                                (FeeDoughnutData data, _) =>
-                                                    data.feeDue,
-                                            dataLabelSettings:
-                                                const DataLabelSettings(
-                                              isVisible: false,
-                                              textStyle:
-                                                  TextStyle(fontSize: 8.0),
-                                            ),
-                                            selectionBehavior:
-                                                SelectionBehavior(
-                                                    enable: true,
-                                                    selectedBorderWidth: 2.0)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ],
-              );
-            }
-            return const Text('');
+                  ],
+                );
+              }).toList(),
+            );
           }
         }
       },
