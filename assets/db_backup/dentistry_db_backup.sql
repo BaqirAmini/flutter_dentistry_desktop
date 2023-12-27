@@ -3,11 +3,10 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 21, 2023 at 12:01 PM
+-- Generation Time: Dec 27, 2023 at 11:39 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
-
--- Create database
+-- Create/use database
 CREATE DATABASE IF NOT EXISTS dentistry_db;
 USE dentistry_db;
 
@@ -40,8 +39,6 @@ CREATE TABLE `appointments` (
   `round` int(2) NOT NULL DEFAULT 1,
   `discount` double(12,2) DEFAULT NULL,
   `total_fee` decimal(12,2) DEFAULT 0.00,
-  `paid_amount` decimal(12,2) NOT NULL,
-  `due_amount` decimal(12,2) NOT NULL,
   `meet_date` date DEFAULT NULL,
   `staff_ID` int(128) DEFAULT NULL,
   `note` varchar(128) DEFAULT NULL
@@ -51,30 +48,34 @@ CREATE TABLE `appointments` (
 -- Dumping data for table `appointments`
 --
 
-INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `service_ID`, `installment`, `round`, `discount`, `total_fee`, `paid_amount`, `due_amount`, `meet_date`, `staff_ID`, `note`) VALUES
-(43, 0, 72, 2, 5, 1, 5.00, '0.00', '850.00', '2150.00', '2023-11-21', 17, NULL),
-(46, 0, 75, 7, 1, 1, 0.00, '0.00', '1000.00', '1000.00', '2023-11-15', 17, NULL),
-(47, 0, 76, 15, 5, 1, 10.00, '0.00', '3500.00', '10000.00', '2023-11-23', 17, NULL),
-(48, 0, 79, 7, 1, 1, 0.00, '0.00', '1500.00', '0.00', '2023-11-25', 17, NULL),
-(49, 0, 80, 9, 6, 1, 15.00, '0.00', '500.00', '1625.00', '2023-11-01', 17, NULL),
-(50, 0, 81, 12, 1, 1, 5.00, '0.00', '950.00', '0.00', '2023-11-09', 17, NULL),
-(51, 0, 82, 7, 6, 1, 0.00, '0.00', '1200.00', '8800.00', '2023-12-04', 17, NULL),
-(52, 0, 84, 5, 1, 1, 5.00, '0.00', '1425.00', '0.00', '0000-00-00', 17, NULL),
-(55, 0, 86, 3, 0, 1, 0.00, '0.00', '0.00', '0.00', '2023-12-08', 17, NULL),
-(58, 0, 80, 3, 0, 1, 0.00, '0.00', '1000.00', '0.00', '2023-12-08', 17, NULL),
-(59, 0, 80, 8, 0, 1, 0.00, '0.00', '500.00', '0.00', '2023-12-08', 17, NULL),
-(60, 0, 81, 13, 2, 1, 0.00, '0.00', '500.00', '500.00', '2023-12-07', 17, NULL),
-(61, 0, 82, 12, 2, 1, 0.00, '0.00', '600.00', '600.00', '2023-12-09', 17, NULL),
-(63, 0, 86, 3, 1, 2, 5.00, '0.00', '500.00', '200.00', '2023-12-11', 17, NULL),
-(64, 0, 86, 2, 4, 1, 0.00, '0.00', '1000.00', '3000.00', '2023-12-07', 17, NULL),
-(68, 0, 84, 11, 0, 2, 0.00, '0.00', '3000.00', '0.00', '2023-12-14', 17, NULL),
-(69, 0, 84, 1, 0, 3, 0.00, '0.00', '500.00', '0.00', '2023-12-14', 17, NULL),
-(74, 0, 92, 14, 0, 1, 0.00, '0.00', '800.00', '0.00', '2023-12-14', 17, NULL),
-(77, 0, 92, 1, 0, 2, 0.00, '0.00', '700.00', '0.00', '2023-12-14', 17, NULL),
-(79, 0, 93, 7, 7, 2, 15.00, '0.00', '890.00', '2000.00', '2023-12-18', 17, NULL),
-(80, 0, 86, 7, 0, 3, 0.00, '0.00', '500.00', '0.00', '2023-12-17', 17, NULL),
-(81, 0, 86, 7, 0, 4, 2.00, '0.00', '588.00', '0.00', '2023-12-17', 17, NULL),
-(82, 0, 86, 3, 0, 5, 0.00, '0.00', '450.00', '0.00', '2023-12-11', 17, NULL);
+INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `service_ID`, `installment`, `round`, `discount`, `total_fee`, `meet_date`, `staff_ID`, `note`) VALUES
+(43, 0, 72, 2, 5, 1, 5.00, '0.00', '2023-11-21', 17, NULL),
+(46, 0, 75, 7, 1, 1, 0.00, '0.00', '2023-11-15', 17, NULL),
+(47, 0, 76, 15, 5, 1, 10.00, '0.00', '2023-11-23', 17, NULL),
+(48, 0, 79, 7, 1, 1, 0.00, '0.00', '2023-11-25', 17, NULL),
+(49, 0, 80, 9, 6, 1, 15.00, '0.00', '2023-11-01', 17, NULL),
+(50, 0, 81, 12, 1, 1, 5.00, '0.00', '2023-11-09', 17, NULL),
+(51, 0, 82, 7, 6, 1, 0.00, '0.00', '2023-12-04', 17, NULL),
+(52, 0, 84, 5, 1, 1, 5.00, '0.00', '0000-00-00', 17, NULL),
+(55, 0, 86, 3, 0, 1, 0.00, '0.00', '2023-12-08', 17, NULL),
+(58, 0, 80, 3, 0, 1, 0.00, '0.00', '2023-12-08', 17, NULL),
+(59, 0, 80, 8, 0, 1, 0.00, '0.00', '2023-12-08', 17, NULL),
+(60, 0, 81, 13, 2, 1, 0.00, '0.00', '2023-12-07', 17, NULL),
+(61, 0, 82, 12, 2, 1, 0.00, '0.00', '2023-12-09', 17, NULL),
+(63, 0, 86, 3, 1, 2, 5.00, '0.00', '2023-12-11', 17, NULL),
+(64, 0, 86, 2, 4, 1, 0.00, '0.00', '2023-12-07', 17, NULL),
+(68, 0, 84, 11, 0, 2, 0.00, '0.00', '2023-12-14', 17, NULL),
+(69, 0, 84, 1, 0, 3, 0.00, '0.00', '2023-12-14', 17, NULL),
+(74, 0, 92, 14, 0, 1, 0.00, '0.00', '2023-12-14', 17, NULL),
+(77, 0, 92, 1, 0, 2, 0.00, '0.00', '2023-12-14', 17, NULL),
+(79, 0, 93, 7, 7, 2, 15.00, '0.00', '2023-12-18', 17, NULL),
+(80, 0, 86, 7, 0, 3, 0.00, '0.00', '2023-12-17', 17, NULL),
+(81, 0, 86, 7, 0, 4, 2.00, '0.00', '2023-12-17', 17, NULL),
+(82, 0, 86, 3, 0, 5, 0.00, '0.00', '2023-12-11', 17, NULL),
+(83, 0, 93, 1, 4, 3, 0.00, '4500.00', '2023-12-27', 17, NULL),
+(84, 0, 92, 11, 4, 3, 0.00, '3000.00', '2023-12-27', 17, NULL),
+(85, 0, 92, 8, 0, 4, 0.00, '1000.00', '2023-12-27', 17, NULL),
+(86, 0, 92, 4, 6, 5, 0.00, '5000.00', '2023-12-11', 17, NULL);
 
 -- --------------------------------------------------------
 
@@ -312,6 +313,18 @@ CREATE TABLE `fee_payments` (
   `apt_ID` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `fee_payments`
+--
+
+INSERT INTO `fee_payments` (`payment_ID`, `installment_counter`, `payment_date`, `paid_amount`, `due_amount`, `whole_fee_paid`, `staff_ID`, `apt_ID`) VALUES
+(1, 1, '2023-12-27', '500.00', '2500.00', 0, 17, 84),
+(2, 2, '2023-12-28', '500.00', '2000.00', 0, 21, 84),
+(3, 1, '2023-12-27', '1000.00', '0.00', 0, 17, 85),
+(4, 1, '2023-12-11', '700.00', '4300.00', 0, 17, 86),
+(5, 3, '2023-12-27', '1000.00', '1000.00', 0, 17, 84),
+(6, 4, '2023-12-28', '500.00', '500.00', 0, 31, 84);
+
 -- --------------------------------------------------------
 
 --
@@ -401,7 +414,16 @@ INSERT INTO `patient_services` (`ps_ID`, `pat_ID`, `ser_ID`, `req_ID`, `value`) 
 (35, 86, 7, 1, 'Q1-4'),
 (36, 86, 7, 2, 'Another tooth damaged'),
 (37, 86, 3, 2, 'سفید کردن دندان'),
-(38, 86, 3, 5, 'دو مرحله');
+(38, 86, 3, 5, 'دو مرحله'),
+(45, 93, 1, 1, 'Q2-3,Q1-3,Q3-2'),
+(46, 93, 1, 2, ''),
+(47, 92, 11, 1, 'Q1-A,Q3-C'),
+(48, 92, 11, 3, 'Vital'),
+(49, 92, 11, 4, 'Porcelain'),
+(50, 92, 11, 2, ''),
+(51, 92, 8, 2, ''),
+(52, 92, 4, 2, 'Scaling and polishing'),
+(53, 92, 4, 3, 'Both');
 
 -- --------------------------------------------------------
 
@@ -681,7 +703,7 @@ ALTER TABLE `tax_payments`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
+  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
 
 --
 -- AUTO_INCREMENT for table `clinics`
@@ -717,7 +739,7 @@ ALTER TABLE `expense_detail`
 -- AUTO_INCREMENT for table `fee_payments`
 --
 ALTER TABLE `fee_payments`
-  MODIFY `payment_ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `payment_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `patients`
@@ -729,7 +751,7 @@ ALTER TABLE `patients`
 -- AUTO_INCREMENT for table `patient_services`
 --
 ALTER TABLE `patient_services`
-  MODIFY `ps_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `ps_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `services`
