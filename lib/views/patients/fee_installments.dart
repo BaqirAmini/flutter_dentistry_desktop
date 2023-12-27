@@ -9,6 +9,12 @@ import 'package:intl/intl.dart' as intl2;
 
 void main() => runApp(const FeeRecord());
 
+// Declare these two display total fee paid & total fee due.
+double totalFeePaid = 0;
+double totalFeeDue = 0;
+// Declare to show/hide the first widget containing totalFeePaid/totalFeeDue
+bool displayTotalFeeRow = false;
+
 class FeeRecord extends StatelessWidget {
   const FeeRecord({super.key});
 
@@ -28,7 +34,33 @@ class FeeRecord extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.only(top: 15),
             width: MediaQuery.of(context).size.width * 0.9,
-            child: const FeeContent(),
+            child: Column(
+              children: [
+                Visibility(
+                  visible: (totalFeePaid + totalFeeDue >= 0)
+                      ? true
+                      : false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 0.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Total Paid: $totalFeePaid',
+                            style: const TextStyle(
+                                color: Colors.green, fontSize: 15.0)),
+                        Text('Total Due: ${-totalFeeDue}',
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 15.0)),
+                      ],
+                    ),
+                  ),
+                ),
+                const Expanded(
+                  child: FeeContent(),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -573,6 +605,10 @@ class _FeeContentState extends State<FeeContent> {
   @override
   @override
   Widget build(BuildContext context) {
+    // To avoid incrementing these two variables by any widget tree built, they should be set zero.
+    totalFeePaid = 0;
+    totalFeeDue = 0;
+
     return FutureBuilder(
       future: _fetchApptFee(),
       builder: (context, snapshot) {
@@ -582,6 +618,7 @@ class _FeeContentState extends State<FeeContent> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           if (snapshot.data!.isEmpty) {
+            displayTotalFeeRow = false;
             return const Center(child: Text('No Fee and Installments found.'));
           } else {
             final apptFee = snapshot.data;
@@ -591,7 +628,11 @@ class _FeeContentState extends State<FeeContent> {
               if (!groupedApptFees.containsKey(af.serviceName)) {
                 groupedApptFees[af.serviceName] = [];
               }
+
               groupedApptFees[af.serviceName]!.add(af);
+              totalFeePaid += af.paidAmount;
+              totalFeeDue += af.dueAmount;
+              displayTotalFeeRow == true;
             }
 
             return ListView(
@@ -838,32 +879,36 @@ class _FeeContentState extends State<FeeContent> {
                           itemBuilder: (BuildContext context) =>
                               <PopupMenuEntry<String>>[
                             PopupMenuItem<String>(
-                              enabled: payments.last.instCounter ==
-                                      payments.last.totalInstallment
-                                  ? false
-                                  : true,
                               value: 'Option 1',
-                              onTap: () => _onMakePayment(
-                                  context,
-                                  payments.first.instCounter,
-                                  payments.first.totalInstallment,
-                                  payments.first.totalFee,
-                                  payments.first.dueAmount,
-                                  payments.first.apptID),
+                              onTap: payments.first.dueAmount <= 0
+                                  ? null
+                                  : () => _onMakePayment(
+                                      context,
+                                      payments.first.instCounter,
+                                      payments.first.totalInstallment,
+                                      payments.first.totalFee,
+                                      payments.first.dueAmount,
+                                      payments.first.apptID),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  const Icon(Icons.payments_outlined,
-                                      color: Colors.grey),
+                                  Icon(
+                                      payments.first.dueAmount <= 0
+                                          ? Icons.check_circle_outline
+                                          : Icons.payments_outlined,
+                                      color: payments.first.dueAmount <= 0
+                                          ? Colors.green
+                                          : Colors.grey),
                                   const SizedBox(width: 10.0),
                                   Text(
-                                    payments.first.instCounter ==
-                                            payments.first.totalInstallment
+                                    payments.first.dueAmount <= 0
                                         ? 'Whole Fee Paid'
                                         : 'Earn Payment',
-                                    style: const TextStyle(
-                                      color: Color.fromRGBO(86, 85, 85, 0.765),
-                                    ),
+                                    style: TextStyle(
+                                        color: payments.first.dueAmount <= 0
+                                            ? Colors.green
+                                            : const Color.fromRGBO(
+                                                86, 85, 85, 0.765)),
                                   ),
                                 ],
                               ),
