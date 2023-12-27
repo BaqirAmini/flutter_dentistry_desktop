@@ -272,7 +272,31 @@ class _NewAppointmentState extends State<NewAppointment> {
                         ServiceInfo.selectedServiceID!,
                         ServiceInfo.meetingDate!,
                         StaffInfo.staffID!)) {
-                      Navigator.pop(context);
+                      // Here i fetch apt_ID (appointment ID) which needs to be passed.
+                      final conn = await onConnToDb();
+                      int appointmentID;
+                      final aptIdResult = await conn.query(
+                          'SELECT apt_ID FROM appointments WHERE meet_date = ? AND service_ID = ? AND round = ? AND pat_ID = ?',
+                          [
+                            ServiceInfo.meetingDate,
+                            ServiceInfo.selectedServiceID,
+                            _round,
+                            PatientInfo.patID
+                          ]);
+
+                      if (aptIdResult.isNotEmpty) {
+                        final row = aptIdResult.first;
+                        appointmentID = row['apt_ID'];
+                      } else {
+                        appointmentID = 0;
+                      }
+
+                      if (await AppointmentFunction.onAddFeePayment(
+                          ServiceInfo.meetingDate!,
+                          StaffInfo.staffID!,
+                          appointmentID)) {
+                        Navigator.pop(context);
+                      }
                     }
                   }
                 }
