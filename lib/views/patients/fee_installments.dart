@@ -55,12 +55,11 @@ class _FeeContentState extends State<FeeContent> {
 // This is to add payment made by a patient
   _onMakePayment(BuildContext context, int instCounter, int totalInstallment,
       double totalFee, double dueAmount, int apptID) {
+// Call to fetch dentists
+    _fetchStaff();
     // Any time a payment is made, installment should be incremented.
     int instIncrement = ++instCounter;
     _installmentController.text = '$instIncrement / $totalInstallment';
-
-// Call to fetch dentists
-    _fetchStaff();
 
     return showDialog(
         context: context,
@@ -471,6 +470,7 @@ class _FeeContentState extends State<FeeContent> {
                                         defaultSelectedStaff,
                                         apptID
                                       ]);
+                                  // ignore: use_build_context_synchronously
                                   Navigator.of(context, rootNavigator: true)
                                       .pop();
                                   setState(
@@ -542,7 +542,7 @@ class _FeeContentState extends State<FeeContent> {
             fp.installment_counter, DATE_FORMAT(fp.payment_date, '%M %d, %Y'), fp.paid_amount, fp.due_amount, fp.whole_fee_paid, fp.apt_ID
             FROM services s 
             INNER JOIN appointments a ON s.ser_ID = a.service_ID
-            INNER JOIN fee_payments fp ON fp.apt_ID = a.apt_ID WHERE a.pat_ID = ? ORDER BY fp.payment_date DESC, fp.installment_counter DESC ''',
+            INNER JOIN fee_payments fp ON fp.apt_ID = a.apt_ID WHERE a.pat_ID = ? ORDER BY fp.installment_counter DESC''',
         [PatientInfo.patID]);
 
     final apptFees = results
@@ -598,10 +598,10 @@ class _FeeContentState extends State<FeeContent> {
               children: groupedApptFees.entries.map<Widget>((entry) {
                 final serviceName = entry.key;
                 final payments = entry.value;
-
                 return Stack(
                   children: [
                     Card(
+                      elevation: 0.3,
                       child: Column(
                         children: [
                           Container(
@@ -626,7 +626,7 @@ class _FeeContentState extends State<FeeContent> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(5.0),
                                       child: Text(
-                                          'Installments: ${payments.length}',
+                                          'Installments: ${payments.last.totalInstallment}',
                                           style: Theme.of(context)
                                               .textTheme
                                               .labelSmall),
@@ -639,99 +639,104 @@ class _FeeContentState extends State<FeeContent> {
                           for (var payment in payments)
                             Column(
                               children: [
-                                Divider(color: Colors.grey),
-                                Stack(
-                                  children: [
-                                    NonExpandableCard(
-                                      title: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: Colors.green[400],
-                                                  shape: BoxShape.circle,
-                                                ),
-                                                child: const Padding(
-                                                  padding: EdgeInsets.all(8.0),
-                                                  child: Icon(
-                                                    Icons.currency_exchange,
-                                                    color: Colors.white,
-                                                  ),
+                                // Divider(color: Colors.grey, thickness: 0.5),
+                                Container(
+                                  decoration: const BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                          width: 0.3, color: Colors.grey),
+                                    ),
+                                  ),
+                                  child: NonExpandableCard(
+                                    title: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.green[400],
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: const Padding(
+                                                padding: EdgeInsets.all(8.0),
+                                                child: Icon(
+                                                  Icons.currency_exchange,
+                                                  color: Colors.white,
                                                 ),
                                               ),
-                                              const SizedBox(width: 10.0),
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    payment.paymentDate,
-                                                    style: const TextStyle(
-                                                        fontSize: 18.0),
-                                                  ),
-                                                  const Text(
-                                                    'تحت نظر: ',
-                                                    style: TextStyle(
-                                                        color: Colors.grey,
-                                                        fontSize: 12.0),
-                                                  ),
-                                                ],
+                                            ),
+                                            const SizedBox(width: 10.0),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  payment.paymentDate,
+                                                  style: const TextStyle(
+                                                      fontSize: 18.0),
+                                                ),
+                                                const Text(
+                                                  'تحت نظر: ',
+                                                  style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontSize: 12.0),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            const SizedBox(width: 15.0),
+                                            Container(
+                                              width: 100.0,
+                                              decoration: const BoxDecoration(
+                                                border: Border(
+                                                  right: BorderSide(
+                                                      width: 0.5,
+                                                      color: Colors.grey),
+                                                ),
                                               ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              const SizedBox(width: 15.0),
-                                              Container(
-                                                width: 100.0,
-                                                decoration: const BoxDecoration(
-                                                  border: Border(
-                                                    right: BorderSide(
-                                                        width: 0.5,
+                                              child: InputDecorator(
+                                                decoration: const InputDecoration(
+                                                    border: InputBorder.none,
+                                                    labelText: 'Installment',
+                                                    labelStyle: TextStyle(
                                                         color: Colors.grey),
-                                                  ),
-                                                ),
-                                                child: InputDecorator(
-                                                  decoration: const InputDecoration(
-                                                      border: InputBorder.none,
-                                                      labelText: 'Installment',
-                                                      labelStyle: TextStyle(
-                                                          color: Colors.grey),
-                                                      floatingLabelAlignment:
-                                                          FloatingLabelAlignment
-                                                              .center),
-                                                  child: Center(
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 5.0),
-                                                      child: ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15.0),
-                                                        child: Container(
-                                                          color: const Color
-                                                              .fromARGB(255,
-                                                              104, 166, 106),
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .symmetric(
-                                                                    horizontal:
-                                                                        5.0,
-                                                                    vertical:
-                                                                        2.0),
-                                                            child: Text(
-                                                              '${payment.instCounter.toString()} / ${payment.totalInstallment.toString()}',
-                                                              style: const TextStyle(
-                                                                  fontSize:
-                                                                      12.0,
-                                                                  color: Colors
-                                                                      .white),
-                                                            ),
+                                                    floatingLabelAlignment:
+                                                        FloatingLabelAlignment
+                                                            .center),
+                                                child: Center(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 5.0),
+                                                    child: ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15.0),
+                                                      child: Container(
+                                                        color: const Color
+                                                            .fromARGB(
+                                                            255, 104, 166, 106),
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal:
+                                                                      5.0,
+                                                                  vertical:
+                                                                      2.0),
+                                                          child: Text(
+                                                            '${payment.instCounter.toString()} / ${payment.totalInstallment.toString()}',
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        12.0,
+                                                                    color: Colors
+                                                                        .white),
                                                           ),
                                                         ),
                                                       ),
@@ -739,83 +744,81 @@ class _FeeContentState extends State<FeeContent> {
                                                   ),
                                                 ),
                                               ),
-                                              const SizedBox(width: 15.0),
-                                              SizedBox(
-                                                width: 100.0,
-                                                height: 100.0,
-                                                child: SfCircularChart(
-                                                  margin: EdgeInsets.zero,
-                                                  tooltipBehavior:
-                                                      TooltipBehavior(
-                                                    color: const Color.fromARGB(
-                                                        255, 106, 105, 105),
-                                                    textStyle: const TextStyle(
-                                                        fontSize: 8.0),
-                                                    enable: true,
-                                                    format:
-                                                        'point.x: point.y افغانی',
-                                                  ),
-                                                  annotations: [
-                                                    CircularChartAnnotation(
-                                                      widget: Text(
-                                                        '${payment.totalFee} افغانی',
-                                                        style: const TextStyle(
-                                                            fontSize: 8.0,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                  series: <DoughnutSeries<
-                                                      FeeDoughnutData, String>>[
-                                                    DoughnutSeries<
-                                                        FeeDoughnutData,
-                                                        String>(
-                                                      innerRadius: '70%',
-                                                      dataSource: <FeeDoughnutData>[
-                                                        FeeDoughnutData(
-                                                            'Paid',
-                                                            payment.paidAmount,
-                                                            Colors.green),
-                                                        FeeDoughnutData(
-                                                            'Due',
-                                                            payment.dueAmount,
-                                                            Colors.pink),
-                                                      ],
-                                                      xValueMapper:
-                                                          (FeeDoughnutData data,
-                                                                  _) =>
-                                                              data.feePaid,
-                                                      pointColorMapper:
-                                                          (FeeDoughnutData data,
-                                                                  _) =>
-                                                              data.color,
-                                                      yValueMapper:
-                                                          (FeeDoughnutData data,
-                                                                  _) =>
-                                                              data.feeDue,
-                                                      dataLabelSettings:
-                                                          const DataLabelSettings(
-                                                        isVisible: false,
-                                                        textStyle: TextStyle(
-                                                            fontSize: 8.0),
-                                                      ),
-                                                      selectionBehavior:
-                                                          SelectionBehavior(
-                                                              enable: true,
-                                                              selectedBorderWidth:
-                                                                  2.0),
-                                                    ),
-                                                  ],
+                                            ),
+                                            const SizedBox(width: 15.0),
+                                            SizedBox(
+                                              width: 100.0,
+                                              height: 100.0,
+                                              child: SfCircularChart(
+                                                margin: EdgeInsets.zero,
+                                                tooltipBehavior:
+                                                    TooltipBehavior(
+                                                  color: const Color.fromARGB(
+                                                      255, 106, 105, 105),
+                                                  textStyle: const TextStyle(
+                                                      fontSize: 8.0),
+                                                  enable: true,
+                                                  format:
+                                                      'point.x: point.y افغانی',
                                                 ),
+                                                annotations: [
+                                                  CircularChartAnnotation(
+                                                    widget: Text(
+                                                      '${payment.totalFee} افغانی',
+                                                      style: const TextStyle(
+                                                          fontSize: 8.0,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                ],
+                                                series: <DoughnutSeries<
+                                                    FeeDoughnutData, String>>[
+                                                  DoughnutSeries<
+                                                      FeeDoughnutData, String>(
+                                                    innerRadius: '70%',
+                                                    dataSource: <FeeDoughnutData>[
+                                                      FeeDoughnutData(
+                                                          'Paid',
+                                                          payment.paidAmount,
+                                                          Colors.green),
+                                                      FeeDoughnutData(
+                                                          'Due',
+                                                          payment.dueAmount,
+                                                          Colors.pink),
+                                                    ],
+                                                    xValueMapper:
+                                                        (FeeDoughnutData data,
+                                                                _) =>
+                                                            data.feePaid,
+                                                    pointColorMapper:
+                                                        (FeeDoughnutData data,
+                                                                _) =>
+                                                            data.color,
+                                                    yValueMapper:
+                                                        (FeeDoughnutData data,
+                                                                _) =>
+                                                            data.feeDue,
+                                                    dataLabelSettings:
+                                                        const DataLabelSettings(
+                                                      isVisible: false,
+                                                      textStyle: TextStyle(
+                                                          fontSize: 8.0),
+                                                    ),
+                                                    selectionBehavior:
+                                                        SelectionBehavior(
+                                                            enable: true,
+                                                            selectedBorderWidth:
+                                                                2.0),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -823,7 +826,7 @@ class _FeeContentState extends State<FeeContent> {
                       ),
                     ),
                     Positioned(
-                      top: 0.0,
+                      top: 5.0,
                       right: 8.0,
                       child: Material(
                         color: Colors.transparent,
@@ -834,39 +837,37 @@ class _FeeContentState extends State<FeeContent> {
                           },
                           itemBuilder: (BuildContext context) =>
                               <PopupMenuEntry<String>>[
-                            for (var payment in payments)
-                              PopupMenuItem<String>(
-                                enabled: payment.instCounter ==
-                                        payment.totalInstallment
-                                    ? false
-                                    : true,
-                                value: 'Option 1',
-                                onTap: () => _onMakePayment(
-                                    context,
-                                    payment.instCounter,
-                                    payment.totalInstallment,
-                                    payment.totalFee,
-                                    payment.dueAmount,
-                                    payment.apptID),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    const Icon(Icons.payments_outlined,
-                                        color: Colors.grey),
-                                    const SizedBox(width: 10.0),
-                                    Text(
-                                      payment.instCounter ==
-                                              payment.totalInstallment
-                                          ? 'Whole Fee Paid'
-                                          : 'Earn Payment',
-                                      style: const TextStyle(
-                                        color:
-                                            Color.fromRGBO(86, 85, 85, 0.765),
-                                      ),
+                            PopupMenuItem<String>(
+                              enabled: payments.last.instCounter ==
+                                      payments.last.totalInstallment
+                                  ? false
+                                  : true,
+                              value: 'Option 1',
+                              onTap: () => _onMakePayment(
+                                  context,
+                                  payments.first.instCounter,
+                                  payments.first.totalInstallment,
+                                  payments.first.totalFee,
+                                  payments.first.dueAmount,
+                                  payments.first.apptID),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  const Icon(Icons.payments_outlined,
+                                      color: Colors.grey),
+                                  const SizedBox(width: 10.0),
+                                  Text(
+                                    payments.first.instCounter ==
+                                            payments.first.totalInstallment
+                                        ? 'Whole Fee Paid'
+                                        : 'Earn Payment',
+                                    style: const TextStyle(
+                                      color: Color.fromRGBO(86, 85, 85, 0.765),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
+                            ),
                             const PopupMenuItem<String>(
                               value: 'Option 2',
                               child: Row(
@@ -912,6 +913,7 @@ class NonExpandableCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      contentPadding: const EdgeInsets.only(left: 8.0),
       title: title,
     );
   }
