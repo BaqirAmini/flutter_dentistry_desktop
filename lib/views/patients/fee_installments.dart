@@ -37,9 +37,7 @@ class FeeRecord extends StatelessWidget {
             child: Column(
               children: [
                 Visibility(
-                  visible: (totalFeePaid + totalFeeDue >= 0)
-                      ? true
-                      : false,
+                  visible: displayTotalFeeRow ? true : false,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8.0, vertical: 0.0),
@@ -603,16 +601,15 @@ class _FeeContentState extends State<FeeContent> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
-    // To avoid incrementing these two variables by any widget tree built, they should be set zero.
-    totalFeePaid = 0;
-    totalFeeDue = 0;
-
     return FutureBuilder(
       future: _fetchApptFee(),
       builder: (context, snapshot) {
+        // To avoid incrementing these two variables by any widget tree built, they should be set zero.
+        totalFeePaid = 0;
+        totalFeeDue = 0;
         if (snapshot.connectionState == ConnectionState.waiting) {
+          displayTotalFeeRow = true;
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
@@ -632,9 +629,8 @@ class _FeeContentState extends State<FeeContent> {
               groupedApptFees[af.serviceName]!.add(af);
               totalFeePaid += af.paidAmount;
               totalFeeDue += af.dueAmount;
-              displayTotalFeeRow == true;
+              displayTotalFeeRow = true;
             }
-
             return ListView(
               children: groupedApptFees.entries.map<Widget>((entry) {
                 final serviceName = entry.key;
