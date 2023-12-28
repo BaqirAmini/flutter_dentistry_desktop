@@ -919,11 +919,11 @@ class _FeeContentState extends State<FeeContent> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.delete_forever_outlined,
+                                  Icon(Icons.mode_edit_outline_outlined,
                                       color: Colors.grey),
                                   SizedBox(width: 10.0),
                                   Text(
-                                    'Delete',
+                                    'Edit',
                                     style: TextStyle(
                                       color: Color.fromRGBO(86, 85, 85, 0.765),
                                     ),
