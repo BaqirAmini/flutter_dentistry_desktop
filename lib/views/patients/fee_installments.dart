@@ -10,9 +10,9 @@ import 'package:intl/intl.dart' as intl2;
 void main() => runApp(const FeeRecord());
 
 // Declare these two display total fee paid & total fee due.
-double totalFeePaid = 0;
+double totalFeeToBePaid = 0;
 double totalFeeDue = 0;
-// Declare to show/hide the first widget containing totalFeePaid/totalFeeDue
+// Declare to show/hide the first widget containing totalFeeToBePaid/totalFeeDue
 bool displayTotalFeeRow = false;
 
 class FeeRecord extends StatelessWidget {
@@ -44,10 +44,10 @@ class FeeRecord extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Total Paid: $totalFeePaid',
+                        Text('Total Fee: $totalFeeToBePaid AFN',
                             style: const TextStyle(
                                 color: Colors.green, fontSize: 15.0)),
-                        Text('Total Due: ${-totalFeeDue}',
+                        Text('Total Due: ${-totalFeeDue} AFN',
                             style: const TextStyle(
                                 color: Colors.red, fontSize: 15.0)),
                       ],
@@ -84,7 +84,7 @@ class _FeeContentState extends State<FeeContent> {
 
 // This is to add payment made by a patient
   _onMakePayment(BuildContext context, int instCounter, int totalInstallment,
-      double totalFee, double dueAmount, int apptID) {
+      double totalFee, double dueAmount, int apptID, Function onRefreshPage) {
 // Call to fetch dentists
     _fetchStaff();
     // Any time a payment is made, installment should be incremented.
@@ -347,11 +347,11 @@ class _FeeContentState extends State<FeeContent> {
                                               return 'مبلغ رسید باید کمتر از مبلغ قابل دریافت باشد.';
                                             } else if (instCounter ==
                                                 totalInstallment) {
-                                              if (receivedAmount <
-                                                  displayedDueAmount) {
+                                              if (receivedAmount < dueAmount) {
                                                 return 'آخرین قسط است باید همه فیس باقیمانده پرداخته شود.';
+                                              } else {
+                                                return null;
                                               }
-                                              return null;
                                             } else {
                                               return null;
                                             }
@@ -503,9 +503,7 @@ class _FeeContentState extends State<FeeContent> {
                                   // ignore: use_build_context_synchronously
                                   Navigator.of(context, rootNavigator: true)
                                       .pop();
-                                  setState(
-                                    () {},
-                                  );
+                                  onRefreshPage();
                                 } catch (e) {
                                   print('Error with inserting payment: $e');
                                 }
@@ -606,7 +604,7 @@ class _FeeContentState extends State<FeeContent> {
       future: _fetchApptFee(),
       builder: (context, snapshot) {
         // To avoid incrementing these two variables by any widget tree built, they should be set zero.
-        totalFeePaid = 0;
+        totalFeeToBePaid = 0;
         totalFeeDue = 0;
         if (snapshot.connectionState == ConnectionState.waiting) {
           displayTotalFeeRow = true;
@@ -622,18 +620,23 @@ class _FeeContentState extends State<FeeContent> {
             final Map<String, List<ApptFeeDataModel>> groupedApptFees = {};
 
             for (var af in apptFee!) {
-              if (!groupedApptFees.containsKey(af.serviceName)) {
-                groupedApptFees[af.serviceName] = [];
+              String key = '${af.serviceName}-${af.apptID}'; // Composite key
+              if (!groupedApptFees.containsKey(key)) {
+                groupedApptFees[key] = [];
+                totalFeeToBePaid += af.totalFee;
+                totalFeeDue += af.dueAmount;
               }
 
-              groupedApptFees[af.serviceName]!.add(af);
-              totalFeePaid += af.paidAmount;
-              totalFeeDue += af.dueAmount;
+              groupedApptFees[key]!.add(af);
+
+              
               displayTotalFeeRow = true;
             }
             return ListView(
               children: groupedApptFees.entries.map<Widget>((entry) {
-                final serviceName = entry.key;
+                // Since it is displaying like: servicename - ID, on the screen it should not be display so.
+                final keyParts = entry.key.split('-');
+                final serviceName = keyParts[0];
                 final payments = entry.value;
                 return Stack(
                   children: [
@@ -879,12 +882,14 @@ class _FeeContentState extends State<FeeContent> {
                               onTap: payments.first.dueAmount <= 0
                                   ? null
                                   : () => _onMakePayment(
-                                      context,
-                                      payments.first.instCounter,
-                                      payments.first.totalInstallment,
-                                      payments.first.totalFee,
-                                      payments.first.dueAmount,
-                                      payments.first.apptID),
+                                          context,
+                                          payments.first.instCounter,
+                                          payments.first.totalInstallment,
+                                          payments.first.totalFee,
+                                          payments.first.dueAmount,
+                                          payments.first.apptID, () {
+                                        setState(() {});
+                                      }),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
