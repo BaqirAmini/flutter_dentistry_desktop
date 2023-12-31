@@ -648,7 +648,7 @@ class _FeeContentState extends State<FeeContent> {
                             width: double.infinity,
                             color: Colors.grey[200],
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 15.0, vertical: 5.0),
+                                horizontal: 8.0, vertical: 5.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -867,7 +867,7 @@ class _FeeContentState extends State<FeeContent> {
                     ),
                     Positioned(
                       top: 5.0,
-                      right: 8.0,
+                      right: 3.0,
                       child: Material(
                         color: Colors.transparent,
                         shape: const CircleBorder(),

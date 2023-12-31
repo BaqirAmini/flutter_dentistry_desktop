@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
@@ -11,6 +9,7 @@ import 'package:flutter_dentistry/views/patients/new_appointment.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:provider/provider.dart';
+import 'package:collection/collection.dart';
 
 void main() {
   runApp(const Appointment());
@@ -351,28 +350,24 @@ class _AppointmentContentState extends State<_AppointmentContent> {
       future: _getAppointment(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-            ],
-          );
+          return const CircularProgressIndicator();
         } else if (snapshot.hasError) {
-          return Center(
-              child: Text('Error loading appointments. ${snapshot.error}'));
+          return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           if (snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text('No appointment found.'),
-            );
+            return const Center(child: Text('No appointments found.'));
           } else {
-            Map<String, List<AppointmentDataModel>>? appoints = snapshot.data;
-            return ListView(
-              children: appoints!.entries.map((entry) {
-                var visitDate = entry.key;
-                var rounds = entry.value;
+            var data = snapshot.data!;
+            var groupedData = groupBy(data, (obj) => obj['meetDate']);
+            var groupedRound = groupBy(data, (obj) => obj['round']);
+            return ListView.builder(
+              itemCount: groupedData.keys.length,
+              itemBuilder: (context, index) {
+                var meetDate = groupedData.keys.elementAt(index);
+                var round = groupedRound.keys.elementAt(index);
                 return Card(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         width: double.infinity,
@@ -383,179 +378,77 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             Text(
-                              visitDate,
+                              meetDate,
                               style: const TextStyle(fontSize: 18.0),
                             ),
-                            Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 400.0),
-                              child: Card(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(30.0)),
-                                  elevation: 0,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Text(
-                                        'Round: ${rounds.first.round.toString()}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelSmall),
-                                  )),
-                            )
+                            Spacer(),
+                            Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0)),
+                              elevation: 0,
+                              child: Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Text('Round: $round',
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1),
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                      Column(
-                        children: rounds.asMap().entries.map((roundEntry) {
-                          var a = roundEntry.value;
-                          var isLastRound = roundEntry.key == rounds.length - 1;
-                          return Column(
-                            children: [
-                              ExpandableCard(
-                                title: Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                      ...groupedData[meetDate]!
+                          .map<Widget>((e) => Column(
+                                children: [
+                                  Column(
                                     children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.green,
-                                              shape: BoxShape.circle,
-                                              border: Border.all(
-                                                  color: Colors.green,
-                                                  width: 2.0),
-                                            ),
-                                            child: const Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Icon(
-                                                Icons.calendar_today_outlined,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 10.0),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                      ExpandableCard(
+                                        title: Padding(
+                                          padding: const EdgeInsets.all(5.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Text(
-                                                a.serviceName,
-                                                style: const TextStyle(
-                                                    fontSize: 18.0),
-                                              ),
-                                              Text(
-                                                'تحت نظر: ${a.staffFirstName} ${a.staffLastName}',
-                                                style: const TextStyle(
-                                                    color: Colors.grey,
-                                                    fontSize: 12.0),
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                     /*  Column(
-                                        children: [
-                                          Text(
-                                            'Paid: ${a.paidAmount}',
-                                            style: const TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 12.0),
-                                          ),
-                                          Text(
-                                            'Due: ${a.dueAmount}',
-                                            style: const TextStyle(
-                                                color: Colors.red,
-                                                fontSize: 12.0),
-                                          )
-                                        ],
-                                      ) */
-                                    ],
-                                  ),
-                                ),
-                                child: FutureBuilder(
-                                  future: _getServices(a.serviceID),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      var services = snapshot.data;
-                                      for (var service in services!) {
-                                        return ListTile(
-                                          title: Column(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    const Text(
-                                                      'Service Name',
-                                                      style: TextStyle(
-                                                          fontSize: 12.0,
-                                                          fontWeight:
-                                                              FontWeight.bold),
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.green,
+                                                      shape: BoxShape.circle,
+                                                      border: Border.all(
+                                                          color: Colors.green,
+                                                          width: 2.0),
                                                     ),
-                                                    Text(
-                                                      a.serviceName,
-                                                      style: const TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 112, 112, 112),
-                                                        fontSize: 12.0,
+                                                    child: const Padding(
+                                                      padding:
+                                                          EdgeInsets.all(8.0),
+                                                      child: Icon(
+                                                        Icons
+                                                            .calendar_today_outlined,
+                                                        color: Colors.white,
                                                       ),
                                                     ),
-                                                  ],
-                                                ),
-                                              ),
-                                              for (var req in service
-                                                  .requirements.entries)
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Row(
+                                                  ),
+                                                  const SizedBox(width: 10.0),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     children: [
                                                       Text(
-                                                        req.key ==
-                                                                'Teeth Selection'
-                                                            ? 'Teeth Selected'
-                                                            : req.key,
+                                                        e['serviceName'],
                                                         style: const TextStyle(
-                                                            fontSize: 12.0,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
+                                                            fontSize: 18.0),
                                                       ),
-                                                      Expanded(
-                                                        child: Text(
-                                                          req.key ==
-                                                                  'Teeth Selection'
-                                                              ? req.value
-                                                                  .map(
-                                                                      codeToDescription)
-                                                                  .join(', ')
-                                                              : req.value
-                                                                  .join(', '),
-                                                          textAlign:
-                                                              TextAlign.end,
-                                                          style:
-                                                              const TextStyle(
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    112,
-                                                                    112,
-                                                                    112),
-                                                            fontSize: 12.0,
-                                                          ),
-                                                        ),
-                                                      ),
+                                                      Text(
+                                                        'تحت نظر: ${e['staffFName']} ${e['staffLName']}',
+                                                        style: const TextStyle(
+                                                            color: Colors.grey,
+                                                            fontSize: 12.0),
+                                                      )
                                                     ],
                                                   ),
-                                                ),
+                                                ],
+                                              ),
                                               SizedBox(
                                                 width: 200,
                                                 child: Row(
@@ -576,8 +469,8 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                       splashRadius: 23,
                                                       onPressed: () =>
                                                           onDeleteAppointment(
-                                                              context, a.aptID,
-                                                              () {
+                                                              context,
+                                                              e['apptID'], () {
                                                         setState(() {});
                                                       }),
                                                       icon: const Icon(
@@ -590,81 +483,97 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                               )
                                             ],
                                           ),
-                                        );
-                                      }
-                                    } else if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    } else {
-                                      return const Row(children: [
-                                        CircularProgressIndicator(),
-                                      ]);
-                                    }
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0),
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                              'No description found for this service.',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall),
-                                          const SizedBox(height: 10.0),
-                                          SizedBox(
-                                            width: 200,
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                IconButton(
-                                                  tooltip: 'Edit',
-                                                  splashRadius: 23,
-                                                  onPressed: () {},
-                                                  icon: const Icon(
-                                                    Icons.edit,
-                                                    size: 16.0,
-                                                    color: Color.fromARGB(
-                                                        255, 112, 112, 112),
+                                        ),
+                                        child: ListTile(
+                                          title: Column(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Text(
+                                                      'Service Name',
+                                                      style: TextStyle(
+                                                          fontSize: 12.0,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    Text(
+                                                      e['serviceName'],
+                                                      style: const TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 112, 112, 112),
+                                                        fontSize: 12.0,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Column(children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    children: [
+                                                      Text(
+                                                        e['reqName'] ==
+                                                                'Teeth Selection'
+                                                            ? 'Teeth Selected'
+                                                            : e['reqName'],
+                                                        style: const TextStyle(
+                                                            fontSize: 12.0,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Expanded(
+                                                        child: Text(
+                                                          e['reqName'] ==
+                                                                  'Teeth Selection'
+                                                              ? e['reqValue']
+                                                                  .split(', ')
+                                                                  .toSet()
+                                                                  .map(
+                                                                      codeToDescription)
+                                                                  .join(', ')
+                                                              : e['reqValue']
+                                                                  .split(', ')
+                                                                  .join(', '),
+                                                          textAlign:
+                                                              TextAlign.end,
+                                                          style:
+                                                              const TextStyle(
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    112,
+                                                                    112,
+                                                                    112),
+                                                            fontSize: 12.0,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
-                                                IconButton(
-                                                  tooltip: 'Delete',
-                                                  splashRadius: 23,
-                                                  onPressed: () =>
-                                                      onDeleteAppointment(
-                                                          context, a.aptID, () {
-                                                    setState(() {});
-                                                  }),
-                                                  icon: const Icon(
-                                                    Icons
-                                                        .delete_forever_outlined,
-                                                    size: 16.0,
-                                                    color: Color.fromARGB(
-                                                        255, 112, 112, 112),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          )
-                                        ],
+                                              ]),
+                                            ],
+                                          ),
+                                        ),
                                       ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              if (!isLastRound)
-                                const Divider(
-                                    color: Colors.grey,
-                                    thickness: 0.5,
-                                    height: 0.0),
-                            ],
-                          );
-                        }).toList(),
-                      ),
+                                    ],
+                                  ),
+                                ],
+                              ))
+                          .toList(),
                     ],
                   ),
                 );
-              }).toList(), // Convert Iterable to List
+              },
             );
           }
         }
@@ -691,107 +600,164 @@ class ExpandableCard extends StatelessWidget {
 }
 
 // This function fetches records of patients, appointments, staff and services using JOIN
-Future<Map<String, List<AppointmentDataModel>>> _getAppointment() async {
+Future<List<Map>> _getAppointment() async {
   final conn = await onConnToDb();
   final results = await conn.query(
     '''SELECT p.firstname, p.lastname, 
         a.staff_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y"), a.round, a.installment, 
-        a.discount, a.apt_ID, st.firstname, st.lastname, s.ser_name, s.ser_ID FROM patients p 
+        a.discount, a.apt_ID, st.firstname, st.lastname, s.ser_name, s.ser_ID, sr.req_name, sr.req_ID, ps.ps_ID, ps.value FROM patients p 
         INNER JOIN appointments a ON a.pat_ID = p.pat_ID
         INNER JOIN staff st ON a.staff_ID = st.staff_ID
         INNER JOIN services s ON s.ser_ID = a.service_ID
-         WHERE a.pat_ID = ? ORDER BY a.meet_date DESC, a.round DESC''',
+        INNER JOIN patient_services ps ON s.ser_ID = ps.ser_ID
+        INNER JOIN service_requirements sr ON ps.req_ID = sr.req_ID
+         WHERE a.pat_ID = ? 
+         ORDER BY a.meet_date DESC, a.round DESC''',
     [PatientInfo.patID],
   );
 
-  Map<String, List<AppointmentDataModel>> appoints = {};
+  List<Map> appointments = [];
 
   for (var row in results) {
-    String visitDate = row[3].toString();
-    var appointment = AppointmentDataModel(
-      staffID: row[2],
-      staffFirstName: row[8],
-      staffLastName: row[9],
-      serviceName: row[10],
-      serviceID: row[11],
-      aptID: row[7],
-      meetDate: visitDate,
-      round: row[4],
-      /*  paidAmount: row[4], 
-      dueAmount: row[4], */
-      installment: row[5],
-    );
-    if (appoints.containsKey(visitDate)) {
-      appoints[visitDate]!.add(appointment);
-    } else {
-      appoints[visitDate] = [appointment];
-    }
+    appointments.add({
+      'pFirstName': row[0].toString(),
+      'pLastName': row[1].toString(),
+      'staffID': row[2],
+      'meetDate': row[3].toString(),
+      'round': row[4],
+      'installment': row[5],
+      'discount': row[6],
+      'apptID': row[7],
+      'staffFName': row[8].toString(),
+      'staffLName': row[9].toString(),
+      'serviceName': row[10].toString(),
+      'serviceID': row[11],
+      'reqName': row[12].toString(),
+      'reqID': row[13],
+      'patSerID': row[14],
+      'reqValue': row[15].toString(),
+    });
   }
 
   await conn.close();
-  return appoints;
+  return appointments;
 }
 
 // Create a data model to set/get appointment details
 class AppointmentDataModel {
-  final int staffID;
   final int serviceID;
+  final int patientID;
+  // It is patient_serivces.ps_iD
+  final int patSerID;
+  final int reqID;
   final String staffFirstName;
   final String staffLastName;
   final String serviceName;
   final int aptID;
   final String meetDate;
   final int round;
- /*  final double paidAmount;
-  final double dueAmount; */
   final int installment;
+  final String reqName;
+  final String reqValue;
 
-  AppointmentDataModel(
-      {required this.staffID,
-      required this.serviceID,
-      required this.staffFirstName,
-      required this.staffLastName,
-      required this.serviceName,
-      required this.aptID,
-      required this.meetDate,
-      required this.round,
-      required this.installment});
+  AppointmentDataModel({
+    required this.serviceID,
+    required this.patientID,
+    required this.patSerID,
+    required this.reqID,
+    required this.staffFirstName,
+    required this.staffLastName,
+    required this.serviceName,
+    required this.aptID,
+    required this.meetDate,
+    required this.round,
+    required this.installment,
+    required this.reqName,
+    required this.reqValue,
+  });
+
+  factory AppointmentDataModel.fromMap(Map<String, dynamic> map) {
+    return AppointmentDataModel(
+        serviceID: map['serviceID'],
+        patientID: map['patientID'],
+        patSerID: map['patSerID'],
+        reqID: map['reqID'],
+        staffFirstName: map['staffFirstName'], // and this line
+        staffLastName: map['staffLastName'],
+        serviceName: map['serviceName'],
+        aptID: map['aptID'],
+        meetDate: map['meetDate'],
+        round: map['round'],
+        installment: map['installment'],
+        reqName: map['reqName'],
+        reqValue: map['reqValue']);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'staffID': staffID,
+      'serviceID': serviceID,
+      'patientID': patientID,
+      'patSerID': patSerID,
+      'reqID': reqID,
+      'staffFirstName': staffFirstName,
+      'staffLastName': staffLastName,
+      'serviceName': serviceName,
+      'aptID': aptID,
+      'meetDate': meetDate,
+      'round': round,
+      'installment': installment,
+      'reqName': reqName,
+      'reqValue': reqValue
+    };
+  }
 }
 
 // This function fetches records from service_requirments, patient_services, services and patients using JOIN
 Future<List<ServiceDataModel>> _getServices(int serID) async {
   final conn = await onConnToDb();
   final results = await conn.query(
-      '''SELECT s.ser_ID, ps.pat_ID, sr.req_name, ps.value FROM service_requirements sr 
+      '''SELECT DISTINCT s.ser_ID, ps.pat_ID, sr.req_name, ps.value, ps.ps_ID FROM service_requirements sr 
   INNER JOIN patient_services ps ON sr.req_ID = ps.req_ID 
   INNER JOIN services s ON s.ser_ID = ps.ser_ID 
   INNER JOIN patients p ON p.pat_ID = ps.pat_ID 
   WHERE ps.pat_ID = ? AND s.ser_ID = ?''', [PatientInfo.patID, serID]);
 
-  Map<int, ServiceDataModel> servicesMap = {};
+  final services = results
+      .map(
+        (row) => ServiceDataModel(
+          serviceID: row[0],
+          patientServiceID: row[4],
+          requirements: {
+            row[2]: [row[3]]
+          },
+        ),
+      )
+      .toList();
+
+  /* Map<String, ServiceDataModel> servicesMap = {};
 
   for (var row in results) {
     int serviceID = row[0];
     String reqName = row[2];
     String value = row[3];
+    String key = '$serviceID-$reqName-$value';
 
-    if (!servicesMap.containsKey(serviceID)) {
-      servicesMap[serviceID] = ServiceDataModel(
+    if (!servicesMap.containsKey(key)) {
+      servicesMap[key] = ServiceDataModel(
         serviceID: serviceID,
         requirements: {
-          reqName: {value}
+          reqName: [value]
         },
       );
-      print(
-          ' 1) Processing - ServiceId: $serviceID, reqName: $reqName, value: $value');
     } else {
-      servicesMap[serviceID]!.requirements[reqName] = {value};
-
-      print(
-          ' 2) Processing - ServiceId: $serviceID, reqName: $reqName, value: $value');
+      String newReqName = '$reqName-$value';
+      servicesMap[key]!.requirements[newReqName] = [value];
     }
+    print('key: $key');
   }
-  final services = servicesMap.values.toList();
+
+  final services = servicesMap.values.toList(); */
 
   await conn.close();
   return services;
@@ -800,10 +766,12 @@ Future<List<ServiceDataModel>> _getServices(int serID) async {
 // Create the second data model for services including (service_requirements & patient_services tables)
 class ServiceDataModel {
   final int serviceID;
-  final Map<String, Set<String>> requirements;
+  final int patientServiceID;
+  final Map<String, List<String>> requirements;
 
   ServiceDataModel({
     required this.serviceID,
+    required this.patientServiceID,
     required this.requirements,
   });
 }
