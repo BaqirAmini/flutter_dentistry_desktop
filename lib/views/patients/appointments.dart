@@ -358,8 +358,18 @@ class _AppointmentContentState extends State<_AppointmentContent> {
             return const Center(child: Text('No appointments found.'));
           } else {
             var data = snapshot.data!;
-            var groupedData = groupBy(data, (obj) => obj['meetDate']);
+            var uniqueData = <Map>[];
+
+            for (var map in data) {
+              if (!uniqueData.any((element) =>
+                  element['meetDate'] == map['meetDate'])) {
+                uniqueData.add(map);
+              }
+            }
+
+            var groupedData = groupBy(uniqueData, (obj) => obj['meetDate']);
             var groupedRound = groupBy(data, (obj) => obj['round']);
+            
             return ListView.builder(
               itemCount: groupedData.keys.length,
               itemBuilder: (context, index) {
