@@ -350,7 +350,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
       future: _getAppointment(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
@@ -368,6 +368,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                 var meetDate = groupedData.keys.elementAt(index);
                 var round = groupedRound.keys.elementAt(index);
                 return Card(
+                  elevation: 0.5,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -387,12 +388,12 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                             Card(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30.0)),
-                              elevation: 0,
+                              elevation: 0.5,
                               child: Padding(
                                 padding: const EdgeInsets.all(5.0),
                                 child: Text('Round: $round',
                                     style:
-                                        Theme.of(context).textTheme.bodyText1),
+                                        Theme.of(context).textTheme.labelSmall),
                               ),
                             ),
                           ],
@@ -403,208 +404,233 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                 children: [
                                   Column(
                                     children: [
-                                      ExpandableCard(
-                                        title: Padding(
-                                          padding: const EdgeInsets.all(5.0),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Container(
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.green,
-                                                      shape: BoxShape.circle,
-                                                      border: Border.all(
-                                                          color: Colors.green,
-                                                          width: 2.0),
-                                                    ),
-                                                    child: const Padding(
-                                                      padding:
-                                                          EdgeInsets.all(8.0),
-                                                      child: Icon(
-                                                        Icons
-                                                            .calendar_today_outlined,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 10.0),
-                                                  Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        e['serviceName'],
-                                                        style: const TextStyle(
-                                                            fontSize: 18.0),
-                                                      ),
-                                                      Text(
-                                                        'تحت نظر: ${e['staffFName']} ${e['staffLName']}',
-                                                        style: const TextStyle(
-                                                            color: Colors.grey,
-                                                            fontSize: 12.0),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                width: 200,
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    IconButton(
-                                                      tooltip: 'Edit',
-                                                      splashRadius: 23,
-                                                      onPressed: () {},
-                                                      icon: const Icon(
-                                                          Icons.edit,
-                                                          size: 16.0),
-                                                    ),
-                                                    IconButton(
-                                                      tooltip: 'Delete',
-                                                      splashRadius: 23,
-                                                      onPressed: () =>
-                                                          onDeleteAppointment(
-                                                              context,
-                                                              e['apptID'], () {
-                                                        setState(() {});
-                                                      }),
-                                                      icon: const Icon(
-                                                          Icons
-                                                              .delete_forever_outlined,
-                                                          size: 16.0),
-                                                    )
-                                                  ],
-                                                ),
-                                              )
-                                            ],
+                                      Container(
+                                        decoration: const BoxDecoration(
+                                          border: Border(
+                                            bottom: BorderSide(
+                                                width: 0.3, color: Colors.grey),
                                           ),
                                         ),
-                                        child: FutureBuilder(
-                                          future:
-                                              _getServiceDetails(e['apptID']),
-                                          builder: (context, snapshot) {
-                                            if (snapshot.connectionState ==
-                                                ConnectionState.waiting) {
-                                              return const Center(
-                                                  child:
-                                                      CircularProgressIndicator());
-                                            } else if (snapshot.hasError) {
-                                              return Text(
-                                                  'Error with service requirements: ${snapshot.error}');
-                                            } else {
-                                              if (snapshot.data!.isEmpty) {
-                                                return const Center(
-                                                    child: Padding(
-                                                  padding: EdgeInsets.all(8.0),
-                                                  child: Text(
-                                                      'No requirements found.'),
-                                                ));
-                                              } else {
-                                                var reqData = snapshot.data;
-                                                return ListTile(
-                                                  title: Column(
-                                                    children: [
-                                                      Padding(
+                                        child: ExpandableCard(
+                                          title: Padding(
+                                            padding: const EdgeInsets.all(5.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.green,
+                                                        shape: BoxShape.circle,
+                                                        border: Border.all(
+                                                            color: Colors.green,
+                                                            width: 2.0),
+                                                      ),
+                                                      child: const Padding(
                                                         padding:
-                                                            const EdgeInsets
-                                                                .all(8.0),
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            const Text(
-                                                              'Service Name',
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      12.0,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold),
-                                                            ),
-                                                            Text(
-                                                              e['serviceName'],
-                                                              style:
-                                                                  const TextStyle(
-                                                                color: Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        112,
-                                                                        112,
-                                                                        112),
-                                                                fontSize: 12.0,
-                                                              ),
-                                                            ),
-                                                          ],
+                                                            EdgeInsets.all(8.0),
+                                                        child: Icon(
+                                                          Icons
+                                                              .calendar_today_outlined,
+                                                          color: Colors.white,
                                                         ),
                                                       ),
-                                                      for (var req in reqData!)
-                                                        Column(children: [
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .all(8.0),
-                                                            child: Row(
-                                                              children: [
-                                                                Text(
-                                                                  req.reqName ==
-                                                                          'Teeth Selection'
-                                                                      ? 'Teeth Selected'
-                                                                      : req
-                                                                          .reqName,
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          12.0,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold),
-                                                                ),
-                                                                Expanded(
-                                                                  child: Text(
-                                                                    req.reqValue ==
-                                                                            'Teeth Selection'
-                                                                        ? (e['reqValue'] !=
-                                                                                null
-                                                                            ? e['reqValue'].split(', ').toSet().map(codeToDescription).join(
-                                                                                ', ')
-                                                                            : '')
-                                                                        // ignore: unnecessary_null_comparison
-                                                                        : (req.reqValue !=
-                                                                                null
-                                                                            ? req.reqValue.split(', ').join(', ')
-                                                                            : ''),
-                                                                    textAlign:
-                                                                        TextAlign
-                                                                            .end,
-                                                                    style:
-                                                                        const TextStyle(
-                                                                      color: Color.fromARGB(
+                                                    ),
+                                                    const SizedBox(width: 10.0),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          e['serviceName'],
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize:
+                                                                      18.0),
+                                                        ),
+                                                        Text(
+                                                          'تحت نظر: ${e['staffFName']} ${e['staffLName']}',
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .grey,
+                                                                  fontSize:
+                                                                      12.0),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          child: FutureBuilder(
+                                            future:
+                                                _getServiceDetails(e['apptID']),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.waiting) {
+                                                return const Center(
+                                                    child: Center(
+                                                        child:
+                                                            CircularProgressIndicator()));
+                                              } else if (snapshot.hasError) {
+                                                return Text(
+                                                    'Error with service requirements: ${snapshot.error}');
+                                              } else {
+                                                if (snapshot.data!.isEmpty) {
+                                                  return const Center(
+                                                      child: Padding(
+                                                    padding:
+                                                        EdgeInsets.all(8.0),
+                                                    child: Text(
+                                                        'No requirements found.'),
+                                                  ));
+                                                } else {
+                                                  var reqData = snapshot.data;
+                                                  return ListTile(
+                                                    title: Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8.0),
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              const Text(
+                                                                'Service Name',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        12.0,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              ),
+                                                              Text(
+                                                                e['serviceName'],
+                                                                style:
+                                                                    const TextStyle(
+                                                                  color: Color
+                                                                      .fromARGB(
                                                                           255,
                                                                           112,
                                                                           112,
                                                                           112),
-                                                                      fontSize:
-                                                                          12.0,
-                                                                    ),
-                                                                  ),
-                                                                )
-                                                              ],
-                                                            ),
+                                                                  fontSize:
+                                                                      12.0,
+                                                                ),
+                                                              ),
+                                                            ],
                                                           ),
-                                                        ]),
-                                                    ],
-                                                  ),
-                                                );
+                                                        ),
+                                                        for (var req
+                                                            in reqData!)
+                                                          Column(children: [
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .all(8.0),
+                                                              child: Row(
+                                                                children: [
+                                                                  Text(
+                                                                    req.reqName ==
+                                                                            'Teeth Selection'
+                                                                        ? 'Teeth Selected'
+                                                                        : req
+                                                                            .reqName,
+                                                                    style: const TextStyle(
+                                                                        fontSize:
+                                                                            12.0,
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      req.reqValue ==
+                                                                              'Teeth Selection'
+                                                                          ? (e['reqValue'] != null
+                                                                              ? e['reqValue'].split(', ').toSet().map(codeToDescription).join(
+                                                                                  ', ')
+                                                                              : '')
+                                                                          // ignore: unnecessary_null_comparison
+                                                                          : (req.reqValue != null
+                                                                              ? req.reqValue.split(', ').join(', ')
+                                                                              : ''),
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .end,
+                                                                      style:
+                                                                          const TextStyle(
+                                                                        color: Color.fromARGB(
+                                                                            255,
+                                                                            112,
+                                                                            112,
+                                                                            112),
+                                                                        fontSize:
+                                                                            12.0,
+                                                                      ),
+                                                                    ),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ]),
+                                                        SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.3,
+                                                          child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceEvenly,
+                                                            children: [
+                                                              IconButton(
+                                                                tooltip: 'Edit',
+                                                                splashRadius:
+                                                                    23,
+                                                                onPressed:
+                                                                    () {},
+                                                                icon: const Icon(
+                                                                    Icons.edit,
+                                                                    size: 16.0),
+                                                              ),
+                                                              IconButton(
+                                                                tooltip:
+                                                                    'Delete',
+                                                                splashRadius:
+                                                                    23,
+                                                                onPressed: () =>
+                                                                    onDeleteAppointment(
+                                                                        context,
+                                                                        e['apptID'],
+                                                                        () {
+                                                                  setState(
+                                                                      () {});
+                                                                }),
+                                                                icon: const Icon(
+                                                                    Icons
+                                                                        .delete_forever_outlined,
+                                                                    size: 16.0),
+                                                              )
+                                                            ],
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  );
+                                                }
                                               }
-                                            }
-                                          },
+                                            },
+                                          ),
                                         ),
                                       ),
                                     ],
