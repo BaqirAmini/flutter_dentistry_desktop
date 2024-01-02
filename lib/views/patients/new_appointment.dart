@@ -262,35 +262,35 @@ class _NewAppointmentState extends State<NewAppointment> {
                     });
                   }
                 } else if (_feeFormKey.currentState!.validate()) {
-                  // First give time to insert into patient_services table
-                  if (await AppointmentFunction.onAddServiceReq(
+                  if (await AppointmentFunction.onAddAppointment(
                       PatientInfo.patID!,
                       ServiceInfo.selectedServiceID!,
-                      ServiceInfo.serviceNote)) {
-                    if (await AppointmentFunction.onAddAppointment(
+                      ServiceInfo.meetingDate!,
+                      StaffInfo.staffID!)) {
+                    // Here i fetch apt_ID (appointment ID) which needs to be passed.
+                    final conn = await onConnToDb();
+                    int appointmentID;
+                    final aptIdResult = await conn.query(
+                        'SELECT apt_ID FROM appointments WHERE meet_date = ? AND service_ID = ? AND round = ? AND pat_ID = ?',
+                        [
+                          ServiceInfo.meetingDate,
+                          ServiceInfo.selectedServiceID,
+                          _round,
+                          PatientInfo.patID
+                        ]);
+
+                    if (aptIdResult.isNotEmpty) {
+                      final row = aptIdResult.first;
+                      appointmentID = row['apt_ID'];
+                    } else {
+                      appointmentID = 0;
+                    }
+
+                    // First give time to insert into patient_services table
+                    if (await AppointmentFunction.onAddServiceReq(
                         PatientInfo.patID!,
                         ServiceInfo.selectedServiceID!,
-                        ServiceInfo.meetingDate!,
-                        StaffInfo.staffID!)) {
-                      // Here i fetch apt_ID (appointment ID) which needs to be passed.
-                      final conn = await onConnToDb();
-                      int appointmentID;
-                      final aptIdResult = await conn.query(
-                          'SELECT apt_ID FROM appointments WHERE meet_date = ? AND service_ID = ? AND round = ? AND pat_ID = ?',
-                          [
-                            ServiceInfo.meetingDate,
-                            ServiceInfo.selectedServiceID,
-                            _round,
-                            PatientInfo.patID
-                          ]);
-
-                      if (aptIdResult.isNotEmpty) {
-                        final row = aptIdResult.first;
-                        appointmentID = row['apt_ID'];
-                      } else {
-                        appointmentID = 0;
-                      }
-
+                        ServiceInfo.serviceNote, appointmentID)) {
                       if (await AppointmentFunction.onAddFeePayment(
                           ServiceInfo.meetingDate!,
                           StaffInfo.staffID!,
@@ -313,19 +313,21 @@ class _NewAppointmentState extends State<NewAppointment> {
 class AppointmentFunction {
   // This function creates service requirements into patient_services table.
   static Future<bool> onAddServiceReq(
-      int patientId, int serviceId, String? desc) async {
+      int patientId, int serviceId, String? desc, int appointmentID) async {
     try {
       final conn = await onConnToDb();
       if (ServiceInfo.selectedServiceID == 1) {
         await conn.query(
-            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+            'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
             [
+              appointmentID,
               patientId,
               serviceId,
               1,
               (Tooth.adultToothSelected)
                   ? Tooth.selectedAdultTeeth
                   : Tooth.selectedChildTeeth,
+              appointmentID,
               patientId,
               serviceId,
               2,
@@ -333,22 +335,26 @@ class AppointmentFunction {
             ]);
       } else if (ServiceInfo.selectedServiceID == 2) {
         await conn.query(
-            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+            'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
             [
+              appointmentID,
               patientId,
               serviceId,
               1,
               (Tooth.adultToothSelected)
                   ? Tooth.selectedAdultTeeth
                   : Tooth.selectedChildTeeth,
+              appointmentID,
               patientId,
               serviceId,
               2,
               desc,
+              appointmentID,
               patientId,
               serviceId,
               3,
               ServiceInfo.fillingGroupValue,
+              appointmentID,
               patientId,
               serviceId,
               4,
@@ -356,12 +362,14 @@ class AppointmentFunction {
             ]);
       } else if (ServiceInfo.selectedServiceID == 3) {
         await conn.query(
-            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+            'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
             [
+              appointmentID,
               patientId,
               serviceId,
               2,
               desc,
+              appointmentID,
               patientId,
               serviceId,
               5,
@@ -369,12 +377,14 @@ class AppointmentFunction {
             ]);
       } else if (ServiceInfo.selectedServiceID == 4) {
         await conn.query(
-            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+            'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
             [
+              appointmentID,
               patientId,
               serviceId,
               2,
               desc,
+              appointmentID,
               patientId,
               serviceId,
               3,
@@ -382,12 +392,14 @@ class AppointmentFunction {
             ]);
       } else if (ServiceInfo.selectedServiceID == 5) {
         await conn.query(
-            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+            'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
             [
+              appointmentID,
               patientId,
               serviceId,
               2,
               desc,
+              appointmentID,
               patientId,
               serviceId,
               4,
@@ -396,18 +408,21 @@ class AppointmentFunction {
       } else if (ServiceInfo.selectedServiceID == 7) {
         if (ServiceInfo.defaultMaxillo == 'Tooth Extraction') {
           await conn.query(
-              'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+              'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
               [
+                appointmentID,
                 patientId,
                 serviceId,
                 3,
                 ServiceInfo.defaultMaxillo,
+                appointmentID,
                 patientId,
                 serviceId,
                 1,
                 (Tooth.adultToothSelected)
                     ? Tooth.selectedAdultTeeth
                     : Tooth.selectedChildTeeth,
+                appointmentID,
                 patientId,
                 serviceId,
                 2,
@@ -415,18 +430,21 @@ class AppointmentFunction {
               ]);
         } else if (ServiceInfo.defaultMaxillo == 'Abscess Treatment') {
           await conn.query(
-              'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+              'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
               [
+                appointmentID,
                 patientId,
                 serviceId,
                 3,
                 ServiceInfo.defaultMaxillo,
+                appointmentID,
                 patientId,
                 serviceId,
                 1,
                 (Tooth.adultToothSelected)
                     ? Tooth.selectedAdultTeeth
                     : Tooth.selectedChildTeeth,
+                appointmentID,
                 patientId,
                 serviceId,
                 2,
@@ -434,16 +452,19 @@ class AppointmentFunction {
               ]);
         } else if (ServiceInfo.defaultMaxillo == 'T.M.J') {
           await conn.query(
-              'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+              'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
               [
+                appointmentID,
                 patientId,
                 serviceId,
                 3,
                 ServiceInfo.defaultMaxillo,
+                appointmentID,
                 patientId,
                 serviceId,
                 9,
                 ServiceInfo.tmgGroupValue,
+                appointmentID,
                 patientId,
                 serviceId,
                 2,
@@ -451,18 +472,21 @@ class AppointmentFunction {
               ]);
         } else if (ServiceInfo.defaultMaxillo == 'Tooth Reimplantation') {
           await conn.query(
-              'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+              'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
               [
+                appointmentID,
                 patientId,
                 serviceId,
                 3,
                 ServiceInfo.defaultMaxillo,
+                appointmentID,
                 patientId,
                 serviceId,
                 1,
                 (Tooth.adultToothSelected)
                     ? Tooth.selectedAdultTeeth
                     : Tooth.selectedChildTeeth,
+                appointmentID,
                 patientId,
                 serviceId,
                 2,
@@ -470,24 +494,27 @@ class AppointmentFunction {
               ]);
         } else {
           await conn.query(
-              'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?)',
-              [patientId, serviceId, 2, desc]);
+              'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?)',
+              [appointmentID, patientId, serviceId, 2, desc]);
         }
       } else if (ServiceInfo.selectedServiceID == 9) {
         if (ServiceInfo.dentureGroupValue == 'Partial') {
           await conn.query(
-              'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+              'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
               [
+                appointmentID,
                 patientId,
                 serviceId,
                 3,
                 ServiceInfo.dentureGroupValue,
+                appointmentID,
                 patientId,
                 serviceId,
                 1,
                 (Tooth.adultToothSelected)
                     ? Tooth.selectedAdultTeeth
                     : Tooth.selectedChildTeeth,
+                appointmentID,
                 patientId,
                 serviceId,
                 2,
@@ -495,16 +522,19 @@ class AppointmentFunction {
               ]);
         } else {
           await conn.query(
-              'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+              'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
               [
+                appointmentID,
                 patientId,
                 serviceId,
                 3,
                 ServiceInfo.dentureGroupValue,
+                appointmentID,
                 patientId,
                 serviceId,
                 7,
                 ServiceInfo.defaultDentureValue,
+                appointmentID,
                 patientId,
                 serviceId,
                 2,
@@ -513,22 +543,26 @@ class AppointmentFunction {
         }
       } else if (ServiceInfo.selectedServiceID == 11) {
         await conn.query(
-            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+            'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
             [
+              appointmentID,
               patientId,
               serviceId,
               1,
               (Tooth.adultToothSelected)
                   ? Tooth.selectedAdultTeeth
                   : Tooth.selectedChildTeeth,
+              appointmentID,
               patientId,
               serviceId,
               3,
               ServiceInfo.crownGroupValue,
+              appointmentID,
               patientId,
               serviceId,
               4,
               ServiceInfo.defaultCrown,
+              appointmentID,
               patientId,
               serviceId,
               2,
@@ -536,14 +570,16 @@ class AppointmentFunction {
             ]);
       } else if (ServiceInfo.selectedServiceID == 15) {
         await conn.query(
-            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+            'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
             [
+              appointmentID,
               patientId,
               serviceId,
               1,
               (Tooth.adultToothSelected)
                   ? Tooth.selectedAdultTeeth
                   : Tooth.selectedChildTeeth,
+              appointmentID,
               patientId,
               serviceId,
               2,
@@ -551,8 +587,8 @@ class AppointmentFunction {
             ]);
       } else {
         await conn.query(
-            'INSERT INTO patient_services (pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?)',
-            [patientId, serviceId, 2, desc]);
+            'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?)',
+            [appointmentID, patientId, serviceId, 2, desc]);
       }
       await conn.close();
       return true;

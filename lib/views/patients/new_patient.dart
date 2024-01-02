@@ -971,25 +971,25 @@ class _NewPatientState extends State<NewPatient> {
 
 // Now insert patient health histories into condition_details
         if (await _onAddPatientHistory(patId)) {
-          if (await AppointmentFunction.onAddServiceReq(
-              patId, ServiceInfo.selectedServiceID!, note)) {
-            // Now create appointments
-            if (await AppointmentFunction.onAddAppointment(
-                patId, serviceID!, meetDate!, staffId!)) {
-              // Here i fetch apt_ID (appointment ID) which needs to be passed.
-              int appointmentID;
-              final aptIdResult = await conn.query(
-                  'SELECT apt_ID FROM appointments WHERE meet_date = ? AND service_ID = ? AND round = ? AND pat_ID = ?',
-                  [meetDate, serviceID, 1, patId]);
+          // Now create appointments
+          if (await AppointmentFunction.onAddAppointment(
+              patId, serviceID!, meetDate!, staffId!)) {
+            // Here i fetch apt_ID (appointment ID) which needs to be passed.
+            int appointmentID;
+            final aptIdResult = await conn.query(
+                'SELECT apt_ID FROM appointments WHERE meet_date = ? AND service_ID = ? AND round = ? AND pat_ID = ?',
+                [meetDate, serviceID, 1, patId]);
 
-              if (aptIdResult.isNotEmpty) {
-                final row = aptIdResult.first;
-                appointmentID = row['apt_ID'];
-              } else {
-                appointmentID = 0;
-              }
+            if (aptIdResult.isNotEmpty) {
+              final row = aptIdResult.first;
+              appointmentID = row['apt_ID'];
+            } else {
+              appointmentID = 0;
+            }
 
-// if it is inserted into the final tables which is fee_payments, it navigates to patients page.
+            if (await AppointmentFunction.onAddServiceReq(
+                patId, ServiceInfo.selectedServiceID!, note, appointmentID)) {
+              // if it is inserted into the final tables which is fee_payments, it navigates to patients page.
               if (await AppointmentFunction.onAddFeePayment(
                   meetDate, staffId, appointmentID)) {
                 // ignore: use_build_context_synchronously

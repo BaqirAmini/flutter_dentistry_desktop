@@ -358,16 +358,8 @@ class _AppointmentContentState extends State<_AppointmentContent> {
             return const Center(child: Text('No appointments found.'));
           } else {
             var data = snapshot.data!;
-            var uniqueData = <Map>[];
 
-            for (var map in data) {
-              if (!uniqueData
-                  .any((element) => element['meetDate'] == map['meetDate'])) {
-                uniqueData.add(map);
-              }
-            }
-
-            var groupedData = groupBy(uniqueData, (obj) => obj['meetDate']);
+            var groupedData = groupBy(data, (obj) => obj['meetDate']);
             var groupedRound = groupBy(data, (obj) => obj['round']);
 
             return ListView.builder(
@@ -750,9 +742,9 @@ Future<List<ServiceDetailDataModel>> _getServiceDetails(
   final conn = await onConnToDb();
 
   const query =
-      ''' SELECT sr.req_name, ps.value, ps.ps_ID, ps.pat_ID, ps.ser_ID, ps.req_ID FROM service_requirements sr 
+      ''' SELECT sr.req_name, ps.value, ps.apt_ID, ps.pat_ID, ps.apt_ID, ps.req_ID FROM service_requirements sr 
           INNER JOIN patient_services ps ON sr.req_ID = ps.req_ID 
-          WHERE ps.pat_ID = ? AND ps.ser_ID = (SELECT service_ID FROM appointments WHERE apt_ID = ?)
+          WHERE ps.pat_ID = ? AND ps.apt_ID = ?
           GROUP BY sr.req_name;''';
 
   final results = await conn.query(query, [PatientInfo.patID, appointmentID]);
@@ -760,7 +752,7 @@ Future<List<ServiceDetailDataModel>> _getServiceDetails(
   final requirements = results
       .map(
         (row) => ServiceDetailDataModel(
-            patientServiceID: row[2],
+            appointmentID: row[2],
             patID: row[3],
             serviceID: row[4],
             reqID: row[5],
@@ -774,7 +766,7 @@ Future<List<ServiceDetailDataModel>> _getServiceDetails(
 
 // Create the second data model for services including (service_requirements & patient_services tables)
 class ServiceDetailDataModel {
-  final int patientServiceID;
+  final int appointmentID;
   final int patID;
   final int serviceID;
   final int reqID;
@@ -782,7 +774,7 @@ class ServiceDetailDataModel {
   final String reqValue;
 
   ServiceDetailDataModel({
-    required this.patientServiceID,
+    required this.appointmentID,
     required this.patID,
     required this.serviceID,
     required this.reqID,
