@@ -227,7 +227,7 @@ class _DashboardState extends State<Dashboard> {
                               Card(
                                 color: Colors.blue,
                                 child: SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.14,
+                                  height: MediaQuery.of(context).size.height * 0.16,
                                   width: MediaQuery.of(context).size.width * 0.19,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -272,7 +272,7 @@ class _DashboardState extends State<Dashboard> {
                               Card(
                                 color: Colors.orange,
                                 child: SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.14,
+                                  height: MediaQuery.of(context).size.height * 0.16,
                                   width: MediaQuery.of(context).size.width * 0.19,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -318,7 +318,7 @@ class _DashboardState extends State<Dashboard> {
                               Card(
                                 color: Colors.green,
                                 child: SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.14,
+                                  height: MediaQuery.of(context).size.height * 0.16,
                                   width: MediaQuery.of(context).size.width * 0.19,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -364,7 +364,7 @@ class _DashboardState extends State<Dashboard> {
                               Card(
                                 color: Colors.brown,
                                 child: SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.14,
+                                  height: MediaQuery.of(context).size.height * 0.16,
                                   width: MediaQuery.of(context).size.width * 0.19,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
