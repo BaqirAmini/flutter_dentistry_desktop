@@ -51,7 +51,7 @@ class PatientDetail extends StatelessWidget {
                   children: [
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.3,
-                      width: MediaQuery.of(context).size.height * 0.5,
+                      width: MediaQuery.of(context).size.width * 0.2,
                       child: const _PatientProfile(),
                     ),
                     _PatientMoreDetail(),
@@ -59,7 +59,7 @@ class PatientDetail extends StatelessWidget {
                 ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.4,
-                  width: MediaQuery.of(context).size.height * 1.49,
+                  width: MediaQuery.of(context).size.width * 0.75,
                   child: Card(
                       elevation: 0.5,
                       shape: RoundedRectangleBorder(
@@ -124,14 +124,14 @@ class _PatientProfile extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               SizedBox(
-                width: 150,
+                width: MediaQuery.of(context).size.width * 0.1,
                 child: Column(
                   children: [
                     Text('${PatientInfo.firstName} ${PatientInfo.lastName}',
                         style: Theme.of(context).textTheme.headlineSmall),
-                    const SizedBox(height: 5.0),
+                    const SizedBox(height: 10.0),
                     Padding(
-                      padding: const EdgeInsets.all(5.0),
+                      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.01),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -217,7 +217,7 @@ class _NavigationArea extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              width: MediaQuery.of(context).size.height * 0.7,
+              width: MediaQuery.of(context).size.width * 0.3,
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -235,7 +235,7 @@ class _NavigationArea extends StatelessWidget {
               ),
             ),
             SizedBox(
-              width: MediaQuery.of(context).size.height * 0.7,
+              width: MediaQuery.of(context).size.width * 0.3,
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -257,7 +257,7 @@ class _NavigationArea extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              width: MediaQuery.of(context).size.height * 0.7,
+              width: MediaQuery.of(context).size.width * 0.3,
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -274,7 +274,7 @@ class _NavigationArea extends StatelessWidget {
               ),
             ),
             SizedBox(
-              width: MediaQuery.of(context).size.height * 0.7,
+              width: MediaQuery.of(context).size.width * 0.3,
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -403,7 +403,7 @@ class _PatientMoreDetailState extends State<_PatientMoreDetail> {
       children: [
         Container(
           height: MediaQuery.of(context).size.height * 0.3,
-          width: MediaQuery.of(context).size.width * 0.5,
+          width: MediaQuery.of(context).size.width * 0.55,
           child: Card(
             elevation: 0.5,
             shape:
