@@ -51,7 +51,7 @@ class PatientDetail extends StatelessWidget {
                   children: [
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.3,
-                      width: MediaQuery.of(context).size.width * 0.2,
+                      width: MediaQuery.of(context).size.width * 0.23,
                       child: const _PatientProfile(),
                     ),
                     _PatientMoreDetail(),
@@ -122,16 +122,16 @@ class _PatientProfile extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(width: 10),
+              // const SizedBox(width: 10),
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.1,
+                width: MediaQuery.of(context).size.width * 0.15,
                 child: Column(
                   children: [
                     Text('${PatientInfo.firstName} ${PatientInfo.lastName}',
                         style: Theme.of(context).textTheme.headlineSmall),
                     const SizedBox(height: 10.0),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.01),
+                      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.017),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -403,7 +403,7 @@ class _PatientMoreDetailState extends State<_PatientMoreDetail> {
       children: [
         Container(
           height: MediaQuery.of(context).size.height * 0.3,
-          width: MediaQuery.of(context).size.width * 0.55,
+          width: MediaQuery.of(context).size.width * 0.52,
           child: Card(
             elevation: 0.5,
             shape:
