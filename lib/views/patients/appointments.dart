@@ -361,15 +361,15 @@ class _AppointmentContentState extends State<_AppointmentContent> {
             var uniqueData = <Map>[];
 
             for (var map in data) {
-              if (!uniqueData.any((element) =>
-                  element['meetDate'] == map['meetDate'])) {
+              if (!uniqueData
+                  .any((element) => element['meetDate'] == map['meetDate'])) {
                 uniqueData.add(map);
               }
             }
 
             var groupedData = groupBy(uniqueData, (obj) => obj['meetDate']);
             var groupedRound = groupBy(data, (obj) => obj['round']);
-            
+
             return ListView.builder(
               itemCount: groupedData.keys.length,
               itemBuilder: (context, index) {
@@ -391,7 +391,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                               meetDate,
                               style: const TextStyle(fontSize: 18.0),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Card(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30.0)),
@@ -494,85 +494,125 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                             ],
                                           ),
                                         ),
-                                        child: ListTile(
-                                          title: Column(
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    const Text(
-                                                      'Service Name',
-                                                      style: TextStyle(
-                                                          fontSize: 12.0,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                    Text(
-                                                      e['serviceName'],
-                                                      style: const TextStyle(
-                                                        color: Color.fromARGB(
-                                                            255, 112, 112, 112),
-                                                        fontSize: 12.0,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              Column(children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Row(
+                                        child: FutureBuilder(
+                                          future:
+                                              _getServiceDetails(e['apptID']),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const Center(
+                                                  child:
+                                                      CircularProgressIndicator());
+                                            } else if (snapshot.hasError) {
+                                              return Text(
+                                                  'Error with service requirements: ${snapshot.error}');
+                                            } else {
+                                              if (snapshot.data!.isEmpty) {
+                                                return const Center(
+                                                    child: Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                      'No requirements found.'),
+                                                ));
+                                              } else {
+                                                var reqData = snapshot.data;
+                                                return ListTile(
+                                                  title: Column(
                                                     children: [
-                                                      Text(
-                                                        e['reqName'] ==
-                                                                'Teeth Selection'
-                                                            ? 'Teeth Selected'
-                                                            : e['reqName'],
-                                                        style: const TextStyle(
-                                                            fontSize: 12.0,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                      Expanded(
-                                                        child: Text(
-                                                          e['reqName'] ==
-                                                                  'Teeth Selection'
-                                                              ? e['reqValue']
-                                                                  .split(', ')
-                                                                  .toSet()
-                                                                  .map(
-                                                                      codeToDescription)
-                                                                  .join(', ')
-                                                              : e['reqValue']
-                                                                  .split(', ')
-                                                                  .join(', '),
-                                                          textAlign:
-                                                              TextAlign.end,
-                                                          style:
-                                                              const TextStyle(
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    112,
-                                                                    112,
-                                                                    112),
-                                                            fontSize: 12.0,
-                                                          ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            const Text(
+                                                              'Service Name',
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      12.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                            Text(
+                                                              e['serviceName'],
+                                                              style:
+                                                                  const TextStyle(
+                                                                color: Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        112,
+                                                                        112,
+                                                                        112),
+                                                                fontSize: 12.0,
+                                                              ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ),
+                                                      for (var req in reqData!)
+                                                        Column(children: [
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(8.0),
+                                                            child: Row(
+                                                              children: [
+                                                                Text(
+                                                                  req.reqName ==
+                                                                          'Teeth Selection'
+                                                                      ? 'Teeth Selected'
+                                                                      : req
+                                                                          .reqName,
+                                                                  style: const TextStyle(
+                                                                      fontSize:
+                                                                          12.0,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold),
+                                                                ),
+                                                                Expanded(
+                                                                  child: Text(
+                                                                    req.reqValue ==
+                                                                            'Teeth Selection'
+                                                                        ? (e['reqValue'] !=
+                                                                                null
+                                                                            ? e['reqValue'].split(', ').toSet().map(codeToDescription).join(
+                                                                                ', ')
+                                                                            : '')
+                                                                        // ignore: unnecessary_null_comparison
+                                                                        : (req.reqValue !=
+                                                                                null
+                                                                            ? req.reqValue.split(', ').join(', ')
+                                                                            : ''),
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .end,
+                                                                    style:
+                                                                        const TextStyle(
+                                                                      color: Color.fromARGB(
+                                                                          255,
+                                                                          112,
+                                                                          112,
+                                                                          112),
+                                                                      fontSize:
+                                                                          12.0,
+                                                                    ),
+                                                                  ),
+                                                                )
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ]),
                                                     ],
                                                   ),
-                                                ),
-                                              ]),
-                                            ],
-                                          ),
+                                                );
+                                              }
+                                            }
+                                          },
                                         ),
                                       ),
                                     ],
@@ -612,40 +652,31 @@ class ExpandableCard extends StatelessWidget {
 // This function fetches records of patients, appointments, staff and services using JOIN
 Future<List<Map>> _getAppointment() async {
   final conn = await onConnToDb();
-  final results = await conn.query(
-    '''SELECT p.firstname, p.lastname, 
-        a.staff_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y"), a.round, a.installment, 
-        a.discount, a.apt_ID, st.firstname, st.lastname, s.ser_name, s.ser_ID, sr.req_name, sr.req_ID, ps.ps_ID, ps.value FROM patients p 
-        INNER JOIN appointments a ON a.pat_ID = p.pat_ID
-        INNER JOIN staff st ON a.staff_ID = st.staff_ID
-        INNER JOIN services s ON s.ser_ID = a.service_ID
-        INNER JOIN patient_services ps ON s.ser_ID = ps.ser_ID
-        INNER JOIN service_requirements sr ON ps.req_ID = sr.req_ID
-         WHERE a.pat_ID = ? 
-         ORDER BY a.meet_date DESC, a.round DESC''',
-    [PatientInfo.patID],
-  );
+
+  const query =
+      '''SELECT a.apt_ID, s.ser_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y"), a.round, a.installment, a.discount, a.total_fee, s.ser_name, st.staff_ID, st.firstname, st.lastname
+          FROM appointments a 
+          INNER JOIN services s ON a.service_ID = s.ser_ID
+          INNER JOIN staff st ON a.staff_ID = st.staff_ID
+          WHERE a.pat_ID = ? ORDER BY a.meet_date DESC, a.round DESC''';
+
+  final results = await conn.query(query, [PatientInfo.patID]);
 
   List<Map> appointments = [];
 
   for (var row in results) {
     appointments.add({
-      'pFirstName': row[0].toString(),
-      'pLastName': row[1].toString(),
-      'staffID': row[2],
-      'meetDate': row[3].toString(),
-      'round': row[4],
-      'installment': row[5],
-      'discount': row[6],
-      'apptID': row[7],
-      'staffFName': row[8].toString(),
-      'staffLName': row[9].toString(),
-      'serviceName': row[10].toString(),
-      'serviceID': row[11],
-      'reqName': row[12].toString(),
-      'reqID': row[13],
-      'patSerID': row[14],
-      'reqValue': row[15].toString(),
+      'staffID': row[8],
+      'meetDate': row[2].toString(),
+      'round': row[3],
+      'installment': row[4],
+      'discount': row[5],
+      'apptID': row[0],
+      'staffFName': row[9].toString(),
+      'staffLName': row[10].toString(),
+      'serviceName': row[7].toString(),
+      'serviceID': row[1],
+      'totalFee': row[6]
     });
   }
 
@@ -656,10 +687,7 @@ Future<List<Map>> _getAppointment() async {
 // Create a data model to set/get appointment details
 class AppointmentDataModel {
   final int serviceID;
-  final int patientID;
-  // It is patient_serivces.ps_iD
-  final int patSerID;
-  final int reqID;
+  final int staffID;
   final String staffFirstName;
   final String staffLastName;
   final String serviceName;
@@ -667,49 +695,42 @@ class AppointmentDataModel {
   final String meetDate;
   final int round;
   final int installment;
-  final String reqName;
-  final String reqValue;
+  final double totalFee;
+  final double discount;
 
-  AppointmentDataModel({
-    required this.serviceID,
-    required this.patientID,
-    required this.patSerID,
-    required this.reqID,
-    required this.staffFirstName,
-    required this.staffLastName,
-    required this.serviceName,
-    required this.aptID,
-    required this.meetDate,
-    required this.round,
-    required this.installment,
-    required this.reqName,
-    required this.reqValue,
-  });
+  AppointmentDataModel(
+      {required this.serviceID,
+      required this.staffID,
+      required this.staffFirstName,
+      required this.staffLastName,
+      required this.serviceName,
+      required this.aptID,
+      required this.meetDate,
+      required this.round,
+      required this.installment,
+      required this.totalFee,
+      required this.discount});
 
   factory AppointmentDataModel.fromMap(Map<String, dynamic> map) {
     return AppointmentDataModel(
-        serviceID: map['serviceID'],
-        patientID: map['patientID'],
-        patSerID: map['patSerID'],
-        reqID: map['reqID'],
-        staffFirstName: map['staffFirstName'], // and this line
-        staffLastName: map['staffLastName'],
-        serviceName: map['serviceName'],
-        aptID: map['aptID'],
-        meetDate: map['meetDate'],
-        round: map['round'],
-        installment: map['installment'],
-        reqName: map['reqName'],
-        reqValue: map['reqValue']);
+      serviceID: map['serviceID'],
+      staffID: map['staffID'],
+      staffFirstName: map['staffFirstName'], // and this line
+      staffLastName: map['staffLastName'],
+      serviceName: map['serviceName'],
+      aptID: map['aptID'],
+      meetDate: map['meetDate'],
+      round: map['round'],
+      installment: map['installment'],
+      totalFee: map['totalFee'],
+      discount: map['discount'],
+    );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'staffID': staffID,
       'serviceID': serviceID,
-      'patientID': patientID,
-      'patSerID': patSerID,
-      'reqID': reqID,
       'staffFirstName': staffFirstName,
       'staffLastName': staffLastName,
       'serviceName': serviceName,
@@ -717,72 +738,56 @@ class AppointmentDataModel {
       'meetDate': meetDate,
       'round': round,
       'installment': installment,
-      'reqName': reqName,
-      'reqValue': reqValue
+      'totalFee': totalFee,
+      'discount': discount
     };
   }
 }
 
 // This function fetches records from service_requirments, patient_services, services and patients using JOIN
-Future<List<ServiceDataModel>> _getServices(int serID) async {
+Future<List<ServiceDetailDataModel>> _getServiceDetails(
+    int appointmentID) async {
   final conn = await onConnToDb();
-  final results = await conn.query(
-      '''SELECT DISTINCT s.ser_ID, ps.pat_ID, sr.req_name, ps.value, ps.ps_ID FROM service_requirements sr 
-  INNER JOIN patient_services ps ON sr.req_ID = ps.req_ID 
-  INNER JOIN services s ON s.ser_ID = ps.ser_ID 
-  INNER JOIN patients p ON p.pat_ID = ps.pat_ID 
-  WHERE ps.pat_ID = ? AND s.ser_ID = ?''', [PatientInfo.patID, serID]);
 
-  final services = results
+  const query =
+      ''' SELECT sr.req_name, ps.value, ps.ps_ID, ps.pat_ID, ps.ser_ID, ps.req_ID FROM service_requirements sr 
+          INNER JOIN patient_services ps ON sr.req_ID = ps.req_ID 
+          WHERE ps.pat_ID = ? AND ps.ser_ID = (SELECT service_ID FROM appointments WHERE apt_ID = ?)
+          GROUP BY sr.req_name;''';
+
+  final results = await conn.query(query, [PatientInfo.patID, appointmentID]);
+
+  final requirements = results
       .map(
-        (row) => ServiceDataModel(
-          serviceID: row[0],
-          patientServiceID: row[4],
-          requirements: {
-            row[2]: [row[3]]
-          },
-        ),
+        (row) => ServiceDetailDataModel(
+            patientServiceID: row[2],
+            patID: row[3],
+            serviceID: row[4],
+            reqID: row[5],
+            reqName: row[0],
+            reqValue: row[1]),
       )
       .toList();
-
-  /* Map<String, ServiceDataModel> servicesMap = {};
-
-  for (var row in results) {
-    int serviceID = row[0];
-    String reqName = row[2];
-    String value = row[3];
-    String key = '$serviceID-$reqName-$value';
-
-    if (!servicesMap.containsKey(key)) {
-      servicesMap[key] = ServiceDataModel(
-        serviceID: serviceID,
-        requirements: {
-          reqName: [value]
-        },
-      );
-    } else {
-      String newReqName = '$reqName-$value';
-      servicesMap[key]!.requirements[newReqName] = [value];
-    }
-    print('key: $key');
-  }
-
-  final services = servicesMap.values.toList(); */
-
   await conn.close();
-  return services;
+  return requirements;
 }
 
 // Create the second data model for services including (service_requirements & patient_services tables)
-class ServiceDataModel {
-  final int serviceID;
+class ServiceDetailDataModel {
   final int patientServiceID;
-  final Map<String, List<String>> requirements;
+  final int patID;
+  final int serviceID;
+  final int reqID;
+  final String reqName;
+  final String reqValue;
 
-  ServiceDataModel({
-    required this.serviceID,
+  ServiceDetailDataModel({
     required this.patientServiceID,
-    required this.requirements,
+    required this.patID,
+    required this.serviceID,
+    required this.reqID,
+    required this.reqName,
+    required this.reqValue,
   });
 }
 
