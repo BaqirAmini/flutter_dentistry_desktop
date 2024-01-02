@@ -3,13 +3,12 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 27, 2023 at 11:39 AM
+-- Generation Time: Jan 02, 2024 at 11:55 AM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.0.25
--- Create/use database
+-- Create database
 CREATE DATABASE IF NOT EXISTS dentistry_db;
 USE dentistry_db;
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -49,33 +48,12 @@ CREATE TABLE `appointments` (
 --
 
 INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `service_ID`, `installment`, `round`, `discount`, `total_fee`, `meet_date`, `staff_ID`, `note`) VALUES
-(43, 0, 72, 2, 5, 1, 5.00, '0.00', '2023-11-21', 17, NULL),
-(46, 0, 75, 7, 1, 1, 0.00, '0.00', '2023-11-15', 17, NULL),
-(47, 0, 76, 15, 5, 1, 10.00, '0.00', '2023-11-23', 17, NULL),
-(48, 0, 79, 7, 1, 1, 0.00, '0.00', '2023-11-25', 17, NULL),
-(49, 0, 80, 9, 6, 1, 15.00, '0.00', '2023-11-01', 17, NULL),
-(50, 0, 81, 12, 1, 1, 5.00, '0.00', '2023-11-09', 17, NULL),
-(51, 0, 82, 7, 6, 1, 0.00, '0.00', '2023-12-04', 17, NULL),
-(52, 0, 84, 5, 1, 1, 5.00, '0.00', '0000-00-00', 17, NULL),
-(55, 0, 86, 3, 0, 1, 0.00, '0.00', '2023-12-08', 17, NULL),
-(58, 0, 80, 3, 0, 1, 0.00, '0.00', '2023-12-08', 17, NULL),
-(59, 0, 80, 8, 0, 1, 0.00, '0.00', '2023-12-08', 17, NULL),
-(60, 0, 81, 13, 2, 1, 0.00, '0.00', '2023-12-07', 17, NULL),
-(61, 0, 82, 12, 2, 1, 0.00, '0.00', '2023-12-09', 17, NULL),
-(63, 0, 86, 3, 1, 2, 5.00, '0.00', '2023-12-11', 17, NULL),
-(64, 0, 86, 2, 4, 1, 0.00, '0.00', '2023-12-07', 17, NULL),
-(68, 0, 84, 11, 0, 2, 0.00, '0.00', '2023-12-14', 17, NULL),
-(69, 0, 84, 1, 0, 3, 0.00, '0.00', '2023-12-14', 17, NULL),
-(74, 0, 92, 14, 0, 1, 0.00, '0.00', '2023-12-14', 17, NULL),
-(77, 0, 92, 1, 0, 2, 0.00, '0.00', '2023-12-14', 17, NULL),
-(79, 0, 93, 7, 7, 2, 15.00, '0.00', '2023-12-18', 17, NULL),
-(80, 0, 86, 7, 0, 3, 0.00, '0.00', '2023-12-17', 17, NULL),
-(81, 0, 86, 7, 0, 4, 2.00, '0.00', '2023-12-17', 17, NULL),
-(82, 0, 86, 3, 0, 5, 0.00, '0.00', '2023-12-11', 17, NULL),
-(83, 0, 93, 1, 4, 3, 0.00, '4500.00', '2023-12-27', 17, NULL),
-(84, 0, 92, 11, 4, 3, 0.00, '3000.00', '2023-12-27', 17, NULL),
-(85, 0, 92, 8, 0, 4, 0.00, '1000.00', '2023-12-27', 17, NULL),
-(86, 0, 92, 4, 6, 5, 0.00, '5000.00', '2023-12-11', 17, NULL);
+(93, 0, 93, 1, 3, 1, 2.00, '1470.00', '2023-12-31', 17, NULL),
+(94, 0, 93, 1, 4, 2, 5.00, '3325.00', '2024-01-01', 17, NULL),
+(95, 0, 92, 11, 3, 1, 0.00, '1800.00', '2024-01-02', 17, NULL),
+(96, 0, 92, 3, 0, 2, 0.00, '500.00', '2024-01-02', 17, NULL),
+(97, 0, 93, 3, 0, 3, 0.00, '500.00', '2024-01-01', 17, NULL),
+(98, 0, 93, 3, 0, 4, 0.00, '750.00', '2023-12-31', 17, NULL);
 
 -- --------------------------------------------------------
 
@@ -318,12 +296,14 @@ CREATE TABLE `fee_payments` (
 --
 
 INSERT INTO `fee_payments` (`payment_ID`, `installment_counter`, `payment_date`, `paid_amount`, `due_amount`, `whole_fee_paid`, `staff_ID`, `apt_ID`) VALUES
-(1, 1, '2023-12-27', '500.00', '2500.00', 0, 17, 84),
-(2, 2, '2023-12-28', '500.00', '2000.00', 0, 21, 84),
-(3, 1, '2023-12-27', '1000.00', '0.00', 0, 17, 85),
-(4, 1, '2023-12-11', '700.00', '4300.00', 0, 17, 86),
-(5, 3, '2023-12-27', '1000.00', '1000.00', 0, 17, 84),
-(6, 4, '2023-12-28', '500.00', '500.00', 0, 31, 84);
+(19, 1, '2023-12-31', '470.00', '1000.00', 0, 17, 93),
+(20, 1, '2024-01-01', '325.00', '3000.00', 0, 17, 94),
+(21, 1, '2024-01-02', '680.00', '1120.00', 0, 17, 95),
+(22, 1, '2024-01-02', '500.00', '0.00', 0, 17, 96),
+(23, 1, '2024-01-01', '500.00', '0.00', 0, 17, 97),
+(24, 2, '2024-01-01', '500.00', '500.00', 0, 26, 93),
+(25, 3, '2024-01-02', '500.00', '0.00', 1, 17, 93),
+(26, 1, '2023-12-31', '750.00', '0.00', 0, 17, 98);
 
 -- --------------------------------------------------------
 
@@ -370,7 +350,7 @@ INSERT INTO `patients` (`pat_ID`, `cli_ID`, `staff_ID`, `firstname`, `lastname`,
 --
 
 CREATE TABLE `patient_services` (
-  `ps_ID` int(11) NOT NULL,
+  `apt_ID` int(11) NOT NULL,
   `pat_ID` int(11) NOT NULL,
   `ser_ID` int(11) NOT NULL,
   `req_ID` int(11) NOT NULL,
@@ -381,49 +361,21 @@ CREATE TABLE `patient_services` (
 -- Dumping data for table `patient_services`
 --
 
-INSERT INTO `patient_services` (`ps_ID`, `pat_ID`, `ser_ID`, `req_ID`, `value`) VALUES
-(1, 86, 1, 1, 'Q3-6'),
-(2, 86, 1, 2, 'توضیحات مربوط به implant'),
-(3, 86, 15, 1, 'Q4-3'),
-(4, 86, 15, 2, 'Testing implant description'),
-(5, 86, 15, 1, 'Q3-3'),
-(6, 86, 15, 2, 'Doing implant service '),
-(7, 84, 11, 1, 'Q1-3,Q1-2'),
-(8, 84, 11, 3, 'R.C.T'),
-(9, 84, 11, 4, 'Metal-Porcelain'),
-(10, 84, 11, 2, 'این دو دندان نیاز به پوش دارد'),
-(11, 84, 1, 1, 'Q3-5'),
-(12, 84, 1, 2, 'عصب کشی دندان پنجم پایین راست'),
-(18, 92, 14, 2, 'طرح لبخند باید اصلاح شود'),
-(19, 92, 8, 2, 'معاینه دهن و دندان'),
-(20, 92, 5, 2, 'ارتوانسی انجام شود'),
-(21, 92, 5, 4, 'هردو فک'),
-(22, 92, 1, 1, 'Q2-B'),
-(23, 92, 1, 2, ''),
-(24, 93, 7, 3, 'Abscess Treatment'),
-(25, 93, 7, 1, 'Q2-4'),
-(26, 93, 7, 9, 'راست'),
-(27, 93, 7, 2, ''),
-(28, 93, 7, 3, 'Abscess Treatment'),
-(29, 93, 7, 1, 'Q3-5,Q3-6'),
-(30, 93, 7, 2, 'Confirm affected area no longer needed'),
-(31, 86, 7, 3, 'Abscess Treatment'),
-(32, 86, 7, 1, 'Q2-8'),
-(33, 86, 7, 2, ''),
-(34, 86, 7, 3, 'Abscess Treatment'),
-(35, 86, 7, 1, 'Q1-4'),
-(36, 86, 7, 2, 'Another tooth damaged'),
-(37, 86, 3, 2, 'سفید کردن دندان'),
-(38, 86, 3, 5, 'دو مرحله'),
-(45, 93, 1, 1, 'Q2-3,Q1-3,Q3-2'),
-(46, 93, 1, 2, ''),
-(47, 92, 11, 1, 'Q1-A,Q3-C'),
-(48, 92, 11, 3, 'Vital'),
-(49, 92, 11, 4, 'Porcelain'),
-(50, 92, 11, 2, ''),
-(51, 92, 8, 2, ''),
-(52, 92, 4, 2, 'Scaling and polishing'),
-(53, 92, 4, 3, 'Both');
+INSERT INTO `patient_services` (`apt_ID`, `pat_ID`, `ser_ID`, `req_ID`, `value`) VALUES
+(93, 93, 1, 1, 'Q2-6'),
+(93, 93, 1, 2, 'اولین عصب کشی'),
+(94, 93, 1, 1, 'Q1-4,Q1-5'),
+(94, 93, 1, 2, 'عصب کشی دو دندان'),
+(95, 92, 11, 1, 'Q1-4,Q1-5'),
+(95, 92, 11, 2, 'از مواد زیرکونیا باید استفاده شود'),
+(95, 92, 11, 3, 'R.C.T'),
+(95, 92, 11, 4, 'Zirconia'),
+(96, 92, 3, 2, ''),
+(96, 92, 3, 5, 'سه مرحله'),
+(97, 93, 3, 2, ''),
+(97, 93, 3, 5, 'سه مرحله'),
+(98, 93, 3, 2, 'یک مرحله سفید کردن'),
+(98, 93, 3, 5, 'یک مرحله');
 
 -- --------------------------------------------------------
 
@@ -651,7 +603,7 @@ ALTER TABLE `patients`
 -- Indexes for table `patient_services`
 --
 ALTER TABLE `patient_services`
-  ADD PRIMARY KEY (`ps_ID`,`pat_ID`,`ser_ID`,`req_ID`),
+  ADD PRIMARY KEY (`apt_ID`,`pat_ID`,`ser_ID`,`req_ID`),
   ADD KEY `pat_ID` (`pat_ID`),
   ADD KEY `ser_ID` (`ser_ID`),
   ADD KEY `req_ID` (`req_ID`);
@@ -703,7 +655,7 @@ ALTER TABLE `tax_payments`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
+  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
 
 --
 -- AUTO_INCREMENT for table `clinics`
@@ -739,19 +691,13 @@ ALTER TABLE `expense_detail`
 -- AUTO_INCREMENT for table `fee_payments`
 --
 ALTER TABLE `fee_payments`
-  MODIFY `payment_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `payment_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `patients`
 --
 ALTER TABLE `patients`
   MODIFY `pat_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
-
---
--- AUTO_INCREMENT for table `patient_services`
---
-ALTER TABLE `patient_services`
-  MODIFY `ps_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `services`
@@ -832,6 +778,7 @@ ALTER TABLE `patients`
 -- Constraints for table `patient_services`
 --
 ALTER TABLE `patient_services`
+  ADD CONSTRAINT `pat_ser_apt_id_fk` FOREIGN KEY (`apt_ID`) REFERENCES `appointments` (`apt_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `pat_ser_pat_id_fk` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `pat_ser_ser_id_fk` FOREIGN KEY (`ser_ID`) REFERENCES `services` (`ser_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `pat_ser_ser_req_fk` FOREIGN KEY (`req_ID`) REFERENCES `service_requirements` (`req_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
