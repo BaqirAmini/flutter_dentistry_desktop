@@ -1737,8 +1737,29 @@ class _NewPatientState extends State<NewPatient> {
                               }
                             }
                           } else if (ServiceInfo.selectedServiceID == 9) {
-                            if (ServiceInfo.defaultDentureValue != null) {
-                              _currentStep++;
+                            if (ServiceInfo.dentureGroupValue == 'Partial') {
+                              if (ageDropDown > 13) {
+                                if (Tooth.adultToothSelected) {
+                                  setState(() {
+                                    _currentStep++;
+                                  });
+                                }
+                              } else {
+                                if (Tooth.childToothSelected) {
+                                  setState(() {
+                                    _currentStep++;
+                                  });
+                                }
+                              }
+                            } else {
+                              if (ServiceInfo.defaultDentureValue != null &&
+                                  ServiceInfo.defaultDentureValue
+                                      .toString()
+                                      .isNotEmpty) {
+                                setState(() {
+                                  _currentStep++;
+                                });
+                              }
                             }
                           } else if (ServiceInfo.selectedServiceID == 11 &&
                               ServiceInfo.defaultCrown != null) {
