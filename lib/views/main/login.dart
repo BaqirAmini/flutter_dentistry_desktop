@@ -198,8 +198,8 @@ class _LoginState extends State<Login> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15.0)),
               child: SizedBox(
-                width: 700.0,
-                height: 500.0,
+                width: MediaQuery.of(context).size.width * 0.4,
+                height: MediaQuery.of(context).size.height * 0.5,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
