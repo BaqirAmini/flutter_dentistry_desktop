@@ -1,113 +1,129 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 
-class XRayUploadScreen extends StatefulWidget {
-  const XRayUploadScreen({super.key});
-
-  @override
-  _XRayUploadScreen createState() => _XRayUploadScreen();
+void main() {
+  runApp(MaterialApp(
+    home: Scaffold(
+      appBar: AppBar(
+        title: const Text('Image Collage'),
+      ),
+      body: XRayUploadScreen(),
+    ),
+  ));
 }
 
-class _XRayUploadScreen extends State<XRayUploadScreen> {
-  List<File> _imageFiles = [];
-  final TransformationController _controller = TransformationController();
-  String? _selectedPatient;
-  final TextEditingController _notesController = TextEditingController();
+class XRayUploadScreen extends StatelessWidget {
+  final images = [
+    'assets/xrays/image1.jpg',
+    'assets/xrays/image2.jpg',
+    'assets/xrays/image3.jpg',
+    'assets/xrays/image4.jpg',
+    'assets/xrays/image1.jpg',
+    'assets/xrays/image2.jpg',
+    'assets/xrays/image3.jpg',
+    'assets/xrays/image4.jpg',
+    // Add more image paths
+  ];
 
-  // This is just a sample list of patients. You should replace this with your actual list.
-  final List<String> _patients = ['John', 'Jane', 'Doe'];
+  XRayUploadScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          appBar: AppBar(
-            leading: Tooltip(
-              message: 'رفتن به داشبورد',
-              child: IconButton(
-                icon: const Icon(Icons.home_outlined),
-                onPressed: () => Navigator.pop(context),
+    return GridView.builder(
+      itemCount: images.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4, // Adjust number of images per row
+        crossAxisSpacing: 10.0, // Adjust horizontal spacing
+        mainAxisSpacing: 10.0, // Adjust vertical spacing
+      ),
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    ImageViewer(images: images, initialIndex: index),
               ),
-            ),
-            title: const Text('X-Ray'),
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+            child: Image.asset(images[index], fit: BoxFit.cover),
           ),
-          body: Directionality(
-            textDirection: TextDirection.rtl,
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: <Widget>[
-                    DropdownButton<String>(
-                      value: _selectedPatient,
-                      hint: const Text('Select a patient'),
-                      items: _patients.map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedPatient = newValue;
-                        });
-                      },
-                    ),
-                    if (_selectedPatient != null)
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: <Widget>[
-                              Text('Patient Information'),
-                              Text('Name: $_selectedPatient'),
-                              // Add more patient information here
-                            ],
-                          ),
-                        ),
-                      ),
-                    ElevatedButton(
-                      child: const Text('Select X-Ray Images'),
-                      onPressed: () async {
-                        final result = await FilePicker.platform.pickFiles(
-                            type: FileType.image, allowMultiple: true);
+        );
+      },
+    );
+  }
+}
 
-                        if (result != null) {
-                          setState(() {
-                            _imageFiles = result.paths
-                                .map((path) => File(path!))
-                                .toList();
-                          });
-                        } else {
-                          print('No images selected.');
-                        }
-                      },
-                    ),
-                    for (var imageFile in _imageFiles) Image.file(imageFile),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 16.0),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width *
-                            0.8, // Adjust the TextField width here
-                        child: TextField(
-                          controller: _notesController,
-                          maxLines: 5,
-                          decoration: InputDecoration(
-                              hintText: "Enter your notes here"),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+class ImageViewer extends StatefulWidget {
+  final List<String> images;
+  final int initialIndex;
+
+  ImageViewer({super.key, required this.images, required this.initialIndex});
+
+  @override
+  _ImageViewerState createState() => _ImageViewerState();
+}
+
+class _ImageViewerState extends State<ImageViewer> {
+  late PageController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Image Viewer'),
+      ),
+      body: Stack(
+        children: <Widget>[
+          PageView.builder(
+            controller: controller,
+            itemCount: widget.images.length,
+            itemBuilder: (context, index) {
+              return InteractiveViewer(
+                boundaryMargin: EdgeInsets.all(20.0),
+                minScale: 0.1,
+                maxScale: 2.0,
+                child: Image.asset(widget.images[index]),
+              );
+            },
+          ),
+          Positioned(
+            top: 0,
+            bottom: 0,
+            left: 0,
+            child: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                controller.previousPage(
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              },
             ),
           ),
-        ),
+          Positioned(
+            top: 0,
+            bottom: 0,
+            right: 0,
+            child: IconButton(
+              icon: Icon(Icons.arrow_forward),
+              onPressed: () {
+                controller.nextPage(
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

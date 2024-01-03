@@ -154,7 +154,7 @@ class _SidebarState extends State<Sidebar> {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const XRayUploadScreen()));
+                      builder: (context) => XRayUploadScreen()));
             },
           ),
           ListTile(
