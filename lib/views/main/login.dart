@@ -225,7 +225,7 @@ class _LoginState extends State<Login> {
                                     right: 20.0,
                                     top: 20.0,
                                     bottom: 10.0),
-                                width: 330.0,
+                                width: MediaQuery.of(context).size.width * 0.25,
                                 child: Builder(builder: (context) {
                                   return TextFormField(
                                     focusNode: _userNameFocus,
@@ -291,7 +291,7 @@ class _LoginState extends State<Login> {
                                     right: 20.0,
                                     top: 10.0,
                                     bottom: 10.0),
-                                width: 330.0,
+                                width: MediaQuery.of(context).size.width * 0.25,
                                 child: Builder(
                                   builder: (context) {
                                     return TextFormField(
@@ -382,7 +382,7 @@ class _LoginState extends State<Login> {
                                     right: 20.0,
                                     top: 10.0,
                                     bottom: 5.0),
-                                width: 300.0,
+                                width: MediaQuery.of(context).size.width * 0.23,
                                 height: 35.0,
                                 child: Builder(
                                   builder: (context) {
@@ -435,8 +435,8 @@ class _LoginState extends State<Login> {
                               Container(
                                 // padding: const EdgeInsets.only(right: 7.0, left: 7.0),
                                 margin: const EdgeInsets.only(top: 30.0),
-                                width: 80.0, // reduced width
-                                height: 30.0, // reduced height
+                                width: MediaQuery.of(context).size.width * 0.06,
+                                height: MediaQuery.of(context).size.height * 0.03,
                                 decoration: const BoxDecoration(
                                   border: Border(
                                       bottom: BorderSide(color: Colors.grey)),
