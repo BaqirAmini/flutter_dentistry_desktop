@@ -1,45 +1,98 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: Scaffold(
-      appBar: AppBar(
-        title: const Text('Image Collage'),
-        actions: [
-          IconButton(
-            tooltip: 'Add an X-Ray Image',
-            splashRadius: 28.0,
-            onPressed: () {},
-            icon: const Icon(Icons.add_photo_alternate_outlined, color: Colors.white),
-          ),
-          const SizedBox(width: 10.0),
-        ],
-      ),
-      body: XRayUploadScreen(),
-    ),
-  ));
-}
+void main() => runApp(XRayUploadScreen());
 
 class XRayUploadScreen extends StatelessWidget {
-  final images = [
-    'assets/xrays/image1.jpg',
-    'assets/xrays/image2.jpg',
-    'assets/xrays/image3.jpg',
-    'assets/xrays/image4.jpg',
-    'assets/xrays/image1.jpg',
-    'assets/xrays/image2.jpg',
-    'assets/xrays/image3.jpg',
-    'assets/xrays/image4.jpg',
-    'assets/xrays/image1.jpg',
-    'assets/xrays/image2.jpg',
-    'assets/xrays/image3.jpg',
-    'assets/xrays/image4.jpg',
-    // Add more image paths
+  final opgImages = [
+    'assets/xrays/opg1.jpg',
+    'assets/xrays/opg2.jpg',
+    'assets/xrays/opg3.jpg',
+    'assets/xrays/opg4.jpg',
   ];
 
-  XRayUploadScreen({super.key});
+  final periapicalImages = [
+    'assets/xrays/peri1.jpg',
+    'assets/xrays/peri2.jpg',
+    'assets/xrays/peri3.jpg',
+    'assets/xrays/peri4.jpg',
+  ];
 
+  final _3DImages = [
+    'assets/xrays/3D1.png',
+    'assets/xrays/3D2.jpg',
+    'assets/xrays/3D3.jpg',
+    'assets/xrays/3D4.jpg',
+  ];
+
+  XRayUploadScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('X-Ray Categories'),
+            leading: IconButton(
+                splashRadius: 30.0,
+                onPressed: () => Navigator.pop(context),
+                icon: const BackButtonIcon()),
+            actions: [
+              IconButton(
+                  splashRadius: 30.0,
+                  onPressed: () {},
+                  icon: const Icon(Icons.add_photo_alternate_outlined)),
+              const SizedBox(width: 15.0)
+            ],
+            backgroundColor: Colors.blue,
+            bottom: const PreferredSize(
+              preferredSize: Size.fromHeight(kToolbarHeight),
+              child: Material(
+                color: Colors.white70,
+                child: TabBar(
+                  unselectedLabelColor: Colors.blue,
+                  labelColor: Colors.green,
+                  indicatorColor: Colors.green,
+                  tabs: [
+                    Tab(
+                      text: 'Periapical ',
+                    ),
+                    Tab(
+                      text: 'Orthopantomagram (OPG)',
+                    ),
+                    Tab(
+                      text: '3D',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              _ImageThumbNail(xrayType: periapicalImages),
+              _ImageThumbNail(xrayType: opgImages),
+              _ImageThumbNail(xrayType: _3DImages)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Create this class to separate the the repeated widget
+class _ImageThumbNail extends StatefulWidget {
+  List<String> xrayType = [];
+  _ImageThumbNail({Key? key, required this.xrayType}) : super(key: key);
+
+  @override
+  State<_ImageThumbNail> createState() => __ImageThumbNailState();
+}
+
+class __ImageThumbNailState extends State<_ImageThumbNail> {
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -48,7 +101,7 @@ class XRayUploadScreen extends StatelessWidget {
         height: MediaQuery.of(context).size.height * 0.8,
         child: GridView.builder(
           scrollDirection: Axis.vertical,
-          itemCount: images.length,
+          itemCount: widget.xrayType.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4, // Adjust number of images per row
             crossAxisSpacing: 10.0, // Adjust horizontal spacing
@@ -60,15 +113,15 @@ class XRayUploadScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        ImageViewer(images: images, initialIndex: index),
+                    builder: (context) => ImageViewer(
+                        images: widget.xrayType, initialIndex: index),
                   ),
                 );
               },
               child: Container(
                 decoration:
                     BoxDecoration(border: Border.all(color: Colors.black)),
-                child: Image.asset(images[index], fit: BoxFit.cover),
+                child: Image.asset(widget.xrayType[index], fit: BoxFit.cover),
               ),
             );
           },
