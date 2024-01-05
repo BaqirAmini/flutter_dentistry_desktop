@@ -38,7 +38,7 @@ void _onShowSnack(Color backColor, String msg, BuildContext context) {
 }
 
 class Appointment extends StatefulWidget {
-  const Appointment({super.key});
+  const Appointment({Key? key}) : super(key: key);
 
   @override
   State<Appointment> createState() => _AppointmentState();
@@ -654,7 +654,8 @@ class _AppointmentContentState extends State<_AppointmentContent> {
 class ExpandableCard extends StatelessWidget {
   final Widget title;
   final Widget child;
-  const ExpandableCard({super.key, required this.title, required this.child});
+  const ExpandableCard({Key? key, required this.title, required this.child}) : super(key: key)
+  
 
   @override
   Widget build(BuildContext context) {

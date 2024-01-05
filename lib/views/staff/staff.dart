@@ -37,7 +37,7 @@ var selectedLanguage;
 var isEnglish;
 
 class Staff extends StatelessWidget {
-  const Staff({super.key});
+  const Staff({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +72,7 @@ class Staff extends StatelessWidget {
 
 // Data table widget is here
 class MyDataTable extends StatefulWidget {
-  const MyDataTable({super.key});
+  const MyDataTable({Key? key}) : super(key: key);
 
   @override
   _MyDataTableState createState() => _MyDataTableState();
@@ -600,11 +600,13 @@ onDeleteStaff(BuildContext context, int staffId, String firstName,
         return AlertDialog(
           title: Directionality(
             textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-            child: Text('${translations[selectedLanguage]?['Delete'] ?? ''} $firstName $lastName'),
+            child: Text(
+                '${translations[selectedLanguage]?['Delete'] ?? ''} $firstName $lastName'),
           ),
           content: Directionality(
             textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-            child: Text(translations[selectedLanguage]?['ConfirmStaffDelete'] ?? ''),
+            child: Text(
+                translations[selectedLanguage]?['ConfirmStaffDelete'] ?? ''),
           ),
           actions: [
             TextButton(
@@ -617,7 +619,8 @@ onDeleteStaff(BuildContext context, int staffId, String firstName,
                 final deleteResult = await conn
                     .query('DELETE FROM staff WHERE staff_ID = ?', [staffId]);
                 if (deleteResult.affectedRows! > 0) {
-                  _onShowSnack(Colors.green, translations[selectedLanguage]?['DeleteStaffMsg'] ?? '');
+                  _onShowSnack(Colors.green,
+                      translations[selectedLanguage]?['DeleteStaffMsg'] ?? '');
                   onDelete();
                 }
                 await conn.close();
@@ -705,15 +708,23 @@ onEditStaff(
                             controller: nameController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return translations[selectedLanguage]?['FNRequired'] ?? '';
-                              } else if (value.length < 3 || value.length > 10) {
-                                return translations[selectedLanguage]?['FNLength'] ?? '';
+                                return translations[selectedLanguage]
+                                        ?['FNRequired'] ??
+                                    '';
+                              } else if (value.length < 3 ||
+                                  value.length > 10) {
+                                return translations[selectedLanguage]
+                                        ?['FNLength'] ??
+                                    '';
                               }
                             },
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]?['FName'] ?? '',
-                              suffixIcon: const Icon(Icons.person_add_alt_outlined),
+                              labelText: translations[selectedLanguage]
+                                      ?['FName'] ??
+                                  '',
+                              suffixIcon:
+                                  const Icon(Icons.person_add_alt_outlined),
                               enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
@@ -741,7 +752,9 @@ onEditStaff(
                             validator: (value) {
                               if (value!.isNotEmpty) {
                                 if (value.length < 3 || value.length > 10) {
-                                  return translations[selectedLanguage]?['LNLength'] ?? '';
+                                  return translations[selectedLanguage]
+                                          ?['LNLength'] ??
+                                      '';
                                 } else {
                                   return null;
                                 }
@@ -749,9 +762,11 @@ onEditStaff(
                                 return null;
                               }
                             },
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]?['LName'] ?? '',
+                              labelText: translations[selectedLanguage]
+                                      ?['LName'] ??
+                                  '',
                               suffixIcon: const Icon(Icons.person),
                               enabledBorder: const OutlineInputBorder(
                                   borderRadius:
@@ -778,7 +793,9 @@ onEditStaff(
                           child: InputDecorator(
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]?['Position'] ?? '',
+                              labelText: translations[selectedLanguage]
+                                      ?['Position'] ??
+                                  '',
                               enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
@@ -834,22 +851,32 @@ onEditStaff(
                             ],
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return translations[selectedLanguage]?['PhoneRequired'] ?? '';
+                                return translations[selectedLanguage]
+                                        ?['PhoneRequired'] ??
+                                    '';
                               } else if (value.startsWith('07')) {
                                 if (value.length < 10 || value.length > 10) {
-                                  return translations[selectedLanguage]?['Phone10'] ?? '';
+                                  return translations[selectedLanguage]
+                                          ?['Phone10'] ??
+                                      '';
                                 }
                               } else if (value.startsWith('+93')) {
                                 if (value.length < 12 || value.length > 12) {
-                                  return translations[selectedLanguage]?['Phone12'] ?? '';
+                                  return translations[selectedLanguage]
+                                          ?['Phone12'] ??
+                                      '';
                                 }
                               } else {
-                                return translations[selectedLanguage]?['ValidPhone'] ?? '';
+                                return translations[selectedLanguage]
+                                        ?['ValidPhone'] ??
+                                    '';
                               }
                             },
-                            decoration:  InputDecoration(
+                            decoration: InputDecoration(
                               border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]?['Phone'] ?? '',
+                              labelText: translations[selectedLanguage]
+                                      ?['Phone'] ??
+                                  '',
                               suffixIcon: const Icon(Icons.phone),
                               enabledBorder: const OutlineInputBorder(
                                   borderRadius:
@@ -879,7 +906,9 @@ onEditStaff(
                               if (value!.isNotEmpty) {
                                 final salary = double.tryParse(value!);
                                 if (salary! < 1000 || salary > 100000) {
-                                  return translations[selectedLanguage]?['ValidSalary'] ?? '';
+                                  return translations[selectedLanguage]
+                                          ?['ValidSalary'] ??
+                                      '';
                                 }
                               }
                             },
@@ -889,7 +918,9 @@ onEditStaff(
                             ],
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]?['Salary'] ?? '',
+                              labelText: translations[selectedLanguage]
+                                      ?['Salary'] ??
+                                  '',
                               suffixIcon: const Icon(Icons.money),
                               enabledBorder: const OutlineInputBorder(
                                   borderRadius:
@@ -918,7 +949,9 @@ onEditStaff(
                             validator: (value) {
                               if (value!.isNotEmpty) {
                                 if (!tazkiraPattern.hasMatch(value)) {
-                                  return translations[selectedLanguage]?['ValidTazkira'] ?? '';
+                                  return translations[selectedLanguage]
+                                          ?['ValidTazkira'] ??
+                                      '';
                                 }
                               }
                               return null;
@@ -929,7 +962,9 @@ onEditStaff(
                             ],
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]?['Tazkira'] ?? '',
+                              labelText: translations[selectedLanguage]
+                                      ?['Tazkira'] ??
+                                  '',
                               suffixIcon: const Icon(Icons.perm_identity),
                               enabledBorder: const OutlineInputBorder(
                                   borderRadius:
@@ -962,8 +997,11 @@ onEditStaff(
                             ],
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]?['Address'] ?? '',
-                              suffixIcon: const Icon(Icons.location_on_outlined),
+                              labelText: translations[selectedLanguage]
+                                      ?['Address'] ??
+                                  '',
+                              suffixIcon:
+                                  const Icon(Icons.location_on_outlined),
                               enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
@@ -999,7 +1037,9 @@ onEditStaff(
                     children: [
                       TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: Text(translations[selectedLanguage]?['CancelBtn'] ?? '')),
+                          child: Text(translations[selectedLanguage]
+                                  ?['CancelBtn'] ??
+                              '')),
                       ElevatedButton(
                         onPressed: () async {
                           if (formKey1.currentState!.validate()) {
@@ -1024,18 +1064,25 @@ onEditStaff(
                                   staffID
                                 ]);
                             if (results.affectedRows! > 0) {
-                              _onShowSnack(Colors.green,
-                                  translations[selectedLanguage]?['StaffEditMsg'] ?? '');
+                              _onShowSnack(
+                                  Colors.green,
+                                  translations[selectedLanguage]
+                                          ?['StaffEditMsg'] ??
+                                      '');
                               Navigator.pop(context);
                               onUpdate();
                             } else {
                               _onShowSnack(
-                                  Colors.red, translations[selectedLanguage]?['StaffEditErrMsg'] ?? '');
+                                  Colors.red,
+                                  translations[selectedLanguage]
+                                          ?['StaffEditErrMsg'] ??
+                                      '');
                               Navigator.pop(context);
                             }
                           }
                         },
-                        child: Text(translations[selectedLanguage]?['Edit'] ?? ''),
+                        child:
+                            Text(translations[selectedLanguage]?['Edit'] ?? ''),
                       ),
                     ],
                   ))

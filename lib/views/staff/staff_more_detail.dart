@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class StaffMoreDetail extends StatefulWidget {
-  const StaffMoreDetail({super.key});
+  const StaffMoreDetail({Key? key}) : super(key: key);
 
   @override
   State<StaffMoreDetail> createState() => _StaffMoreDetailState();
@@ -33,10 +33,9 @@ class _StaffMoreDetailState extends State<StaffMoreDetail> {
                     child: Text(
                       'معلومات شخصی',
                       style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold
-                      ),
+                          fontSize: 16.0,
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                   const Center(

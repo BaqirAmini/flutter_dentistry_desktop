@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NewUser extends StatefulWidget {
-  const NewUser({super.key});
+  const NewUser({Key? key}) : super(key: key);
 
   @override
   State<NewUser> createState() => _NewUserState();

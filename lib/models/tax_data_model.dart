@@ -29,7 +29,7 @@ void _onShowSnack(Color backColor, String msg) {
 }
 
 class TaxData extends StatelessWidget {
-  const TaxData({super.key});
+  const TaxData({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class TaxData extends StatelessWidget {
 
 // Data table widget is here
 class TaxDataTable extends StatefulWidget {
-  const TaxDataTable({super.key});
+  const TaxDataTable({Key? key}) : super(key: key);
 
   @override
   TaxDataTableState createState() => TaxDataTableState();
@@ -920,8 +920,8 @@ class TaxDataTableState extends State<TaxDataTable> {
                       setState(() {
                         _sortColumnIndex = columnIndex;
                         _sortAscending = ascending;
-                        _filteredData
-                            .sort((a, b) => a.annualIncom.compareTo(b.annualIncom));
+                        _filteredData.sort(
+                            (a, b) => a.annualIncom.compareTo(b.annualIncom));
                         if (!ascending) {
                           _filteredData = _filteredData.reversed.toList();
                         }
@@ -974,8 +974,8 @@ class TaxDataTableState extends State<TaxDataTable> {
                       setState(() {
                         _sortColumnIndex = columnIndex;
                         _sortAscending = ascending;
-                        _filteredData.sort(
-                            ((a, b) => a.deliveredTax.compareTo(b.deliveredTax)));
+                        _filteredData.sort(((a, b) =>
+                            a.deliveredTax.compareTo(b.deliveredTax)));
                         if (!ascending) {
                           _filteredData = _filteredData.reversed.toList();
                         }

@@ -16,7 +16,7 @@ double totalFeeDue = 0;
 bool displayTotalFeeRow = false;
 
 class FeeRecord extends StatelessWidget {
-  const FeeRecord({super.key});
+  const FeeRecord({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,7 @@ class FeeRecord extends StatelessWidget {
 }
 
 class FeeContent extends StatefulWidget {
-  const FeeContent({super.key});
+  const FeeContent({Key? key}) : super(key: key);
 
   @override
   State<FeeContent> createState() => _FeeContentState();
@@ -629,7 +629,6 @@ class _FeeContentState extends State<FeeContent> {
 
               groupedApptFees[key]!.add(af);
 
-              
               displayTotalFeeRow = true;
             }
             return ListView(
@@ -954,7 +953,7 @@ class _FeeContentState extends State<FeeContent> {
 class NonExpandableCard extends StatelessWidget {
   final Widget title;
 
-  const NonExpandableCard({super.key, required this.title});
+  const NonExpandableCard({Key? key, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

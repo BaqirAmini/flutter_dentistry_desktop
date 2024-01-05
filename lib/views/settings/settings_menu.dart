@@ -39,7 +39,7 @@ void _onShowSnack(Color backColor, String msg) {
 }
 
 class SettingsMenu extends StatefulWidget {
-  const SettingsMenu({super.key});
+  const SettingsMenu({Key? key}) : super(key: key);
 
   @override
   State<SettingsMenu> createState() => _SettingsMenuState();
@@ -972,8 +972,8 @@ Widget onChangeLang() {
                           Text(
                             translations[selectedLanguage]?['chooseLanguage'] ??
                                 'Choose Language',
-                            style:
-                                const TextStyle(fontSize: 20.0, color: Colors.black),
+                            style: const TextStyle(
+                                fontSize: 20.0, color: Colors.black),
                           ),
                           const SizedBox(
                             height: 50.0,

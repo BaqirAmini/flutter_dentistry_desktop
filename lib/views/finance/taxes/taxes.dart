@@ -5,7 +5,7 @@ import '/models/tax_data_model.dart';
 void main() => runApp(const TaxList());
 
 class TaxList extends StatelessWidget {
-  const TaxList({super.key});
+  const TaxList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,8 @@ class TaxList extends StatelessWidget {
             leading: Tooltip(
               message: 'رفتن به داشبورد',
               child: IconButton(
-                onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Dashboard())),
+                onPressed: () => Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => const Dashboard())),
                 icon: const Icon(Icons.home_outlined),
               ),
             ),

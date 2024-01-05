@@ -20,7 +20,7 @@ void updateSelectedTeeth(List<String> selectedTeeth) async {
 }
 
 class ChildQuadrantGrid extends StatefulWidget {
-  const ChildQuadrantGrid({super.key});
+  const ChildQuadrantGrid({Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api

@@ -9,7 +9,7 @@ import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:provider/provider.dart';
 
 class NewStaffForm extends StatefulWidget {
-  const NewStaffForm({super.key});
+  const NewStaffForm({Key? key}) : super(key: key);
 
   @override
   State<NewStaffForm> createState() => _NewStaffFormState();
@@ -89,9 +89,11 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     ],
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return translations[selectedLanguage]?['FNRequired'] ?? '';
+                        return translations[selectedLanguage]?['FNRequired'] ??
+                            '';
                       } else if (value.length < 3) {
-                        return translations[selectedLanguage]?['FNLength'] ?? '';
+                        return translations[selectedLanguage]?['FNLength'] ??
+                            '';
                       }
                       return null;
                     },
@@ -128,7 +130,8 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     validator: (value) {
                       if (value!.isNotEmpty) {
                         if (value.length < 3 || value.length > 10) {
-                          return translations[selectedLanguage]?['LNLength'] ?? '';
+                          return translations[selectedLanguage]?['LNLength'] ??
+                              '';
                         } else {
                           return null;
                         }
@@ -163,7 +166,8 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   child: InputDecorator(
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: translations[selectedLanguage]?['Position'] ?? '',
+                      labelText:
+                          translations[selectedLanguage]?['Position'] ?? '',
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.grey)),
@@ -215,17 +219,22 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     ],
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return translations[selectedLanguage]?['PhoneRequired'] ?? '';
+                        return translations[selectedLanguage]
+                                ?['PhoneRequired'] ??
+                            '';
                       } else if (value.startsWith('07')) {
                         if (value.length < 10 || value.length > 10) {
-                          return translations[selectedLanguage]?['Phone10'] ?? '';
+                          return translations[selectedLanguage]?['Phone10'] ??
+                              '';
                         }
                       } else if (value.startsWith('+93')) {
                         if (value.length < 12 || value.length > 12) {
-                          return translations[selectedLanguage]?['Phone12'] ?? '';
+                          return translations[selectedLanguage]?['Phone12'] ??
+                              '';
                         }
                       } else {
-                        return translations[selectedLanguage]?['ValidPhone'] ?? '';
+                        return translations[selectedLanguage]?['ValidPhone'] ??
+                            '';
                       }
                       return null;
                     },
@@ -259,7 +268,9 @@ class _NewStaffFormState extends State<NewStaffForm> {
                       if (value!.isNotEmpty) {
                         final salary = double.tryParse(value);
                         if (salary! < 1000 || salary > 100000) {
-                          return translations[selectedLanguage]?['ValidSalary'] ?? '';
+                          return translations[selectedLanguage]
+                                  ?['ValidSalary'] ??
+                              '';
                         }
                       }
                       return null;
@@ -269,7 +280,8 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     ],
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: translations[selectedLanguage]?['Salary'] ?? '',
+                      labelText:
+                          translations[selectedLanguage]?['Salary'] ?? '',
                       suffixIcon: Icon(Icons.money),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
@@ -295,7 +307,9 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     validator: (value) {
                       if (value!.isNotEmpty) {
                         if (!_tazkiraPattern.hasMatch(value)) {
-                          return translations[selectedLanguage]?['ValidTazkira'] ?? '';
+                          return translations[selectedLanguage]
+                                  ?['ValidTazkira'] ??
+                              '';
                         }
                       }
                       return null;
@@ -308,7 +322,8 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     ],
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: translations[selectedLanguage]?['Tazkira'] ?? '',
+                      labelText:
+                          translations[selectedLanguage]?['Tazkira'] ?? '',
                       suffixIcon: Icon(Icons.perm_identity),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
@@ -338,7 +353,8 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     ],
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: translations[selectedLanguage]?['Address'] ?? '',
+                      labelText:
+                          translations[selectedLanguage]?['Address'] ?? '',
                       suffixIcon: Icon(Icons.location_on_outlined),
                       enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
@@ -399,7 +415,9 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                 addr
                               ]);
                           if (query.affectedRows! > 0) {
-                            onShowSnackBar(translations[selectedLanguage]?['StaffRegSuccess'] ?? '');
+                            onShowSnackBar(translations[selectedLanguage]
+                                    ?['StaffRegSuccess'] ??
+                                '');
                             _nameController.clear();
                             _lastNameController.clear();
                             _salaryController.clear();
@@ -415,7 +433,8 @@ class _NewStaffFormState extends State<NewStaffForm> {
                         }
                       }
                     },
-                    child: Text(translations[selectedLanguage]?['AddBtn'] ?? ''),
+                    child:
+                        Text(translations[selectedLanguage]?['AddBtn'] ?? ''),
                   ),
                 )
               ],

@@ -5,7 +5,7 @@ import 'package:flutter_dentistry/views/staff/staff.dart';
 void main() => runApp(const StaffDetail());
 
 class StaffDetail extends StatefulWidget {
-  const StaffDetail({super.key});
+  const StaffDetail({Key? key}) : super(key: key);
 
   @override
   State<StaffDetail> createState() => _StaffDetailState();
@@ -23,7 +23,9 @@ class _StaffDetailState extends State<StaffDetail> {
             actions: [
               Tooltip(
                 message: 'تغییر دادن یوزر',
-                child: IconButton(onPressed: () {}, icon: const Icon(Icons.person_pin_outlined)),
+                child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.person_pin_outlined)),
               ),
             ],
             leading: Tooltip(
@@ -87,7 +89,8 @@ class _StaffDetailState extends State<StaffDetail> {
               ),
               Expanded(
                 child: Container(
-                  margin: const EdgeInsets.only(top: 5.0, left: 5.0, bottom: .0),
+                  margin:
+                      const EdgeInsets.only(top: 5.0, left: 5.0, bottom: .0),
                   constraints: const BoxConstraints(maxWidth: 500.0),
                   child: const StaffDetailTabs(),
                 ),

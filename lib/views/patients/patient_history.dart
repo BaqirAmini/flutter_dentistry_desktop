@@ -10,7 +10,7 @@ void main() {
 }
 
 class PatientHistory extends StatelessWidget {
-  const PatientHistory({super.key});
+  const PatientHistory({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

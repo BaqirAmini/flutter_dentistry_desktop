@@ -132,7 +132,9 @@ class _PatientProfile extends StatelessWidget {
                         style: Theme.of(context).textTheme.headlineSmall),
                     const SizedBox(height: 10.0),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.017),
+                      padding: EdgeInsets.symmetric(
+                          horizontal:
+                              MediaQuery.of(context).size.width * 0.017),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -206,7 +208,7 @@ class _PatientProfile extends StatelessWidget {
 }
 
 class _NavigationArea extends StatelessWidget {
-  const _NavigationArea({super.key});
+  const _NavigationArea({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -353,7 +355,11 @@ class _HoverCardState extends State<HoverCard> {
                     ),
                   );
                 } else {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => XRayUploadScreen(),));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => XRayUploadScreen(),
+                      ));
                 }
               },
             ),

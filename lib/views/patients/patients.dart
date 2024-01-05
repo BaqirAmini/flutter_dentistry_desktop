@@ -1174,7 +1174,7 @@ void _onShowSnack(Color backColor, String msg, BuildContext context) {
 }
 
 class Patient extends StatefulWidget {
-  const Patient({super.key});
+  const Patient({Key? key}) : super(key: key);
 
   @override
   _PatientState createState() => _PatientState();
@@ -1250,8 +1250,10 @@ class _PatientState extends State<Patient> {
                   message: 'رفتن به داشبورد',
                   child: IconButton(
                     icon: const Icon(Icons.home_outlined),
-                    onPressed: () => Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const Dashboard())),
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Dashboard())),
                   ),
                 ),
                 title:
@@ -1339,7 +1341,7 @@ onDeletePatient(BuildContext context, Function onDelete) {
 
 // Data table widget is here
 class PatientDataTable extends StatefulWidget {
-  const PatientDataTable({super.key});
+  const PatientDataTable({Key? key}) : super(key: key);
 
   @override
   _PatientDataTableState createState() => _PatientDataTableState();

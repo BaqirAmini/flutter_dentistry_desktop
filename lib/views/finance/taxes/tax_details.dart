@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/views/finance/taxes/tax_info.dart';
 
 class TaxDetails extends StatelessWidget {
-  const TaxDetails({super.key});
+  const TaxDetails({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +57,7 @@ class TaxDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child:  Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Text(
@@ -83,7 +83,7 @@ class TaxDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child:  Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Text(
@@ -101,7 +101,7 @@ class TaxDetails extends StatelessWidget {
                 width: 240.0,
                 padding: const EdgeInsets.all(10.0),
                 color: const Color.fromARGB(255, 240, 239, 239),
-                child:  Column(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Text(
@@ -123,7 +123,7 @@ class TaxDetails extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10.0),
             color: const Color.fromARGB(255, 240, 239, 239),
-            child:  Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 const Text(

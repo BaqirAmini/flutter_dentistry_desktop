@@ -15,7 +15,7 @@ void main() {
 final items = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
 
 class PatientDetail extends StatefulWidget {
-  const PatientDetail({super.key});
+  const PatientDetail({Key? key}) : super(key: key);
 
   @override
   State<PatientDetail> createState() => _PatientDetailState();
@@ -46,7 +46,6 @@ class _PatientDetailState extends State<PatientDetail> {
   bool _isVisibleForPayment = false;
   // Declare a variable for payment installment
   String payTypeDropdown = 'تکمیل';
-
 
 // It is for two forms of stepper
   final _ptFormKey1 = GlobalKey<FormState>();
@@ -407,7 +406,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                       ],
                                     ),
                                   ),
-                                 /*  Container(
+                                  /*  Container(
                                     height: 100,
                                     child: SingleChildScrollView(
                                       child: Column(
@@ -673,7 +672,8 @@ class _PatientDetailState extends State<PatientDetail> {
                                       ),
                                     ),
                                   ),
- */                                ],
+ */
+                                ],
                               ),
                             ),
                           ),
@@ -1036,7 +1036,8 @@ class _PatientDetailState extends State<PatientDetail> {
                                           return const CircularProgressIndicator();
                                         }
                                       }),
- */                                ],
+ */
+                                ],
                               ),
                             ),
                           ),
@@ -1195,16 +1196,13 @@ class _PatientDetailState extends State<PatientDetail> {
                                             child: Text(service['ser_name']),
                                           );
                                         }).toList(),
-                                        onChanged: (String? newValue) {
-                                          
-                                          
-                                        },
+                                        onChanged: (String? newValue) {},
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                          /*     Visibility(
+                              /*     Visibility(
                                 visible: _isVisibleForBleaching,
                                 child: Container(
                                   margin: const EdgeInsets.only(
@@ -1717,7 +1715,8 @@ class _PatientDetailState extends State<PatientDetail> {
                                   ),
                                 ),
                               ),
- */                            ],
+ */
+                            ],
                           ),
                         ),
                       ),
@@ -2705,7 +2704,7 @@ class _PatientDetailState extends State<PatientDetail> {
                                       ),
                                     ),
                                   ),
-                                 /*  Container(
+                                  /*  Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0,
                                         right: 20.0,
@@ -2804,7 +2803,8 @@ class _PatientDetailState extends State<PatientDetail> {
                                       ),
                                     ),
                                   ),
- */                                  Container(
+ */
+                                  Container(
                                     margin: const EdgeInsets.only(
                                         left: 20.0,
                                         right: 20.0,
@@ -3052,7 +3052,7 @@ class _PatientDetailState extends State<PatientDetail> {
   }
 
 // Add a new appointment (visit)
- /*  Future<void> onAddNewAppointment(BuildContext context) async {
+  /*  Future<void> onAddNewAppointment(BuildContext context) async {
     String? meetDate = _meetController.text.isNotEmpty
         ? _meetController.text.toString()
         : null;
@@ -3202,7 +3202,6 @@ class _PatientDetailState extends State<PatientDetail> {
       ),
     );
   }
-
 
 //  پرکاری دندان
   String? selectedFilling;

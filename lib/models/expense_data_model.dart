@@ -27,7 +27,7 @@ void _onShowSnack(Color backColor, String msg) {
 }
 
 class ExpenseData extends StatelessWidget {
-  const ExpenseData({super.key});
+  const ExpenseData({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class ExpenseData extends StatelessWidget {
 
 // Data table widget is here
 class ExpenseDataTable extends StatefulWidget {
-  const ExpenseDataTable({super.key});
+  const ExpenseDataTable({Key? key}) : super(key: key);
 
   @override
   ExpenseDataTableState createState() => ExpenseDataTableState();
@@ -61,7 +61,7 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
         : await conn.query(
             'SELECT  A.exp_name, B.item_name, B.quantity, B.unit_price, B.total, C.firstname, C.lastname, DATE_FORMAT(B.purchase_date, "%Y-%m-%d"), B.note, B.exp_detail_ID, A.exp_ID, B.qty_unit FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID INNER JOIN staff C ON B.purchased_by = C.staff_ID WHERE A.exp_ID = ? ORDER BY B.purchase_date DESC;',
             [expFilterValue]);
-   
+
     _data = results.map((row) {
       return Expense(
         expenseType: row[0],

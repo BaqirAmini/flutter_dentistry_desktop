@@ -135,7 +135,8 @@ class ImageViewer extends StatefulWidget {
   final List<String> images;
   final int initialIndex;
 
-  ImageViewer({super.key, required this.images, required this.initialIndex});
+  ImageViewer({Key? key, required this.images, required this.initialIndex})
+      : super(key: key);
 
   @override
   _ImageViewerState createState() => _ImageViewerState();

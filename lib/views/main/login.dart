@@ -25,7 +25,7 @@ void main() async {
 }
 
 class Login extends StatefulWidget {
-  const Login({super.key});
+  const Login({Key? key}) : super(key: key);
 
   @override
   _LoginState createState() => _LoginState();
@@ -436,7 +436,8 @@ class _LoginState extends State<Login> {
                                 // padding: const EdgeInsets.only(right: 7.0, left: 7.0),
                                 margin: const EdgeInsets.only(top: 30.0),
                                 width: MediaQuery.of(context).size.width * 0.06,
-                                height: MediaQuery.of(context).size.height * 0.03,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.03,
                                 decoration: const BoxDecoration(
                                   border: Border(
                                       bottom: BorderSide(color: Colors.grey)),

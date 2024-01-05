@@ -11,7 +11,7 @@ import 'package:flutter_dentistry/views/staff/staff_info.dart';
 int _round = 0;
 
 class NewAppointment extends StatefulWidget {
-  const NewAppointment({super.key});
+  const NewAppointment({Key? key}) : super(key: key);
 
   @override
   State<NewAppointment> createState() => _NewAppointmentState();
@@ -290,7 +290,8 @@ class _NewAppointmentState extends State<NewAppointment> {
                     if (await AppointmentFunction.onAddServiceReq(
                         PatientInfo.patID!,
                         ServiceInfo.selectedServiceID!,
-                        ServiceInfo.serviceNote, appointmentID)) {
+                        ServiceInfo.serviceNote,
+                        appointmentID)) {
                       if (await AppointmentFunction.onAddFeePayment(
                           ServiceInfo.meetingDate!,
                           StaffInfo.staffID!,

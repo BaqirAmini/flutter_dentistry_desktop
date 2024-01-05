@@ -15,7 +15,7 @@ import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 
 class Sidebar extends StatefulWidget {
-  Sidebar({super.key});
+  Sidebar({Key? key}) : super(key: key);
 
   @override
   State<Sidebar> createState() => _SidebarState();
@@ -151,10 +151,8 @@ class _SidebarState extends State<Sidebar> {
             title: const Text('X-Ray'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => XRayUploadScreen()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => XRayUploadScreen()));
             },
           ),
           ListTile(

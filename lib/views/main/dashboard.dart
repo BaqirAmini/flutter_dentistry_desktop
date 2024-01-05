@@ -17,7 +17,7 @@ void main() {
 }
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+  const Dashboard({Key? key}) : super(key: key);
 
   @override
   _DashboardState createState() => _DashboardState();
@@ -204,7 +204,9 @@ class _DashboardState extends State<Dashboard> {
                           Scaffold.of(context).openDrawer();
                           setState(() {});
                         },
-                        tooltip: translations[languageProvider.selectedLanguage]?["OpenDrawerMsg"] ?? '',
+                        tooltip: translations[languageProvider.selectedLanguage]
+                                ?["OpenDrawerMsg"] ??
+                            '',
                         icon: const Icon(Icons.menu),
                       );
                     },
@@ -227,8 +229,10 @@ class _DashboardState extends State<Dashboard> {
                               Card(
                                 color: Colors.blue,
                                 child: SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.16,
-                                  width: MediaQuery.of(context).size.width * 0.19,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.16,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.19,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -272,8 +276,10 @@ class _DashboardState extends State<Dashboard> {
                               Card(
                                 color: Colors.orange,
                                 child: SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.16,
-                                  width: MediaQuery.of(context).size.width * 0.19,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.16,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.19,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -318,8 +324,10 @@ class _DashboardState extends State<Dashboard> {
                               Card(
                                 color: Colors.green,
                                 child: SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.16,
-                                  width: MediaQuery.of(context).size.width * 0.19,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.16,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.19,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -364,8 +372,10 @@ class _DashboardState extends State<Dashboard> {
                               Card(
                                 color: Colors.brown,
                                 child: SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.16,
-                                  width: MediaQuery.of(context).size.width * 0.19,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.16,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.19,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -414,8 +424,10 @@ class _DashboardState extends State<Dashboard> {
                             children: [
                               Card(
                                 child: SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.6,
-                                  width: MediaQuery.of(context).size.width * 0.47,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.6,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.47,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -471,8 +483,10 @@ class _DashboardState extends State<Dashboard> {
                               ),
                               Card(
                                 child: SizedBox(
-                                  height: MediaQuery.of(context).size.height * 0.6,
-                                  width: MediaQuery.of(context).size.width * 0.3,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.6,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
                                   child: Column(
                                     children: [
                                       if (!_isPieDataInitialized)
