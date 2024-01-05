@@ -654,8 +654,8 @@ class _AppointmentContentState extends State<_AppointmentContent> {
 class ExpandableCard extends StatelessWidget {
   final Widget title;
   final Widget child;
-  const ExpandableCard({Key? key, required this.title, required this.child}) : super(key: key)
-  
+  const ExpandableCard({Key? key, required this.title, required this.child})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
