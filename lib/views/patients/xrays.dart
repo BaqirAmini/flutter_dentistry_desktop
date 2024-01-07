@@ -1,6 +1,16 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/settings/settings_menu.dart';
+import 'package:flutter_dentistry/views/staff/staff_info.dart';
+import 'package:intl/intl.dart' as intl2;
 
 void main() => runApp(XRayUploadScreen());
+bool _isLoadingPhoto = false;
 
 class XRayUploadScreen extends StatelessWidget {
   XRayUploadScreen({Key? key}) : super(key: key);
@@ -98,6 +108,7 @@ class XRayUploadScreen extends StatelessWidget {
 // ignore: must_be_immutable
 class _ImageThumbNail extends StatefulWidget {
   List<String> xrayType = [];
+
   _ImageThumbNail({Key? key, required this.xrayType}) : super(key: key);
 
   @override
@@ -147,23 +158,280 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
             ),
           ),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.08,
-            width: MediaQuery.of(context).size.width * 0.08,
-            child: OutlinedButton.icon(
+            height: MediaQuery.of(context).size.height * 0.065,
+            width: MediaQuery.of(context).size.width * 0.065,
+            child: OutlinedButton(
               style: OutlinedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                ),
-                side: const BorderSide(color: Colors.blue),
-              ),
-              onPressed: () async {},
-              icon: const Icon(Icons.add_a_photo_outlined),
-              label: Text(''),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  side: const BorderSide(color: Colors.blue)),
+              onPressed: () {
+                int tabIndex = DefaultTabController.of(context).index;
+                _onUploadXRayImage(tabIndex);
+              },
+              child: const Icon(Icons.add_a_photo_outlined),
             ),
           ),
         ],
       ),
     );
+  }
+
+  _onUploadXRayImage(int index) {
+    String xrayType = index == 0
+        ? 'Periapical'
+        : index == 1
+            ? 'OPG'
+            : '3D';
+
+    TextEditingController dateContoller = TextEditingController();
+    TextEditingController xrayNoteController = TextEditingController();
+    final xrayFormKey = GlobalKey<FormState>();
+
+    return showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Directionality(
+          textDirection: TextDirection.rtl,
+          child: Text('آپلود اکسری'),
+        ),
+        content: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.39,
+          height: MediaQuery.of(context).size.height * 0.7,
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: Form(
+              key: xrayFormKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.all(5.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('نوعیت اکسری:'),
+                        Text(xrayType),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(5.0),
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    height: MediaQuery.of(context).size.height * 0.3,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          side: const BorderSide(color: Colors.blue)),
+                      onPressed: () => _onPickXRay(),
+                      child: const Icon(Icons.add),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(5.0),
+                    child: Row(
+                      children: [
+                        const Text(
+                          '*',
+                          style: TextStyle(
+                              color: Colors.red, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(width: 7.0),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.34,
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
+                          child: TextFormField(
+                            controller: dateContoller,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'تاریخ نمی تواند خالی باشد.';
+                              }
+                              return null;
+                            },
+                            onTap: () async {
+                              FocusScope.of(context).requestFocus(
+                                FocusNode(),
+                              );
+                              final DateTime? dateTime = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(1900),
+                                  lastDate: DateTime(2100));
+                              if (dateTime != null) {
+                                final intl2.DateFormat formatter =
+                                    intl2.DateFormat('yyyy-MM-dd');
+                                final String formattedDate =
+                                    formatter.format(dateTime);
+                                dateContoller.text = formattedDate;
+                              }
+                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9.]'))
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'تاریخ',
+                              suffixIcon: Icon(Icons.calendar_month_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(5.0),
+                    width: MediaQuery.of(context).size.width * 0.34,
+                    child: TextFormField(
+                      controller: xrayNoteController,
+                      validator: (value) {
+                        if (value!.isNotEmpty) {
+                          if (value.length > 40 || value.length < 10) {
+                            return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                          }
+                        }
+                        return null;
+                      },
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(GlobalUsage.allowedEPChar),
+                        ),
+                      ],
+                      minLines: 1,
+                      maxLines: 2,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'توضیحات',
+                        suffixIcon: Icon(Icons.note_alt_outlined),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.grey)),
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.blue)),
+                        errorBorder: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide: BorderSide(color: Colors.red)),
+                        focusedErrorBorder: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50.0)),
+                            borderSide:
+                                BorderSide(color: Colors.red, width: 1.5)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+              child: const Text('لغو')),
+          ElevatedButton(
+              onPressed: () {
+                if (xrayFormKey.currentState!.validate()) {}
+              },
+              child: const Text('آپلود اکسری')),
+        ],
+      ),
+    );
+  }
+
+// This method is to update profile picture of the user
+  void _onPickXRay() async {
+    setState(() {
+      _isLoadingPhoto = true;
+    });
+
+    final result = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'jpeg', 'png']);
+    if (result != null) {
+      final conn = await onConnToDb();
+      pickedFile = File(result.files.single.path.toString());
+      final bytes = await pickedFile!.readAsBytes();
+      // Check if the file size is larger than 1MB
+      if (bytes.length > 1024 * 1024) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            content: Center(
+              child: Text('عکس حداکثر باید 1MB باشد.'),
+            ),
+          ),
+        );
+        setState(() {
+          _isLoadingPhoto = false;
+        });
+        return;
+      }
+      // final photo = MySQL.escapeBuffer(bytes);
+      var results = await conn.query(
+          'UPDATE staff SET photo = ? WHERE staff_ID = ?',
+          [bytes, StaffInfo.staffID]);
+      setState(() {
+        if (results.affectedRows! > 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              content: Center(
+                child: Text('عکس پروفایل تان موفقانه تغییر کرد.'),
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.red,
+              content: Center(
+                child: Text('متاسفم، تغییر عکس پروفایل ناکام شد..'),
+              ),
+            ),
+          );
+        }
+        setState(() {
+          _isLoadingPhoto = false;
+        });
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Center(child: Text('هیچ عکسی را انتخاب نکردید.')),
+        ),
+      );
+      setState(() {
+        _isLoadingPhoto = false;
+      });
+    }
   }
 }
 
