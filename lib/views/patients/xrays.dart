@@ -197,201 +197,252 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                 return AlertDialog(
                   title: const Directionality(
                     textDirection: TextDirection.rtl,
-                    child: Text('آپلود اکسری'),
+                    child: Text('آپلود اکسری',
+                        style: TextStyle(color: Colors.blue)),
                   ),
                   content: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.37,
-                    height: MediaQuery.of(context).size.height * 0.5,
+                    width: MediaQuery.of(context).size.width * 0.38,
+                    height: MediaQuery.of(context).size.height * 0.7,
                     child: Directionality(
                       textDirection: TextDirection.rtl,
-                      child: Form(
-                        key: xrayFormKey,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.all(5.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text('نوعیت اکسری:'),
-                                  Text(xrayType),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.all(5.0),
-                              width: MediaQuery.of(context).size.width * 0.3,
-                              height: MediaQuery.of(context).size.height * 0.3,
-                              child: InkWell(
-                                onTap: () async {
-                                  final result = await FilePicker.platform
-                                      .pickFiles(
-                                          allowMultiple: true,
-                                          type: FileType.custom,
-                                          allowedExtensions: [
-                                        'jpg',
-                                        'jpeg',
-                                        'png'
-                                      ]);
-                                  if (result != null) {
-                                    setState(() {
-                                      _selectedImage = File(
-                                          result.files.single.path.toString());
-                                    });
-                                  }
-                                },
-                                child: _selectedImage == null
-                                    ? const Icon(Icons.add, size: 50)
-                                    : Image.file(_selectedImage!,
-                                        fit: BoxFit.fill),
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.all(5.0),
-                              child: Row(
-                                children: [
-                                  const Text(
-                                    '*',
-                                    style: TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(width: 7.0),
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.34,
-                                    margin: const EdgeInsets.only(
-                                        left: 20.0,
-                                        right: 10.0,
-                                        top: 10.0,
-                                        bottom: 10.0),
-                                    child: TextFormField(
-                                      controller: dateContoller,
-                                      validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'تاریخ نمی تواند خالی باشد.';
-                                        }
-                                        return null;
-                                      },
-                                      onTap: () async {
-                                        FocusScope.of(context).requestFocus(
-                                          FocusNode(),
-                                        );
-                                        final DateTime? dateTime =
-                                            await showDatePicker(
-                                                context: context,
-                                                initialDate: DateTime.now(),
-                                                firstDate: DateTime(1900),
-                                                lastDate: DateTime(2100));
-                                        if (dateTime != null) {
-                                          final intl2.DateFormat formatter =
-                                              intl2.DateFormat('yyyy-MM-dd');
-                                          final String formattedDate =
-                                              formatter.format(dateTime);
-                                          dateContoller.text = formattedDate;
-                                        }
-                                      },
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp(r'[0-9.]'))
+                      child: SingleChildScrollView(
+                        child: Form(
+                          key: xrayFormKey,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 30.0, vertical: 5.0),
+                                child: Card(
+                                  elevation: 3.0,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        const Text('نوعیت اکسری:'),
+                                        Text(xrayType),
                                       ],
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'تاریخ',
-                                        suffixIcon:
-                                            Icon(Icons.calendar_month_outlined),
-                                        enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(50.0)),
-                                            borderSide:
-                                                BorderSide(color: Colors.grey)),
-                                        focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(50.0)),
-                                            borderSide:
-                                                BorderSide(color: Colors.blue)),
-                                        errorBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(50.0)),
-                                            borderSide:
-                                                BorderSide(color: Colors.red)),
-                                        focusedErrorBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(50.0)),
-                                            borderSide: BorderSide(
-                                                color: Colors.red, width: 1.5)),
-                                      ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.all(5.0),
-                              width: MediaQuery.of(context).size.width * 0.34,
-                              child: TextFormField(
-                                controller: xrayNoteController,
-                                validator: (value) {
-                                  if (value!.isNotEmpty) {
-                                    if (value.length > 40 ||
-                                        value.length < 10) {
-                                      return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
-                                    }
-                                  }
-                                  return null;
-                                },
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.allow(
-                                    RegExp(GlobalUsage.allowedEPChar),
-                                  ),
-                                ],
-                                minLines: 1,
-                                maxLines: 2,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'توضیحات',
-                                  suffixIcon: Icon(Icons.note_alt_outlined),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue)),
-                                  errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide: BorderSide(
-                                          color: Colors.red, width: 1.5)),
                                 ),
                               ),
-                            ),
-                          ],
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1.0,
+                                          color: _selectedImage == null
+                                              ? Colors.red
+                                              : Colors.blue),
+                                    ),
+                                    margin: const EdgeInsets.all(5.0),
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.3,
+                                    child: InkWell(
+                                      onTap: () async {
+                                        final result = await FilePicker.platform
+                                            .pickFiles(
+                                                allowMultiple: true,
+                                                type: FileType.custom,
+                                                allowedExtensions: [
+                                              'jpg',
+                                              'jpeg',
+                                              'png'
+                                            ]);
+                                        if (result != null) {
+                                          setState(() {
+                                            _selectedImage = File(result
+                                                .files.single.path
+                                                .toString());
+                                          });
+                                        }
+                                      },
+                                      child: _selectedImage == null
+                                          ? const Icon(Icons.add,
+                                              size: 40, color: Colors.blue)
+                                          : Image.file(_selectedImage!,
+                                              fit: BoxFit.fill),
+                                    ),
+                                  ),
+                                  if (_selectedImage == null)
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 8.0),
+                                      child: Text(
+                                        'هیچ فایل اکسری را انتخاب نکرده اید.',
+                                        style: TextStyle(
+                                            fontSize: 12.0,
+                                            color: Colors.redAccent),
+                                      ),
+                                    )
+                                ],
+                              ),
+                              Container(
+                                margin: const EdgeInsets.all(5.0),
+                                child: Row(
+                                  children: [
+                                    const Text(
+                                      '*',
+                                      style: TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(width: 7.0),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.335,
+                                      margin: const EdgeInsets.only(
+                                          left: 20.0,
+                                          right: 10.0,
+                                          top: 10.0,
+                                          bottom: 10.0),
+                                      child: TextFormField(
+                                        controller: dateContoller,
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return 'تاریخ نمی تواند خالی باشد.';
+                                          }
+                                          return null;
+                                        },
+                                        onTap: () async {
+                                          FocusScope.of(context).requestFocus(
+                                            FocusNode(),
+                                          );
+                                          final DateTime? dateTime =
+                                              await showDatePicker(
+                                                  context: context,
+                                                  initialDate: DateTime.now(),
+                                                  firstDate: DateTime(1900),
+                                                  lastDate: DateTime(2100));
+                                          if (dateTime != null) {
+                                            final intl2.DateFormat formatter =
+                                                intl2.DateFormat('yyyy-MM-dd');
+                                            final String formattedDate =
+                                                formatter.format(dateTime);
+                                            dateContoller.text = formattedDate;
+                                          }
+                                        },
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.allow(
+                                              RegExp(r'[0-9.]'))
+                                        ],
+                                        decoration: const InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          labelText: 'تاریخ',
+                                          suffixIcon: Icon(
+                                              Icons.calendar_month_outlined),
+                                          enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(50.0)),
+                                              borderSide: BorderSide(
+                                                  color: Colors.grey)),
+                                          focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(50.0)),
+                                              borderSide: BorderSide(
+                                                  color: Colors.blue)),
+                                          errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(50.0)),
+                                              borderSide: BorderSide(
+                                                  color: Colors.red)),
+                                          focusedErrorBorder:
+                                              OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(
+                                                              50.0)),
+                                                  borderSide: BorderSide(
+                                                      color: Colors.red,
+                                                      width: 1.5)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.all(5.0),
+                                width:
+                                    MediaQuery.of(context).size.width * 0.335,
+                                child: TextFormField(
+                                  controller: xrayNoteController,
+                                  validator: (value) {
+                                    if (value!.isNotEmpty) {
+                                      if (value.length > 40 ||
+                                          value.length < 10) {
+                                        return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                      }
+                                    }
+                                    return null;
+                                  },
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(GlobalUsage.allowedEPChar),
+                                    ),
+                                  ],
+                                  minLines: 1,
+                                  maxLines: 2,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'توضیحات',
+                                    suffixIcon: Icon(Icons.note_alt_outlined),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                    errorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.red)),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide: BorderSide(
+                                            color: Colors.red, width: 1.5)),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                   actions: [
-                    TextButton(
-                        onPressed: () =>
-                            Navigator.of(context, rootNavigator: true).pop(),
-                        child: const Text('لغو')),
-                    ElevatedButton(
-                        onPressed: () {
-                          if (xrayFormKey.currentState!.validate()) {}
-                        },
-                        child: const Text('آپلود اکسری')),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        TextButton(
+                            onPressed: () =>
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop(),
+                            child: const Text('لغو')),
+                        ElevatedButton(
+                            onPressed: () {
+                              if (xrayFormKey.currentState!.validate() &&
+                                  _selectedImage != null) {
+                                print('validated!');
+                              }
+                            },
+                            child: const Text('آپلود اکسری')),
+                      ],
+                    ),
                   ],
                 );
               },
@@ -410,10 +461,9 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
         allowedExtensions: ['jpg', 'jpeg', 'png']);
     if (result != null) {
       final conn = await onConnToDb();
-      
+
       setState(() {
-        _selectedImage = File(
-                                          result.files.single.path.toString());
+        _selectedImage = File(result.files.single.path.toString());
       });
       final bytes = await _selectedImage!.readAsBytes();
       // Check if the file size is larger than 1MB
