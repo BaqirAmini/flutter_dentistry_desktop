@@ -3,10 +3,10 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 08, 2024 at 12:02 PM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.0.25
--- Create database
+-- Generation Time: Jan 08, 2024 at 06:04 PM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.1.6
+-- Create Database
 CREATE DATABASE IF NOT EXISTS dentistry_db;
 USE dentistry_db;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -41,7 +41,7 @@ CREATE TABLE `appointments` (
   `meet_date` date DEFAULT NULL,
   `staff_ID` int(128) DEFAULT NULL,
   `note` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `appointments`
@@ -70,7 +70,7 @@ CREATE TABLE `clinics` (
   `open_date` date DEFAULT NULL,
   `cli_addr` varchar(64) DEFAULT NULL,
   `founder` varchar(64) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `clinics`
@@ -88,7 +88,7 @@ INSERT INTO `clinics` (`cli_ID`, `cli_logo`, `cli_name`, `open_date`, `cli_addr`
 CREATE TABLE `conditions` (
   `cond_ID` int(11) NOT NULL,
   `name` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `conditions`
@@ -119,7 +119,7 @@ CREATE TABLE `condition_details` (
   `diagnosis_date` date DEFAULT NULL,
   `pat_ID` int(128) DEFAULT NULL,
   `notes` tinytext DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `condition_details`
@@ -233,7 +233,7 @@ CREATE TABLE `expenses` (
   `exp_ID` int(128) NOT NULL,
   `cli_ID` int(128) NOT NULL,
   `exp_name` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `expenses`
@@ -264,7 +264,7 @@ CREATE TABLE `expense_detail` (
   `purchase_date` date NOT NULL,
   `invoice` varchar(128) DEFAULT NULL,
   `note` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `expense_detail`
@@ -291,7 +291,7 @@ CREATE TABLE `fee_payments` (
   `whole_fee_paid` tinyint(1) DEFAULT 0,
   `staff_ID` int(11) DEFAULT NULL,
   `apt_ID` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `fee_payments`
@@ -328,7 +328,7 @@ CREATE TABLE `patients` (
   `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `blood_group` varchar(12) DEFAULT NULL,
   `address` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `patients`
@@ -359,7 +359,7 @@ CREATE TABLE `patient_services` (
   `ser_ID` int(11) NOT NULL,
   `req_ID` int(11) NOT NULL,
   `value` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `patient_services`
@@ -394,17 +394,24 @@ CREATE TABLE `patient_xrays` (
   `xray_ID` int(11) NOT NULL,
   `pat_ID` int(11) NOT NULL,
   `xray_name` varchar(128) NOT NULL,
+  `xray_type` varchar(64) NOT NULL,
   `reg_date` date NOT NULL,
   `description` tinytext DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `patient_xrays`
 --
 
-INSERT INTO `patient_xrays` (`xray_ID`, `pat_ID`, `xray_name`, `reg_date`, `description`) VALUES
-(1, 93, 'C:\\Users\\BaqirAmini\\Desktop\\First Rate Logo Square Blue.png', '2024-01-08', 'SDDDDDDDDDDDDDDDDDDD'),
-(2, 81, 'D:/Baqir\'s/Flutter Docs/xray_image/Full-stack-development.jpg', '2024-01-08', '');
+INSERT INTO `patient_xrays` (`xray_ID`, `pat_ID`, `xray_name`, `xray_type`, `reg_date`, `description`) VALUES
+(1, 93, 'C:\\Users\\BaqirAmini\\Desktop\\First Rate Logo Square Blue.png', '', '2024-01-08', 'SDDDDDDDDDDDDDDDDDDD'),
+(2, 81, 'D:/Baqir\'s/Flutter Docs/xray_image/Full-stack-development.jpg', '', '2024-01-08', ''),
+(3, 93, 'C:\\Users\\BA-E7470\\Documents\\DCMIS\\login_img1.png', 'Periapical', '2024-01-08', ''),
+(4, 93, 'C:\\Users\\BA-E7470\\Documents\\DCMIS\\login.png', 'Periapical', '2024-01-08', 'Testing description of xray'),
+(5, 93, 'C:\\Users\\BA-E7470\\Documents\\DCMIS\\login.png', 'OPG', '2024-01-07', ''),
+(6, 92, 'C:\\Users\\BA-E7470\\Documents\\DCMIS\\عالیه92\\login_img1.jpg', '3D', '2024-01-08', ''),
+(7, 86, 'C:\\Users\\BA-E7470\\Documents\\DCMIS\\علی مامد86\\login_img2.png', 'OPG', '2024-01-08', 'Testing xray of Ali Mamad'),
+(8, 79, 'C:\\Users\\BA-E7470\\Documents\\DCMIS\\حسین79\\dashboard3.png', 'Periapical', '2024-01-04', '');
 
 -- --------------------------------------------------------
 
@@ -416,7 +423,7 @@ CREATE TABLE `services` (
   `ser_ID` int(128) NOT NULL,
   `ser_name` varchar(64) NOT NULL,
   `ser_fee` decimal(10,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `services`
@@ -447,7 +454,7 @@ INSERT INTO `services` (`ser_ID`, `ser_name`, `ser_fee`) VALUES
 CREATE TABLE `service_requirements` (
   `req_ID` int(11) NOT NULL,
   `req_name` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `service_requirements`
@@ -478,7 +485,7 @@ CREATE TABLE `staff` (
   `tazkira_ID` varchar(16) DEFAULT NULL,
   `photo` mediumblob DEFAULT NULL,
   `address` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `staff`
@@ -506,7 +513,7 @@ CREATE TABLE `staff_auth` (
   `username` varchar(64) NOT NULL,
   `password` varchar(64) NOT NULL,
   `role` varchar(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `staff_auth`
@@ -528,7 +535,7 @@ CREATE TABLE `taxes` (
   `total_annual_tax` decimal(15,2) NOT NULL,
   `TIN` char(10) DEFAULT NULL,
   `tax_for_year` int(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `taxes`
@@ -560,7 +567,7 @@ CREATE TABLE `tax_payments` (
   `note` mediumtext DEFAULT NULL,
   `modified_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `docs` blob DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Indexes for dumped tables
@@ -739,7 +746,7 @@ ALTER TABLE `patients`
 -- AUTO_INCREMENT for table `patient_xrays`
 --
 ALTER TABLE `patient_xrays`
-  MODIFY `xray_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `xray_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `services`
