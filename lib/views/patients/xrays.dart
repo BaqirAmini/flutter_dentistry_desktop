@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_dentistry/views/settings/settings_menu.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:intl/intl.dart' as intl2;
+import 'package:path/path.dart' as p;
 
 void main() => runApp(XRayUploadScreen());
 bool _isLoadingPhoto = false;
@@ -201,8 +203,8 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                         style: TextStyle(color: Colors.blue)),
                   ),
                   content: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.38,
-                    height: MediaQuery.of(context).size.height * 0.7,
+                    width: MediaQuery.of(context).size.width * 0.365,
+                    height: MediaQuery.of(context).size.height * 0.6,
                     child: Directionality(
                       textDirection: TextDirection.rtl,
                       child: SingleChildScrollView(
@@ -288,6 +290,7 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                               Container(
                                 margin: const EdgeInsets.all(5.0),
                                 child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     const Text(
                                       '*',
@@ -434,10 +437,42 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                     .pop(),
                             child: const Text('لغو')),
                         ElevatedButton(
-                            onPressed: () {
-                              if (xrayFormKey.currentState!.validate() &&
-                                  _selectedImage != null) {
-                                print('validated!');
+                            onPressed: () async {
+                              try {
+                                if (xrayFormKey.currentState!.validate() &&
+                                    _selectedImage != null) {
+                                  final conn = await onConnToDb();
+                                  // Save the image to the file system
+                                  final imagePath =
+                                      'D:/Baqir\'s/Flutter Docs/xray_image/${p.basename(_selectedImage!.path)}';
+                                  await _selectedImage!.copy(imagePath);
+
+                                  // Save the date, description, and image name to the database
+                                  final date = dateContoller.text;
+                                  final description = xrayNoteController
+                                      .text; 
+                                      // Path of windows file system where images are uploaded
+                                  final dir = Directory(
+                                      'D:/Baqir\'s/Flutter Docs/xray_image');
+                                  if (!dir.existsSync()) {
+                                    dir.createSync(
+                                        recursive:
+                                            true); // Use `recursive: true` to create the directory if not exists
+                                  }
+                                  await conn.query(
+                                      'INSERT INTO patient_xrays (pat_ID, xray_name, reg_date, description) VALUES (?, ?, ?, ?)',
+                                      [
+                                        PatientInfo.patID,
+                                        imagePath,
+                                        date,
+                                        description
+                                      ]);
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop();
+                                }
+                              } catch (e) {
+                                print('Uploading X-Ray failed. $e');
                               }
                             },
                             child: const Text('آپلود اکسری')),
@@ -570,13 +605,48 @@ class _ImageViewerState extends State<ImageViewer> {
                   boundaryMargin: const EdgeInsets.all(20.0),
                   minScale: 0.1,
                   maxScale: 2.0,
-                  child: Center(
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      height: MediaQuery.of(context).size.height * 4.0,
-                      child: Image.asset(widget.images[index],
-                          fit: BoxFit.contain),
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Date Added:',
+                              style: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            Text(
+                              '2023-12-05',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Description:',
+                                style: Theme.of(context).textTheme.labelLarge),
+                            Text('Testing X-Ray Description...',
+                                style: Theme.of(context).textTheme.bodyLarge),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        height: MediaQuery.of(context).size.height * 0.8,
+                        child: Image.asset(widget.images[index],
+                            fit: BoxFit.contain),
+                      ),
+                    ],
                   ),
                 ),
               );
