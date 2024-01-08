@@ -10,6 +10,7 @@ import 'package:flutter_dentistry/views/settings/settings_menu.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:intl/intl.dart' as intl2;
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 void main() => runApp(XRayUploadScreen());
 bool _isLoadingPhoto = false;
@@ -203,8 +204,8 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                         style: TextStyle(color: Colors.blue)),
                   ),
                   content: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.365,
-                    height: MediaQuery.of(context).size.height * 0.6,
+                    width: MediaQuery.of(context).size.width * 0.39,
+                    height: MediaQuery.of(context).size.height * 0.68,
                     child: Directionality(
                       textDirection: TextDirection.rtl,
                       child: SingleChildScrollView(
@@ -298,10 +299,13 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                           color: Colors.red,
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    const SizedBox(width: 7.0),
+                                    SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.005),
                                     Container(
                                       width: MediaQuery.of(context).size.width *
-                                          0.335,
+                                          0.338,
                                       margin: const EdgeInsets.only(
                                           left: 20.0,
                                           right: 10.0,
@@ -442,34 +446,43 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                 if (xrayFormKey.currentState!.validate() &&
                                     _selectedImage != null) {
                                   final conn = await onConnToDb();
-                                  // Save the image to the file system
-                                  final imagePath =
-                                      'D:/Baqir\'s/Flutter Docs/xray_image/${p.basename(_selectedImage!.path)}';
-                                  await _selectedImage!.copy(imagePath);
-
-                                  // Save the date, description, and image name to the database
                                   final date = dateContoller.text;
-                                  final description = xrayNoteController
-                                      .text; 
-                                      // Path of windows file system where images are uploaded
-                                  final dir = Directory(
-                                      'D:/Baqir\'s/Flutter Docs/xray_image');
-                                  if (!dir.existsSync()) {
-                                    dir.createSync(
-                                        recursive:
-                                            true); // Use `recursive: true` to create the directory if not exists
+                                  final description = xrayNoteController.text;
+                                  Directory? userDir =
+                                      await getApplicationDocumentsDirectory();
+                                  // Name of the uploaded xray image name
+                                  final xrayImageName =
+                                      p.basename(_selectedImage!.path);
+
+                                  if (userDir != null) {
+                                    // Patient directory path for instance, Users/name-specified-in-windows/Documents/DCMIS/Ali123
+                                    final patientDirPath = p.join(
+                                        userDir.path,
+                                        'DCMIS',
+                                        '${PatientInfo.firstName}${PatientInfo.patID}');
+                                    // Patient Directory for instance, DCMIS/Ali123
+                                    final patientsDir =
+                                        Directory(patientDirPath);
+                                    if (!patientsDir.existsSync()) {
+                                      // If the directory is not existing, create it.
+                                      patientsDir.createSync(recursive: true);
+                                    }
+                                    final xrayImagePath =
+                                        p.join(patientDirPath, xrayImageName);
+                                    await _selectedImage!.copy(xrayImagePath);
+                                    await conn.query(
+                                        'INSERT INTO patient_xrays (pat_ID, xray_name, xray_type, reg_date, description) VALUES (?, ?, ?, ?, ?)',
+                                        [
+                                          PatientInfo.patID,
+                                          xrayImagePath,
+                                          xrayType,
+                                          date,
+                                          description
+                                        ]);
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop();
                                   }
-                                  await conn.query(
-                                      'INSERT INTO patient_xrays (pat_ID, xray_name, reg_date, description) VALUES (?, ?, ?, ?)',
-                                      [
-                                        PatientInfo.patID,
-                                        imagePath,
-                                        date,
-                                        description
-                                      ]);
-                                  // ignore: use_build_context_synchronously
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop();
                                 }
                               } catch (e) {
                                 print('Uploading X-Ray failed. $e');
