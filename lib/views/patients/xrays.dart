@@ -95,21 +95,42 @@ class XRayUploadScreen extends StatelessWidget {
           ),
           body: TabBarView(
             children: [
-              _ImageThumbNail(xrayType: _periapicalImages),
-              _ImageThumbNail(xrayType: _opgImages),
-              _ImageThumbNail(xrayType: _3DImages)
+              _ImageThumbNail(xrayType: _fetchXRayImages('Periapical')),
+              _ImageThumbNail(xrayType: _fetchXRayImages('OPG')),
+              _ImageThumbNail(xrayType: _fetchXRayImages('3D'))
             ],
           ),
         ),
       ),
     );
   }
+
+    Future<List<XRayDataModel>> _fetchXRayImages(String type) async {
+    try {
+      final conn = await onConnToDb();
+      final results = await conn.query(
+          'SELECT xray_ID, xray_name, reg_date, xray_type, description FROM patient_xrays WHERE pat_ID = ? AND xray_type = ?',
+          [PatientInfo.patID, type]);
+      final xrays = results
+          .map((row) => XRayDataModel(
+              xrayID: row[0],
+              xrayImage: row[1],
+              xrayDate: row[2],
+              xrayType: row[3],
+              xrayDescription: row[4]))
+          .toList();
+      return xrays;
+    } catch (e) {
+      print('Error retrieving xrays: $e');
+      return Future.value([]);
+    }
+  }
 }
 
 // Create this class to separate the the repeated widget
 // ignore: must_be_immutable
 class _ImageThumbNail extends StatefulWidget {
-  List<String> xrayType = [];
+  final Future<List<XRayDataModel>> xrayType;
 
   _ImageThumbNail({Key? key, required this.xrayType}) : super(key: key);
 
@@ -122,63 +143,79 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
   bool _isLoadingXray = false;
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.8,
-            height: MediaQuery.of(context).size.height * 0.7,
-            child: GridView.builder(
-              scrollDirection: Axis.vertical,
-              itemCount: widget.xrayType.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4, // Adjust number of images per row
-                crossAxisSpacing: 10.0, // Adjust horizontal spacing
-                mainAxisSpacing: 10.0, // Adjust vertical spacing
-              ),
-              itemBuilder: (context, index) {
-                return MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ImageViewer(
-                              images: widget.xrayType, initialIndex: index),
+    return FutureBuilder<List<XRayDataModel>>(
+      future: widget.xrayType,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        } else {
+          var xrayData = snapshot.data;
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: GridView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: xrayData!.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4, // Adjust number of images per row
+                      crossAxisSpacing: 10.0, // Adjust horizontal spacing
+                      mainAxisSpacing: 10.0, // Adjust vertical spacing
+                    ),
+                    itemBuilder: (context, index) {
+                      return MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ImageViewer(
+                                    images: widget.xrayType,
+                                    initialIndex: index),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black)),
+                            child: Image.asset(widget.xrayType[index],
+                                fit: BoxFit.cover),
+                          ),
                         ),
                       );
                     },
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black)),
-                      child: Image.asset(widget.xrayType[index],
-                          fit: BoxFit.cover),
-                    ),
                   ),
-                );
-              },
-            ),
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.065,
-            width: MediaQuery.of(context).size.width * 0.065,
-            child: OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.065,
+                  width: MediaQuery.of(context).size.width * 0.065,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        side: const BorderSide(color: Colors.blue)),
+                    onPressed: () {
+                      int tabIndex = DefaultTabController.of(context).index;
+                      _onUploadXRayImage(tabIndex);
+                    },
+                    child: const Icon(Icons.add_a_photo_outlined),
                   ),
-                  side: const BorderSide(color: Colors.blue)),
-              onPressed: () {
-                int tabIndex = DefaultTabController.of(context).index;
-                _onUploadXRayImage(tabIndex);
-              },
-              child: const Icon(Icons.add_a_photo_outlined),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
+          );
+        }
+      },
     );
   }
 
@@ -197,6 +234,7 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
         context: context,
         builder: (ctx) => StatefulBuilder(
               builder: (context, setState) {
+                String xrayMessage = 'هیچ فایل اکسری را انتخاب نکرده اید.';
                 return AlertDialog(
                   title: const Directionality(
                     textDirection: TextDirection.rtl,
@@ -287,12 +325,12 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                     ),
                                   ),
                                   if (_selectedImage == null)
-                                    const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 8.0),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
                                       child: Text(
-                                        'هیچ فایل اکسری را انتخاب نکرده اید.',
-                                        style: TextStyle(
+                                        xrayMessage,
+                                        style: const TextStyle(
                                             fontSize: 12.0,
                                             color: Colors.redAccent),
                                       ),
@@ -658,4 +696,21 @@ class _ImageViewerState extends State<ImageViewer> {
       ),
     );
   }
+}
+
+// Data Model of X-Ray
+class XRayDataModel {
+  final int xrayID;
+  final String xrayImage;
+  final String xrayDate;
+  final String xrayType;
+  final String xrayDescription;
+
+  // Calling the constructor
+  XRayDataModel(
+      {required this.xrayID,
+      required this.xrayImage,
+      required this.xrayDate,
+      required this.xrayType,
+      required this.xrayDescription});
 }
