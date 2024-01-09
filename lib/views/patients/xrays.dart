@@ -13,7 +13,6 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 void main() => runApp(XRayUploadScreen());
-bool _isLoadingPhoto = false;
 
 class XRayUploadScreen extends StatelessWidget {
   XRayUploadScreen({Key? key}) : super(key: key);
@@ -120,6 +119,7 @@ class _ImageThumbNail extends StatefulWidget {
 
 class __ImageThumbNailState extends State<_ImageThumbNail> {
   File? _selectedImage;
+  bool _isLoadingXray = false;
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -205,7 +205,7 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                   ),
                   content: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.39,
-                    height: MediaQuery.of(context).size.height * 0.68,
+                    height: MediaQuery.of(context).size.height * 0.65,
                     child: Directionality(
                       textDirection: TextDirection.rtl,
                       child: SingleChildScrollView(
@@ -251,6 +251,10 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                         0.3,
                                     child: InkWell(
                                       onTap: () async {
+                                        setState(() {
+                                          _isLoadingXray = true;
+                                        });
+
                                         final result = await FilePicker.platform
                                             .pickFiles(
                                                 allowMultiple: true,
@@ -262,17 +266,24 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                             ]);
                                         if (result != null) {
                                           setState(() {
+                                            _isLoadingXray = false;
                                             _selectedImage = File(result
                                                 .files.single.path
                                                 .toString());
                                           });
                                         }
                                       },
-                                      child: _selectedImage == null
+                                      child: _selectedImage == null &&
+                                              !_isLoadingXray
                                           ? const Icon(Icons.add,
                                               size: 40, color: Colors.blue)
-                                          : Image.file(_selectedImage!,
-                                              fit: BoxFit.fill),
+                                          : _isLoadingXray
+                                              ? const Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                          strokeWidth: 3.0))
+                                              : Image.file(_selectedImage!,
+                                                  fit: BoxFit.fill),
                                     ),
                                   ),
                                   if (_selectedImage == null)
@@ -454,35 +465,32 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                   final xrayImageName =
                                       p.basename(_selectedImage!.path);
 
-                                  if (userDir != null) {
-                                    // Patient directory path for instance, Users/name-specified-in-windows/Documents/DCMIS/Ali123
-                                    final patientDirPath = p.join(
-                                        userDir.path,
-                                        'DCMIS',
-                                        '${PatientInfo.firstName}${PatientInfo.patID}');
-                                    // Patient Directory for instance, DCMIS/Ali123
-                                    final patientsDir =
-                                        Directory(patientDirPath);
-                                    if (!patientsDir.existsSync()) {
-                                      // If the directory is not existing, create it.
-                                      patientsDir.createSync(recursive: true);
-                                    }
-                                    final xrayImagePath =
-                                        p.join(patientDirPath, xrayImageName);
-                                    await _selectedImage!.copy(xrayImagePath);
-                                    await conn.query(
-                                        'INSERT INTO patient_xrays (pat_ID, xray_name, xray_type, reg_date, description) VALUES (?, ?, ?, ?, ?)',
-                                        [
-                                          PatientInfo.patID,
-                                          xrayImagePath,
-                                          xrayType,
-                                          date,
-                                          description
-                                        ]);
-                                    // ignore: use_build_context_synchronously
-                                    Navigator.of(context, rootNavigator: true)
-                                        .pop();
+                                  // Patient directory path for instance, Users/name-specified-in-windows/Documents/DCMIS/Ali123
+                                  final patientDirPath = p.join(
+                                      userDir.path,
+                                      'DCMIS',
+                                      '${PatientInfo.firstName}${PatientInfo.patID}');
+                                  // Patient Directory for instance, DCMIS/Ali123
+                                  final patientsDir = Directory(patientDirPath);
+                                  if (!patientsDir.existsSync()) {
+                                    // If the directory is not existing, create it.
+                                    patientsDir.createSync(recursive: true);
                                   }
+                                  final xrayImagePath =
+                                      p.join(patientDirPath, xrayImageName);
+                                  await _selectedImage!.copy(xrayImagePath);
+                                  await conn.query(
+                                      'INSERT INTO patient_xrays (pat_ID, xray_name, xray_type, reg_date, description) VALUES (?, ?, ?, ?, ?)',
+                                      [
+                                        PatientInfo.patID,
+                                        xrayImagePath,
+                                        xrayType,
+                                        date,
+                                        description
+                                      ]);
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop();
                                 }
                               } catch (e) {
                                 print('Uploading X-Ray failed. $e');
@@ -495,79 +503,6 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                 );
               },
             ));
-  }
-
-// This method is to update profile picture of the user
-  void _onPickXRay() async {
-    setState(() {
-      _isLoadingPhoto = true;
-    });
-
-    final result = await FilePicker.platform.pickFiles(
-        allowMultiple: true,
-        type: FileType.custom,
-        allowedExtensions: ['jpg', 'jpeg', 'png']);
-    if (result != null) {
-      final conn = await onConnToDb();
-
-      setState(() {
-        _selectedImage = File(result.files.single.path.toString());
-      });
-      final bytes = await _selectedImage!.readAsBytes();
-      // Check if the file size is larger than 1MB
-      if (bytes.length > 1024 * 1024) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Colors.red,
-            content: Center(
-              child: Text('عکس حداکثر باید 1MB باشد.'),
-            ),
-          ),
-        );
-        setState(() {
-          _isLoadingPhoto = false;
-        });
-        return;
-      }
-      // final photo = MySQL.escapeBuffer(bytes);
-      /* var results = await conn.query(
-          'UPDATE staff SET photo = ? WHERE staff_ID = ?',
-          [bytes, StaffInfo.staffID]); */
-      setState(() {
-        /*   if (results.affectedRows! > 0) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.green,
-              content: Center(
-                child: Text('عکس پروفایل تان موفقانه تغییر کرد.'),
-              ),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.red,
-              content: Center(
-                child: Text('متاسفم، تغییر عکس پروفایل ناکام شد..'),
-              ),
-            ),
-          );
-        }
-        setState(() {
-          _isLoadingPhoto = false;
-        }); */
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.red,
-          content: Center(child: Text('هیچ عکسی را انتخاب نکردید.')),
-        ),
-      );
-      setState(() {
-        _isLoadingPhoto = false;
-      });
-    }
   }
 }
 
