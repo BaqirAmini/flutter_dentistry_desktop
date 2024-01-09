@@ -95,44 +95,44 @@ class XRayUploadScreen extends StatelessWidget {
           ),
           body: TabBarView(
             children: [
-              _ImageThumbNail(xrayType: _fetchXRayImages('Periapical')),
-              _ImageThumbNail(xrayType: _fetchXRayImages('OPG')),
-              _ImageThumbNail(xrayType: _fetchXRayImages('3D'))
+              _ImageThumbNail(xrayCategory: 'Periapical'),
+              _ImageThumbNail(xrayCategory: 'OPG'),
+              _ImageThumbNail(xrayCategory: '3D')
             ],
           ),
         ),
       ),
     );
   }
+}
 
-    Future<List<XRayDataModel>> _fetchXRayImages(String type) async {
-    try {
-      final conn = await onConnToDb();
-      final results = await conn.query(
-          'SELECT xray_ID, xray_name, reg_date, xray_type, description FROM patient_xrays WHERE pat_ID = ? AND xray_type = ?',
-          [PatientInfo.patID, type]);
-      final xrays = results
-          .map((row) => XRayDataModel(
-              xrayID: row[0],
-              xrayImage: row[1],
-              xrayDate: row[2],
-              xrayType: row[3],
-              xrayDescription: row[4]))
-          .toList();
-      return xrays;
-    } catch (e) {
-      print('Error retrieving xrays: $e');
-      return Future.value([]);
-    }
+Future<List<XRayDataModel>> _fetchXRayImages(String type) async {
+  try {
+    final conn = await onConnToDb();
+    final results = await conn.query(
+        'SELECT xray_ID, xray_name, DATE_FORMAT(reg_date, "%M %d, %Y"), xray_type, description FROM patient_xrays WHERE pat_ID = ? AND xray_type = ?',
+        [PatientInfo.patID, type]);
+    final xrays = results
+        .map((row) => XRayDataModel(
+            xrayID: row[0],
+            xrayImage: row[1].toString(),
+            xrayDate: row[2].toString(),
+            xrayType: row[3],
+            xrayDescription: row[4].toString()))
+        .toList();
+    return xrays;
+  } catch (e) {
+    print('Error retrieving xrays: $e');
+    return Future.value([]);
   }
 }
 
 // Create this class to separate the the repeated widget
 // ignore: must_be_immutable
 class _ImageThumbNail extends StatefulWidget {
-  final Future<List<XRayDataModel>> xrayType;
+  final String xrayCategory;
 
-  _ImageThumbNail({Key? key, required this.xrayType}) : super(key: key);
+  _ImageThumbNail({Key? key, required this.xrayCategory}) : super(key: key);
 
   @override
   State<_ImageThumbNail> createState() => __ImageThumbNailState();
@@ -144,82 +144,115 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<XRayDataModel>>(
-      future: widget.xrayType,
+      future: _fetchXRayImages(widget.xrayCategory),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasError) {
           return Text('Error: ${snapshot.error}');
         } else {
-          var xrayData = snapshot.data;
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  child: GridView.builder(
-                    scrollDirection: Axis.vertical,
-                    itemCount: xrayData!.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4, // Adjust number of images per row
-                      crossAxisSpacing: 10.0, // Adjust horizontal spacing
-                      mainAxisSpacing: 10.0, // Adjust vertical spacing
+          if (snapshot.data!.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                   Text('No X-Ray Image Found.', style: Theme.of(context).textTheme.labelMedium,),
+                  const SizedBox(height: 15.0),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.065,
+                    width: MediaQuery.of(context).size.width * 0.065,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          side: const BorderSide(color: Colors.blue)),
+                      onPressed: () {
+                        int tabIndex = DefaultTabController.of(context).index;
+                        _onUploadXRayImage(tabIndex, () {
+                          setState(() {});
+                        });
+                      },
+                      child: const Icon(Icons.add_a_photo_outlined),
                     ),
-                    itemBuilder: (context, index) {
-                      return MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
+                  ),
+                ],
+              ),
+            );
+          } else {
+            var xrayData = snapshot.data;
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: GridView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: xrayData!.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4, // Adjust number of images per row
+                        crossAxisSpacing: 10.0, // Adjust horizontal spacing
+                        mainAxisSpacing: 10.0, // Adjust vertical spacing
+                      ),
+                      itemBuilder: (context, index) {
+                        final xray = xrayData[index];
+                        return MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ImageViewer(
-                                    images: widget.xrayType,
+                                    images: xrayData,
                                     initialIndex: index),
                               ),
                             );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black)),
-                            child: Image.asset(widget.xrayType[index],
-                                fit: BoxFit.cover),
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black)),
+                              child: Image.file(File(xray.xrayImage),
+                                  fit: BoxFit.cover),
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.065,
-                  width: MediaQuery.of(context).size.width * 0.065,
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        side: const BorderSide(color: Colors.blue)),
-                    onPressed: () {
-                      int tabIndex = DefaultTabController.of(context).index;
-                      _onUploadXRayImage(tabIndex);
-                    },
-                    child: const Icon(Icons.add_a_photo_outlined),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.065,
+                    width: MediaQuery.of(context).size.width * 0.065,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          side: const BorderSide(color: Colors.blue)),
+                      onPressed: () {
+                        int tabIndex = DefaultTabController.of(context).index;
+                        _onUploadXRayImage(tabIndex, () {
+                          setState(() {});
+                        });
+                      },
+                      child: const Icon(Icons.add_a_photo_outlined),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
+                ],
+              ),
+            );
+          }
         }
       },
     );
   }
 
-  _onUploadXRayImage(int index) {
+  _onUploadXRayImage(int index, Function onRefresh) {
     String xrayType = index == 0
         ? 'Periapical'
         : index == 1
@@ -529,6 +562,7 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                   // ignore: use_build_context_synchronously
                                   Navigator.of(context, rootNavigator: true)
                                       .pop();
+                                  onRefresh();
                                 }
                               } catch (e) {
                                 print('Uploading X-Ray failed. $e');
@@ -545,7 +579,7 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
 }
 
 class ImageViewer extends StatefulWidget {
-  final List<String> images;
+  final List<XRayDataModel> images;
   final int initialIndex;
 
   const ImageViewer(
@@ -606,7 +640,7 @@ class _ImageViewerState extends State<ImageViewer> {
                               style: Theme.of(context).textTheme.labelLarge,
                             ),
                             Text(
-                              '2023-12-05',
+                              widget.images[index].xrayDate,
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                           ],
@@ -620,7 +654,7 @@ class _ImageViewerState extends State<ImageViewer> {
                           children: [
                             Text('Description:',
                                 style: Theme.of(context).textTheme.labelLarge),
-                            Text('Testing X-Ray Description...',
+                            Text(widget.images[index].xrayDescription,
                                 style: Theme.of(context).textTheme.bodyLarge),
                           ],
                         ),
@@ -628,8 +662,8 @@ class _ImageViewerState extends State<ImageViewer> {
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
                         width: MediaQuery.of(context).size.width * 0.6,
-                        height: MediaQuery.of(context).size.height * 0.8,
-                        child: Image.asset(widget.images[index],
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: Image.file(File(widget.images[index].xrayImage),
                             fit: BoxFit.contain),
                       ),
                     ],
