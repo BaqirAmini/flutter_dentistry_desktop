@@ -158,7 +158,10 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                   Text('No X-Ray Image Found.', style: Theme.of(context).textTheme.labelMedium,),
+                  Text(
+                    'No X-Ray Image Found.',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
                   const SizedBox(height: 15.0),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.065,
@@ -206,19 +209,23 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                           child: GestureDetector(
                             onTap: () {
                               Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ImageViewer(
-                                    images: xrayData,
-                                    initialIndex: index),
-                              ),
-                            );
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ImageViewer(
+                                      images: xrayData, initialIndex: index),
+                                ),
+                              );
                             },
                             child: Container(
                               decoration: BoxDecoration(
                                   border: Border.all(color: Colors.black)),
-                              child: Image.file(File(xray.xrayImage),
-                                  fit: BoxFit.cover),
+                              child: File(xray.xrayImage).existsSync()
+                                  ? Image.file(File(xray.xrayImage),
+                                      fit: BoxFit.cover)
+                                  : const Center(
+                                    child: Text(
+                                        'Image not found'),
+                                  ), // Replace this with your placeholder widget
                             ),
                           ),
                         );
