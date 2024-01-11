@@ -106,6 +106,7 @@ class XRayUploadScreen extends StatelessWidget {
   }
 }
 
+// This function fetches all x-ray images details from database.
 Future<List<XRayDataModel>> _fetchXRayImages(String type) async {
   try {
     final conn = await onConnToDb();
@@ -223,9 +224,8 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                   ? Image.file(File(xray.xrayImage),
                                       fit: BoxFit.cover)
                                   : const Center(
-                                    child: Text(
-                                        'Image not found'),
-                                  ), // Replace this with your placeholder widget
+                                      child: Text('Image not found'),
+                                    ), // Replace this with your placeholder widget
                             ),
                           ),
                         );
@@ -266,6 +266,7 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
             ? 'OPG'
             : '3D';
 
+    TextEditingController xrayController = TextEditingController();
     TextEditingController dateContoller = TextEditingController();
     TextEditingController xrayNoteController = TextEditingController();
     final xrayFormKey = GlobalKey<FormState>();
@@ -283,7 +284,7 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                   ),
                   content: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.39,
-                    height: MediaQuery.of(context).size.height * 0.65,
+                    height: MediaQuery.of(context).size.height * 1,
                     child: Directionality(
                       textDirection: TextDirection.rtl,
                       child: SingleChildScrollView(
@@ -348,6 +349,11 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                             _selectedImage = File(result
                                                 .files.single.path
                                                 .toString());
+                                                // Fetch only image name from the path
+                                            var onlyImageName = p.basename(
+                                                _selectedImage!.path);
+                                                // Set in the textfield
+                                            xrayController.text = onlyImageName;
                                           });
                                         }
                                       },
@@ -377,93 +383,147 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                     )
                                 ],
                               ),
-                              Container(
-                                margin: const EdgeInsets.all(5.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      '*',
-                                      style: TextStyle(
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.005),
-                                    Container(
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    '*',
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
                                       width: MediaQuery.of(context).size.width *
-                                          0.338,
-                                      margin: const EdgeInsets.only(
-                                          left: 20.0,
-                                          right: 10.0,
-                                          top: 10.0,
-                                          bottom: 10.0),
-                                      child: TextFormField(
-                                        controller: dateContoller,
-                                        validator: (value) {
-                                          if (value!.isEmpty) {
-                                            return 'تاریخ نمی تواند خالی باشد.';
-                                          }
-                                          return null;
-                                        },
-                                        onTap: () async {
-                                          FocusScope.of(context).requestFocus(
-                                            FocusNode(),
-                                          );
-                                          final DateTime? dateTime =
-                                              await showDatePicker(
-                                                  context: context,
-                                                  initialDate: DateTime.now(),
-                                                  firstDate: DateTime(1900),
-                                                  lastDate: DateTime(2100));
-                                          if (dateTime != null) {
-                                            final intl2.DateFormat formatter =
-                                                intl2.DateFormat('yyyy-MM-dd');
-                                            final String formattedDate =
-                                                formatter.format(dateTime);
-                                            dateContoller.text = formattedDate;
-                                          }
-                                        },
-                                        inputFormatters: [
-                                          FilteringTextInputFormatter.allow(
-                                              RegExp(r'[0-9.]'))
-                                        ],
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          labelText: 'تاریخ',
-                                          suffixIcon: Icon(
-                                              Icons.calendar_month_outlined),
-                                          enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(50.0)),
-                                              borderSide: BorderSide(
-                                                  color: Colors.grey)),
-                                          focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(50.0)),
-                                              borderSide: BorderSide(
-                                                  color: Colors.blue)),
-                                          errorBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(50.0)),
-                                              borderSide: BorderSide(
-                                                  color: Colors.red)),
-                                          focusedErrorBorder:
-                                              OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(
-                                                              50.0)),
-                                                  borderSide: BorderSide(
-                                                      color: Colors.red,
-                                                      width: 1.5)),
-                                        ),
+                                          0.005),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.338,
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 10.0,
+                                        top: 10.0,
+                                        bottom: 5.0),
+                                    child: TextFormField(
+                                      controller: xrayController,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'نام اکسری نمی تواند خالی باشد.';
+                                        }
+                                        return null;
+                                      },
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp(r'[0-9.]'))
+                                      ],
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'نام اکسری',
+                                        suffixIcon:
+                                            Icon(Icons.calendar_month_outlined),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                        errorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.red)),
+                                        focusedErrorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    '*',
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  SizedBox(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.005),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.338,
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 10.0,
+                                        top: 10.0,
+                                        bottom: 10.0),
+                                    child: TextFormField(
+                                      controller: dateContoller,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return 'تاریخ نمی تواند خالی باشد.';
+                                        }
+                                        return null;
+                                      },
+                                      onTap: () async {
+                                        FocusScope.of(context).requestFocus(
+                                          FocusNode(),
+                                        );
+                                        final DateTime? dateTime =
+                                            await showDatePicker(
+                                                context: context,
+                                                initialDate: DateTime.now(),
+                                                firstDate: DateTime(1900),
+                                                lastDate: DateTime(2100));
+                                        if (dateTime != null) {
+                                          final intl2.DateFormat formatter =
+                                              intl2.DateFormat('yyyy-MM-dd');
+                                          final String formattedDate =
+                                              formatter.format(dateTime);
+                                          dateContoller.text = formattedDate;
+                                        }
+                                      },
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp(r'[0-9.]'))
+                                      ],
+                                      decoration: const InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'تاریخ',
+                                        suffixIcon:
+                                            Icon(Icons.calendar_month_outlined),
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                        errorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.red)),
+                                        focusedErrorBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                               Container(
                                 margin: const EdgeInsets.all(5.0),
@@ -542,7 +602,6 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                   // Name of the uploaded xray image name
                                   final xrayImageName =
                                       p.basename(_selectedImage!.path);
-
                                   // Patient directory path for instance, Users/name-specified-in-windows/Documents/DCMIS/Ali123
                                   final patientDirPath = p.join(
                                       userDir.path,
