@@ -16,38 +16,6 @@ void main() => runApp(XRayUploadScreen());
 
 class XRayUploadScreen extends StatelessWidget {
   XRayUploadScreen({Key? key}) : super(key: key);
-  final _opgImages = [
-    'assets/xrays/opg1.jpg',
-    'assets/xrays/opg2.jpg',
-    'assets/xrays/opg3.jpg',
-    'assets/xrays/opg4.jpg',
-    'assets/xrays/opg1.jpg',
-    'assets/xrays/opg2.jpg',
-    'assets/xrays/opg3.jpg',
-    'assets/xrays/opg4.jpg',
-  ];
-
-  final _periapicalImages = [
-    'assets/xrays/peri1.jpg',
-    'assets/xrays/peri2.jpg',
-    'assets/xrays/peri3.jpg',
-    'assets/xrays/peri4.jpg',
-    'assets/xrays/peri1.jpg',
-    'assets/xrays/peri2.jpg',
-    'assets/xrays/peri3.jpg',
-    'assets/xrays/peri4.jpg',
-    'assets/xrays/peri1.jpg',
-    'assets/xrays/peri2.jpg',
-    'assets/xrays/peri3.jpg',
-    'assets/xrays/peri4.jpg',
-  ];
-
-  final _3DImages = [
-    'assets/xrays/3D1.jpg',
-    'assets/xrays/3D2.jpg',
-    'assets/xrays/3D3.jpg',
-    'assets/xrays/3D4.jpg',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -275,7 +243,7 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
         context: context,
         builder: (ctx) => StatefulBuilder(
               builder: (context, setState) {
-                String xrayMessage = 'هیچ فایل اکسری را انتخاب نکرده اید.';
+                final xrayMessage = ValueNotifier<String>('');
                 return AlertDialog(
                   title: const Directionality(
                     textDirection: TextDirection.rtl,
@@ -349,11 +317,6 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                             _selectedImage = File(result
                                                 .files.single.path
                                                 .toString());
-                                                // Fetch only image name from the path
-                                            var onlyImageName = p.basename(
-                                                _selectedImage!.path);
-                                                // Set in the textfield
-                                            xrayController.text = onlyImageName;
                                           });
                                         }
                                       },
@@ -371,78 +334,41 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                     ),
                                   ),
                                   if (_selectedImage == null)
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0),
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 8.0),
                                       child: Text(
-                                        xrayMessage,
-                                        style: const TextStyle(
+                                        'لطفاً فایل اکسری را انتخاب کنید.',
+                                        style: TextStyle(
                                             fontSize: 12.0,
                                             color: Colors.redAccent),
                                       ),
-                                    )
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Text(
-                                    '*',
-                                    style: TextStyle(
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  SizedBox(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.005),
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.338,
-                                    margin: const EdgeInsets.only(
-                                        left: 20.0,
-                                        right: 10.0,
-                                        top: 10.0,
-                                        bottom: 5.0),
-                                    child: TextFormField(
-                                      controller: xrayController,
-                                      validator: (value) {
-                                        if (value!.isEmpty) {
-                                          return 'نام اکسری نمی تواند خالی باشد.';
-                                        }
-                                        return null;
-                                      },
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.allow(
-                                            RegExp(r'[0-9.]'))
-                                      ],
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'نام اکسری',
-                                        suffixIcon:
-                                            Icon(Icons.calendar_month_outlined),
-                                        enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(50.0)),
-                                            borderSide:
-                                                BorderSide(color: Colors.grey)),
-                                        focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(50.0)),
-                                            borderSide:
-                                                BorderSide(color: Colors.blue)),
-                                        errorBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(50.0)),
-                                            borderSide:
-                                                BorderSide(color: Colors.red)),
-                                        focusedErrorBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(50.0)),
-                                            borderSide: BorderSide(
-                                                color: Colors.red, width: 1.5)),
-                                      ),
                                     ),
-                                  ),
+                                  ValueListenableBuilder<String>(
+                                    valueListenable: xrayMessage,
+                                    builder: (context, value, child) {
+                                      if (value.isEmpty) {
+                                        return const SizedBox
+                                            .shrink(); // or Container()
+                                      } else {
+                                        return Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 8.0),
+                                          child: SizedBox(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.3,
+                                            child: Text(
+                                              value,
+                                              style: const TextStyle(
+                                                  fontSize: 12.0,
+                                                  color: Colors.redAccent),
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  )
                                 ],
                               ),
                               Row(
@@ -615,20 +541,41 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                   }
                                   final xrayImagePath =
                                       p.join(patientDirPath, xrayImageName);
-                                  await _selectedImage!.copy(xrayImagePath);
-                                  await conn.query(
-                                      'INSERT INTO patient_xrays (pat_ID, xray_name, xray_type, reg_date, description) VALUES (?, ?, ?, ?, ?)',
+                                  // Firstly, query to check if the selected x-ray already exists, it should not be allowed
+                                  final duplicateResult = await conn.query(
+                                      'SELECT * FROM patient_xrays WHERE pat_ID = ? AND xray_name = ? AND xray_type = ?',
                                       [
                                         PatientInfo.patID,
                                         xrayImagePath,
-                                        xrayType,
-                                        date,
-                                        description
+                                        xrayType
                                       ]);
-                                  // ignore: use_build_context_synchronously
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop();
-                                  onRefresh();
+                                  // Check to not allow duplicates.
+                                  if (duplicateResult.isNotEmpty) {
+                                    xrayMessage.value = 'اکسری با این نام قبلاً در سیستم وجود دارد. پس یا این فایل را تغییر نام داده و یا فایل دیگری را انتخاب نموده و دوباره آپلود کنید.';
+                                  } else {
+                                    // It should not allow x-ray images with size more than 10MB.
+                                    var xraySize =
+                                        await _selectedImage!.readAsBytes();
+                                    if (xraySize.length > 10 * 1024 * 1024) {
+                                      xrayMessage.value =
+                                          'اندازه فایل اکسری باید کمتر از 10 میگابایت باشد.';
+                                    } else {
+                                      await _selectedImage!.copy(xrayImagePath);
+                                      await conn.query(
+                                          'INSERT INTO patient_xrays (pat_ID, xray_name, xray_type, reg_date, description) VALUES (?, ?, ?, ?, ?)',
+                                          [
+                                            PatientInfo.patID,
+                                            xrayImagePath,
+                                            xrayType,
+                                            date,
+                                            description
+                                          ]);
+                                      // ignore: use_build_context_synchronously
+                                      Navigator.of(context, rootNavigator: true)
+                                          .pop();
+                                      onRefresh();
+                                    }
+                                  }
                                 }
                               } catch (e) {
                                 print('Uploading X-Ray failed. $e');
