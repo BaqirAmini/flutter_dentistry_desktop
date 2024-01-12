@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
+import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:flutter_dentistry/views/settings/settings_menu.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:intl/intl.dart' as intl2;
@@ -27,13 +29,27 @@ class XRayUploadScreen extends StatelessWidget {
           appBar: AppBar(
             title: const Text('X-Ray Categories'),
             leading: IconButton(
-                splashRadius: 30.0,
+                splashRadius: 27.0,
                 onPressed: () => Navigator.pop(context),
                 icon: const BackButtonIcon()),
             actions: [
               IconButton(
-                  splashRadius: 30.0,
-                  onPressed: () {},
+                onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const Patient()),
+                    (route) => route.settings.name == 'Patient'),
+                icon: const Icon(Icons.people_outline),
+                tooltip: 'Patients',
+                padding: const EdgeInsets.all(3.0),
+                splashRadius: 30.0,
+              ),
+              const SizedBox(width: 15.0),
+              IconButton(
+                  splashRadius: 27.0,
+                  tooltip: 'Dashboard',
+                  padding: const EdgeInsets.all(3.0),
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const Dashboard(),
+                      )),
                   icon: const Icon(Icons.home_outlined)),
               const SizedBox(width: 15.0)
             ],
@@ -159,6 +175,14 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  const Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                          'آدرس همه فایل های اکسری که تا حالا آپلود گریده اند: Users/account-name/Documents/DCMIS', style: TextStyle(color: Colors.green, fontSize: 12.0, fontWeight: FontWeight.bold))
+                    ),
+                  ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.8,
                     height: MediaQuery.of(context).size.height * 0.7,
@@ -187,10 +211,12 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black)),
+                                  border: Border.all(color: Colors.blue)),
                               child: File(xray.xrayImage).existsSync()
-                                  ? Image.file(File(xray.xrayImage),
-                                      fit: BoxFit.cover)
+                                  ? Image.file(
+                                      File(xray.xrayImage),
+                                      fit: BoxFit.cover,
+                                    )
                                   : const Center(
                                       child: Text('Image not found'),
                                     ), // Replace this with your placeholder widget
@@ -234,7 +260,6 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
             ? 'OPG'
             : '3D';
 
-    TextEditingController xrayController = TextEditingController();
     TextEditingController dateContoller = TextEditingController();
     TextEditingController xrayNoteController = TextEditingController();
     final xrayFormKey = GlobalKey<FormState>();
@@ -551,7 +576,8 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                       ]);
                                   // Check to not allow duplicates.
                                   if (duplicateResult.isNotEmpty) {
-                                    xrayMessage.value = 'اکسری با این نام قبلاً در سیستم وجود دارد. پس یا این فایل را تغییر نام داده و یا فایل دیگری را انتخاب نموده و دوباره آپلود کنید.';
+                                    xrayMessage.value =
+                                        'اکسری با این نام قبلاً در سیستم وجود دارد. پس یا این فایل را تغییر نام داده و یا فایل دیگری را انتخاب نموده و دوباره آپلود کنید.';
                                   } else {
                                     // It should not allow x-ray images with size more than 10MB.
                                     var xraySize =
