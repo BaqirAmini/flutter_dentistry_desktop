@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -29,6 +30,27 @@ class FeeRecord extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             icon: const BackButtonIcon(),
           ),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const Patient()),
+                  (route) => route.settings.name == 'Patient'),
+              icon: const Icon(Icons.people_outline),
+              tooltip: 'Patients',
+              padding: const EdgeInsets.all(3.0),
+              splashRadius: 30.0,
+            ),
+            const SizedBox(width: 15.0),
+            IconButton(
+                splashRadius: 27.0,
+                tooltip: 'Dashboard',
+                padding: const EdgeInsets.all(3.0),
+                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const Dashboard(),
+                    )),
+                icon: const Icon(Icons.home_outlined)),
+            const SizedBox(width: 15.0)
+          ],
         ),
         body: Center(
           child: Container(
@@ -567,10 +589,12 @@ class _FeeContentState extends State<FeeContent> {
     final conn = await onConnToDb();
     final results = await conn.query(
         '''SELECT s.ser_name, a.installment, a.total_fee, a.round, fp.payment_ID, 
-            fp.installment_counter, DATE_FORMAT(fp.payment_date, '%M %d, %Y'), fp.paid_amount, fp.due_amount, fp.whole_fee_paid, fp.apt_ID
-            FROM services s 
+            fp.installment_counter, DATE_FORMAT(fp.payment_date, '%M %d, %Y'), fp.paid_amount, fp.due_amount, fp.whole_fee_paid, fp.apt_ID,
+            st.firstname, st.lastname FROM services s 
             INNER JOIN appointments a ON s.ser_ID = a.service_ID
-            INNER JOIN fee_payments fp ON fp.apt_ID = a.apt_ID WHERE a.pat_ID = ? ORDER BY fp.installment_counter DESC''',
+            INNER JOIN fee_payments fp ON fp.apt_ID = a.apt_ID 
+            INNER JOIN staff st ON fp.staff_ID = st.staff_ID
+            WHERE a.pat_ID = ? ORDER BY fp.installment_counter DESC''',
         [PatientInfo.patID]);
 
     final apptFees = results
@@ -585,7 +609,9 @@ class _FeeContentState extends State<FeeContent> {
             paidAmount: row[7],
             dueAmount: row[8],
             isWholePaid: row[9],
-            apptID: row[10]))
+            apptID: row[10],
+            staffFirstName: row[11],
+            staffLastName: row[12]))
         .toList();
 
     await conn.close();
@@ -716,9 +742,9 @@ class _FeeContentState extends State<FeeContent> {
                                                   style: const TextStyle(
                                                       fontSize: 18.0),
                                                 ),
-                                                const Text(
-                                                  'تحت نظر: ',
-                                                  style: TextStyle(
+                                                Text(
+                                                  'تحت نظر: ${payment.staffFirstName} ${payment.staffLastName}',
+                                                  style: const TextStyle(
                                                       color: Colors.grey,
                                                       fontSize: 12.0),
                                                 ),
@@ -984,6 +1010,8 @@ class ApptFeeDataModel {
   final double dueAmount;
   final int isWholePaid;
   final int apptID;
+  final String staffFirstName;
+  final String staffLastName;
 
   ApptFeeDataModel(
       {required this.serviceName,
@@ -996,5 +1024,7 @@ class ApptFeeDataModel {
       required this.paidAmount,
       required this.dueAmount,
       required this.isWholePaid,
-      required this.apptID});
+      required this.apptID,
+      required this.staffFirstName,
+      required this.staffLastName});
 }
