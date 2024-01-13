@@ -12,4 +12,15 @@ class StaffInfo {
   static String? address;
   static Function? onUpdateProfile;
   static Blob? userPhoto;
+
+   // position types dropdown variables
+  static String staffDefaultPosistion = 'داکتر دندان';
+  static var staffPositionItems = [
+    'داکتر دندان',
+    'پروتیزین',
+    'مدیر سیستم',
+    'آشپز',
+    'حسابدار',
+    'کار آموز'
+  ];
 }

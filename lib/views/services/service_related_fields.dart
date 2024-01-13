@@ -35,6 +35,8 @@ class _ServiceFormState extends State<ServiceForm> {
   final List<String> _crownItems = [
     'Porcelain',
     'Metal-Porcelain',
+    'Design Porcelain',
+    'Style Porcelain',
     'CAD CAM',
     'Zirconia',
     'Mital',

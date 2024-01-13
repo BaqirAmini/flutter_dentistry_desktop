@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/views/staff/staff_info.dart';
 
 class NewUser extends StatefulWidget {
   const NewUser({Key? key}) : super(key: key);
@@ -8,13 +9,6 @@ class NewUser extends StatefulWidget {
 }
 
 class _NewUserState extends State<NewUser> {
-// position types dropdown variables
-  String positionDropDown = 'داکتر دندان';
-  var positionItems = [
-    'داکتر دندان',
-    'نرس',
-    'مدیر سیستم',
-  ];
 // The global for the form
   final _newUserFormKey = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
@@ -121,8 +115,8 @@ class _NewUserState extends State<NewUser> {
                           child: DropdownButton(
                             isExpanded: true,
                             icon: const Icon(Icons.arrow_drop_down),
-                            value: positionDropDown,
-                            items: positionItems.map((String positionItems) {
+                            value: StaffInfo.staffDefaultPosistion,
+                            items: StaffInfo.staffPositionItems.map((String positionItems) {
                               return DropdownMenuItem(
                                 value: positionItems,
                                 alignment: Alignment.centerRight,
@@ -131,7 +125,7 @@ class _NewUserState extends State<NewUser> {
                             }).toList(),
                             onChanged: (String? newValue) {
                               setState(() {
-                                positionDropDown = newValue!;
+                                StaffInfo.staffDefaultPosistion = newValue!;
                               });
                             },
                           ),

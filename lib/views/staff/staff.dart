@@ -647,13 +647,7 @@ onEditStaff(
     String tazkira,
     String address,
     Function onUpdate) {
-  // position types dropdown variables
-  String positionDropDown = 'داکتر دندان';
-  var positionItems = [
-    'داکتر دندان',
-    'نرس',
-    'مدیر سیستم',
-  ];
+  
 // The global for the form
   final formKey1 = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
@@ -671,7 +665,7 @@ onEditStaff(
 /* ------------- Set all staff related values into their fields.----------- */
   nameController.text = firstname;
   lastNameController.text = lastname;
-  positionDropDown = position;
+  StaffInfo.staffDefaultPosistion = position;
   salaryController.text = salary.toString();
   phoneController.text = phoneNum;
   tazkiraController.text = tazkira;
@@ -820,9 +814,9 @@ onEditStaff(
                                 child: DropdownButton(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: positionDropDown,
+                                  value: StaffInfo.staffDefaultPosistion,
                                   items:
-                                      positionItems.map((String positionItems) {
+                                      StaffInfo.staffPositionItems.map((String positionItems) {
                                     return DropdownMenuItem(
                                       value: positionItems,
                                       alignment: Alignment.centerRight,
@@ -831,7 +825,7 @@ onEditStaff(
                                   }).toList(),
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      positionDropDown = newValue!;
+                                      StaffInfo.staffDefaultPosistion = newValue!;
                                     });
                                   },
                                 ),
@@ -1045,7 +1039,7 @@ onEditStaff(
                           if (formKey1.currentState!.validate()) {
                             String fname = nameController.text;
                             String lname = lastNameController.text;
-                            String pos = positionDropDown;
+                            String pos = StaffInfo.staffDefaultPosistion;
                             String phone = phoneController.text;
                             double salary = double.parse(salaryController.text);
                             String tazkiraId = tazkiraController.text;

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:provider/provider.dart';
 
 class NewStaffForm extends StatefulWidget {
@@ -21,13 +22,7 @@ var languageProvider;
 var selectedLanguage;
 
 class _NewStaffFormState extends State<NewStaffForm> {
-  // position types dropdown variables
-  String positionDropDown = 'داکتر دندان';
-  var positionItems = [
-    'داکتر دندان',
-    'نرس',
-    'مدیر سیستم',
-  ];
+
 // The global for the form
   final _newStaffFormKey = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
@@ -188,8 +183,8 @@ class _NewStaffFormState extends State<NewStaffForm> {
                         child: DropdownButton(
                           isExpanded: true,
                           icon: const Icon(Icons.arrow_drop_down),
-                          value: positionDropDown,
-                          items: positionItems.map((String positionItems) {
+                          value: StaffInfo.staffDefaultPosistion,
+                          items: StaffInfo.staffPositionItems.map((String positionItems) {
                             return DropdownMenuItem(
                               value: positionItems,
                               alignment: Alignment.centerRight,
@@ -198,7 +193,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                           }).toList(),
                           onChanged: (String? newValue) {
                             setState(() {
-                              positionDropDown = newValue!;
+                              StaffInfo.staffDefaultPosistion = newValue!;
                             });
                           },
                         ),
@@ -389,7 +384,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     onPressed: () async {
                       String fname = _nameController.text;
                       String lname = _lastNameController.text;
-                      String pos = positionDropDown;
+                      String pos = StaffInfo.staffDefaultPosistion;
                       double salary = 0;
                       String phone = _phoneController.text;
                       String tazkira = _tazkiraController.text;
