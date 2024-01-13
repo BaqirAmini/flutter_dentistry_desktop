@@ -178,10 +178,13 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                   const Directionality(
                     textDirection: TextDirection.rtl,
                     child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                          'آدرس همه فایل های اکسری که تا حالا آپلود گریده اند: Users/account-name/Documents/DCMIS', style: TextStyle(color: Colors.green, fontSize: 12.0, fontWeight: FontWeight.bold))
-                    ),
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                            'آدرس همه فایل های اکسری که تا حالا آپلود گریده اند: Users/account-name/Documents/DCMIS',
+                            style: TextStyle(
+                                color: Colors.green,
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.bold))),
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.8,
@@ -633,6 +636,8 @@ class ImageViewer extends StatefulWidget {
 class _ImageViewerState extends State<ImageViewer> {
   int counter = 0;
   late PageController controller;
+  final TransformationController _transformationController =
+      TransformationController();
 
   @override
   void initState() {
@@ -661,6 +666,8 @@ class _ImageViewerState extends State<ImageViewer> {
               return MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: InteractiveViewer(
+                  transformationController: _transformationController,
+                  onInteractionEnd: _onInteractionEnd,
                   boundaryMargin: const EdgeInsets.all(20.0),
                   minScale: 0.1,
                   maxScale: 2.0,
@@ -670,7 +677,7 @@ class _ImageViewerState extends State<ImageViewer> {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        width: MediaQuery.of(context).size.width * 0.6,
+                        width: MediaQuery.of(context).size.width * 0.43,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -687,7 +694,7 @@ class _ImageViewerState extends State<ImageViewer> {
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        width: MediaQuery.of(context).size.width * 0.6,
+                        width: MediaQuery.of(context).size.width * 0.43,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -700,8 +707,8 @@ class _ImageViewerState extends State<ImageViewer> {
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        height: MediaQuery.of(context).size.height * 0.5,
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        height: MediaQuery.of(context).size.height * 0.7,
                         child: Image.file(File(widget.images[index].xrayImage),
                             fit: BoxFit.contain),
                       ),
@@ -768,6 +775,11 @@ class _ImageViewerState extends State<ImageViewer> {
         ],
       ),
     );
+  }
+
+// This function controls the zooming when it goes beyond the scale specified.
+  void _onInteractionEnd(ScaleEndDetails details) {
+    _transformationController.value = Matrix4.identity();
   }
 }
 
