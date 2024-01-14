@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart' as intl2;
+import 'package:path/path.dart' as p;
 
 class NewStaffForm extends StatefulWidget {
   const NewStaffForm({Key? key}) : super(key: key);
@@ -35,6 +37,9 @@ class _NewStaffFormState extends State<NewStaffForm> {
   final _tazkiraController = TextEditingController();
   final _addressController = TextEditingController();
   final _hireDateController = TextEditingController();
+  File? _selectedContractFile;
+  bool _isLoadingFile = false;
+  var _contractFileMessage = '';
 
   final _regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
   final _regExOnlydigits = "[0-9+]";
@@ -596,6 +601,10 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
+                                disabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
                                 focusedBorder: OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
@@ -701,6 +710,74 @@ class _NewStaffFormState extends State<NewStaffForm> {
                               ),
                             ),
                           ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  border: Border.all(
+                                      width: 1.0,
+                                      color: _selectedContractFile == null
+                                          ? Colors.red
+                                          : Colors.blue),
+                                ),
+                                margin: const EdgeInsets.all(5.0),
+                                width: MediaQuery.of(context).size.width * 0.24,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.055,
+                                child: InkWell(
+                                    onTap: () async {
+                                      setState(() {
+                                        _isLoadingFile = true;
+                                      });
+
+                                      final result = await FilePicker.platform
+                                          .pickFiles(
+                                              allowMultiple: true,
+                                              type: FileType.custom,
+                                              allowedExtensions: [
+                                            'jpg',
+                                            'jpeg',
+                                            'png',
+                                            'pdf',
+                                            'docx'
+                                          ]);
+                                      if (result != null) {
+                                        setState(() {
+                                          _isLoadingFile = false;
+                                          _selectedContractFile = File(result
+                                              .files.single.path
+                                              .toString());
+                                        });
+                                      }
+                                    },
+                                    child: _selectedContractFile == null &&
+                                            !_isLoadingFile
+                                        ? const Icon(Icons.add,
+                                            size: 30, color: Colors.blue)
+                                        : _isLoadingFile
+                                            ? const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                        strokeWidth: 3.0))
+                                            : Center(
+                                                child: Text(p.basename(
+                                                    _selectedContractFile!
+                                                        .path)))),
+                              ),
+                              if (_selectedContractFile == null)
+                                const Padding(
+                                  padding: EdgeInsets.only(right: 8.0),
+                                  child: Text(
+                                    'لطفاً فایل قرارداد را انتخاب کنید.',
+                                    style: TextStyle(
+                                        fontSize: 12.0,
+                                        color: Colors.redAccent),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -733,37 +810,68 @@ class _NewStaffFormState extends State<NewStaffForm> {
                       } else {
                         salary = double.parse(_salaryController.text);
                       }
+                      String hireDate = _hireDateController.text;
+                      double prePaidAmount = _prepaymentController.text.isEmpty
+                          ? 0
+                          : double.parse(_prepaymentController.text);
+                      String familyPhone1 = _familyPhone1Controller.text;
+                      String? familyPhone2 =
+                          _familyPhone2Controller.text.isEmpty
+                              ? null
+                              : _familyPhone2Controller.text;
+                      final contractFile =
+                          await _selectedContractFile!.readAsBytes();
 
-                      if (_newStaffFormKey.currentState!.validate()) {
-                        try {
-                          final conn = await onConnToDb();
-                          var query = await conn.query(
-                              'INSERT INTO staff (firstname, lastname, position, salary, phone, tazkira_ID, address) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                              [
-                                fname,
-                                lname,
-                                pos,
-                                salary,
-                                phone,
-                                tazkira,
-                                addr
-                              ]);
-                          if (query.affectedRows! > 0) {
-                            onShowSnackBar(translations[selectedLanguage]
-                                    ?['StaffRegSuccess'] ??
-                                '');
-                            _nameController.clear();
-                            _lastNameController.clear();
-                            _salaryController.clear();
-                            _phoneController.clear();
-                            _tazkiraController.clear();
-                            _addressController.clear();
-                          } else {
-                            print('Inserting staff failed!');
+                      if (!_isIntern) {
+                        if (_newStaffFormKey.currentState!.validate() &&
+                            contractFile.isNotEmpty) {
+                          try {
+                            final conn = await onConnToDb();
+                            if (contractFile.length > 1024 * 1024) {
+                              setState(() {
+                                _contractFileMessage =
+                                    'اندازه این فایل باید 1 میگابایت یا کمتر باشد.';
+                              });
+                            } else if (contractFile.isEmpty) {
+                              setState(() {
+                                _contractFileMessage =
+                                    'لطفاً قرارداد خط را انتخاب کنید.';
+                              });
+                            } else {
+                              var query = await conn.query(
+                                  'INSERT INTO staff (firstname, lastname, hire_date, position, salary, prepayment, phone, family_phone1, family_phone2, contract_file, tazkira_ID, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                  [
+                                    fname,
+                                    lname,
+                                    hireDate,
+                                    pos,
+                                    salary,
+                                    prePaidAmount,
+                                    phone,
+                                    familyPhone1,
+                                    familyPhone2,
+                                    contractFile,
+                                    tazkira,
+                                    addr
+                                  ]);
+                              if (query.affectedRows! > 0) {
+                                onShowSnackBar(translations[selectedLanguage]
+                                        ?['StaffRegSuccess'] ??
+                                    '');
+                                _nameController.clear();
+                                _lastNameController.clear();
+                                _salaryController.clear();
+                                _phoneController.clear();
+                                _tazkiraController.clear();
+                                _addressController.clear();
+                              } else {
+                                print('Inserting staff failed!');
+                              }
+                              await conn.close();
+                            }
+                          } on SocketException {
+                            onShowSnackBar('Database not found.');
                           }
-                          await conn.close();
-                        } on SocketException {
-                          onShowSnackBar('Database not found.');
                         }
                       }
                     },
