@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/staff/staff.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart' as intl2;
@@ -39,9 +40,9 @@ class _NewStaffFormState extends State<NewStaffForm> {
   final _hireDateController = TextEditingController();
   File? _selectedContractFile;
   bool _isLoadingFile = false;
-  var _contractFileMessage = '';
+  final _contractFileMessage = ValueNotifier<String>('');
 
-  final _regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
+  final _regExOnlyAbc = "[a-zA-Z,-، \u0600-\u06FFF]";
   final _regExOnlydigits = "[0-9+]";
   final _tazkiraPattern = RegExp(r'^\d{4}-\d{4}-\d{5}$');
   bool _isIntern = false;
@@ -71,7 +72,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
         child: Form(
           key: _newStaffFormKey,
           child: SizedBox(
-            width: 1000.0,
+            width: MediaQuery.of(context).size.width * 0.7,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -83,6 +84,13 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     style: TextStyle(color: Color.fromARGB(255, 133, 133, 133)),
                   ),
                 ),
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Text(
+                    '* نماینگر فیلد (خانه) های الزامی میباشد.',
+                    style: TextStyle(color: Colors.red, fontSize: 12.0),
+                  ),
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,56 +98,72 @@ class _NewStaffFormState extends State<NewStaffForm> {
                     Expanded(
                       child: Column(
                         children: [
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: _nameController,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(_regExOnlyAbc),
-                                ),
-                              ],
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return translations[selectedLanguage]
-                                          ?['FNRequired'] ??
-                                      '';
-                                } else if (value.length < 3) {
-                                  return translations[selectedLanguage]
-                                          ?['FNLength'] ??
-                                      '';
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: translations[selectedLanguage]
-                                        ?['FName'] ??
-                                    '',
-                                suffixIcon: Icon(Icons.person),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                '*',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold),
                               ),
-                            ),
+                              Container(
+                                width:
+                                    MediaQuery.of(context).size.width * 0.318,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 10.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: TextFormField(
+                                  controller: _nameController,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(_regExOnlyAbc),
+                                    ),
+                                  ],
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return translations[selectedLanguage]
+                                              ?['FNRequired'] ??
+                                          '';
+                                    } else if (value.length < 3) {
+                                      return translations[selectedLanguage]
+                                              ?['FNLength'] ??
+                                          '';
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                            ?['FName'] ??
+                                        '',
+                                    suffixIcon: Icon(Icons.person),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                    errorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.red)),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide: BorderSide(
+                                            color: Colors.red, width: 1.5)),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           Container(
                             margin: const EdgeInsets.only(
@@ -200,131 +224,165 @@ class _NewStaffFormState extends State<NewStaffForm> {
                               ),
                             ),
                           ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              textDirection: TextDirection.ltr,
-                              controller: _phoneController,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(_regExOnlydigits),
-                                ),
-                              ],
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return translations[selectedLanguage]
-                                          ?['PhoneRequired'] ??
-                                      '';
-                                } else if (value.startsWith('07')) {
-                                  if (value.length < 10 || value.length > 10) {
-                                    return translations[selectedLanguage]
-                                            ?['Phone10'] ??
-                                        '';
-                                  }
-                                } else if (value.startsWith('+93')) {
-                                  if (value.length < 12 || value.length > 12) {
-                                    return translations[selectedLanguage]
-                                            ?['Phone12'] ??
-                                        '';
-                                  }
-                                } else {
-                                  return translations[selectedLanguage]
-                                          ?['ValidPhone'] ??
-                                      '';
-                                }
-                                return null;
-                              },
-                              // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: translations[selectedLanguage]
-                                        ?['Phone'] ??
-                                    '',
-                                suffixIcon: Icon(Icons.phone),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
+                          Row(
+                            children: [
+                              const Text(
+                                '*',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold),
                               ),
-                            ),
+                              Container(
+                                width:
+                                    MediaQuery.of(context).size.width * 0.318,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 10.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: TextFormField(
+                                  textDirection: TextDirection.ltr,
+                                  controller: _phoneController,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(_regExOnlydigits),
+                                    ),
+                                  ],
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return translations[selectedLanguage]
+                                              ?['PhoneRequired'] ??
+                                          '';
+                                    } else if (value.startsWith('07')) {
+                                      if (value.length < 10 ||
+                                          value.length > 10) {
+                                        return translations[selectedLanguage]
+                                                ?['Phone10'] ??
+                                            '';
+                                      }
+                                    } else if (value.startsWith('+93')) {
+                                      if (value.length < 12 ||
+                                          value.length > 12) {
+                                        return translations[selectedLanguage]
+                                                ?['Phone12'] ??
+                                            '';
+                                      }
+                                    } else {
+                                      return translations[selectedLanguage]
+                                              ?['ValidPhone'] ??
+                                          '';
+                                    }
+                                    return null;
+                                  },
+                                  // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                            ?['Phone'] ??
+                                        '',
+                                    suffixIcon: Icon(Icons.phone),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                    errorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.red)),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide: BorderSide(
+                                            color: Colors.red, width: 1.5)),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              textDirection: TextDirection.ltr,
-                              controller: _familyPhone1Controller,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(_regExOnlydigits),
-                                ),
-                              ],
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'این نمبر تماس عضوی فامیل نمی تواند خالی باشد.';
-                                } else if (value.startsWith('07')) {
-                                  if (value.length < 10 || value.length > 10) {
-                                    return translations[selectedLanguage]
-                                            ?['Phone10'] ??
-                                        '';
-                                  }
-                                } else if (value.startsWith('+93')) {
-                                  if (value.length < 12 || value.length > 12) {
-                                    return translations[selectedLanguage]
-                                            ?['Phone12'] ??
-                                        '';
-                                  }
-                                } else {
-                                  return translations[selectedLanguage]
-                                          ?['ValidPhone'] ??
-                                      '';
-                                }
-                                return null;
-                              },
-                              // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'نمبر تماس عضو فامیل (1)',
-                                suffixIcon: Icon(Icons.phone),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
+                          Row(
+                            children: [
+                              const Text(
+                                '*',
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold),
                               ),
-                            ),
+                              Container(
+                                width:
+                                    MediaQuery.of(context).size.width * 0.315,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 10.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: TextFormField(
+                                  textDirection: TextDirection.ltr,
+                                  controller: _familyPhone1Controller,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(
+                                      RegExp(_regExOnlydigits),
+                                    ),
+                                  ],
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'این نمبر تماس عضوی فامیل نمی تواند خالی باشد.';
+                                    } else if (value.startsWith('07')) {
+                                      if (value.length < 10 ||
+                                          value.length > 10) {
+                                        return translations[selectedLanguage]
+                                                ?['Phone10'] ??
+                                            '';
+                                      }
+                                    } else if (value.startsWith('+93')) {
+                                      if (value.length < 12 ||
+                                          value.length > 12) {
+                                        return translations[selectedLanguage]
+                                                ?['Phone12'] ??
+                                            '';
+                                      }
+                                    } else {
+                                      return translations[selectedLanguage]
+                                              ?['ValidPhone'] ??
+                                          '';
+                                    }
+                                    return null;
+                                  },
+                                  // inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'نمبر تماس عضو فامیل (1)',
+                                    suffixIcon: Icon(Icons.phone),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey)),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                    errorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.red)),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide: BorderSide(
+                                            color: Colors.red, width: 1.5)),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           Container(
                             margin: const EdgeInsets.only(
@@ -506,7 +564,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                     fontWeight: FontWeight.bold),
                               ),
                               Container(
-                                width: 460.0,
+                                width: MediaQuery.of(context).size.width * 0.32,
                                 margin: const EdgeInsets.only(
                                     left: 20.0,
                                     right: 10.0,
@@ -723,9 +781,9 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                           : Colors.blue),
                                 ),
                                 margin: const EdgeInsets.all(5.0),
-                                width: MediaQuery.of(context).size.width * 0.24,
+                                width: MediaQuery.of(context).size.width * 0.31,
                                 height:
-                                    MediaQuery.of(context).size.height * 0.055,
+                                    MediaQuery.of(context).size.height * 0.07,
                                 child: InkWell(
                                     onTap: () async {
                                       setState(() {
@@ -762,20 +820,53 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                                     CircularProgressIndicator(
                                                         strokeWidth: 3.0))
                                             : Center(
-                                                child: Text(p.basename(
-                                                    _selectedContractFile!
-                                                        .path)))),
+                                                child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  p.basename(
+                                                      _selectedContractFile!
+                                                          .path),
+                                                  style:
+                                                      TextStyle(fontSize: 12.0),
+                                                ),
+                                              ))),
                               ),
-                              if (_selectedContractFile == null)
-                                const Padding(
-                                  padding: EdgeInsets.only(right: 8.0),
+                              if (_selectedContractFile == null && !_isIntern)
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 20.0),
                                   child: Text(
-                                    'لطفاً فایل قرارداد را انتخاب کنید.',
-                                    style: TextStyle(
-                                        fontSize: 12.0,
-                                        color: Colors.redAccent),
-                                  ),
+                                      'لطفاً قرارداد خط را انتخاب کنید.',
+                                      style: TextStyle(
+                                          color: Colors.redAccent,
+                                          fontSize: 12.0)),
                                 ),
+                              ValueListenableBuilder<String>(
+                                valueListenable: _contractFileMessage,
+                                builder: (context, value, child) {
+                                  if (value.isEmpty) {
+                                    return const SizedBox
+                                        .shrink(); // or Container()
+                                  } else {
+                                    return Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 20.0),
+                                      child: SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.3,
+                                        child: Text(
+                                          value,
+                                          style: const TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.redAccent),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              )
                             ],
                           ),
                         ],
@@ -784,8 +875,8 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   ],
                 ),
                 Container(
-                  width: 400.0,
-                  height: 35.0,
+                  width: MediaQuery.of(context).size.width * 0.32,
+                  height: MediaQuery.of(context).size.height * 0.06,
                   margin: const EdgeInsets.only(
                       left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                   child: OutlinedButton(
@@ -819,26 +910,25 @@ class _NewStaffFormState extends State<NewStaffForm> {
                           _familyPhone2Controller.text.isEmpty
                               ? null
                               : _familyPhone2Controller.text;
-                      final contractFile =
-                          await _selectedContractFile!.readAsBytes();
+                      Uint8List? contractFile;
+                      if (_selectedContractFile != null) {
+                        contractFile =
+                            await _selectedContractFile!.readAsBytes();
+                      }
 
-                      if (!_isIntern) {
-                        if (_newStaffFormKey.currentState!.validate() &&
-                            contractFile.isNotEmpty) {
-                          try {
-                            final conn = await onConnToDb();
-                            if (contractFile.length > 1024 * 1024) {
-                              setState(() {
-                                _contractFileMessage =
-                                    'اندازه این فایل باید 1 میگابایت یا کمتر باشد.';
-                              });
-                            } else if (contractFile.isEmpty) {
-                              setState(() {
-                                _contractFileMessage =
-                                    'لطفاً قرارداد خط را انتخاب کنید.';
-                              });
+                      try {
+                        final conn = await onConnToDb();
+                        if (!_isIntern) {
+                          if (_newStaffFormKey.currentState!.validate() &&
+                              _selectedContractFile != null) {
+                            if (contractFile!.length > 1024 * 1024) {
+                              _contractFileMessage.value =
+                                  'اندازه این فایل باید 1 میگابایت یا کمتر باشد.';
+                            } else if (_selectedContractFile == null) {
+                              _contractFileMessage.value =
+                                  'لطفاً قرارداد خط را انتخاب کنید.';
                             } else {
-                              var query = await conn.query(
+                              await conn.query(
                                   'INSERT INTO staff (firstname, lastname, hire_date, position, salary, prepayment, phone, family_phone1, family_phone2, contract_file, tazkira_ID, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                                   [
                                     fname,
@@ -854,25 +944,63 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                     tazkira,
                                     addr
                                   ]);
-                              if (query.affectedRows! > 0) {
-                                onShowSnackBar(translations[selectedLanguage]
-                                        ?['StaffRegSuccess'] ??
-                                    '');
-                                _nameController.clear();
-                                _lastNameController.clear();
-                                _salaryController.clear();
-                                _phoneController.clear();
-                                _tazkiraController.clear();
-                                _addressController.clear();
-                              } else {
-                                print('Inserting staff failed!');
-                              }
+                              // Navigator.of(context).pop();
                               await conn.close();
                             }
-                          } on SocketException {
-                            onShowSnackBar('Database not found.');
+                          }
+                        } else {
+                          if (_selectedContractFile != null) {
+                            if (_newStaffFormKey.currentState!.validate() &&
+                                _selectedContractFile != null) {
+                              if (contractFile!.length > 1024 * 1024) {
+                                _contractFileMessage.value =
+                                    'اندازه این فایل باید 1 میگابایت یا کمتر باشد.';
+                              } else {
+                                await conn.query(
+                                    'INSERT INTO staff (firstname, lastname, hire_date, position, salary, prepayment, phone, family_phone1, family_phone2, contract_file, tazkira_ID, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                    [
+                                      fname,
+                                      lname,
+                                      hireDate,
+                                      pos,
+                                      salary,
+                                      prePaidAmount,
+                                      phone,
+                                      familyPhone1,
+                                      familyPhone2,
+                                      contractFile,
+                                      tazkira,
+                                      addr
+                                    ]);
+                                // Navigator.of(context).pop();
+                                await conn.close();
+                              }
+                            }
+                          } else {
+                            if (_newStaffFormKey.currentState!.validate()) {
+                              await conn.query(
+                                  'INSERT INTO staff (firstname, lastname, hire_date, position, salary, prepayment, phone, family_phone1, family_phone2, contract_file, tazkira_ID, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                  [
+                                    fname,
+                                    lname,
+                                    hireDate,
+                                    pos,
+                                    salary,
+                                    prePaidAmount,
+                                    phone,
+                                    familyPhone1,
+                                    familyPhone2,
+                                    null,
+                                    tazkira,
+                                    addr
+                                  ]);
+                              // Navigator.of(context).pop();
+                              await conn.close();
+                            }
                           }
                         }
+                      } catch (e) {
+                        print('(1) Inserting staff failed. $e');
                       }
                     },
                     child:
