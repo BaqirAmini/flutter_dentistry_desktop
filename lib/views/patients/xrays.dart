@@ -280,7 +280,7 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                   ),
                   content: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.39,
-                    height: MediaQuery.of(context).size.height * 1,
+                    height: MediaQuery.of(context).size.height * 0.55,
                     child: Directionality(
                       textDirection: TextDirection.rtl,
                       child: SingleChildScrollView(
@@ -656,12 +656,16 @@ class _ImageViewerState extends State<ImageViewer> {
           PageView.builder(
             controller: controller,
             itemCount: widget.images.length,
+            onPageChanged: (index) {
+              setState(() {
+                counter = index == widget.images.length - 1
+                    ? widget.images.length - 1
+                    : index > 0
+                        ? index
+                        : 0;
+              });
+            },
             itemBuilder: (context, index) {
-              counter = index == widget.images.length - 1
-                  ? widget.images.length - 1
-                  : index > 0
-                      ? index
-                      : 0;
               print('Index: $index');
               return MouseRegion(
                 cursor: SystemMouseCursors.click,
