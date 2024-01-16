@@ -481,10 +481,11 @@ class _LoginState extends State<Login> {
                             ],
                           ),
                         ),
-                        const Image(
-                          image: AssetImage('assets/graphics/login_img1.png'),
-                          width: 300,
-                          height: 300,
+                        Image(
+                          image: const AssetImage(
+                              'assets/graphics/login_img1.png'),
+                          width: MediaQuery.of(context).size.width * 0.2,
+                          height: MediaQuery.of(context).size.width * 0.2,
                         )
                       ],
                     ),
