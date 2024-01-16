@@ -72,8 +72,8 @@ class _NewStaffFormState extends State<NewStaffForm> {
     var isEnglish = selectedLanguage == 'English';
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
+      body: Center(
+        child: SingleChildScrollView(
           child: Form(
             key: _newStaffFormKey,
             child: SizedBox(
@@ -243,7 +243,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                             Container(
                               margin: EdgeInsets.only(
                                   right: MediaQuery.of(context).size.width *
-                                      0.013),
+                                      0.007),
                               child: Row(
                                 children: [
                                   const Text(
@@ -333,7 +333,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                             Container(
                               margin: EdgeInsets.only(
                                   right: MediaQuery.of(context).size.width *
-                                      0.013),
+                                      0.007),
                               child: Row(
                                 children: [
                                   const Text(
@@ -601,7 +601,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                             Container(
                               margin: EdgeInsets.only(
                                   right: MediaQuery.of(context).size.width *
-                                      0.007),
+                                      0.005),
                               child: Row(
                                 children: [
                                   const Text(
@@ -612,7 +612,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                   ),
                                   Container(
                                     width: MediaQuery.of(context).size.width *
-                                        0.31,
+                                        0.307,
                                     margin: const EdgeInsets.only(
                                         left: 20.0,
                                         right: 20.0,
@@ -844,10 +844,9 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                             : Colors.blue),
                                   ),
                                   margin: const EdgeInsets.all(5.0),
+                                  padding: EdgeInsets.all(8.0),
                                   width:
                                       MediaQuery.of(context).size.width * 0.31,
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.045,
                                   child: InkWell(
                                       onTap: () async {
                                         setState(() {
@@ -941,7 +940,6 @@ class _NewStaffFormState extends State<NewStaffForm> {
                   ),
                   Container(
                     width: MediaQuery.of(context).size.width * 0.32,
-                    height: MediaQuery.of(context).size.height * 0.04,
                     margin: const EdgeInsets.only(
                         left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                     child: OutlinedButton(
@@ -1068,8 +1066,11 @@ class _NewStaffFormState extends State<NewStaffForm> {
                           print('(1) Inserting staff failed. $e');
                         }
                       },
-                      child:
-                          Text(translations[selectedLanguage]?['AddBtn'] ?? ''),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                            translations[selectedLanguage]?['AddBtn'] ?? ''),
+                      ),
                     ),
                   )
                 ],
