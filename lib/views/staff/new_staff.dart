@@ -18,25 +18,22 @@ class NewStaff extends StatelessWidget {
     var selectedLanguage = languageProvider.selectedLanguage;
     var isEnglish = selectedLanguage == 'English';
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Directionality(
-        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(translations[selectedLanguage]?['StaffReg'] ?? ''),
-            leading: Tooltip(
-              message: translations[selectedLanguage]?['GoBack'] ?? '',
-              child: IconButton(
-                icon: const BackButtonIcon(),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
+    return Directionality(
+      textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(translations[selectedLanguage]?['StaffReg'] ?? ''),
+          leading: Tooltip(
+            message: translations[selectedLanguage]?['GoBack'] ?? '',
+            child: IconButton(
+              icon: const BackButtonIcon(),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
           ),
-          body: const NewStaffForm(),
         ),
+        body: const NewStaffForm(),
       ),
     );
   }
