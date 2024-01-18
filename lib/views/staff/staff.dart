@@ -4,6 +4,7 @@ import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/staff/new_staff.dart';
+import 'package:flutter_dentistry/views/staff/staff_detail.dart';
 import 'package:galileo_mysql/galileo_mysql.dart';
 import 'package:provider/provider.dart';
 import 'staff_info.dart';
@@ -454,7 +455,12 @@ class MyData extends DataTableSource {
                       style: const TextStyle(fontSize: 15.0),
                     ),
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const StaffDetail(),
+                          ));
+                      // Navigator.pop(context);
                     },
                   ),
                 ),
@@ -647,7 +653,6 @@ onEditStaff(
     String tazkira,
     String address,
     Function onUpdate) {
-  
 // The global for the form
   final formKey1 = GlobalKey<FormState>();
 // The text editing controllers for the TextFormFields
@@ -815,8 +820,8 @@ onEditStaff(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
                                   value: StaffInfo.staffDefaultPosistion,
-                                  items:
-                                      StaffInfo.staffPositionItems.map((String positionItems) {
+                                  items: StaffInfo.staffPositionItems
+                                      .map((String positionItems) {
                                     return DropdownMenuItem(
                                       value: positionItems,
                                       alignment: Alignment.centerRight,
@@ -825,7 +830,8 @@ onEditStaff(
                                   }).toList(),
                                   onChanged: (String? newValue) {
                                     setState(() {
-                                      StaffInfo.staffDefaultPosistion = newValue!;
+                                      StaffInfo.staffDefaultPosistion =
+                                          newValue!;
                                     });
                                   },
                                 ),
