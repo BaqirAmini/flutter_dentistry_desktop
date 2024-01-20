@@ -952,6 +952,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                         ),
                       ),
                       onPressed: () async {
+                        String? fileType;
                         String fname = _nameController.text;
                         String lname = _lastNameController.text;
                         String pos = StaffInfo.staffDefaultPosistion;
@@ -978,6 +979,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                         if (_selectedContractFile != null) {
                           contractFile =
                               await _selectedContractFile!.readAsBytes();
+                          fileType = p.extension(_selectedContractFile!.path);
                         }
                         try {
                           final conn = await onConnToDb();
@@ -992,7 +994,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                     'لطفاً قرارداد خط را انتخاب کنید.';
                               } else {
                                 await conn.query(
-                                    'INSERT INTO staff (firstname, lastname, hire_date, position, salary, prepayment, phone, family_phone1, family_phone2, contract_file, tazkira_ID, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                    'INSERT INTO staff (firstname, lastname, hire_date, position, salary, prepayment, phone, family_phone1, family_phone2, contract_file, file_type, tazkira_ID, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                                     [
                                       fname,
                                       lname,
@@ -1004,6 +1006,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                       familyPhone1,
                                       familyPhone2,
                                       contractFile,
+                                      fileType,
                                       tazkira,
                                       addr
                                     ]);
@@ -1020,7 +1023,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                       'اندازه این فایل باید 1 میگابایت یا کمتر باشد.';
                                 } else {
                                   await conn.query(
-                                      'INSERT INTO staff (firstname, lastname, hire_date, position, salary, prepayment, phone, family_phone1, family_phone2, contract_file, tazkira_ID, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                      'INSERT INTO staff (firstname, lastname, hire_date, position, salary, prepayment, phone, family_phone1, family_phone2, contract_file, file_type, tazkira_ID, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                                       [
                                         fname,
                                         lname,
@@ -1032,6 +1035,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                         familyPhone1,
                                         familyPhone2,
                                         contractFile,
+                                        fileType,
                                         tazkira,
                                         addr
                                       ]);
@@ -1042,7 +1046,7 @@ class _NewStaffFormState extends State<NewStaffForm> {
                             } else {
                               if (_newStaffFormKey.currentState!.validate()) {
                                 await conn.query(
-                                    'INSERT INTO staff (firstname, lastname, hire_date, position, salary, prepayment, phone, family_phone1, family_phone2, contract_file, tazkira_ID, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                    'INSERT INTO staff (firstname, lastname, hire_date, position, salary, prepayment, phone, family_phone1, family_phone2, tazkira_ID, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                                     [
                                       fname,
                                       lname,
@@ -1053,7 +1057,6 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                       phone,
                                       familyPhone1,
                                       familyPhone2,
-                                      null,
                                       tazkira,
                                       addr
                                     ]);
