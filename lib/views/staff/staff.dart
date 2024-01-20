@@ -90,7 +90,7 @@ class _MyDataTableState extends State<MyDataTable> {
   Future<void> _fetchData() async {
     final conn = await onConnToDb();
     final queryResult = await conn.query(
-        'SELECT photo, firstname, lastname, position, salary, phone, tazkira_ID, address, staff_ID FROM staff');
+        'SELECT photo, firstname, lastname, position, salary, phone, tazkira_ID, address, staff_ID, DATE_FORMAT(hire_date, "%M %d, %Y"), prepayment, family_phone1, family_phone2, contract_file, file_type FROM staff');
     conn.close();
 
     _data = queryResult.map((row) {
@@ -104,6 +104,13 @@ class _MyDataTableState extends State<MyDataTable> {
         tazkira: row[6],
         address: row[7],
         staffID: row[8],
+        hireDate: row[9].toString(),
+        prepayment: row[10] ?? 0,
+        familyPhone1: row[11] ?? '',
+        familyPhone2: row[12] ?? '',
+        contractFile:
+            row[13] == null ? null : Uint8List.fromList(row[13].toBytes()),
+        fileType: row[14],
       );
     }).toList();
     _filteredData = List.from(_data);
@@ -455,12 +462,26 @@ class MyData extends DataTableSource {
                       style: const TextStyle(fontSize: 15.0),
                     ),
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const StaffDetail(),
+                            builder: (context) => StaffDetail(
+                                staffID: data[index].staffID,
+                                staffFName: data[index].firstName,
+                                staffLName: data[index].lastName,
+                                staffPhone: data[index].phone,
+                                stafffphone1: data[index].familyPhone1,
+                                stafffphone2: data[index].familyPhone2,
+                                staffPos: data[index].position,
+                                staffSalary: data[index].salary,
+                                staffPrPayment: data[index].prepayment,
+                                tazkiraID: data[index].tazkira,
+                                contractFile: data[index].contractFile,
+                                fileType: data[index].fileType,
+                                staffAddr: data[index].address,
+                                staffHDate: data[index].hireDate),
                           ));
-                      // Navigator.pop(context);
                     },
                   ),
                 ),
@@ -1657,6 +1678,12 @@ class MyStaff {
   final String tazkira;
   final String address;
   final int staffID;
+  final String hireDate;
+  final double prepayment;
+  final String familyPhone1;
+  final String? familyPhone2;
+  final Uint8List? contractFile;
+  final String? fileType;
   MyStaff({
     this.photo,
     required this.firstName,
@@ -1667,6 +1694,12 @@ class MyStaff {
     required this.tazkira,
     required this.address,
     required this.staffID,
+    required this.hireDate,
+    required this.prepayment,
+    required this.familyPhone1,
+    this.familyPhone2,
+    this.contractFile,
+    this.fileType,
   });
 
   @override

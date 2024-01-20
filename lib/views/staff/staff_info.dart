@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:galileo_mysql/src/blob.dart';
 
 class StaffInfo {
@@ -12,6 +14,8 @@ class StaffInfo {
   static String? address;
   static Function? onUpdateProfile;
   static Blob? userPhoto;
+  static Uint8List? contractFile;
+  static String? fileType;
 
    // position types dropdown variables
   static String staffDefaultPosistion = 'داکتر دندان';

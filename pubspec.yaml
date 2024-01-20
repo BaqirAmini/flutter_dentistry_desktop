@@ -59,6 +59,8 @@ dependencies:
   provider: ^6.0.5
   window_manager: ^0.3.7
   collection: ^1.17.2
+  open_file: ^3.3.2
+  syncfusion_flutter_pdfviewer: ^21.2.10
 
 dev_dependencies:
   flutter_test:
