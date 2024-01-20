@@ -666,7 +666,6 @@ class _ImageViewerState extends State<ImageViewer> {
               });
             },
             itemBuilder: (context, index) {
-              print('Index: $index');
               return MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: InteractiveViewer(
