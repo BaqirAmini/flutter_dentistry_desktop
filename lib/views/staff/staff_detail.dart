@@ -59,17 +59,17 @@ class StaffDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     gStaffID = staffID;
     gStaffFName = staffFName;
-    gStaffLName = staffLName!;
+    gStaffLName = staffLName ?? '';
     gStaffPhone = staffPhone;
     gStaffFPhone1 = stafffphone1;
-    gStaffFPhone2 = stafffphone2!;
+    gStaffFPhone2 = stafffphone2 ?? '';
     gStaffPos = staffPos;
-    gStaffAddr = staffAddr!;
-    gstaffFType = fileType!;
+    gStaffAddr = staffAddr ?? '';
+    gstaffFType = fileType ?? '';
     gStaffContract = contractFile;
-    gStaffPrePay = staffPrPayment!;
-    gStaffSalary = staffSalary!;
-    gStaffTazkira = tazkiraID!;
+    gStaffPrePay = staffPrPayment ?? 0;
+    gStaffSalary = staffSalary ?? 0;
+    gStaffTazkira = tazkiraID ?? '';
     gStaffHDate = staffHDate;
 
     return MaterialApp(
@@ -166,11 +166,21 @@ class _StaffProfile extends StatelessWidget {
               ),
               // const SizedBox(width: 10),
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.15,
+                width: MediaQuery.of(context).size.width * 0.12,
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text('$gStaffFName $gStaffLName',
-                        style: Theme.of(context).textTheme.headlineSmall),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal:
+                              MediaQuery.of(context).size.width * 0.017),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: Text('$gStaffFName $gStaffLName',
+                            style: Theme.of(context).textTheme.headlineSmall),
+                      ),
+                    ),
                     const SizedBox(height: 10.0),
                     Padding(
                       padding: EdgeInsets.symmetric(
@@ -294,151 +304,172 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
             elevation: 0.5,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'تاریخ استخدام',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0),
-                          ),
-                          Text(gStaffHDate),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: Column(
-                        children: [
-                          const Text('بست',
-                              style: TextStyle(
-                                  color: Colors.grey, fontSize: 12.0)),
-                          Text(gStaffPos),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'نمبر تذکره',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0),
-                          ),
-                          Text(gStaffTazkira),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: Column(
-                        children: [
-                          const Text('معاش',
-                              style: TextStyle(
-                                  color: Colors.grey, fontSize: 12.0)),
-                          Text('$gStaffSalary افغانی'),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: Column(
-                        children: [
-                          const Text('مقدار پول ضمانت',
-                              style: TextStyle(
-                                  color: Colors.grey, fontSize: 12.0)),
-                          Text('$gStaffPrePay افغانی'),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: Column(
-                        children: [
-                          const Text('آدرس',
-                              style: TextStyle(
-                                  color: Colors.grey, fontSize: 12.0)),
-                          Text(gStaffAddr),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: SizedBox(
-                        width: 220,
-                        child: Column(
-                          children: [
-                            const Text('نمبر تماس عضو فامیل 1',
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin:
+                              const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'تاریخ استخدام',
                                 style: TextStyle(
-                                    color: Colors.grey, fontSize: 12.0)),
-                            Text(gStaffFPhone1),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: Column(
-                        children: [
-                          const Text('نمبر تماس عضو فامیل 2',
-                              style: TextStyle(
-                                  color: Colors.grey, fontSize: 12.0)),
-                          Text(gStaffFPhone2),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: InkWell(
-                        onTap: () async {
-                          // This is your Uint8List variable
-                          Uint8List? convertToU8List = gStaffContract;
-
-                          // Write the Uint8List to a temporary file
-                          var tempDir = await getTemporaryDirectory();
-                          File tempFile =
-                              File('${tempDir.path}/temp_file$fileExtension');
-
-                          if (convertToU8List == null) {
-                            const snackbar = SnackBar(
-                              content: Center(
-                                child: Text(
-                                  'فایل قرارداد یافت نشد.',
-                                  style: TextStyle(color: Colors.white),
-                                ),
+                                    color: Colors.grey, fontSize: 12.0),
                               ),
-                              backgroundColor: Colors.red,
-                            );
-                            // ignore: use_build_context_synchronously
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackbar);
-                          } else {
-                            await tempFile.writeAsBytes(convertToU8List);
-                            OpenFile.open(tempFile.path);
-                          }
+                              Text(gStaffHDate),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin:
+                              const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                          child: Column(
+                            children: [
+                              const Text('بست',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12.0)),
+                              Text(gStaffPos),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (gStaffPos != 'کارآموز')
+                          Container(
+                            margin:
+                                const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                            child: Column(
+                              children: [
+                                const Text('معاش',
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12.0)),
+                                Text('$gStaffSalary افغانی'),
+                              ],
+                            ),
+                          ),
+                        if (gStaffPos == 'کارآموز')
+                          Container(
+                            margin:
+                                const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                            child: Column(
+                              children: [
+                                const Text('مقدار پول ضمانت',
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12.0)),
+                                Text('$gStaffPrePay افغانی'),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin:
+                              const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                          child: SizedBox(
+                            width: 220,
+                            child: Column(
+                              children: [
+                                const Text('نمبر تماس عضو فامیل 1',
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12.0)),
+                                Text(gStaffFPhone1),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin:
+                              const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                          child: Column(
+                            children: [
+                              const Text('نمبر تماس عضو فامیل 2',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12.0)),
+                              Text(gStaffFPhone2),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin:
+                              const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                          child: Column(
+                            children: [
+                              const Text('آدرس',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12.0)),
+                              Text(gStaffAddr),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin:
+                              const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'نمبر تذکره',
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 12.0),
+                              ),
+                              Text(gStaffTazkira),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                  child: InkWell(
+                    onTap: () async {
+                      // This is your Uint8List variable
+                      Uint8List? convertToU8List = gStaffContract;
 
-                          // Open the file with the appropriate viewer
-                          /*  if (fileExtension == '.pdf') {
+                      // Write the Uint8List to a temporary file
+                      var tempDir = await getTemporaryDirectory();
+                      File tempFile =
+                          File('${tempDir.path}/temp_file$fileExtension');
+
+                      if (convertToU8List == null) {
+                        const snackbar = SnackBar(
+                          content: Center(
+                            child: Text(
+                              'فایل قرارداد یافت نشد.',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          backgroundColor: Colors.red,
+                        );
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+                      } else {
+                        await tempFile.writeAsBytes(convertToU8List);
+                        OpenFile.open(tempFile.path);
+                      }
+
+                      // Open the file with the appropriate viewer
+                      /*  if (fileExtension == '.pdf') {
                         // It's a PDF file
                         // ignore: use_build_context_synchronously
                         Navigator.push(
@@ -464,34 +495,33 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
                         // It's a Word document
                         OpenFile.open(tempFile.path);
                       } */
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.blue, width: 1.3),
-                          ),
-                          child: Tooltip(
-                            message: 'باز کردن قرارداد خط',
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: fileExtension == '.docx'
-                                  ? const Icon(FontAwesomeIcons.fileWord,
-                                      size: 15, color: Colors.blue)
-                                  : fileExtension == '.png' ||
-                                          fileExtension == '.jpeg' ||
-                                          fileExtension == '.jpg'
-                                      ? const Icon(FontAwesomeIcons.fileImage,
-                                          size: 15, color: Colors.blue)
-                                      : const Icon(
-                                          FontAwesomeIcons.solidFilePdf,
-                                          size: 15,
-                                          color: Colors.blue),
-                            ),
-                          ),
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.blue, width: 1.3),
+                      ),
+                      child: Tooltip(
+                        message: 'باز کردن قرارداد خط',
+                        child: Padding(
+                          padding: EdgeInsets.all(
+                              MediaQuery.of(context).size.width * 0.008),
+                          child: fileExtension == '.docx'
+                              ? const Icon(FontAwesomeIcons.fileWord,
+                                  size: 15, color: Colors.blue)
+                              : fileExtension == '.png' ||
+                                      fileExtension == '.jpeg' ||
+                                      fileExtension == '.jpg'
+                                  ? Icon(FontAwesomeIcons.fileImage,
+                                      size: MediaQuery.of(context).size.width *
+                                          0.03,
+                                      color: Colors.blue)
+                                  : const Icon(FontAwesomeIcons.solidFilePdf,
+                                      size: 15, color: Colors.blue),
                         ),
                       ),
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
