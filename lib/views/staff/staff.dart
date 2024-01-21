@@ -307,26 +307,6 @@ class _MyDataTableState extends State<MyDataTable> {
                     ),
                     DataColumn(
                       label: Text(
-                        translations[selectedLanguage]?['Salary'] ?? '',
-                        style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                            fontSize: isEnglish ? 11 : null),
-                      ),
-                      onSort: (columnIndex, ascending) {
-                        setState(() {
-                          _sortColumnIndex = columnIndex;
-                          _sortAscending = ascending;
-                          _filteredData
-                              .sort((a, b) => a.salary.compareTo(b.salary));
-                          if (!ascending) {
-                            _filteredData = _filteredData.reversed.toList();
-                          }
-                        });
-                      },
-                    ),
-                    DataColumn(
-                      label: Text(
                         translations[selectedLanguage]?['Phone'] ?? '',
                         style: TextStyle(
                             color: Colors.blue,
@@ -438,11 +418,6 @@ class MyData extends DataTableSource {
           style: isEnglish ? const TextStyle(fontSize: 12) : null)),
       DataCell(Text(data[index].position,
           style: isEnglish ? const TextStyle(fontSize: 12) : null)),
-      DataCell(
-        Text(
-            '${data[index].salary} ${translations[selectedLanguage]?['Afn'] ?? ''}',
-            style: isEnglish ? const TextStyle(fontSize: 12) : null),
-      ),
       DataCell(Text(data[index].phone,
           style: isEnglish ? const TextStyle(fontSize: 12) : null)),
       DataCell(Text(data[index].tazkira,
@@ -562,7 +537,9 @@ class MyData extends DataTableSource {
                         String position = staffRow['position'];
                         double salary = staffRow['salary'];
                         double prePayment = staffRow['prepayment'] ?? 0;
-                        String hireDate = staffRow['hire_date'].toString();
+                        DateTime hireDateTime = staffRow['hire_date'];
+                        String hireDate =
+                            intl2.DateFormat('yyyy-MM-dd').format(hireDateTime);
                         String phone = staffRow['phone'];
                         String fPhone1 = staffRow['family_phone1'];
                         String fPhone2 = staffRow['family_phone2'] ?? '';
@@ -722,7 +699,7 @@ onEditStaff(
   lastNameController.text = lastname;
   StaffInfo.staffDefaultPosistion = position;
   salaryController.text = salary.toString();
-  prePaidController.text = salary.toString();
+  prePaidController.text = prepayment.toString();
   hireDateController.text = hireDate;
   phoneController.text = phoneNum;
   familyPhone1Controller.text = fPhone1Num;
@@ -731,7 +708,7 @@ onEditStaff(
   addressController.text = address;
   File? selectedContractFile;
   bool isLoadingFile = false;
-  bool isIntern = false;
+  bool isIntern = position == 'کار آموز' ? true : false;
   final contractFileMessage = ValueNotifier<String>('');
 /* ------------- END Set all staff related values into their fields.----------- */
   return showDialog(
@@ -904,6 +881,9 @@ onEditStaff(
                                         StaffInfo.staffDefaultPosistion =
                                             newValue!;
                                         position = newValue;
+                                        isIntern = position == 'کار آموز'
+                                            ? true
+                                            : false;
                                       });
                                     },
                                   ),
@@ -1217,8 +1197,8 @@ onEditStaff(
                                 controller: prePaidController,
                                 validator: (value) {
                                   if (value!.isNotEmpty) {
-                                    final salary = double.tryParse(value!);
-                                    if (salary! < 1000 || salary > 100000) {
+                                    final prePaid = double.tryParse(value!);
+                                    if (prePaid! < 1000 || prePaid > 100000) {
                                       return 'مقدار پول ضمانت باید بین 1000 و 100000 افغانی باشد.';
                                     }
                                   }
@@ -1497,54 +1477,13 @@ onEditStaff(
                             }
                             if (selectedContractFile == null) {
                               if (formKey1.currentState!.validate()) {
-                                final conn = await onConnToDb();
-                                final results = await conn.query(
-                                    'UPDATE staff SET firstname = ?, lastname = ?, position = ?, salary = ?, prepayment = ?, hire_date = ?, phone = ?,  family_phone1 = ?, family_phone2 = ?, tazkira_ID = ?, address = ? WHERE staff_ID = ?',
-                                    [
-                                      fname,
-                                      lname,
-                                      pos,
-                                      salary,
-                                      prePayment,
-                                      hireDate,
-                                      phone,
-                                      fPhone1,
-                                      fPhone2,
-                                      tazkiraId,
-                                      addr,
-                                      staffID
-                                    ]);
-                                if (results.affectedRows! > 0) {
-                                  _onShowSnack(
-                                      Colors.green,
-                                      translations[selectedLanguage]
-                                              ?['StaffEditMsg'] ??
-                                          '');
-                                  Navigator.pop(context);
-                                  onUpdate();
-                                } else {
-                                  _onShowSnack(
-                                      Colors.red,
-                                      translations[selectedLanguage]
-                                              ?['StaffEditErrMsg'] ??
-                                          '');
-                                  Navigator.pop(context);
-                                }
-                              }
-                            } else {
-                              if (formKey1.currentState!.validate()) {
-                                if (contractFile!.length > 1024 * 1024) {
-                                  contractFileMessage.value =
-                                      'اندازه این فایل باید 1 میگابایت یا کمتر باشد.';
-                                } else {
+                                if (isIntern) {
                                   final results = await conn.query(
-                                      'UPDATE staff SET firstname = ?, lastname = ?, position = ?, salary = ?, prepayment = ?, hire_date = ?, phone = ?,  family_phone1 = ?, family_phone2 = ?, tazkira_ID = ?, address = ?, contract_file = ?, file_type = ? WHERE staff_ID = ?',
+                                      'UPDATE staff SET firstname = ?, lastname = ?, position = ?,  prepayment = ?, hire_date = ?, phone = ?,  family_phone1 = ?, family_phone2 = ?, tazkira_ID = ?, address = ? WHERE staff_ID = ?',
                                       [
                                         fname,
                                         lname,
-                                        hireDate,
                                         pos,
-                                        salary,
                                         prePayment,
                                         hireDate,
                                         phone,
@@ -1552,8 +1491,6 @@ onEditStaff(
                                         fPhone2,
                                         tazkiraId,
                                         addr,
-                                        contractFile,
-                                        fileType,
                                         staffID
                                       ]);
                                   if (results.affectedRows! > 0) {
@@ -1571,6 +1508,120 @@ onEditStaff(
                                                 ?['StaffEditErrMsg'] ??
                                             '');
                                     Navigator.pop(context);
+                                  }
+                                } else {
+                                  final results = await conn.query(
+                                      'UPDATE staff SET firstname = ?, lastname = ?, position = ?, salary = ?, hire_date = ?, phone = ?,  family_phone1 = ?, family_phone2 = ?, tazkira_ID = ?, address = ? WHERE staff_ID = ?',
+                                      [
+                                        fname,
+                                        lname,
+                                        pos,
+                                        salary,
+                                        hireDate,
+                                        phone,
+                                        fPhone1,
+                                        fPhone2,
+                                        tazkiraId,
+                                        addr,
+                                        staffID
+                                      ]);
+                                  if (results.affectedRows! > 0) {
+                                    _onShowSnack(
+                                        Colors.green,
+                                        translations[selectedLanguage]
+                                                ?['StaffEditMsg'] ??
+                                            '');
+                                    Navigator.pop(context);
+                                    onUpdate();
+                                  } else {
+                                    _onShowSnack(
+                                        Colors.red,
+                                        translations[selectedLanguage]
+                                                ?['StaffEditErrMsg'] ??
+                                            '');
+                                    Navigator.pop(context);
+                                  }
+                                }
+                              }
+                            } else {
+                              if (formKey1.currentState!.validate()) {
+                                if (isIntern) {
+                                  if (contractFile!.length > 1024 * 1024) {
+                                    contractFileMessage.value =
+                                        'اندازه این فایل باید 1 میگابایت یا کمتر باشد.';
+                                  } else {
+                                    final results = await conn.query(
+                                        'UPDATE staff SET firstname = ?, lastname = ?, position = ?, prepayment = ?, hire_date = ?, phone = ?,  family_phone1 = ?, family_phone2 = ?, tazkira_ID = ?, address = ?, contract_file = ?, file_type = ? WHERE staff_ID = ?',
+                                        [
+                                          fname,
+                                          lname,
+                                          pos,
+                                          prePayment,
+                                          hireDate,
+                                          phone,
+                                          fPhone1,
+                                          fPhone2,
+                                          tazkiraId,
+                                          addr,
+                                          contractFile,
+                                          fileType,
+                                          staffID
+                                        ]);
+                                    if (results.affectedRows! > 0) {
+                                      _onShowSnack(
+                                          Colors.green,
+                                          translations[selectedLanguage]
+                                                  ?['StaffEditMsg'] ??
+                                              '');
+                                      Navigator.pop(context);
+                                      onUpdate();
+                                    } else {
+                                      _onShowSnack(
+                                          Colors.red,
+                                          translations[selectedLanguage]
+                                                  ?['StaffEditErrMsg'] ??
+                                              '');
+                                      Navigator.pop(context);
+                                    }
+                                  }
+                                } else {
+                                  if (contractFile!.length > 1024 * 1024) {
+                                    contractFileMessage.value =
+                                        'اندازه این فایل باید 1 میگابایت یا کمتر باشد.';
+                                  } else {
+                                    final results = await conn.query(
+                                        'UPDATE staff SET firstname = ?, lastname = ?, position = ?, salary = ?, hire_date = ?, phone = ?,  family_phone1 = ?, family_phone2 = ?, tazkira_ID = ?, address = ?, contract_file = ?, file_type = ? WHERE staff_ID = ?',
+                                        [
+                                          fname,
+                                          lname,
+                                          pos,
+                                          salary,
+                                          hireDate,
+                                          phone,
+                                          fPhone1,
+                                          fPhone2,
+                                          tazkiraId,
+                                          addr,
+                                          contractFile,
+                                          fileType,
+                                          staffID
+                                        ]);
+                                    if (results.affectedRows! > 0) {
+                                      _onShowSnack(
+                                          Colors.green,
+                                          translations[selectedLanguage]
+                                                  ?['StaffEditMsg'] ??
+                                              '');
+                                      Navigator.pop(context);
+                                      onUpdate();
+                                    } else {
+                                      _onShowSnack(
+                                          Colors.red,
+                                          translations[selectedLanguage]
+                                                  ?['StaffEditErrMsg'] ??
+                                              '');
+                                      Navigator.pop(context);
+                                    }
                                   }
                                 }
                               }
