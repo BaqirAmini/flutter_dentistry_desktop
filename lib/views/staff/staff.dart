@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
@@ -8,6 +10,8 @@ import 'package:flutter_dentistry/views/staff/staff_detail.dart';
 import 'package:galileo_mysql/galileo_mysql.dart';
 import 'package:provider/provider.dart';
 import 'staff_info.dart';
+import 'package:intl/intl.dart' as intl2;
+import 'package:path/path.dart' as p;
 
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKey3 =
@@ -557,7 +561,10 @@ class MyData extends DataTableSource {
                         String lastName = staffRow['lastname'];
                         String position = staffRow['position'];
                         double salary = staffRow['salary'];
+                        double prePayment = staffRow['prepayment'] ?? 0;
                         String phone = staffRow['phone'];
+                        String fPhone1 = staffRow['family_phone1'];
+                        String fPhone2 = staffRow['family_phone2'] ?? '';
                         String tazkira = staffRow['tazkira_ID'];
                         String address = staffRow['address'];
                         // ignore: use_build_context_synchronously
@@ -570,7 +577,10 @@ class MyData extends DataTableSource {
                             lastName,
                             position,
                             salary,
+                            prePayment,
                             phone,
+                            fPhone1,
+                            fPhone2,
                             tazkira,
                             address,
                             onUpdate);
@@ -679,7 +689,10 @@ onEditStaff(
     String lastname,
     String position,
     double salary,
+    double prepayment,
     String phoneNum,
+    String fPhone1Num,
+    String fPhone2Num,
     String tazkira,
     String address,
     Function onUpdate) {
@@ -689,7 +702,10 @@ onEditStaff(
   final nameController = TextEditingController();
   final lastNameController = TextEditingController();
   final phoneController = TextEditingController();
+  final familyPhone1Controller = TextEditingController();
+  final familyPhone2Controller = TextEditingController();
   final salaryController = TextEditingController();
+  final prePaidController = TextEditingController();
   final tazkiraController = TextEditingController();
   final addressController = TextEditingController();
 
@@ -702,9 +718,16 @@ onEditStaff(
   lastNameController.text = lastname;
   StaffInfo.staffDefaultPosistion = position;
   salaryController.text = salary.toString();
+  prePaidController.text = salary.toString();
   phoneController.text = phoneNum;
+  familyPhone1Controller.text = fPhone1Num;
+  familyPhone2Controller.text = fPhone2Num;
   tazkiraController.text = tazkira;
   addressController.text = address;
+  File? selectedContractFile;
+  bool isLoadingFile = false;
+  bool isIntern = false;
+  final contractFileMessage = ValueNotifier<String>('');
 /* ------------- END Set all staff related values into their fields.----------- */
   return showDialog(
     context: context,
@@ -721,338 +744,639 @@ onEditStaff(
             ),
             content: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: Form(
-                key: formKey1,
-                child: SizedBox(
-                  width: 500.0,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 20.0),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(20.0),
-                          child: TextFormField(
-                            controller: nameController,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return translations[selectedLanguage]
-                                        ?['FNRequired'] ??
-                                    '';
-                              } else if (value.length < 3 ||
-                                  value.length > 10) {
-                                return translations[selectedLanguage]
-                                        ?['FNLength'] ??
-                                    '';
-                              }
-                            },
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]
-                                      ?['FName'] ??
-                                  '',
-                              suffixIcon:
-                                  const Icon(Icons.person_add_alt_outlined),
-                              enabledBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: formKey1,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(top: 20.0),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: TextFormField(
+                              controller: nameController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return translations[selectedLanguage]
+                                          ?['FNRequired'] ??
+                                      '';
+                                } else if (value.length < 3 ||
+                                    value.length > 10) {
+                                  return translations[selectedLanguage]
+                                          ?['FNLength'] ??
+                                      '';
+                                }
+                              },
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['FName'] ??
+                                    '',
+                                suffixIcon:
+                                    const Icon(Icons.person_add_alt_outlined),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(20.0),
-                          child: TextFormField(
-                            controller: lastNameController,
-                            validator: (value) {
-                              if (value!.isNotEmpty) {
-                                if (value.length < 3 || value.length > 10) {
-                                  return translations[selectedLanguage]
-                                          ?['LNLength'] ??
-                                      '';
+                          Container(
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: TextFormField(
+                              controller: lastNameController,
+                              validator: (value) {
+                                if (value!.isNotEmpty) {
+                                  if (value.length < 3 || value.length > 10) {
+                                    return translations[selectedLanguage]
+                                            ?['LNLength'] ??
+                                        '';
+                                  } else {
+                                    return null;
+                                  }
                                 } else {
                                   return null;
                                 }
-                              } else {
-                                return null;
-                              }
-                            },
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]
-                                      ?['LName'] ??
-                                  '',
-                              suffixIcon: const Icon(Icons.person),
-                              enabledBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
+                              },
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['LName'] ??
+                                    '',
+                                suffixIcon: const Icon(Icons.person),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(20.0),
-                          child: InputDecorator(
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]
-                                      ?['Position'] ??
-                                  '',
-                              enabledBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: Container(
-                                height: 26.0,
-                                child: DropdownButton(
-                                  isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: StaffInfo.staffDefaultPosistion,
-                                  items: StaffInfo.staffPositionItems
-                                      .map((String positionItems) {
-                                    return DropdownMenuItem(
-                                      value: positionItems,
-                                      alignment: Alignment.centerRight,
-                                      child: Text(positionItems),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      StaffInfo.staffDefaultPosistion =
-                                          newValue!;
-                                    });
-                                  },
+                          Container(
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['Position'] ??
+                                    '',
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: Container(
+                                  height: 26.0,
+                                  child: DropdownButton(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: StaffInfo.staffDefaultPosistion,
+                                    items: StaffInfo.staffPositionItems
+                                        .map((String positionItems) {
+                                      return DropdownMenuItem(
+                                        value: positionItems,
+                                        alignment: Alignment.centerRight,
+                                        child: Text(positionItems),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        StaffInfo.staffDefaultPosistion =
+                                            newValue!;
+                                      });
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(20.0),
-                          child: TextFormField(
-                            textDirection: TextDirection.ltr,
-                            controller: phoneController,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                RegExp(regExOnlydigits),
+                          Container(
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: TextFormField(
+                              textDirection: TextDirection.ltr,
+                              controller: phoneController,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(regExOnlydigits),
+                                ),
+                              ],
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return translations[selectedLanguage]
+                                          ?['PhoneRequired'] ??
+                                      '';
+                                } else if (value.startsWith('07')) {
+                                  if (value.length < 10 || value.length > 10) {
+                                    return translations[selectedLanguage]
+                                            ?['Phone10'] ??
+                                        '';
+                                  }
+                                } else if (value.startsWith('+93')) {
+                                  if (value.length < 12 || value.length > 12) {
+                                    return translations[selectedLanguage]
+                                            ?['Phone12'] ??
+                                        '';
+                                  }
+                                } else {
+                                  return translations[selectedLanguage]
+                                          ?['ValidPhone'] ??
+                                      '';
+                                }
+                              },
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['Phone'] ??
+                                    '',
+                                suffixIcon: const Icon(Icons.phone),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
                               ),
-                            ],
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return translations[selectedLanguage]
-                                        ?['PhoneRequired'] ??
-                                    '';
-                              } else if (value.startsWith('07')) {
-                                if (value.length < 10 || value.length > 10) {
-                                  return translations[selectedLanguage]
-                                          ?['Phone10'] ??
-                                      '';
-                                }
-                              } else if (value.startsWith('+93')) {
-                                if (value.length < 12 || value.length > 12) {
-                                  return translations[selectedLanguage]
-                                          ?['Phone12'] ??
-                                      '';
-                                }
-                              } else {
-                                return translations[selectedLanguage]
-                                        ?['ValidPhone'] ??
-                                    '';
-                              }
-                            },
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]
-                                      ?['Phone'] ??
-                                  '',
-                              suffixIcon: const Icon(Icons.phone),
-                              enabledBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(20.0),
-                          child: TextFormField(
-                            controller: salaryController,
-                            validator: (value) {
-                              if (value!.isNotEmpty) {
-                                final salary = double.tryParse(value!);
-                                if (salary! < 1000 || salary > 100000) {
+                          Container(
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: TextFormField(
+                              textDirection: TextDirection.ltr,
+                              controller: familyPhone1Controller,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(regExOnlydigits),
+                                ),
+                              ],
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'این نمبر تماس عضوی فامیل الزامی میباشد.';
+                                } else if (value.startsWith('07')) {
+                                  if (value.length < 10 || value.length > 10) {
+                                    return translations[selectedLanguage]
+                                            ?['Phone10'] ??
+                                        '';
+                                  }
+                                } else if (value.startsWith('+93')) {
+                                  if (value.length < 12 || value.length > 12) {
+                                    return translations[selectedLanguage]
+                                            ?['Phone12'] ??
+                                        '';
+                                  }
+                                } else {
                                   return translations[selectedLanguage]
-                                          ?['ValidSalary'] ??
+                                          ?['ValidPhone'] ??
                                       '';
                                 }
-                              }
-                            },
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9.]'))
-                            ],
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]
-                                      ?['Salary'] ??
-                                  '',
-                              suffixIcon: const Icon(Icons.money),
-                              enabledBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(20.0),
-                          child: TextFormField(
-                            controller: tazkiraController,
-                            validator: (value) {
-                              if (value!.isNotEmpty) {
-                                if (!tazkiraPattern.hasMatch(value)) {
-                                  return translations[selectedLanguage]
-                                          ?['ValidTazkira'] ??
-                                      '';
-                                }
-                              }
-                              return null;
-                            },
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9-]'))
-                            ],
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]
-                                      ?['Tazkira'] ??
-                                  '',
-                              suffixIcon: const Icon(Icons.perm_identity),
-                              enabledBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(20.0),
-                          child: TextFormField(
-                            controller: addressController,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                RegExp(regExOnlyAbc),
+                              },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'نمبر تماس عضو فامیل 1',
+                                suffixIcon: Icon(Icons.phone),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
                               ),
-                            ],
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]
-                                      ?['Address'] ??
-                                  '',
-                              suffixIcon:
-                                  const Icon(Icons.location_on_outlined),
-                              enabledBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
                             ),
                           ),
-                        ),
-                      ],
+                          Container(
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: TextFormField(
+                              textDirection: TextDirection.ltr,
+                              controller: familyPhone2Controller,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(regExOnlydigits),
+                                ),
+                              ],
+                              validator: (value) {
+                                if (value!.isNotEmpty) {
+                                  if (value.startsWith('07')) {
+                                    if (value.length < 10 ||
+                                        value.length > 10) {
+                                      return translations[selectedLanguage]
+                                              ?['Phone10'] ??
+                                          '';
+                                    }
+                                  } else if (value.startsWith('+93')) {
+                                    if (value.length < 12 ||
+                                        value.length > 12) {
+                                      return translations[selectedLanguage]
+                                              ?['Phone12'] ??
+                                          '';
+                                    }
+                                  } else {
+                                    return translations[selectedLanguage]
+                                            ?['ValidPhone'] ??
+                                        '';
+                                  }
+                                }
+                                return null;
+                              },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'نمبر تماس عضو فامیل 1',
+                                suffixIcon: Icon(Icons.phone),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                            ),
+                          ),
+                          if (position != 'کار آموز')
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 10.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: TextFormField(
+                                controller: salaryController,
+                                validator: (value) {
+                                  if (value!.isNotEmpty) {
+                                    final salary = double.tryParse(value!);
+                                    if (salary! < 1000 || salary > 100000) {
+                                      return translations[selectedLanguage]
+                                              ?['ValidSalary'] ??
+                                          '';
+                                    }
+                                  }
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9.]'))
+                                ],
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: translations[selectedLanguage]
+                                          ?['Salary'] ??
+                                      '',
+                                  suffixIcon: const Icon(Icons.money),
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
+                              ),
+                            ),
+                          if (position == 'کار آموز')
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 10.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: TextFormField(
+                                controller: prePaidController,
+                                validator: (value) {
+                                  if (value!.isNotEmpty) {
+                                    final salary = double.tryParse(value!);
+                                    if (salary! < 1000 || salary > 100000) {
+                                      return 'مقدار پول ضمانت باید بین 1000 و 100000 افغانی باشد.';
+                                    }
+                                  }
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[0-9.]'))
+                                ],
+                                // ignore: prefer_const_constructors
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: 'مقدار پول ضمانت',
+                                  suffixIcon: const Icon(Icons.money),
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
+                              ),
+                            ),
+                          Container(
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: TextFormField(
+                              controller: tazkiraController,
+                              validator: (value) {
+                                if (value!.isNotEmpty) {
+                                  if (!tazkiraPattern.hasMatch(value)) {
+                                    return translations[selectedLanguage]
+                                            ?['ValidTazkira'] ??
+                                        '';
+                                  }
+                                }
+                                return null;
+                              },
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[0-9-]'))
+                              ],
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['Tazkira'] ??
+                                    '',
+                                suffixIcon: const Icon(Icons.perm_identity),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: TextFormField(
+                              controller: addressController,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(regExOnlyAbc),
+                                ),
+                              ],
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['Address'] ??
+                                    '',
+                                suffixIcon:
+                                    const Icon(Icons.location_on_outlined),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  border: Border.all(
+                                      width: 1.0,
+                                      color: selectedContractFile == null
+                                          ? Colors.red
+                                          : Colors.blue),
+                                ),
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 20.0),
+                                width: MediaQuery.of(context).size.width * 0.31,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.04,
+                                child: InkWell(
+                                    onTap: () async {
+                                      setState(() {
+                                        isLoadingFile = true;
+                                      });
+
+                                      final result = await FilePicker.platform
+                                          .pickFiles(
+                                              allowMultiple: true,
+                                              type: FileType.custom,
+                                              allowedExtensions: [
+                                            'jpg',
+                                            'jpeg',
+                                            'png',
+                                            'pdf',
+                                            'docx'
+                                          ]);
+                                      if (result != null) {
+                                        setState(() {
+                                          isLoadingFile = false;
+                                          selectedContractFile = File(result
+                                              .files.single.path
+                                              .toString());
+                                        });
+                                      }
+                                    },
+                                    child: selectedContractFile == null &&
+                                            !isLoadingFile
+                                        ? const Icon(Icons.add,
+                                            size: 30, color: Colors.blue)
+                                        : isLoadingFile
+                                            ?  Center(
+                                                child: SizedBox(
+                                                  width: MediaQuery.of(context).size.width * 0.02,
+                                                  height: MediaQuery.of(context).size.height * 0.02,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                          strokeWidth: 3.0),
+                                                ),
+                                              )
+                                            : Center(
+                                                child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  p.basename(
+                                                      selectedContractFile!
+                                                          .path),
+                                                  style: const TextStyle(
+                                                      fontSize: 12.0),
+                                                ),
+                                              ))),
+                              ),
+                              ValueListenableBuilder<String>(
+                                valueListenable: contractFileMessage,
+                                builder: (context, value, child) {
+                                  if (value.isEmpty) {
+                                    return const SizedBox
+                                        .shrink(); // or Container()
+                                  } else {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 30.0, vertical: 5.0),
+                                      child: SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.3,
+                                        child: Text(
+                                          value,
+                                          style: const TextStyle(
+                                              fontSize: 12.0,
+                                              color: Colors.redAccent),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -1072,43 +1396,112 @@ onEditStaff(
                               '')),
                       ElevatedButton(
                         onPressed: () async {
-                          if (formKey1.currentState!.validate()) {
+                          try {
+                            String? fileType;
+                            final conn = await onConnToDb();
                             String fname = nameController.text;
                             String lname = lastNameController.text;
                             String pos = StaffInfo.staffDefaultPosistion;
                             String phone = phoneController.text;
-                            double salary = double.parse(salaryController.text);
+                            String fPhone1 = familyPhone1Controller.text;
+                            String? fPhone2 =
+                                familyPhone2Controller.text.isEmpty
+                                    ? null
+                                    : familyPhone2Controller.text;
+                            double salary = salaryController.text.isEmpty
+                                ? 0
+                                : double.parse(salaryController.text);
+                            double prePayment = prePaidController.text.isEmpty
+                                ? 0
+                                : double.parse(prePaidController.text);
                             String tazkiraId = tazkiraController.text;
                             String addr = addressController.text;
-                            final conn = await onConnToDb();
-                            final results = await conn.query(
-                                'UPDATE staff SET firstname = ?, lastname = ?, position = ?, salary = ?, phone = ?, tazkira_ID = ?, address = ? WHERE staff_ID = ?',
-                                [
-                                  fname,
-                                  lname,
-                                  pos,
-                                  salary,
-                                  phone,
-                                  tazkiraId,
-                                  addr,
-                                  staffID
-                                ]);
-                            if (results.affectedRows! > 0) {
-                              _onShowSnack(
-                                  Colors.green,
-                                  translations[selectedLanguage]
-                                          ?['StaffEditMsg'] ??
-                                      '');
-                              Navigator.pop(context);
-                              onUpdate();
-                            } else {
-                              _onShowSnack(
-                                  Colors.red,
-                                  translations[selectedLanguage]
-                                          ?['StaffEditErrMsg'] ??
-                                      '');
-                              Navigator.pop(context);
+                            Uint8List? contractFile;
+                            if (selectedContractFile != null) {
+                              contractFile =
+                                  await selectedContractFile!.readAsBytes();
+                              fileType =
+                                  p.extension(selectedContractFile!.path);
                             }
+                            if (selectedContractFile == null) {
+                              if (formKey1.currentState!.validate()) {
+                                final conn = await onConnToDb();
+                                final results = await conn.query(
+                                    'UPDATE staff SET firstname = ?, lastname = ?, position = ?, salary = ?, prepayment = ?, phone = ?, family_phone1 = ?, family_phone2 = ?, tazkira_ID = ?, address = ? WHERE staff_ID = ?',
+                                    [
+                                      fname,
+                                      lname,
+                                      pos,
+                                      salary,
+                                      prePayment,
+                                      phone,
+                                      fPhone1,
+                                      fPhone2,
+                                      tazkiraId,
+                                      addr,
+                                      staffID
+                                    ]);
+                                if (results.affectedRows! > 0) {
+                                  _onShowSnack(
+                                      Colors.green,
+                                      translations[selectedLanguage]
+                                              ?['StaffEditMsg'] ??
+                                          '');
+                                  Navigator.pop(context);
+                                  onUpdate();
+                                } else {
+                                  _onShowSnack(
+                                      Colors.red,
+                                      translations[selectedLanguage]
+                                              ?['StaffEditErrMsg'] ??
+                                          '');
+                                  Navigator.pop(context);
+                                }
+                              }
+                            } else {
+                              if (formKey1.currentState!.validate()) {
+                                if (contractFile!.length > 1024 * 1024) {
+                                  contractFileMessage.value =
+                                      'اندازه این فایل باید 1 میگابایت یا کمتر باشد.';
+                                } else {
+                                  final results = await conn.query(
+                                      'UPDATE staff SET firstname = ?, lastname = ?, position = ?, salary = ?, prepayment = ?, phone = ?, family_phone1 = ?, family_phone2 = ?, tazkira_ID = ?, address = ?, contract_file = ?, file_type = ? WHERE staff_ID = ?',
+                                      [
+                                        fname,
+                                        lname,
+                                        pos,
+                                        salary,
+                                        prePayment,
+                                        phone,
+                                        fPhone1,
+                                        fPhone2,
+                                        tazkiraId,
+                                        addr,
+                                        contractFile,
+                                        fileType,
+                                        staffID
+                                      ]);
+                                  if (results.affectedRows! > 0) {
+                                    _onShowSnack(
+                                        Colors.green,
+                                        translations[selectedLanguage]
+                                                ?['StaffEditMsg'] ??
+                                            '');
+                                    Navigator.pop(context);
+                                    onUpdate();
+                                  } else {
+                                    _onShowSnack(
+                                        Colors.red,
+                                        translations[selectedLanguage]
+                                                ?['StaffEditErrMsg'] ??
+                                            '');
+                                    Navigator.pop(context);
+                                  }
+                                }
+                              }
+                            }
+                          } catch (e) {
+                            print('Error occured with update this staff: $e');
                           }
                         },
                         child:
@@ -1167,10 +1560,7 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                         ),
                         Container(
                           margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
+                              left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: userNameController,
                             inputFormatters: [
@@ -1218,10 +1608,7 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                         ),
                         Container(
                           margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
+                              left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: pwdController,
                             validator: (value) {
@@ -1264,10 +1651,7 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                         ),
                         Container(
                           margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
+                              left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: confirmController,
                             validator: (value) {
@@ -1311,10 +1695,7 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                         ),
                         Container(
                           margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
+                              left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
@@ -1461,10 +1842,7 @@ onUpdateUserAccount(
                         ),
                         Container(
                           margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
+                              left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: userNameController,
                             inputFormatters: [
@@ -1512,10 +1890,7 @@ onUpdateUserAccount(
                         ),
                         Container(
                           margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
+                              left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: pwdController,
                             validator: (value) {
@@ -1559,10 +1934,7 @@ onUpdateUserAccount(
                         ),
                         Container(
                           margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
+                              left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
                             controller: confirmController,
                             validator: (value) {
@@ -1606,10 +1978,7 @@ onUpdateUserAccount(
                         ),
                         Container(
                           margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
+                              left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),

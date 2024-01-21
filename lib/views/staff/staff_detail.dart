@@ -507,17 +507,21 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
                           padding: EdgeInsets.all(
                               MediaQuery.of(context).size.width * 0.008),
                           child: fileExtension == '.docx'
-                              ? const Icon(FontAwesomeIcons.fileWord,
-                                  size: 15, color: Colors.blue)
+                              ? Icon(FontAwesomeIcons.fileWord,
+                                  size:
+                                      MediaQuery.of(context).size.width * 0.012,
+                                  color: Colors.blue)
                               : fileExtension == '.png' ||
                                       fileExtension == '.jpeg' ||
                                       fileExtension == '.jpg'
                                   ? Icon(FontAwesomeIcons.fileImage,
                                       size: MediaQuery.of(context).size.width *
-                                          0.03,
+                                          0.012,
                                       color: Colors.blue)
-                                  : const Icon(FontAwesomeIcons.solidFilePdf,
-                                      size: 15, color: Colors.blue),
+                                  : Icon(FontAwesomeIcons.solidFilePdf,
+                                      size: MediaQuery.of(context).size.width *
+                                          0.012,
+                                      color: Colors.blue),
                         ),
                       ),
                     ),
