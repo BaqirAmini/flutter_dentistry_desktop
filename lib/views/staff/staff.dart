@@ -1166,7 +1166,11 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                           margin: const EdgeInsets.only(top: 20.0),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
                           child: TextFormField(
                             controller: userNameController,
                             inputFormatters: [
@@ -1213,7 +1217,11 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
                           child: TextFormField(
                             controller: pwdController,
                             validator: (value) {
@@ -1255,7 +1263,11 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
                           child: TextFormField(
                             controller: confirmController,
                             validator: (value) {
@@ -1298,7 +1310,11 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
                           child: InputDecorator(
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
@@ -1444,7 +1460,11 @@ onUpdateUserAccount(
                           margin: const EdgeInsets.only(top: 20.0),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
                           child: TextFormField(
                             controller: userNameController,
                             inputFormatters: [
@@ -1491,7 +1511,11 @@ onUpdateUserAccount(
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
                           child: TextFormField(
                             controller: pwdController,
                             validator: (value) {
@@ -1534,7 +1558,11 @@ onUpdateUserAccount(
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
                           child: TextFormField(
                             controller: confirmController,
                             validator: (value) {
@@ -1577,7 +1605,11 @@ onUpdateUserAccount(
                           ),
                         ),
                         Container(
-                          margin: const EdgeInsets.all(20.0),
+                          margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
                           child: InputDecorator(
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
