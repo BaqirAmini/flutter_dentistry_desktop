@@ -122,6 +122,13 @@ class _MyDataTableState extends State<MyDataTable> {
     });
   }
 
+  int calculateRowsPerPage() {
+    double screenHeight = MediaQuery.of(context).size.height;
+    int rowsPerPage =
+        (screenHeight / 50).floor(); // assuming each row is 50 pixels high
+    return rowsPerPage;
+  }
+
 // The text editing controller for the search TextField
   final TextEditingController _searchController = TextEditingController();
 
@@ -386,8 +393,9 @@ class _MyDataTableState extends State<MyDataTable> {
                         ),
                       ),
                   ],
-                  rowsPerPage:
-                      _filteredData.length < 8 ? _filteredData.length : 8,
+                  rowsPerPage: _filteredData.length < calculateRowsPerPage()
+                      ? _filteredData.length
+                      : calculateRowsPerPage(),
                 )
             ],
           ),
@@ -441,6 +449,7 @@ class MyData extends DataTableSource {
       if (StaffInfo.staffRole == 'مدیر سیستم')
         DataCell(
           PopupMenuButton(
+            splashRadius: 25.0,
             padding: EdgeInsets.zero,
             icon: const Icon(
               Icons.more_horiz,
