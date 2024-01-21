@@ -22,7 +22,6 @@ class StaffInfo {
   static var staffPositionItems = [
     'داکتر دندان',
     'پروتیزین',
-    'مدیر سیستم',
     'آشپز',
     'حسابدار',
     'کار آموز'
