@@ -341,7 +341,7 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (gStaffPos != 'کارآموز')
+                    if (gStaffPos != 'کار آموز')
                       Container(
                         margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                         child: Column(
@@ -353,7 +353,7 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
                           ],
                         ),
                       ),
-                    if (gStaffPos == 'کارآموز')
+                    if (gStaffPos == 'کار آموز')
                       Container(
                         margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                         child: Column(
@@ -407,7 +407,10 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
                           const Text('آدرس',
                               style: TextStyle(
                                   color: Colors.grey, fontSize: 12.0)),
-                          Text(gStaffAddr),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.07,
+                            child: Text(gStaffAddr),
+                          ),
                         ],
                       ),
                     ),
