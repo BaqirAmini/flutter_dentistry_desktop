@@ -562,6 +562,7 @@ class MyData extends DataTableSource {
                         String position = staffRow['position'];
                         double salary = staffRow['salary'];
                         double prePayment = staffRow['prepayment'] ?? 0;
+                        String hireDate = staffRow['hire_date'].toString();
                         String phone = staffRow['phone'];
                         String fPhone1 = staffRow['family_phone1'];
                         String fPhone2 = staffRow['family_phone2'] ?? '';
@@ -578,6 +579,7 @@ class MyData extends DataTableSource {
                             position,
                             salary,
                             prePayment,
+                            hireDate,
                             phone,
                             fPhone1,
                             fPhone2,
@@ -690,6 +692,7 @@ onEditStaff(
     String position,
     double salary,
     double prepayment,
+    String hireDate,
     String phoneNum,
     String fPhone1Num,
     String fPhone2Num,
@@ -702,6 +705,7 @@ onEditStaff(
   final nameController = TextEditingController();
   final lastNameController = TextEditingController();
   final phoneController = TextEditingController();
+  final hireDateController = TextEditingController();
   final familyPhone1Controller = TextEditingController();
   final familyPhone2Controller = TextEditingController();
   final salaryController = TextEditingController();
@@ -719,6 +723,7 @@ onEditStaff(
   StaffInfo.staffDefaultPosistion = position;
   salaryController.text = salary.toString();
   prePaidController.text = salary.toString();
+  hireDateController.text = hireDate;
   phoneController.text = phoneNum;
   familyPhone1Controller.text = fPhone1Num;
   familyPhone2Controller.text = fPhone2Num;
@@ -748,7 +753,7 @@ onEditStaff(
                 child: Form(
                   key: formKey1,
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.3,
+                    width: MediaQuery.of(context).size.width * 0.35,
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
@@ -898,10 +903,70 @@ onEditStaff(
                                       setState(() {
                                         StaffInfo.staffDefaultPosistion =
                                             newValue!;
+                                        position = newValue;
                                       });
                                     },
                                   ),
                                 ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(
+                                left: 20.0,
+                                right: 10.0,
+                                top: 10.0,
+                                bottom: 10.0),
+                            child: TextFormField(
+                              controller: hireDateController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'لطفا تاریخ استخدام کارمند را انتخاب کنید.';
+                                }
+                                return null;
+                              },
+                              onTap: () async {
+                                FocusScope.of(context).requestFocus(
+                                  FocusNode(),
+                                );
+                                final DateTime? dateTime = await showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(1900),
+                                    lastDate: DateTime(2100));
+                                if (dateTime != null) {
+                                  final intl2.DateFormat formatter =
+                                      intl2.DateFormat('yyyy-MM-dd');
+                                  final String formattedDate =
+                                      formatter.format(dateTime);
+                                  hireDateController.text = formattedDate;
+                                }
+                              },
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[0-9.]'))
+                              ],
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'تاریخ استخدام',
+                                suffixIcon: Icon(Icons.calendar_month_outlined),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
                               ),
                             ),
                           ),
@@ -1294,7 +1359,7 @@ onEditStaff(
                                     horizontal: 20.0),
                                 width: MediaQuery.of(context).size.width * 0.31,
                                 height:
-                                    MediaQuery.of(context).size.height * 0.04,
+                                    MediaQuery.of(context).size.height * 0.057,
                                 child: InkWell(
                                     onTap: () async {
                                       setState(() {
@@ -1326,12 +1391,18 @@ onEditStaff(
                                         ? const Icon(Icons.add,
                                             size: 30, color: Colors.blue)
                                         : isLoadingFile
-                                            ?  Center(
+                                            ? Center(
                                                 child: SizedBox(
-                                                  width: MediaQuery.of(context).size.width * 0.02,
-                                                  height: MediaQuery.of(context).size.height * 0.02,
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.015,
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.015,
                                                   child:
-                                                      CircularProgressIndicator(
+                                                      const CircularProgressIndicator(
                                                           strokeWidth: 3.0),
                                                 ),
                                               )
@@ -1402,6 +1473,7 @@ onEditStaff(
                             String fname = nameController.text;
                             String lname = lastNameController.text;
                             String pos = StaffInfo.staffDefaultPosistion;
+                            String hireDate = hireDateController.text;
                             String phone = phoneController.text;
                             String fPhone1 = familyPhone1Controller.text;
                             String? fPhone2 =
@@ -1427,13 +1499,14 @@ onEditStaff(
                               if (formKey1.currentState!.validate()) {
                                 final conn = await onConnToDb();
                                 final results = await conn.query(
-                                    'UPDATE staff SET firstname = ?, lastname = ?, position = ?, salary = ?, prepayment = ?, phone = ?, family_phone1 = ?, family_phone2 = ?, tazkira_ID = ?, address = ? WHERE staff_ID = ?',
+                                    'UPDATE staff SET firstname = ?, lastname = ?, position = ?, salary = ?, prepayment = ?, hire_date = ?, phone = ?,  family_phone1 = ?, family_phone2 = ?, tazkira_ID = ?, address = ? WHERE staff_ID = ?',
                                     [
                                       fname,
                                       lname,
                                       pos,
                                       salary,
                                       prePayment,
+                                      hireDate,
                                       phone,
                                       fPhone1,
                                       fPhone2,
@@ -1465,13 +1538,15 @@ onEditStaff(
                                       'اندازه این فایل باید 1 میگابایت یا کمتر باشد.';
                                 } else {
                                   final results = await conn.query(
-                                      'UPDATE staff SET firstname = ?, lastname = ?, position = ?, salary = ?, prepayment = ?, phone = ?, family_phone1 = ?, family_phone2 = ?, tazkira_ID = ?, address = ?, contract_file = ?, file_type = ? WHERE staff_ID = ?',
+                                      'UPDATE staff SET firstname = ?, lastname = ?, position = ?, salary = ?, prepayment = ?, hire_date = ?, phone = ?,  family_phone1 = ?, family_phone2 = ?, tazkira_ID = ?, address = ?, contract_file = ?, file_type = ? WHERE staff_ID = ?',
                                       [
                                         fname,
                                         lname,
+                                        hireDate,
                                         pos,
                                         salary,
                                         prePayment,
+                                        hireDate,
                                         phone,
                                         fPhone1,
                                         fPhone2,
