@@ -273,6 +273,11 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                           return translations[selectedLanguage]
                                                   ?['PhoneRequired'] ??
                                               '';
+                                        } else if (value ==
+                                                _familyPhone1Controller.text ||
+                                            value ==
+                                                _familyPhone2Controller.text) {
+                                          return 'نمبر تماس شما با نمبر تماس خانواده تان نباید یکسان باشد.';
                                         } else if (value.startsWith('07')) {
                                           if (value.length < 10 ||
                                               value.length > 10) {
@@ -361,6 +366,11 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return 'این نمبر تماس عضوی فامیل نمی تواند خالی باشد.';
+                                        } else if (value ==
+                                                _phoneController.text ||
+                                            value ==
+                                                _familyPhone2Controller.text) {
+                                          return 'این نمبر تماس باید متفاوت باشد.';
                                         } else if (value.startsWith('07')) {
                                           if (value.length < 10 ||
                                               value.length > 10) {
@@ -439,6 +449,9 @@ class _NewStaffFormState extends State<NewStaffForm> {
                                                 ?['Phone10'] ??
                                             '';
                                       }
+                                    } else if (value == _phoneController.text ||
+                                        value == _familyPhone1Controller.text) {
+                                      return 'نمبر تماس خانواده تان باید متفاوت باشد.';
                                     } else if (value.startsWith('+93')) {
                                       if (value.length < 12 ||
                                           value.length > 12) {
