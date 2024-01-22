@@ -537,9 +537,11 @@ class MyData extends DataTableSource {
                         String position = staffRow['position'];
                         double salary = staffRow['salary'];
                         double prePayment = staffRow['prepayment'] ?? 0;
-                        DateTime hireDateTime = staffRow['hire_date'];
-                        String hireDate =
-                            intl2.DateFormat('yyyy-MM-dd').format(hireDateTime);
+                        DateTime? hireDateTime = staffRow['hire_date'];
+                        String? hireDate = hireDateTime == null
+                            ? null
+                            : intl2.DateFormat('yyyy-MM-dd')
+                                .format(hireDateTime);
                         String phone = staffRow['phone'];
                         String fPhone1 = staffRow['family_phone1'];
                         String fPhone2 = staffRow['family_phone2'] ?? '';
@@ -556,7 +558,7 @@ class MyData extends DataTableSource {
                             position,
                             salary,
                             prePayment,
-                            hireDate,
+                            hireDate ?? '',
                             phone,
                             fPhone1,
                             fPhone2,
@@ -969,6 +971,10 @@ onEditStaff(
                                   return translations[selectedLanguage]
                                           ?['PhoneRequired'] ??
                                       '';
+                                } else if (value ==
+                                        familyPhone1Controller.text ||
+                                    value == familyPhone2Controller.text) {
+                                  return 'نمبر تماس شما با نمبر تماس خانواده تان نباید یکسان باشد.';
                                 } else if (value.startsWith('07')) {
                                   if (value.length < 10 || value.length > 10) {
                                     return translations[selectedLanguage]
@@ -1030,6 +1036,9 @@ onEditStaff(
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return 'این نمبر تماس عضوی فامیل الزامی میباشد.';
+                                } else if (value == phoneController.text ||
+                                    value == familyPhone2Controller.text) {
+                                  return 'نمبر تماس خانواده شما باید متفاوت باشد.';
                                 } else if (value.startsWith('07')) {
                                   if (value.length < 10 || value.length > 10) {
                                     return translations[selectedLanguage]
@@ -1095,6 +1104,10 @@ onEditStaff(
                                               ?['Phone10'] ??
                                           '';
                                     }
+                                  } else if (value ==
+                                          phoneController.text ||
+                                      value == familyPhone1Controller.text) {
+                                    return 'نمبر تماس شما با نمبر تماس خانواده تان نباید یکسان باشد.';
                                   } else if (value.startsWith('+93')) {
                                     if (value.length < 12 ||
                                         value.length > 12) {
