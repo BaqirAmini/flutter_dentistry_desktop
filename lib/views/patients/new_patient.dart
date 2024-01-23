@@ -16,6 +16,10 @@ void main() {
   return runApp(const NewPatient());
 }
 
+// Assign default selected staff
+String? defaultSelectedStaff;
+List<Map<String, dynamic>> staffList = [];
+int? staffID;
 // Set global variables which are needed later.
 var selectedLanguage;
 var isEnglish;
@@ -29,10 +33,6 @@ class NewPatient extends StatefulWidget {
 }
 
 class _NewPatientState extends State<NewPatient> {
-  // Assign default selected staff
-  String? defaultSelectedStaff;
-  List<Map<String, dynamic>> staffList = [];
-  int? staffID;
   // Fetch staff which will be needed later.
   Future<void> fetchStaff() async {
     // Fetch staff for purchased by fields
@@ -661,77 +661,63 @@ class _NewPatientState extends State<NewPatient> {
                           )
                         ],
                       ),
-                      FutureBuilder(
-                        future: fetchStaff(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return CircularProgressIndicator();
-                          } else {
-                            return Container(
-                              width: MediaQuery.of(context).size.width * 0.3,
-                              margin: const EdgeInsets.all(15.0),
-                              child: InputDecorator(
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'انتخاب داکتر',
-                                  labelStyle:
-                                      TextStyle(color: Colors.blueAccent),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blueAccent)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue)),
-                                  errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide: BorderSide(
-                                          color: Colors.red, width: 1.5)),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: Container(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.03,
-                                    padding: EdgeInsets.zero,
-                                    child: DropdownButton(
-                                      isExpanded: true,
-                                      icon: const Icon(Icons.arrow_drop_down),
-                                      value: defaultSelectedStaff,
-                                      style:
-                                          const TextStyle(color: Colors.black),
-                                      items: staffList.map((staff) {
-                                        return DropdownMenuItem<String>(
-                                          value: staff['staff_ID'],
-                                          alignment: Alignment.centerRight,
-                                          child: Text(staff['firstname'] +
-                                              ' ' +
-                                              staff['lastname']),
-                                        );
-                                      }).toList(),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          defaultSelectedStaff = newValue;
-                                          staffID = int.parse(newValue!);
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        margin: const EdgeInsets.all(15.0),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'انتخاب داکتر',
+                            labelStyle: TextStyle(color: Colors.blueAccent),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.blueAccent)),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15.0)),
+                                borderSide: BorderSide(color: Colors.blue)),
+                            errorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15.0)),
+                                borderSide: BorderSide(color: Colors.red)),
+                            focusedErrorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 1.5)),
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: Container(
+                              height: MediaQuery.of(context).size.height * 0.03,
+                              padding: EdgeInsets.zero,
+                              child: DropdownButton(
+                                isExpanded: true,
+                                icon: const Icon(Icons.arrow_drop_down),
+                                value: defaultSelectedStaff,
+                                style: const TextStyle(color: Colors.black),
+                                items: staffList.map((staff) {
+                                  return DropdownMenuItem<String>(
+                                    value: staff['staff_ID'],
+                                    alignment: Alignment.centerRight,
+                                    child: Text(staff['firstname'] +
+                                        ' ' +
+                                        staff['lastname']),
+                                  );
+                                }).toList(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    defaultSelectedStaff = newValue;
+                                    staffID = int.parse(newValue!);
+                                    print('Staff selected: $staffID');
+                                  });
+                                },
                               ),
-                            );
-                          }
-                        },
-                      )
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -1774,6 +1760,7 @@ class _NewPatientState extends State<NewPatient> {
 
   @override
   Widget build(BuildContext context) {
+    fetchStaff();
     // Fetch translations keys based on the selected language.
     var languageProvider = Provider.of<LanguageProvider>(context);
     selectedLanguage = languageProvider.selectedLanguage;
