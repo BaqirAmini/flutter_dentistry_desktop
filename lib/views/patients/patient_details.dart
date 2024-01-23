@@ -102,8 +102,8 @@ class _PatientProfile extends StatelessWidget {
                     top: -5.0,
                     right: -5.0,
                     child: SizedBox(
-                      width: 30.0,
-                      height: 30.0,
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      height: MediaQuery.of(context).size.height * 0.5,
                       child: Card(
                         shape: const CircleBorder(),
                         child: Center(
@@ -125,11 +125,15 @@ class _PatientProfile extends StatelessWidget {
               ),
               // const SizedBox(width: 10),
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.15,
+                width: MediaQuery.of(context).size.width * 0.12,
                 child: Column(
                   children: [
-                    Text('${PatientInfo.firstName} ${PatientInfo.lastName}',
-                        style: Theme.of(context).textTheme.headlineSmall),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: Text(
+                          '${PatientInfo.firstName} ${PatientInfo.lastName}',
+                          style: Theme.of(context).textTheme.headlineSmall),
+                    ),
                     const SizedBox(height: 10.0),
                     Padding(
                       padding: EdgeInsets.symmetric(
