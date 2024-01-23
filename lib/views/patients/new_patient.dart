@@ -29,6 +29,30 @@ class NewPatient extends StatefulWidget {
 }
 
 class _NewPatientState extends State<NewPatient> {
+  // Assign default selected staff
+  String? defaultSelectedStaff;
+  List<Map<String, dynamic>> staffList = [];
+  int? staffID;
+  // Fetch staff which will be needed later.
+  Future<void> fetchStaff() async {
+    // Fetch staff for purchased by fields
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?',
+        ['داکتر دندان']);
+    defaultSelectedStaff =
+        staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
+
+    staffList = results
+        .map((result) => {
+              'staff_ID': result[0].toString(),
+              'firstname': result[1],
+              'lastname': result[2]
+            })
+        .toList();
+    await conn.close();
+  }
+
   final GlobalKey<ScaffoldMessengerState> _globalKey2 =
       GlobalKey<ScaffoldMessengerState>();
 
@@ -76,6 +100,7 @@ class _NewPatientState extends State<NewPatient> {
   final Map<int, String> _durationGroupValue = {};
   // Create a Map to store the group values for each condition
   final Map<int, int> _condResultGV = {};
+
   // Declare a list to contain patients' info
   List<Step> stepList() => [
         Step(
@@ -99,18 +124,79 @@ class _NewPatientState extends State<NewPatient> {
                       style: TextStyle(color: Colors.blue),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Column(
                     children: [
-                      Column(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Row(
+                          Column(
                             children: [
-                              const Text(
-                                '*',
-                                style: TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold),
+                              Row(
+                                children: [
+                                  const Text(
+                                    '*',
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Container(
+                                    width: 400.0,
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 10.0,
+                                        top: 10.0,
+                                        bottom: 10.0),
+                                    child: TextFormField(
+                                      controller: _nameController,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                          RegExp(GlobalUsage.allowedEPChar),
+                                        ),
+                                      ],
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return translations[selectedLanguage]
+                                              ?['FNRequired'];
+                                        } else if (value.length < 3 ||
+                                            value.length > 10) {
+                                          return translations[selectedLanguage]
+                                              ?['FNLength'];
+                                        }
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        border: const OutlineInputBorder(),
+                                        labelText:
+                                            translations[selectedLanguage]
+                                                    ?['FName'] ??
+                                                '',
+                                        suffixIcon: const Icon(Icons.person),
+                                        enabledBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                        errorBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.red)),
+                                        focusedErrorBorder:
+                                            const OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(50.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.red,
+                                                    width: 1.5)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                               Container(
                                 width: 400.0,
@@ -120,113 +206,228 @@ class _NewPatientState extends State<NewPatient> {
                                     top: 10.0,
                                     bottom: 10.0),
                                 child: TextFormField(
-                                  controller: _nameController,
+                                  controller: _lNameController,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(
                                       RegExp(GlobalUsage.allowedEPChar),
                                     ),
                                   ],
                                   validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return translations[selectedLanguage]
-                                          ?['FNRequired'];
-                                    } else if (value.length < 3 ||
-                                        value.length > 10) {
-                                      return translations[selectedLanguage]
-                                          ?['FNLength'];
+                                    if (value!.isNotEmpty) {
+                                      if (value.length < 3 ||
+                                          value.length > 10) {
+                                        return translations[selectedLanguage]
+                                            ?['LNLength'];
+                                      } else {
+                                        return null;
+                                      }
+                                    } else {
+                                      return null;
                                     }
-                                    return null;
                                   },
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: translations[selectedLanguage]
-                                            ?['FName'] ??
-                                        '',
-                                    suffixIcon: const Icon(Icons.person),
-                                    enabledBorder: const OutlineInputBorder(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'تخلص',
+                                    suffixIcon: Icon(Icons.person),
+                                    enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.grey)),
-                                    focusedBorder: const OutlineInputBorder(
+                                    focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
-                                    errorBorder: const OutlineInputBorder(
+                                    errorBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.red)),
-                                    focusedErrorBorder:
-                                        const OutlineInputBorder(
+                                    focusedErrorBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(50.0)),
+                                        borderSide: BorderSide(
+                                            color: Colors.red, width: 1.5)),
+                                  ),
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  const Text(
+                                    '*',
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Container(
+                                    width: 400.0,
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 10.0,
+                                        top: 10.0,
+                                        bottom: 10.0),
+                                    child: InputDecorator(
+                                      decoration: InputDecoration(
+                                        border: const OutlineInputBorder(),
+                                        labelText:
+                                            translations[selectedLanguage]
+                                                    ?['Age'] ??
+                                                '',
+                                        enabledBorder: const OutlineInputBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(50.0)),
-                                            borderSide: BorderSide(
-                                                color: Colors.red, width: 1.5)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                        errorText:
+                                            ageDropDown == 0 && !_ageSelected
+                                                ? 'Please select an age'
+                                                : null,
+                                        errorBorder: OutlineInputBorder(
+                                          borderRadius: const BorderRadius.all(
+                                            Radius.circular(50.0),
+                                          ),
+                                          borderSide: BorderSide(
+                                              color: !_ageSelected
+                                                  ? Colors.red
+                                                  : Colors.grey),
+                                        ),
+                                      ),
+                                      child: DropdownButtonHideUnderline(
+                                        child: SizedBox(
+                                          height: 26.0,
+                                          child: DropdownButton(
+                                            isExpanded: true,
+                                            icon: const Icon(
+                                                Icons.arrow_drop_down),
+                                            value: ageDropDown,
+                                            items: <DropdownMenuItem<int>>[
+                                              const DropdownMenuItem(
+                                                value: 0,
+                                                child: Text('No age selected'),
+                                              ),
+                                              ...getAges().map((int ageItems) {
+                                                return DropdownMenuItem(
+                                                  alignment:
+                                                      Alignment.centerRight,
+                                                  value: ageItems,
+                                                  child: Directionality(
+                                                    textDirection: isEnglish
+                                                        ? TextDirection.ltr
+                                                        : TextDirection.rtl,
+                                                    child: Text(
+                                                        '$ageItems ${translations[selectedLanguage]?['Year'] ?? ''} '),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                            ],
+                                            onChanged: (int? newValue) {
+                                              if (newValue != 0) {
+                                                // Ignore the 'Please select an age' option
+                                                setState(() {
+                                                  ageDropDown = newValue!;
+                                                  _ageSelected = true;
+                                                  ServiceInfo.patAge = newValue;
+                                                });
+                                              }
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                width: 400.0,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 10.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: InputDecorator(
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 10.0),
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                        ?['Sex'],
+                                    enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey),
+                                    ),
+                                    focusedBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(50.0),
+                                      ),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      SizedBox(
+                                        width: 100,
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'مرد',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'مرد',
+                                              groupValue: _sexGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _sexGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 100,
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                                    horizontalTitleGap: 0.5),
+                                          ),
+                                          child: RadioListTile(
+                                              title: const Text(
+                                                'زن',
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                              value: 'زن',
+                                              groupValue: _sexGroupValue,
+                                              onChanged: (String? value) {
+                                                setState(() {
+                                                  _sexGroupValue = value!;
+                                                });
+                                              }),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          Container(
-                            width: 400.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: _lNameController,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(GlobalUsage.allowedEPChar),
-                                ),
-                              ],
-                              validator: (value) {
-                                if (value!.isNotEmpty) {
-                                  if (value.length < 3 || value.length > 10) {
-                                    return translations[selectedLanguage]
-                                        ?['LNLength'];
-                                  } else {
-                                    return null;
-                                  }
-                                } else {
-                                  return null;
-                                }
-                              },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'تخلص',
-                                suffixIcon: Icon(Icons.person),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
-                              ),
-                            ),
-                          ),
-                          Row(
+                          Column(
                             children: [
-                              const Text(
-                                '*',
-                                style: TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold),
-                              ),
                               Container(
                                 width: 400.0,
                                 margin: const EdgeInsets.only(
@@ -238,8 +439,7 @@ class _NewPatientState extends State<NewPatient> {
                                   decoration: InputDecoration(
                                     border: const OutlineInputBorder(),
                                     labelText: translations[selectedLanguage]
-                                            ?['Age'] ??
-                                        '',
+                                        ?['Marital'],
                                     enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
@@ -250,253 +450,179 @@ class _NewPatientState extends State<NewPatient> {
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
-                                    errorText: ageDropDown == 0 && !_ageSelected
-                                        ? 'Please select an age'
-                                        : null,
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide: BorderSide(
-                                          color: !_ageSelected
-                                              ? Colors.red
-                                              : Colors.grey),
-                                    ),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: SizedBox(
                                       height: 26.0,
-                                      child: DropdownButton(
+                                      child: DropdownButton<String>(
                                         isExpanded: true,
                                         icon: const Icon(Icons.arrow_drop_down),
-                                        value: ageDropDown,
-                                        items: <DropdownMenuItem<int>>[
-                                          const DropdownMenuItem(
-                                            value: 0,
-                                            child: Text('No age selected'),
-                                          ),
-                                          ...getAges().map((int ageItems) {
-                                            return DropdownMenuItem(
-                                              alignment: Alignment.centerRight,
-                                              value: ageItems,
-                                              child: Directionality(
-                                                textDirection: isEnglish
-                                                    ? TextDirection.ltr
-                                                    : TextDirection.rtl,
-                                                child: Text(
-                                                    '$ageItems ${translations[selectedLanguage]?['Year'] ?? ''} '),
-                                              ),
-                                            );
-                                          }).toList(),
-                                        ],
-                                        onChanged: (int? newValue) {
-                                          if (newValue != 0) {
-                                            // Ignore the 'Please select an age' option
-                                            setState(() {
-                                              ageDropDown = newValue!;
-                                              _ageSelected = true;
-                                              ServiceInfo.patAge = newValue;
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            width: 400.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: InputDecorator(
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 10.0),
-                                border: const OutlineInputBorder(),
-                                labelText: translations[selectedLanguage]
-                                    ?['Sex'],
-                                enabledBorder: const OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(50.0),
-                                  ),
-                                  borderSide: BorderSide(color: Colors.grey),
-                                ),
-                                focusedBorder: const OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(50.0),
-                                  ),
-                                  borderSide: BorderSide(color: Colors.blue),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  SizedBox(
-                                    width: 100,
-                                    child: Theme(
-                                      data: Theme.of(context).copyWith(
-                                        listTileTheme: const ListTileThemeData(
-                                            horizontalTitleGap: 0.5),
-                                      ),
-                                      child: RadioListTile(
-                                          title: const Text(
-                                            'مرد',
-                                            style: TextStyle(fontSize: 14),
-                                          ),
-                                          value: 'مرد',
-                                          groupValue: _sexGroupValue,
-                                          onChanged: (String? value) {
-                                            setState(() {
-                                              _sexGroupValue = value!;
-                                            });
-                                          }),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 100,
-                                    child: Theme(
-                                      data: Theme.of(context).copyWith(
-                                        listTileTheme: const ListTileThemeData(
-                                            horizontalTitleGap: 0.5),
-                                      ),
-                                      child: RadioListTile(
-                                          title: const Text(
-                                            'زن',
-                                            style: TextStyle(fontSize: 14),
-                                          ),
-                                          value: 'زن',
-                                          groupValue: _sexGroupValue,
-                                          onChanged: (String? value) {
-                                            setState(() {
-                                              _sexGroupValue = value!;
-                                            });
-                                          }),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Container(
-                            width: 400.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: InputDecorator(
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translations[selectedLanguage]
-                                    ?['Marital'],
-                                enabledBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: SizedBox(
-                                  height: 26.0,
-                                  child: DropdownButton<String>(
-                                    isExpanded: true,
-                                    icon: const Icon(Icons.arrow_drop_down),
-                                    value: maritalStatusDD,
-                                    items: items.map((String items) {
-                                      return DropdownMenuItem<String>(
-                                        alignment: Alignment.centerRight,
-                                        value: items,
-                                        child: Text(items),
-                                      );
-                                    }).toList(),
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        maritalStatusDD = newValue!;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 400.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: Column(
-                              children: <Widget>[
-                                InputDecorator(
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: translations[selectedLanguage]
-                                        ?['BloodGroup'],
-                                    enabledBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey),
-                                    ),
-                                    focusedBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
-                                    ),
-                                    errorBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide: BorderSide(color: Colors.red),
-                                    ),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton(
-                                        // isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: bloodDropDown,
-                                        items: bloodGroupItems
-                                            .map((String bloodGroupItems) {
-                                          return DropdownMenuItem(
+                                        value: maritalStatusDD,
+                                        items: items.map((String items) {
+                                          return DropdownMenuItem<String>(
                                             alignment: Alignment.centerRight,
-                                            value: bloodGroupItems,
-                                            child: Text(bloodGroupItems),
+                                            value: items,
+                                            child: Text(items),
                                           );
                                         }).toList(),
                                         onChanged: (String? newValue) {
                                           setState(() {
-                                            bloodDropDown = newValue;
+                                            maritalStatusDD = newValue!;
                                           });
                                         },
                                       ),
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              const Text('*',
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold)),
+                              ),
+                              Container(
+                                width: 400.0,
+                                margin: const EdgeInsets.only(
+                                    left: 20.0,
+                                    right: 10.0,
+                                    top: 10.0,
+                                    bottom: 10.0),
+                                child: Column(
+                                  children: <Widget>[
+                                    InputDecorator(
+                                      decoration: InputDecoration(
+                                        border: const OutlineInputBorder(),
+                                        labelText:
+                                            translations[selectedLanguage]
+                                                ?['BloodGroup'],
+                                        enabledBorder: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey),
+                                        ),
+                                        focusedBorder: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue),
+                                        ),
+                                        errorBorder: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.red),
+                                        ),
+                                      ),
+                                      child: DropdownButtonHideUnderline(
+                                        child: SizedBox(
+                                          height: 26.0,
+                                          child: DropdownButton(
+                                            // isExpanded: true,
+                                            icon: const Icon(
+                                                Icons.arrow_drop_down),
+                                            value: bloodDropDown,
+                                            items: bloodGroupItems
+                                                .map((String bloodGroupItems) {
+                                              return DropdownMenuItem(
+                                                alignment:
+                                                    Alignment.centerRight,
+                                                value: bloodGroupItems,
+                                                child: Text(bloodGroupItems),
+                                              );
+                                            }).toList(),
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                bloodDropDown = newValue;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  const Text('*',
+                                      style: TextStyle(
+                                          color: Colors.red,
+                                          fontWeight: FontWeight.bold)),
+                                  Container(
+                                    width: 400.0,
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 10.0,
+                                        top: 10.0,
+                                        bottom: 10.0),
+                                    child: TextFormField(
+                                      textDirection: TextDirection.ltr,
+                                      controller: _phoneController,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                          RegExp(GlobalUsage.allowedDigits),
+                                        ),
+                                      ],
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return translations[selectedLanguage]
+                                                  ?['PhoneRequired'] ??
+                                              '';
+                                        } else if (value.startsWith('07') ||
+                                            value.startsWith('۰۷')) {
+                                          if (value.length < 10 ||
+                                              value.length > 10) {
+                                            return translations[
+                                                        selectedLanguage]
+                                                    ?['Phone10'] ??
+                                                '';
+                                          }
+                                        } else if (value.startsWith('+93') ||
+                                            value.startsWith('+۹۳')) {
+                                          if (value.length < 12 ||
+                                              value.length > 12) {
+                                            return translations[
+                                                        selectedLanguage]
+                                                    ?['Phone12'] ??
+                                                '';
+                                          }
+                                        } else {
+                                          return translations[selectedLanguage]
+                                                  ?['ValidPhone'] ??
+                                              '';
+                                        }
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        border: const OutlineInputBorder(),
+                                        labelText:
+                                            translations[selectedLanguage]
+                                                    ?['Phone'] ??
+                                                '',
+                                        suffixIcon: const Icon(Icons.phone),
+                                        enabledBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                        errorBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.red)),
+                                        focusedErrorBorder:
+                                            const OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(50.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.red,
+                                                    width: 1.5)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               Container(
                                 width: 400.0,
                                 margin: const EdgeInsets.only(
@@ -505,47 +631,19 @@ class _NewPatientState extends State<NewPatient> {
                                     top: 10.0,
                                     bottom: 10.0),
                                 child: TextFormField(
-                                  textDirection: TextDirection.ltr,
-                                  controller: _phoneController,
+                                  controller: _addrController,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(
-                                      RegExp(GlobalUsage.allowedDigits),
+                                      RegExp(GlobalUsage.allowedEPChar),
                                     ),
                                   ],
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return translations[selectedLanguage]
-                                              ?['PhoneRequired'] ??
-                                          '';
-                                    } else if (value.startsWith('07') ||
-                                        value.startsWith('۰۷')) {
-                                      if (value.length < 10 ||
-                                          value.length > 10) {
-                                        return translations[selectedLanguage]
-                                                ?['Phone10'] ??
-                                            '';
-                                      }
-                                    } else if (value.startsWith('+93') ||
-                                        value.startsWith('+۹۳')) {
-                                      if (value.length < 12 ||
-                                          value.length > 12) {
-                                        return translations[selectedLanguage]
-                                                ?['Phone12'] ??
-                                            '';
-                                      }
-                                    } else {
-                                      return translations[selectedLanguage]
-                                              ?['ValidPhone'] ??
-                                          '';
-                                    }
-                                    return null;
-                                  },
                                   decoration: InputDecoration(
                                     border: const OutlineInputBorder(),
                                     labelText: translations[selectedLanguage]
-                                            ?['Phone'] ??
+                                            ?['Address'] ??
                                         '',
-                                    suffixIcon: const Icon(Icons.phone),
+                                    suffixIcon:
+                                        const Icon(Icons.location_on_outlined),
                                     enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
@@ -556,55 +654,83 @@ class _NewPatientState extends State<NewPatient> {
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
-                                    errorBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.red)),
-                                    focusedErrorBorder:
-                                        const OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(50.0)),
-                                            borderSide: BorderSide(
-                                                color: Colors.red, width: 1.5)),
                                   ),
                                 ),
                               ),
                             ],
-                          ),
-                          Container(
-                            width: 400.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: _addrController,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(GlobalUsage.allowedEPChar),
-                                ),
-                              ],
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translations[selectedLanguage]
-                                        ?['Address'] ??
-                                    '',
-                                suffixIcon:
-                                    const Icon(Icons.location_on_outlined),
-                                enabledBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                              ),
-                            ),
-                          ),
+                          )
                         ],
+                      ),
+                      FutureBuilder(
+                        future: fetchStaff(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          } else {
+                            return Container(
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              margin: const EdgeInsets.all(15.0),
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'انتخاب داکتر',
+                                  labelStyle:
+                                      TextStyle(color: Colors.blueAccent),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blueAccent)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.025,
+                                    padding: EdgeInsets.zero,
+                                    child: DropdownButton(
+                                      isExpanded: true,
+                                      icon: const Icon(Icons.arrow_drop_down),
+                                      value: defaultSelectedStaff,
+                                      style:
+                                          const TextStyle(color: Colors.black),
+                                      items: staffList.map((staff) {
+                                        return DropdownMenuItem<String>(
+                                          value: staff['staff_ID'],
+                                          alignment: Alignment.centerRight,
+                                          child: Text(staff['firstname'] +
+                                              ' ' +
+                                              staff['lastname']),
+                                        );
+                                      }).toList(),
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          defaultSelectedStaff = newValue;
+                                          staffID = int.parse(newValue!);
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                        },
                       )
                     ],
                   ),
@@ -923,7 +1049,6 @@ class _NewPatientState extends State<NewPatient> {
 // Add a new patient
   Future<void> onAddNewPatient(BuildContext context) async {
     _onAddPatientHistory(86);
-    var staffId = StaffInfo.staffID;
     var firstName = _nameController.text;
     var lastName = _lNameController.text;
     var sex = _sexGroupValue;
@@ -949,7 +1074,7 @@ class _NewPatientState extends State<NewPatient> {
       var insertPatQuery = await conn.query(
           'INSERT INTO patients (staff_ID, firstname, lastname, sex, age, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
-            staffId,
+            staffID,
             firstName,
             lastName,
             sex,
@@ -973,7 +1098,7 @@ class _NewPatientState extends State<NewPatient> {
         if (await _onAddPatientHistory(patId)) {
           // Now create appointments
           if (await AppointmentFunction.onAddAppointment(
-              patId, serviceID!, meetDate!, staffId!)) {
+              patId, serviceID!, meetDate!, staffID!)) {
             // Here i fetch apt_ID (appointment ID) which needs to be passed.
             int appointmentID;
             final aptIdResult = await conn.query(
@@ -991,7 +1116,7 @@ class _NewPatientState extends State<NewPatient> {
                 patId, ServiceInfo.selectedServiceID!, note, appointmentID)) {
               // if it is inserted into the final tables which is fee_payments, it navigates to patients page.
               if (await AppointmentFunction.onAddFeePayment(
-                  meetDate, staffId, appointmentID)) {
+                  meetDate, staffID!, appointmentID)) {
                 // ignore: use_build_context_synchronously
                 Navigator.pop(context);
               }
@@ -1642,12 +1767,17 @@ class _NewPatientState extends State<NewPatient> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    fetchStaff();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Fetch translations keys based on the selected language.
     var languageProvider = Provider.of<LanguageProvider>(context);
     selectedLanguage = languageProvider.selectedLanguage;
     isEnglish = selectedLanguage == 'English';
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: ScaffoldMessenger(
