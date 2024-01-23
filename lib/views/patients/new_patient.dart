@@ -701,7 +701,7 @@ class _NewPatientState extends State<NewPatient> {
                                 child: DropdownButtonHideUnderline(
                                   child: Container(
                                     height: MediaQuery.of(context).size.height *
-                                        0.025,
+                                        0.03,
                                     padding: EdgeInsets.zero,
                                     child: DropdownButton(
                                       isExpanded: true,
