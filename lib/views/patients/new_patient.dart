@@ -979,7 +979,7 @@ class _NewPatientState extends State<NewPatient> {
       var insertPatQuery = await conn.query(
           'INSERT INTO patients (staff_ID, firstname, lastname, sex, age, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
-            ServiceInfo.selectedServiceID,
+            ServiceInfo.selectedDentistID,
             firstName,
             lastName,
             sex,
