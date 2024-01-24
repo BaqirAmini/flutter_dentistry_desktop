@@ -1007,7 +1007,7 @@ class _NewPatientState extends State<NewPatient> {
         if (await _onAddPatientHistory(patId)) {
           // Now create appointments
           if (await AppointmentFunction.onAddAppointment(
-              patId, serviceID!, meetDate!, ServiceInfo.selectedServiceID!)) {
+              patId, serviceID!, meetDate!, ServiceInfo.selectedDentistID!)) {
             // Here i fetch apt_ID (appointment ID) which needs to be passed.
             int appointmentID;
             final aptIdResult = await conn.query(
@@ -1025,7 +1025,7 @@ class _NewPatientState extends State<NewPatient> {
                 patId, ServiceInfo.selectedServiceID!, note, appointmentID)) {
               // if it is inserted into the final tables which is fee_payments, it navigates to patients page.
               if (await AppointmentFunction.onAddFeePayment(
-                  meetDate, ServiceInfo.selectedServiceID!, appointmentID)) {
+                  meetDate, ServiceInfo.selectedDentistID!, appointmentID)) {
                 // ignore: use_build_context_synchronously
                 Navigator.pop(context);
               }
@@ -1675,10 +1675,8 @@ class _NewPatientState extends State<NewPatient> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
-    fetchStaff();
     // Fetch translations keys based on the selected language.
     var languageProvider = Provider.of<LanguageProvider>(context);
     selectedLanguage = languageProvider.selectedLanguage;

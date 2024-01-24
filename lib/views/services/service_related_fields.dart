@@ -83,13 +83,6 @@ class _ServiceFormState extends State<ServiceForm> {
 
   List<Map<String, dynamic>> services = [];
 
-  @override
-  void initState() {
-    super.initState();
-    fetchServices();
-    fetchStaff();
-  }
-
   // Fetch staff which will be needed later.
   Future<void> fetchStaff() async {
     // Fetch staff for purchased by fields
@@ -97,17 +90,27 @@ class _ServiceFormState extends State<ServiceForm> {
     var results = await conn.query(
         'SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?',
         ['داکتر دندان']);
-    ServiceInfo.selectedDentistID =
-        staffList.isNotEmpty ? int.parse(staffList[0]['staff_ID']) : null;
 
-    staffList = results
-        .map((result) => {
-              'staff_ID': result[0].toString(),
-              'firstname': result[1],
-              'lastname': result[2]
-            })
-        .toList();
+    setState(() {
+      staffList = results
+          .map((result) => {
+                'staff_ID': result[0].toString(),
+                'firstname': result[1],
+                'lastname': result[2] ?? ''
+              })
+          .toList();
+      ServiceInfo.selectedDentistID =
+          staffList.isNotEmpty ? int.parse(staffList[0]['staff_ID']) : null;
+    });
+
     await conn.close();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchServices();
+    fetchStaff();
   }
 
   Future<void> fetchServices() async {
@@ -1145,7 +1148,7 @@ class _ServiceFormState extends State<ServiceForm> {
                           child: Container(
                             height: MediaQuery.of(context).size.height * 0.025,
                             padding: EdgeInsets.zero,
-                            child: DropdownButton(
+                            child: DropdownButton<String>(
                               isExpanded: true,
                               icon: const Icon(Icons.arrow_drop_down),
                               value: ServiceInfo.selectedDentistID.toString(),
