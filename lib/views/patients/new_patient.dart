@@ -33,26 +33,6 @@ class NewPatient extends StatefulWidget {
 }
 
 class _NewPatientState extends State<NewPatient> {
-  // Fetch staff which will be needed later.
-  Future<void> fetchStaff() async {
-    // Fetch staff for purchased by fields
-    var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?',
-        ['داکتر دندان']);
-    defaultSelectedStaff =
-        staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
-
-    staffList = results
-        .map((result) => {
-              'staff_ID': result[0].toString(),
-              'firstname': result[1],
-              'lastname': result[2]
-            })
-        .toList();
-    await conn.close();
-  }
-
   final GlobalKey<ScaffoldMessengerState> _globalKey2 =
       GlobalKey<ScaffoldMessengerState>();
 
@@ -661,63 +641,6 @@ class _NewPatientState extends State<NewPatient> {
                           )
                         ],
                       ),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.3,
-                        margin: const EdgeInsets.all(15.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'انتخاب داکتر',
-                            labelStyle: TextStyle(color: Colors.blueAccent),
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide:
-                                    BorderSide(color: Colors.blueAccent)),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15.0)),
-                                borderSide: BorderSide(color: Colors.blue)),
-                            errorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15.0)),
-                                borderSide: BorderSide(color: Colors.red)),
-                            focusedErrorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15.0)),
-                                borderSide:
-                                    BorderSide(color: Colors.red, width: 1.5)),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: Container(
-                              height: MediaQuery.of(context).size.height * 0.03,
-                              padding: EdgeInsets.zero,
-                              child: DropdownButton(
-                                isExpanded: true,
-                                icon: const Icon(Icons.arrow_drop_down),
-                                value: defaultSelectedStaff,
-                                style: const TextStyle(color: Colors.black),
-                                items: staffList.map((staff) {
-                                  return DropdownMenuItem<String>(
-                                    value: staff['staff_ID'],
-                                    alignment: Alignment.centerRight,
-                                    child: Text(staff['firstname'] +
-                                        ' ' +
-                                        staff['lastname']),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    defaultSelectedStaff = newValue;
-                                    staffID = int.parse(newValue!);
-                                    print('Staff selected: $staffID');
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ],
@@ -1060,7 +983,7 @@ class _NewPatientState extends State<NewPatient> {
       var insertPatQuery = await conn.query(
           'INSERT INTO patients (staff_ID, firstname, lastname, sex, age, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
-            staffID,
+            ServiceInfo.selectedDentistID,
             firstName,
             lastName,
             sex,
@@ -1084,7 +1007,7 @@ class _NewPatientState extends State<NewPatient> {
         if (await _onAddPatientHistory(patId)) {
           // Now create appointments
           if (await AppointmentFunction.onAddAppointment(
-              patId, serviceID!, meetDate!, staffID!)) {
+              patId, serviceID!, meetDate!, ServiceInfo.selectedServiceID!)) {
             // Here i fetch apt_ID (appointment ID) which needs to be passed.
             int appointmentID;
             final aptIdResult = await conn.query(
@@ -1102,7 +1025,7 @@ class _NewPatientState extends State<NewPatient> {
                 patId, ServiceInfo.selectedServiceID!, note, appointmentID)) {
               // if it is inserted into the final tables which is fee_payments, it navigates to patients page.
               if (await AppointmentFunction.onAddFeePayment(
-                  meetDate, staffID!, appointmentID)) {
+                  meetDate, ServiceInfo.selectedServiceID!, appointmentID)) {
                 // ignore: use_build_context_synchronously
                 Navigator.pop(context);
               }
@@ -1752,11 +1675,6 @@ class _NewPatientState extends State<NewPatient> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchStaff();
-  }
 
   @override
   Widget build(BuildContext context) {

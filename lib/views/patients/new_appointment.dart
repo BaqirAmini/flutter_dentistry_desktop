@@ -266,7 +266,7 @@ class _NewAppointmentState extends State<NewAppointment> {
                       PatientInfo.patID!,
                       ServiceInfo.selectedServiceID!,
                       ServiceInfo.meetingDate!,
-                      StaffInfo.staffID!)) {
+                      ServiceInfo.selectedDentistID!)) {
                     // Here i fetch apt_ID (appointment ID) which needs to be passed.
                     final conn = await onConnToDb();
                     int appointmentID;
@@ -294,7 +294,7 @@ class _NewAppointmentState extends State<NewAppointment> {
                         appointmentID)) {
                       if (await AppointmentFunction.onAddFeePayment(
                           ServiceInfo.meetingDate!,
-                          StaffInfo.staffID!,
+                          ServiceInfo.selectedDentistID!,
                           appointmentID)) {
                         Navigator.pop(context);
                       }
