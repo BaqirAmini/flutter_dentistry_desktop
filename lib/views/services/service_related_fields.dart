@@ -11,6 +11,10 @@ import 'package:provider/provider.dart';
 // Set global variables which are needed later.
 var selectedLanguage;
 bool isEnglish = false;
+// Assign default selected staff (Dentists are listed in this dropdown only)
+String? defaultSelectedStaff;
+List<Map<String, dynamic>> staffList = [];
+
 
 class CustomForm extends StatelessWidget {
   const CustomForm({Key? key}) : super(key: key);
@@ -31,6 +35,26 @@ class ServiceForm extends StatefulWidget {
 }
 
 class _ServiceFormState extends State<ServiceForm> {
+  // Fetch staff which will be needed later.
+  Future<void> fetchStaff() async {
+    // Fetch staff for purchased by fields
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?',
+        ['داکتر دندان']);
+    defaultSelectedStaff =
+        staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
+
+    staffList = results
+        .map((result) => {
+              'staff_ID': result[0].toString(),
+              'firstname': result[1],
+              'lastname': result[2]
+            })
+        .toList();
+    await conn.close();
+  }
+
 //  پوش کردن دندان
   final List<String> _crownItems = [
     'Porcelain',
@@ -84,6 +108,7 @@ class _ServiceFormState extends State<ServiceForm> {
   void initState() {
     super.initState();
     fetchServices();
+    fetchStaff();
   }
 
   Future<void> fetchServices() async {
@@ -111,6 +136,7 @@ class _ServiceFormState extends State<ServiceForm> {
     /*  var languageProvider = Provider.of<LanguageProvider>(context);
     selectedLanguage = languageProvider.selectedLanguage;
     isEnglish = selectedLanguage == 'English'; */
+    fetchStaff();
     ServiceInfo.serviceNote = _noteController.text;
     ServiceInfo.meetingDate = _meetController.text.toString();
     return Form(
@@ -233,6 +259,103 @@ class _ServiceFormState extends State<ServiceForm> {
                                 });
                               },
                             ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible:
+                          (ServiceInfo.selectedServiceID == 9) ? true : false,
+                      child: Container(
+                        width: 400.0,
+                        margin: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 10.0),
+                            border: OutlineInputBorder(),
+                            labelText: 'نوعیت دینچر',
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(50.0),
+                              ),
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(50.0),
+                              ),
+                              borderSide: BorderSide(color: Colors.blue),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: const Text(
+                                        'Full',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                      value: 'Full',
+                                      groupValue: ServiceInfo.dentureGroupValue,
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          ServiceInfo.dentureGroupValue =
+                                              value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: const Text(
+                                        'Partial',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                      value: 'Partial',
+                                      groupValue: ServiceInfo.dentureGroupValue,
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          ServiceInfo.dentureGroupValue =
+                                              value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: const Text(
+                                        'C.C Plate',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                      value: 'C.C Plate',
+                                      groupValue: ServiceInfo.dentureGroupValue,
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          ServiceInfo.dentureGroupValue =
+                                              value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -444,103 +567,6 @@ class _ServiceFormState extends State<ServiceForm> {
                                 },
                               ),
                             ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Visibility(
-                      visible:
-                          (ServiceInfo.selectedServiceID == 9) ? true : false,
-                      child: Container(
-                        width: 400.0,
-                        margin: const EdgeInsets.only(
-                            left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 10.0, horizontal: 10.0),
-                            border: OutlineInputBorder(),
-                            labelText: 'نوعیت دینچر',
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(50.0),
-                              ),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(50.0),
-                              ),
-                              borderSide: BorderSide(color: Colors.blue),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(
-                                    listTileTheme: const ListTileThemeData(
-                                        horizontalTitleGap: 0.5),
-                                  ),
-                                  child: RadioListTile(
-                                      title: const Text(
-                                        'Full',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      value: 'Full',
-                                      groupValue: ServiceInfo.dentureGroupValue,
-                                      onChanged: (String? value) {
-                                        setState(() {
-                                          ServiceInfo.dentureGroupValue =
-                                              value!;
-                                        });
-                                      }),
-                                ),
-                              ),
-                              Expanded(
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(
-                                    listTileTheme: const ListTileThemeData(
-                                        horizontalTitleGap: 0.5),
-                                  ),
-                                  child: RadioListTile(
-                                      title: const Text(
-                                        'Partial',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      value: 'Partial',
-                                      groupValue: ServiceInfo.dentureGroupValue,
-                                      onChanged: (String? value) {
-                                        setState(() {
-                                          ServiceInfo.dentureGroupValue =
-                                              value!;
-                                        });
-                                      }),
-                                ),
-                              ),
-                              Expanded(
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(
-                                    listTileTheme: const ListTileThemeData(
-                                        horizontalTitleGap: 0.5),
-                                  ),
-                                  child: RadioListTile(
-                                      title: const Text(
-                                        'C.C Plate',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      value: 'C.C Plate',
-                                      groupValue: ServiceInfo.dentureGroupValue,
-                                      onChanged: (String? value) {
-                                        setState(() {
-                                          ServiceInfo.dentureGroupValue =
-                                              value!;
-                                        });
-                                      }),
-                                ),
-                              ),
-                            ],
                           ),
                         ),
                       ),
@@ -1091,6 +1117,62 @@ class _ServiceFormState extends State<ServiceForm> {
                         ),
                       ),
                     ),
+                    Container(
+                      width: 400.0,
+                      margin: const EdgeInsets.all(15.0),
+                      child: InputDecorator(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'انتخاب داکتر',
+                          labelStyle: TextStyle(color: Colors.blueAccent),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50.0)),
+                              borderSide: BorderSide(color: Colors.blueAccent)),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15.0)),
+                              borderSide: BorderSide(color: Colors.blue)),
+                          errorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15.0)),
+                              borderSide: BorderSide(color: Colors.red)),
+                          focusedErrorBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15.0)),
+                              borderSide:
+                                  BorderSide(color: Colors.red, width: 1.5)),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.025,
+                            padding: EdgeInsets.zero,
+                            child: DropdownButton(
+                              isExpanded: true,
+                              icon: const Icon(Icons.arrow_drop_down),
+                              value: defaultSelectedStaff,
+                              style: const TextStyle(color: Colors.black),
+                              items: staffList.map((staff) {
+                                return DropdownMenuItem<String>(
+                                  value: staff['staff_ID'],
+                                  alignment: Alignment.centerRight,
+                                  child: Text(staff['firstname'] +
+                                      ' ' +
+                                      staff['lastname']),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  defaultSelectedStaff = newValue;
+                                  ServiceInfo.selectedDentistID =
+                                      int.parse(newValue!);
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                     Visibility(
                       visible: true,
                       child: Container(
@@ -1177,6 +1259,7 @@ class _ServiceFormState extends State<ServiceForm> {
 
 // Static class
 class ServiceInfo {
+  static int? selectedDentistID;
   static int? selectedServiceID;
   // This age is essential for teeth selection chart switch
   static int patAge = 1;
