@@ -552,7 +552,7 @@ class _FeeContentState extends State<FeeContent> {
     // Fetch staff for purchased by fields
     var conn = await onConnToDb();
     var results =
-        await conn.query('SELECT staff_ID, firstname, lastname FROM staff');
+        await conn.query('SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?', ['داکتر دندان']);
     defaultSelectedStaff =
         staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
     // setState(() {
