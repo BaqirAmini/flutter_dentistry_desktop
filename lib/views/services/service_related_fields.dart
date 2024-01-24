@@ -11,10 +11,6 @@ import 'package:provider/provider.dart';
 // Set global variables which are needed later.
 var selectedLanguage;
 bool isEnglish = false;
-// Assign default selected staff (Dentists are listed in this dropdown only)
-String? defaultSelectedStaff;
-List<Map<String, dynamic>> staffList = [];
-
 
 class CustomForm extends StatelessWidget {
   const CustomForm({Key? key}) : super(key: key);
@@ -35,25 +31,8 @@ class ServiceForm extends StatefulWidget {
 }
 
 class _ServiceFormState extends State<ServiceForm> {
-  // Fetch staff which will be needed later.
-  Future<void> fetchStaff() async {
-    // Fetch staff for purchased by fields
-    var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?',
-        ['داکتر دندان']);
-    defaultSelectedStaff =
-        staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
-
-    staffList = results
-        .map((result) => {
-              'staff_ID': result[0].toString(),
-              'firstname': result[1],
-              'lastname': result[2]
-            })
-        .toList();
-    await conn.close();
-  }
+  // This is to fetch staff list
+  List<Map<String, dynamic>> staffList = [];
 
 //  پوش کردن دندان
   final List<String> _crownItems = [
@@ -111,6 +90,26 @@ class _ServiceFormState extends State<ServiceForm> {
     fetchStaff();
   }
 
+  // Fetch staff which will be needed later.
+  Future<void> fetchStaff() async {
+    // Fetch staff for purchased by fields
+    var conn = await onConnToDb();
+    var results = await conn.query(
+        'SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?',
+        ['داکتر دندان']);
+    ServiceInfo.selectedDentistID =
+        staffList.isNotEmpty ? int.parse(staffList[0]['staff_ID']) : null;
+
+    staffList = results
+        .map((result) => {
+              'staff_ID': result[0].toString(),
+              'firstname': result[1],
+              'lastname': result[2]
+            })
+        .toList();
+    await conn.close();
+  }
+
   Future<void> fetchServices() async {
     var conn = await onConnToDb();
     var queryService =
@@ -136,7 +135,6 @@ class _ServiceFormState extends State<ServiceForm> {
     /*  var languageProvider = Provider.of<LanguageProvider>(context);
     selectedLanguage = languageProvider.selectedLanguage;
     isEnglish = selectedLanguage == 'English'; */
-    fetchStaff();
     ServiceInfo.serviceNote = _noteController.text;
     ServiceInfo.meetingDate = _meetController.text.toString();
     return Form(
@@ -1150,7 +1148,7 @@ class _ServiceFormState extends State<ServiceForm> {
                             child: DropdownButton(
                               isExpanded: true,
                               icon: const Icon(Icons.arrow_drop_down),
-                              value: defaultSelectedStaff,
+                              value: ServiceInfo.selectedDentistID.toString(),
                               style: const TextStyle(color: Colors.black),
                               items: staffList.map((staff) {
                                 return DropdownMenuItem<String>(
@@ -1163,7 +1161,6 @@ class _ServiceFormState extends State<ServiceForm> {
                               }).toList(),
                               onChanged: (String? newValue) {
                                 setState(() {
-                                  defaultSelectedStaff = newValue;
                                   ServiceInfo.selectedDentistID =
                                       int.parse(newValue!);
                                 });
