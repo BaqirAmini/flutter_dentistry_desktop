@@ -551,10 +551,10 @@ class _FeeContentState extends State<FeeContent> {
   Future<void> _fetchStaff() async {
     // Fetch staff for purchased by fields
     var conn = await onConnToDb();
-    var results =
-        await conn.query('SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?', ['داکتر دندان']);
-    defaultSelectedStaff =
-        staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
+    var results = await conn.query(
+        'SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?',
+        ['داکتر دندان']);
+
     // setState(() {
     staffList = results
         .map((result) => {
@@ -563,6 +563,8 @@ class _FeeContentState extends State<FeeContent> {
               'lastname': result[2]
             })
         .toList();
+    defaultSelectedStaff =
+        staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
     // });
     await conn.close();
   }
