@@ -14,10 +14,10 @@ import 'package:intl/intl.dart' as intl2;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-void main() => runApp(XRayUploadScreen());
+void main() => runApp(const XRayUploadScreen());
 
 class XRayUploadScreen extends StatelessWidget {
-  XRayUploadScreen({Key? key}) : super(key: key);
+  const XRayUploadScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +77,7 @@ class XRayUploadScreen extends StatelessWidget {
               ),
             ),
           ),
-          body: TabBarView(
+          body: const TabBarView(
             children: [
               _ImageThumbNail(xrayCategory: 'Periapical'),
               _ImageThumbNail(xrayCategory: 'OPG'),
@@ -117,7 +117,8 @@ Future<List<XRayDataModel>> _fetchXRayImages(String type) async {
 class _ImageThumbNail extends StatefulWidget {
   final String xrayCategory;
 
-  _ImageThumbNail({Key? key, required this.xrayCategory}) : super(key: key);
+  const _ImageThumbNail({Key? key, required this.xrayCategory})
+      : super(key: key);
 
   @override
   State<_ImageThumbNail> createState() => __ImageThumbNailState();
@@ -212,17 +213,18 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                 ),
                               );
                             },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.blue)),
-                              child: File(xray.xrayImage).existsSync()
-                                  ? Image.file(
-                                      File(xray.xrayImage),
-                                      fit: BoxFit.cover,
-                                    )
-                                  : const Center(
-                                      child: Text('Image not found'),
-                                    ), // Replace this with your placeholder widget
+                            child: Visibility(
+                              visible: File(xray.xrayImage).existsSync()
+                                  ? true
+                                  : false,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.blue)),
+                                child: Image.file(
+                                  File(xray.xrayImage),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                           ),
                         );

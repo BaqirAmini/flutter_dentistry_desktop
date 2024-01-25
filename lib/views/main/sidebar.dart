@@ -146,7 +146,7 @@ class _SidebarState extends State<Sidebar> {
                   MaterialPageRoute(builder: (context) => const Patient()));
             },
           ),
-          ListTile(
+          /* ListTile(
             leading: const Icon(FontAwesomeIcons.xRay),
             title: const Text('X-Ray'),
             onTap: () {
@@ -154,7 +154,7 @@ class _SidebarState extends State<Sidebar> {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => XRayUploadScreen()));
             },
-          ),
+          ), */
           ListTile(
             leading: const Icon(Icons.people),
             title: Text(
