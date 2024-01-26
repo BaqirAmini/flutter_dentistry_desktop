@@ -128,7 +128,7 @@ onCreatePrescription(BuildContext context) {
                             // Current date
                             DateTime now = DateTime.now();
                             String formattedDate =
-                                intl.DateFormat('yyyy-MM-dd').format(now);
+                                intl.DateFormat('yyyy/MM/dd').format(now);
 
                             const imageProvider = AssetImage(
                               'assets/graphics/logo1.png',
@@ -203,7 +203,7 @@ onCreatePrescription(BuildContext context) {
                                     children: <pw.Widget>[
                                       pw.Directionality(
                                           child: pw.Text(
-                                            'تاریخ: $formattedDate',
+                                            'Date: $formattedDate',
                                             style: pw.TextStyle(font: ttf),
                                           ),
                                           textDirection: pw.TextDirection.rtl),
@@ -213,12 +213,12 @@ onCreatePrescription(BuildContext context) {
                                             child: patientNameController
                                                     .text.isNotEmpty
                                                 ? pw.Text(
-                                                    'سن: $defaultSelectedAge',
+                                                    'Age: $defaultSelectedAge',
                                                     style:
                                                         pw.TextStyle(font: ttf),
                                                   )
                                                 : pw.Text(
-                                                    'سن: $pAge',
+                                                    'Age: $pAge',
                                                     style:
                                                         pw.TextStyle(font: ttf),
                                                   ),
@@ -230,12 +230,12 @@ onCreatePrescription(BuildContext context) {
                                             child: patientNameController
                                                     .text.isNotEmpty
                                                 ? pw.Text(
-                                                    'جنسیت: $defaultSelectedSex',
+                                                    'Sex: $defaultSelectedSex',
                                                     style:
                                                         pw.TextStyle(font: ttf),
                                                   )
                                                 : pw.Text(
-                                                    'جنسیت: $pSex',
+                                                    'Sex: $pSex',
                                                     style:
                                                         pw.TextStyle(font: ttf),
                                                   ),
@@ -247,12 +247,12 @@ onCreatePrescription(BuildContext context) {
                                             child: patientNameController
                                                     .text.isNotEmpty
                                                 ? pw.Text(
-                                                    'نام مریض: ${patientNameController.text}',
+                                                    'Patient\'s Name: ${patientNameController.text}',
                                                     style:
                                                         pw.TextStyle(font: ttf),
                                                   )
                                                 : pw.Text(
-                                                    'نام مریض: $pFirstName $pLastName',
+                                                    'Patient\'s Name: $pFirstName $pLastName',
                                                     style:
                                                         pw.TextStyle(font: ttf),
                                                   ),
