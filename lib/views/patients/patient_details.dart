@@ -4,6 +4,7 @@ import 'package:flutter_dentistry/views/patients/appointments.dart';
 import 'package:flutter_dentistry/views/patients/fee_installments.dart';
 import 'package:flutter_dentistry/views/patients/patient_history.dart';
 import 'package:flutter_dentistry/views/patients/xrays.dart';
+import 'package:flutter_dentistry/views/sf_calendar/syncfusion_calendar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 
@@ -11,9 +12,14 @@ void main() {
   runApp(const PatientDetail());
 }
 
-class PatientDetail extends StatelessWidget {
+class PatientDetail extends StatefulWidget {
   const PatientDetail({Key? key}) : super(key: key);
 
+  @override
+  State<PatientDetail> createState() => _PatientDetailState();
+}
+
+class _PatientDetailState extends State<PatientDetail> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,6 +27,22 @@ class PatientDetail extends StatelessWidget {
       home: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.green,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CalendarApp()),
+              ).then((_) {
+                setState(() {});
+              });
+            },
+            tooltip: 'تعیین زمان جلسه مابعد',
+            child: const Icon(
+              Icons.edit_calendar_outlined,
+              color: Colors.white,
+            ),
+          ),
           appBar: AppBar(
             title: const Text('سوابق مریض'),
             leading: IconButton(
