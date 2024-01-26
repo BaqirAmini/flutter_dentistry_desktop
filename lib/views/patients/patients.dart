@@ -1249,6 +1249,7 @@ class _PatientState extends State<Patient> {
                 leading: Tooltip(
                   message: 'رفتن به داشبورد',
                   child: IconButton(
+                    splashRadius: 25.0,
                     icon: const Icon(Icons.home_outlined),
                     onPressed: () => Navigator.push(
                         context,
@@ -1416,6 +1417,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
                     border: const OutlineInputBorder(),
                     labelText: translations[selectedLanguage]?['Search'] ?? '',
                     suffixIcon: IconButton(
+                      splashRadius: 25.0,
                       icon: const Icon(Icons.clear),
                       onPressed: () {
                         setState(() {
@@ -1655,6 +1657,7 @@ class PatientDataSource extends DataTableSource {
       DataCell(
         Builder(builder: (BuildContext context) {
           return IconButton(
+            splashRadius: 25.0,
             icon: data[index].patientDetail,
             onPressed: (() {
               PatientInfo.patID = data[index].patID;
@@ -1686,6 +1689,7 @@ class PatientDataSource extends DataTableSource {
           Builder(
             builder: (BuildContext context) {
               return IconButton(
+                splashRadius: 25.0,
                 icon: data[index].deletePatient,
                 onPressed: (() {
                   PatientInfo.patID = data[index].patID;
