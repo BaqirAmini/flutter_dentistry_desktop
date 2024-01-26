@@ -1,16 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-void main() => runApp(const CalendarApp());
-
 class CalendarApp extends StatelessWidget {
   const CalendarApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: CalendarPage(),
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Patient' 's Appointments Schedule'),
+          leading: IconButton(
+            splashRadius: 25.0,
+            onPressed: () => Navigator.pop(context),
+            icon: const BackButtonIcon(),
+          ),
+        ),
+        body: const CalendarPage(),
+      ),
     );
   }
 }
@@ -46,14 +54,9 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Patient' 's Appointments Schedule'),
-      ),
-      body: SfCalendar(
-        view: CalendarView.week,
-        dataSource: _AppointmentDataSource(_appointments),
-      ),
+    return SfCalendar(
+      view: CalendarView.week,
+      dataSource: _AppointmentDataSource(_appointments),
     );
   }
 }
