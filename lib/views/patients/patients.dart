@@ -42,7 +42,7 @@ onCreatePrescription(BuildContext context) {
   // This list will contain medicine types
   List<Map<String, dynamic>> medicines = [
     {
-      'type': 'Syrup',
+      'type': 'Syrups',
       'piece': '150mg',
       'qty': '1',
       'dose': '1 x 1',
@@ -210,7 +210,8 @@ onCreatePrescription(BuildContext context) {
                                       pw.Directionality(
                                           child: pw.Align(
                                             alignment: pw.Alignment.centerLeft,
-                                            child: pFirstName.isEmpty
+                                            child: patientNameController
+                                                    .text.isNotEmpty
                                                 ? pw.Text(
                                                     'سن: $defaultSelectedAge',
                                                     style:
@@ -226,7 +227,8 @@ onCreatePrescription(BuildContext context) {
                                       pw.Directionality(
                                           child: pw.Align(
                                             alignment: pw.Alignment.centerLeft,
-                                            child: pFirstName.isEmpty
+                                            child: patientNameController
+                                                    .text.isNotEmpty
                                                 ? pw.Text(
                                                     'جنسیت: $defaultSelectedSex',
                                                     style:
@@ -242,14 +244,15 @@ onCreatePrescription(BuildContext context) {
                                       pw.Directionality(
                                           child: pw.Align(
                                             alignment: pw.Alignment.centerRight,
-                                            child: pFirstName.isNotEmpty
+                                            child: patientNameController
+                                                    .text.isNotEmpty
                                                 ? pw.Text(
-                                                    'نام مریض: $pFirstName $pLastName',
+                                                    'نام مریض: ${patientNameController.text}',
                                                     style:
                                                         pw.TextStyle(font: ttf),
                                                   )
                                                 : pw.Text(
-                                                    'نام مریض: ${patientNameController.text}',
+                                                    'نام مریض: $pFirstName $pLastName',
                                                     style:
                                                         pw.TextStyle(font: ttf),
                                                   ),
@@ -288,11 +291,30 @@ onCreatePrescription(BuildContext context) {
                                                   pw.TableRow(
                                                     children: [
                                                       pw.Text(
-                                                          '${medicine['type']}',
-                                                          style: pw.TextStyle(
-                                                              font: ttf)),
+                                                          (medicine['type'] ==
+                                                                  'Syrups')
+                                                              ? 'SYR'
+                                                              : (medicine['type'] ==
+                                                                      'Capsules')
+                                                                  ? 'CAP'
+                                                                  : (medicine['type'] ==
+                                                                          'Tablets')
+                                                                      ? 'TAB'
+                                                                      : (medicine['type'] ==
+                                                                              'Ointments')
+                                                                          ? 'UNG'
+                                                                          : (medicine['type'] == 'Solutions')
+                                                                              ? 'SOL'
+                                                                              : (medicine['type'] == 'Ampoules')
+                                                                                  ? 'AMP'
+                                                                                  : (medicine['type'] == 'Flourides')
+                                                                                      ? 'FL'
+                                                                                      : (medicine['type']),
+                                                          style: pw.TextStyle(font: ttf)),
                                                       pw.Text(
-                                                          '${medicine['nameController'].text}',
+                                                          (medicine[
+                                                                  'nameController']
+                                                              .text),
                                                           style: pw.TextStyle(
                                                               font: ttf)),
                                                       pw.Text(
@@ -353,6 +375,7 @@ onCreatePrescription(BuildContext context) {
                                         : 'prescription.pdf';
                             await Printing.sharePdf(
                                 bytes: bytes, filename: fileName);
+                            Navigator.pop(context);
                             /*   // Print the PDF
                             await Printing.layoutPdf(
                               onLayout: (PdfPageFormat format) async => bytes,
@@ -824,9 +847,19 @@ onCreatePrescription(BuildContext context) {
                                           });
                                         },
                                         items: <String>[
-                                          'Syrup',
-                                          'Tablet',
-                                          'Mouthwash'
+                                          'Syrups',
+                                          'Capsules',
+                                          'Tablets',
+                                          'Mouthwashes',
+                                          'Ointments',
+                                          'Gels',
+                                          'Solutions',
+                                          'Ampoules',
+                                          'Flourides',
+                                          'Sprays',
+                                          'Lozenges',
+                                          'Drops',
+                                          'Toothpastes',
                                         ].map<DropdownMenuItem<String>>(
                                             (String value) {
                                           return DropdownMenuItem<String>(
@@ -994,7 +1027,7 @@ onCreatePrescription(BuildContext context) {
                                 child: InputDecorator(
                                   decoration: const InputDecoration(
                                     border: OutlineInputBorder(),
-                                    labelText: 'Dose',
+                                    labelText: 'Doses',
                                     enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
@@ -1109,7 +1142,7 @@ onCreatePrescription(BuildContext context) {
                           onTap: () {
                             setState(() {
                               medicines.add({
-                                'type': 'Syrup',
+                                'type': 'Syrups',
                                 'piece': '150mg',
                                 'qty': '1',
                                 'dose': '1 x 1',
