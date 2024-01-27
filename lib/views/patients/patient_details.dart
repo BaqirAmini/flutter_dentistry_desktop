@@ -551,27 +551,34 @@ class _HoverCardState extends State<HoverCard> {
   }
 }
 
-class _PatientMoreDetail extends StatefulWidget {
-  @override
-  State<_PatientMoreDetail> createState() => _PatientMoreDetailState();
-}
-
-class _PatientMoreDetailState extends State<_PatientMoreDetail> {
+// ignore: must_be_immutable
+class _PatientMoreDetail extends StatelessWidget {
   final _editPatFormKey = GlobalKey<FormState>();
+
   // The text editing controllers for the TextFormFields
   final _firstNameController = TextEditingController();
+
   final _lastNameController = TextEditingController();
+
   final _phoneController = TextEditingController();
+
   final hireDateController = TextEditingController();
+
   final familyPhone1Controller = TextEditingController();
+
   final familyPhone2Controller = TextEditingController();
+
   final salaryController = TextEditingController();
+
   final prePaidController = TextEditingController();
+
   final tazkiraController = TextEditingController();
+
   final _addrController = TextEditingController();
 
   // Radio Buttons
   String _sexGroupValue = 'مرد';
+
 // This function edits patient's personal info
   onEditPatientInfo(BuildContext context) {
     _firstNameController.text = PatientInfo.firstName!;
@@ -920,6 +927,14 @@ class _PatientMoreDetailState extends State<_PatientMoreDetail> {
                                 bottom: 10.0),
                             child: TextFormField(
                               controller: _addrController,
+                              validator: (value) {
+                                if (value!.isNotEmpty) {
+                                  if (value.length > 40 || value.length < 5) {
+                                    return 'آدرس باید حداقل 5 و حداکثر 40 حرف باشد.';
+                                  }
+                                  return null;
+                                }
+                              },
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
                                   RegExp(GlobalUsage.allowedEPChar),
@@ -940,6 +955,11 @@ class _PatientMoreDetailState extends State<_PatientMoreDetail> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red),
+                                ),
                               ),
                             ),
                           ),
@@ -1172,7 +1192,6 @@ class _PatientMoreDetailState extends State<_PatientMoreDetail> {
                           Navigator.of(context, rootNavigator: true).pop();
                           _onShowSnack(Colors.green,
                               'معلومات مریض موفقانه تغییر کرد.', context);
-                          _reload();
                         } else {
                           Navigator.of(context, rootNavigator: true).pop();
                           _onShowSnack(Colors.red, 'شما هیچ تغییراتی نیاوردید.',
@@ -1193,10 +1212,6 @@ class _PatientMoreDetailState extends State<_PatientMoreDetail> {
 
   @override
   Widget build(BuildContext context) {
-    void _reload() {
-      setState(() {});
-    }
-
     return Stack(
       children: [
         Container(
