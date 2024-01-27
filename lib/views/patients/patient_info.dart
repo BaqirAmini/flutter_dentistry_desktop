@@ -9,4 +9,36 @@ class PatientInfo {
   static String? maritalStatus;
   static String? bloodGroup;
   static String? regDate;
+
+  // Declare a dropdown for ages
+  static int ageDropDown = 0;
+  static bool ageSelected = false;
+  // Declare a method to add ages 1 - 100
+  static List<int> getAges() {
+    // Declare variables to contain from 1 - 100 for ages
+    List<int> ages = [];
+    for (int a = 1; a <= 100; a++) {
+      ages.add(a);
+    }
+    return ages;
+  }
+
+  // Marital Status
+  static String maritalStatusDD = 'مجرد';
+  static var items = ['مجرد', 'متأهل'];
+  // Blood group types
+  static String? bloodDropDown = 'نامعلوم';
+  static var bloodGroupItems = [
+    'نامعلوم',
+    'A+',
+    'B+',
+    'AB+',
+    'O+',
+    'A-',
+    'B-',
+    'AB-',
+    'O-'
+  ];
+
+  static Function? onRefresh;
 }

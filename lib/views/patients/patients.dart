@@ -1709,7 +1709,7 @@ class PatientDataSource extends DataTableSource {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: ((context) => const PatientDetail())));
+                      builder: ((context) => const PatientDetail()))).then((_) => onDelete());
             }),
             color: Colors.blue,
             iconSize: 20.0,
