@@ -133,7 +133,7 @@ class _StaffProfile extends StatefulWidget {
 class _StaffProfileState extends State<_StaffProfile> {
   bool _isLoadingPhoto = false;
   late ImageProvider _image;
-  Uint8List? uint8list;
+  
 // This method is to update profile picture of a staff
   void _onUpdateStaffPhoto() async {
     setState(() {
@@ -203,28 +203,13 @@ class _StaffProfileState extends State<_StaffProfile> {
     }
   }
 
-// This function fetches staff photo
-  Future<void> _onFetchStaffPhoto(int staffID) async {
-    final conn = await onConnToDb();
-    final result = await conn
-        .query('SELECT photo FROM staff WHERE staff_ID = ?', [staffID]);
-
-    Blob? staffPhoto =
-        result.first['photo'] != null ? result.first['photo'] as Blob : null;
-
-    // Convert image of BLOB type to binary first.
-    uint8list =
-        staffPhoto != null ? Uint8List.fromList(staffPhoto.toBytes()) : null;
-    await conn.close();
-  }
-
   @override
   void initState() {
     super.initState();
     // Clear image caching since Flutter by default does.
     imageCache.clear();
     imageCache.clearLiveImages();
-    _onFetchStaffPhoto(gStaffID);
+    StaffInfo.onFetchStaffPhoto(gStaffID);
   }
 
   @override
@@ -233,7 +218,7 @@ class _StaffProfileState extends State<_StaffProfile> {
     // Clear image caching since Flutter by default does.
     imageCache.clear();
     imageCache.clearLiveImages();
-    _onFetchStaffPhoto(gStaffID);
+    StaffInfo.onFetchStaffPhoto(gStaffID);
   }
 
   @override
@@ -250,7 +235,7 @@ class _StaffProfileState extends State<_StaffProfile> {
               Stack(
                 children: [
                   FutureBuilder(
-                    future: _onFetchStaffPhoto(gStaffID),
+                    future: StaffInfo.onFetchStaffPhoto(gStaffID),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(
@@ -259,8 +244,8 @@ class _StaffProfileState extends State<_StaffProfile> {
                       } else {
                         return CircleAvatar(
                             radius: 30.0,
-                            backgroundImage: _image = (uint8list != null)
-                                ? MemoryImage(uint8list!)
+                            backgroundImage: _image = (StaffInfo.uint8list != null)
+                                ? MemoryImage(StaffInfo.uint8list!)
                                 : const AssetImage(
                                         'assets/graphics/user_profile2.jpg')
                                     as ImageProvider);
