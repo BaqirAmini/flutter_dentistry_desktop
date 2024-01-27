@@ -406,10 +406,17 @@ class MyData extends DataTableSource {
 
   @override
   DataRow getRow(int index) {
+    late ImageProvider _image;
+    Uint8List? uint8list = data[index].photo != null
+        ? Uint8List.fromList((data[index].photo)!.toBytes())
+        : null;
     return DataRow(cells: [
-      const DataCell(
+      DataCell(
         CircleAvatar(
-          backgroundImage: AssetImage('assets/graphics/patient.png'),
+          backgroundImage: _image = (uint8list != null)
+              ? MemoryImage(uint8list)
+              : const AssetImage('assets/graphics/user_profile2.jpg')
+                  as ImageProvider,
         ),
       ),
       DataCell(Text(data[index].firstName,
@@ -469,7 +476,9 @@ class MyData extends DataTableSource {
                                 fileType: data[index].fileType,
                                 staffAddr: data[index].address,
                                 staffHDate: data[index].hireDate),
-                          ));
+                          )).then((_) {
+                        onUpdate();
+                      });
                     },
                   ),
                 ),
@@ -1104,8 +1113,7 @@ onEditStaff(
                                               ?['Phone10'] ??
                                           '';
                                     }
-                                  } else if (value ==
-                                          phoneController.text ||
+                                  } else if (value == phoneController.text ||
                                       value == familyPhone1Controller.text) {
                                     return 'نمبر تماس شما با نمبر تماس خانواده تان نباید یکسان باشد.';
                                   } else if (value.startsWith('+93')) {
