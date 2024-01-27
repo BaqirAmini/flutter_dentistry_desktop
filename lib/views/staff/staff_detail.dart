@@ -1,9 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
+import 'package:flutter_dentistry/views/settings/settings_menu.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:galileo_mysql/galileo_mysql.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 
@@ -117,8 +123,118 @@ class StaffDetail extends StatelessWidget {
   }
 }
 
-class _StaffProfile extends StatelessWidget {
+class _StaffProfile extends StatefulWidget {
   const _StaffProfile({Key? key}) : super(key: key);
+
+  @override
+  State<_StaffProfile> createState() => _StaffProfileState();
+}
+
+class _StaffProfileState extends State<_StaffProfile> {
+  bool _isLoadingPhoto = false;
+  late ImageProvider _image;
+  Uint8List? uint8list;
+// This method is to update profile picture of a staff
+  void _onUpdateStaffPhoto() async {
+    setState(() {
+      _isLoadingPhoto = true;
+    });
+
+    final result = await FilePicker.platform.pickFiles(
+        allowMultiple: true,
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'jpeg', 'png']);
+    if (result != null) {
+      final conn = await onConnToDb();
+      pickedFile = File(result.files.single.path.toString());
+      final bytes = await pickedFile!.readAsBytes();
+      // Check if the file size is larger than 1MB
+      if (bytes.length > 1024 * 1024) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            content: Center(
+              child: Text('عکس حداکثر باید 1MB باشد.'),
+            ),
+          ),
+        );
+        setState(() {
+          _isLoadingPhoto = false;
+        });
+        return;
+      }
+      // final photo = MySQL.escapeBuffer(bytes);
+      var results = await conn.query(
+          'UPDATE staff SET photo = ? WHERE staff_ID = ?', [bytes, gStaffID]);
+      setState(() {
+        if (results.affectedRows! > 0) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.green,
+              content: Center(
+                child: Text('عکس کارمند موفقانه تغییر کرد.'),
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.red,
+              content: Center(
+                child: Text('متاسفم، تغییر عکس پروفایل ناکام شد..'),
+              ),
+            ),
+          );
+        }
+        setState(() {
+          _isLoadingPhoto = false;
+        });
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Center(child: Text('هیچ عکسی را انتخاب نکردید.')),
+        ),
+      );
+      setState(() {
+        _isLoadingPhoto = false;
+      });
+    }
+  }
+
+// This function fetches staff photo
+  Future<void> _onFetchStaffPhoto(int staffID) async {
+    final conn = await onConnToDb();
+    final result = await conn
+        .query('SELECT photo FROM staff WHERE staff_ID = ?', [staffID]);
+
+    Blob? staffPhoto =
+        result.first['photo'] != null ? result.first['photo'] as Blob : null;
+
+    // Convert image of BLOB type to binary first.
+    uint8list =
+        staffPhoto != null ? Uint8List.fromList(staffPhoto.toBytes()) : null;
+    await conn.close();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Clear image caching since Flutter by default does.
+    imageCache.clear();
+    imageCache.clearLiveImages();
+    _onFetchStaffPhoto(gStaffID);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Clear image caching since Flutter by default does.
+    imageCache.clear();
+    imageCache.clearLiveImages();
+    _onFetchStaffPhoto(gStaffID);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,30 +249,52 @@ class _StaffProfile extends StatelessWidget {
             children: [
               Stack(
                 children: [
-                  const CircleAvatar(
-                    radius: 30.0,
-                    backgroundImage:
-                        AssetImage('assets/graphics/user_profile2.jpg'),
-                    backgroundColor: Colors.transparent,
+                  FutureBuilder(
+                    future: _onFetchStaffPhoto(gStaffID),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else {
+                        return CircleAvatar(
+                            radius: 30.0,
+                            backgroundImage: _image = (uint8list != null)
+                                ? MemoryImage(uint8list!)
+                                : const AssetImage(
+                                        'assets/graphics/user_profile2.jpg')
+                                    as ImageProvider);
+                      }
+                    },
                   ),
                   Positioned(
                     top: -5.0,
-                    right: -5.0,
+                    right: -20.0,
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.5,
-                      height: MediaQuery.of(context).size.height * 0.5,
+                      width: MediaQuery.of(context).size.width * 0.05,
+                      height: MediaQuery.of(context).size.height * 0.05,
                       child: Card(
                         shape: const CircleBorder(),
                         child: Center(
                           child: InkWell(
                             customBorder: const CircleBorder(),
-                            child: const Padding(
-                              padding: EdgeInsets.all(5.0),
-                              child: Icon(Icons.edit,
-                                  size: 12.0,
-                                  color: Color.fromARGB(255, 123, 123, 123)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: _isLoadingPhoto
+                                  ? const SizedBox(
+                                      height: 18.0,
+                                      width: 18.0,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 3.0,
+                                      ),
+                                    )
+                                  : const Icon(
+                                      Icons.edit,
+                                      size: 12.0,
+                                      color: Colors.grey,
+                                    ),
                             ),
-                            onTap: () {},
+                            onTap: () => _onUpdateStaffPhoto(),
                           ),
                         ),
                       ),
