@@ -558,784 +558,102 @@ class _HoverCardState extends State<HoverCard> {
 
 // ignore: must_be_immutable
 class _PatientMoreDetail extends StatelessWidget {
-  final _editPatFormKey = GlobalKey<FormState>();
-
-  // The text editing controllers for the TextFormFields
-  final _firstNameController = TextEditingController();
-
-  final _lastNameController = TextEditingController();
-
-  final _phoneController = TextEditingController();
-
-  final hireDateController = TextEditingController();
-
-  final familyPhone1Controller = TextEditingController();
-
-  final familyPhone2Controller = TextEditingController();
-
-  final salaryController = TextEditingController();
-
-  final prePaidController = TextEditingController();
-
-  final tazkiraController = TextEditingController();
-
-  final _addrController = TextEditingController();
-
-  // Radio Buttons
-  String _sexGroupValue = 'مرد';
-
-// This function edits patient's personal info
-  onEditPatientInfo(BuildContext context) {
-    _firstNameController.text = PatientInfo.firstName!;
-    _lastNameController.text = PatientInfo.lastName!;
-    _phoneController.text = PatientInfo.phone!;
-    _addrController.text = PatientInfo.address!;
-    _sexGroupValue = PatientInfo.sex!;
-    PatientInfo.maritalStatusDD = PatientInfo.maritalStatus!;
-    PatientInfo.ageDropDown = PatientInfo.age!;
-    PatientInfo.bloodDropDown = PatientInfo.bloodGroup;
-
-    return showDialog(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            title: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text('تغییر معلومات شخصی مریض'),
-            ),
-            content: Directionality(
-              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _editPatFormKey,
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.35,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(top: 20.0),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: _firstNameController,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'نام مریض الزامی میباشد.';
-                                } else if (value.length < 3 ||
-                                    value.length > 10) {
-                                  return 'نام مریض باید 4 تا 9 حرف باشد.';
-                                }
-                              },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'نام',
-                                suffixIcon: Icon(Icons.person_add_alt_outlined),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: _lastNameController,
-                              validator: (value) {
-                                if (value!.isNotEmpty) {
-                                  if (value.length < 3 || value.length > 10) {
-                                    return 'تخلص مریض باید 3 تا 9 حرف باشد.';
-                                  } else {
-                                    return null;
-                                  }
-                                } else {
-                                  return null;
-                                }
-                              },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'تخلص',
-                                suffixIcon: Icon(Icons.person),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 400.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: InputDecorator(
-                              decoration: const InputDecoration(
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 10.0),
-                                border: OutlineInputBorder(),
-                                labelText: 'جنسیت',
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(50.0),
-                                  ),
-                                  borderSide: BorderSide(color: Colors.grey),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(50.0),
-                                  ),
-                                  borderSide: BorderSide(color: Colors.blue),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  SizedBox(
-                                    width: 100,
-                                    child: Theme(
-                                      data: Theme.of(context).copyWith(
-                                        listTileTheme: const ListTileThemeData(
-                                            horizontalTitleGap: 0.5),
-                                      ),
-                                      child: RadioListTile(
-                                          title: const Text(
-                                            'مرد',
-                                            style: TextStyle(fontSize: 14),
-                                          ),
-                                          value: 'مرد',
-                                          groupValue: _sexGroupValue,
-                                          onChanged: (String? value) {
-                                            setState(() {
-                                              _sexGroupValue = value!;
-                                            });
-                                          }),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 100,
-                                    child: Theme(
-                                      data: Theme.of(context).copyWith(
-                                        listTileTheme: const ListTileThemeData(
-                                            horizontalTitleGap: 0.5),
-                                      ),
-                                      child: RadioListTile(
-                                          title: const Text(
-                                            'زن',
-                                            style: TextStyle(fontSize: 14),
-                                          ),
-                                          value: 'زن',
-                                          groupValue: _sexGroupValue,
-                                          onChanged: (String? value) {
-                                            setState(() {
-                                              _sexGroupValue = value!;
-                                            });
-                                          }),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              const Text(
-                                '*',
-                                style: TextStyle(
-                                    color: Colors.red,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Container(
-                                width: 400.0,
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 10.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: 'سن',
-                                    enabledBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: const OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                    errorText: PatientInfo.ageDropDown == 0 &&
-                                            !PatientInfo.ageSelected
-                                        ? 'Please select an age'
-                                        : null,
-                                    errorBorder: OutlineInputBorder(
-                                      borderRadius: const BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide: BorderSide(
-                                          color: !PatientInfo.ageSelected
-                                              ? Colors.red
-                                              : Colors.grey),
-                                    ),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton(
-                                        isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: PatientInfo.ageDropDown,
-                                        items: <DropdownMenuItem<int>>[
-                                          const DropdownMenuItem(
-                                            value: 0,
-                                            child: Text('No age selected'),
-                                          ),
-                                          ...PatientInfo.getAges()
-                                              .map((int ageItems) {
-                                            return DropdownMenuItem(
-                                              alignment: Alignment.centerRight,
-                                              value: ageItems,
-                                              child: Directionality(
-                                                textDirection: isEnglish
-                                                    ? TextDirection.ltr
-                                                    : TextDirection.rtl,
-                                                child: Text('$ageItems سال'),
-                                              ),
-                                            );
-                                          }).toList(),
-                                        ],
-                                        onChanged: (int? newValue) {
-                                          if (newValue != 0) {
-                                            // Ignore the 'Please select an age' option
-                                            setState(() {
-                                              PatientInfo.ageDropDown =
-                                                  newValue!;
-                                              PatientInfo.ageSelected = true;
-                                            });
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              textDirection: TextDirection.ltr,
-                              controller: _phoneController,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(GlobalUsage.allowedDigits),
-                                ),
-                              ],
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return translations[selectedLanguage]
-                                          ?['PhoneRequired'] ??
-                                      '';
-                                } else if (value.startsWith('07')) {
-                                  if (value.length < 10 || value.length > 10) {
-                                    return translations[selectedLanguage]
-                                            ?['Phone10'] ??
-                                        '';
-                                  }
-                                } else if (value.startsWith('+93')) {
-                                  if (value.length < 12 || value.length > 12) {
-                                    return translations[selectedLanguage]
-                                            ?['Phone12'] ??
-                                        '';
-                                  }
-                                } else {
-                                  return translations[selectedLanguage]
-                                          ?['ValidPhone'] ??
-                                      '';
-                                }
-                              },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'نمبر تماس',
-                                suffixIcon: Icon(Icons.phone),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 400.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: _addrController,
-                              validator: (value) {
-                                if (value!.isNotEmpty) {
-                                  if (value.length > 40 || value.length < 5) {
-                                    return 'آدرس باید حداقل 5 و حداکثر 40 حرف باشد.';
-                                  }
-                                  return null;
-                                }
-                              },
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(GlobalUsage.allowedEPChar),
-                                ),
-                              ],
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translations[selectedLanguage]
-                                        ?['Address'] ??
-                                    '',
-                                suffixIcon:
-                                    const Icon(Icons.location_on_outlined),
-                                enabledBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 400.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: InputDecorator(
-                              decoration: InputDecoration(
-                                contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 10.0),
-                                border: const OutlineInputBorder(),
-                                labelText: translations[selectedLanguage]
-                                    ?['Sex'],
-                                enabledBorder: const OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(50.0),
-                                  ),
-                                  borderSide: BorderSide(color: Colors.grey),
-                                ),
-                                focusedBorder: const OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(50.0),
-                                  ),
-                                  borderSide: BorderSide(color: Colors.blue),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  SizedBox(
-                                    width: 100,
-                                    child: Theme(
-                                      data: Theme.of(context).copyWith(
-                                        listTileTheme: const ListTileThemeData(
-                                            horizontalTitleGap: 0.5),
-                                      ),
-                                      child: RadioListTile(
-                                          title: const Text(
-                                            'مرد',
-                                            style: TextStyle(fontSize: 14),
-                                          ),
-                                          value: 'مرد',
-                                          groupValue: _sexGroupValue,
-                                          onChanged: (String? value) {
-                                            setState(() {
-                                              _sexGroupValue = value!;
-                                            });
-                                          }),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 100,
-                                    child: Theme(
-                                      data: Theme.of(context).copyWith(
-                                        listTileTheme: const ListTileThemeData(
-                                            horizontalTitleGap: 0.5),
-                                      ),
-                                      child: RadioListTile(
-                                          title: const Text(
-                                            'زن',
-                                            style: TextStyle(fontSize: 14),
-                                          ),
-                                          value: 'زن',
-                                          groupValue: _sexGroupValue,
-                                          onChanged: (String? value) {
-                                            setState(() {
-                                              _sexGroupValue = value!;
-                                            });
-                                          }),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 400.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: InputDecorator(
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: translations[selectedLanguage]
-                                    ?['Marital'],
-                                enabledBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: SizedBox(
-                                  height: 26.0,
-                                  child: DropdownButton<String>(
-                                    isExpanded: true,
-                                    icon: const Icon(Icons.arrow_drop_down),
-                                    value: PatientInfo.maritalStatusDD,
-                                    items:
-                                        PatientInfo.items.map((String items) {
-                                      return DropdownMenuItem<String>(
-                                        alignment: Alignment.centerRight,
-                                        value: items,
-                                        child: Text(items),
-                                      );
-                                    }).toList(),
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        PatientInfo.maritalStatusDD = newValue!;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 400.0,
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 10.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: Column(
-                              children: <Widget>[
-                                InputDecorator(
-                                  decoration: InputDecoration(
-                                    border: const OutlineInputBorder(),
-                                    labelText: translations[selectedLanguage]
-                                        ?['BloodGroup'],
-                                    enabledBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey),
-                                    ),
-                                    focusedBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
-                                    ),
-                                    errorBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide: BorderSide(color: Colors.red),
-                                    ),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton(
-                                        // isExpanded: true,
-                                        icon: const Icon(Icons.arrow_drop_down),
-                                        value: PatientInfo.bloodDropDown,
-                                        items: PatientInfo.bloodGroupItems
-                                            .map((String bloodGroupItems) {
-                                          return DropdownMenuItem(
-                                            alignment: Alignment.centerRight,
-                                            value: bloodGroupItems,
-                                            child: Text(bloodGroupItems),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            PatientInfo.bloodDropDown =
-                                                newValue;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () =>
-                      Navigator.of(context, rootNavigator: true).pop(),
-                  child: const Text('لغو')),
-              ElevatedButton(
-                  onPressed: () async {
-                    try {
-                      if (_editPatFormKey.currentState!.validate()) {
-                        final conn = await onConnToDb();
-                        String firstName = _firstNameController.text;
-                        String? lastName = _lastNameController.text.isEmpty
-                            ? null
-                            : _lastNameController.text;
-                        int selectedAge = PatientInfo.ageDropDown;
-                        String selectedSex = _sexGroupValue;
-                        String marital = PatientInfo.maritalStatusDD;
-                        String phone = _phoneController.text;
-                        String bloodGroup = PatientInfo.bloodDropDown!;
-                        String? address = _addrController.text.isEmpty
-                            ? null
-                            : _addrController.text;
-                        final results = await conn.query(
-                            'UPDATE patients SET firstname = ?, lastname = ?, age = ?, sex = ?, marital_status = ?, phone = ?, blood_group = ?, address = ? WHERE pat_ID = ?',
-                            [
-                              firstName,
-                              lastName,
-                              selectedAge,
-                              selectedSex,
-                              marital,
-                              phone,
-                              bloodGroup,
-                              address,
-                              PatientInfo.patID
-                            ]);
-                        if (results.affectedRows! > 0) {
-                          Navigator.of(context, rootNavigator: true).pop();
-                          _onShowSnack(Colors.green,
-                              'معلومات مریض موفقانه تغییر کرد.', context);
-                        } else {
-                          Navigator.of(context, rootNavigator: true).pop();
-                          _onShowSnack(Colors.red, 'شما هیچ تغییراتی نیاوردید.',
-                              context);
-                        }
-                      }
-                    } catch (e) {
-                      print('Editing patient\' info failed: $e');
-                    }
-                  },
-                  child: const Text('تغییر')),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          height: MediaQuery.of(context).size.height * 0.3,
-          width: MediaQuery.of(context).size.width * 0.52,
-          child: Card(
-            elevation: 0.5,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.3,
+      width: MediaQuery.of(context).size.width * 0.52,
+      child: Card(
+        elevation: 0.5,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'جنسیت',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0),
-                          ),
-                          Text('${PatientInfo.sex}'),
-                        ],
+                Container(
+                  margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                  child: Column(
+                    children: [
+                      const Text(
+                        'جنسیت',
+                        style: TextStyle(color: Colors.grey, fontSize: 12.0),
                       ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: Column(
-                        children: [
-                          const Text('حالت مدنی',
-                              style: TextStyle(
-                                  color: Colors.grey, fontSize: 12.0)),
-                          Text('${PatientInfo.maritalStatus}'),
-                        ],
-                      ),
-                    ),
-                  ],
+                      Text('${PatientInfo.sex}'),
+                    ],
+                  ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: Column(
-                        children: [
-                          const Text('سن',
-                              style: TextStyle(
-                                  color: Colors.grey, fontSize: 12.0)),
-                          Text('${PatientInfo.age} سال'),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: Column(
-                        children: [
-                          const Text('گروپ خون',
-                              style: TextStyle(
-                                  color: Colors.grey, fontSize: 12.0)),
-                          Text('${PatientInfo.bloodGroup}'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: SizedBox(
-                        width: 220,
-                        child: Column(
-                          children: [
-                            const Text('آدرس',
-                                style: TextStyle(
-                                    color: Colors.grey, fontSize: 12.0)),
-                            Text('${PatientInfo.address}'),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
-                      child: Column(
-                        children: [
-                          const Text('تاریخ ثبت',
-                              style: TextStyle(
-                                  color: Colors.grey, fontSize: 12.0)),
-                          Text('${PatientInfo.regDate}'),
-                        ],
-                      ),
-                    ),
-                  ],
+                Container(
+                  margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                  child: Column(
+                    children: [
+                      const Text('حالت مدنی',
+                          style: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                      Text('${PatientInfo.maritalStatus}'),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ),
-        Positioned(
-          top: 8.0,
-          left: 8.0,
-          child: Material(
-              color: Colors.transparent,
-              shape: const CircleBorder(),
-              child: InkWell(
-                  customBorder: const CircleBorder(),
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(Icons.edit,
-                        size: 16.0, color: Color.fromARGB(255, 123, 123, 123)),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                  child: Column(
+                    children: [
+                      const Text('سن',
+                          style: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                      Text('${PatientInfo.age} سال'),
+                    ],
                   ),
-                  onTap: () => onEditPatientInfo(context))),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                  child: Column(
+                    children: [
+                      const Text('گروپ خون',
+                          style: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                      Text('${PatientInfo.bloodGroup}'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                  child: SizedBox(
+                    width: 220,
+                    child: Column(
+                      children: [
+                        const Text('آدرس',
+                            style:
+                                TextStyle(color: Colors.grey, fontSize: 12.0)),
+                        Text('${PatientInfo.address}'),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
+                  child: Column(
+                    children: [
+                      const Text('تاریخ ثبت',
+                          style: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                      Text('${PatientInfo.regDate}'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
