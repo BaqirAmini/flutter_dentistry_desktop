@@ -236,6 +236,11 @@ class _PatientProfileState extends State<_PatientProfile> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    double top = -5.0 / screenHeight;
+    double right = -25.0 / screenWidth;
     return Card(
       elevation: 0.5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -266,8 +271,8 @@ class _PatientProfileState extends State<_PatientProfile> {
                     },
                   ),
                   Positioned(
-                    top: -5.0,
-                    right: -15.0,
+                    top: top,
+                    right: right,
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width * 0.05,
                       height: MediaQuery.of(context).size.height * 0.05,
