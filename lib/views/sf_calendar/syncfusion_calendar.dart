@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:windows_notification/notification_message.dart';
+import 'package:windows_notification/windows_notification.dart';
 
 class CalendarApp extends StatelessWidget {
   const CalendarApp({Key? key}) : super(key: key);
@@ -16,10 +18,25 @@ class CalendarApp extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             icon: const BackButtonIcon(),
           ),
+          actions: [
+            IconButton(onPressed: showWithLargeImage, icon: Icon(Icons.notification_add))
+          ],
         ),
         body: const CalendarPage(),
       ),
     );
+  }
+
+// This function is to give notifiction for users
+  void showWithLargeImage() async {
+    final winNotifyPlugin = WindowsNotification(
+        applicationId:
+            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinics MIS\flutter_dentistry.exe");
+        /* applicationId:
+            r"{D65231B0-B2F1-4857-A4CE-A8E7C6EA7D27}\WindowsPowerShell\v1.0\powershell.exe"); */
+    NotificationMessage message = NotificationMessage.fromPluginTemplate(
+        "moon", "fly to the moon", "we are ready!");
+    winNotifyPlugin.showNotificationPluginTemplate(message);
   }
 }
 
@@ -67,9 +84,9 @@ class _CalendarPageState extends State<CalendarPage> {
 
   _showDateTimeDialog(BuildContext context) async {
     DateTime selectedDateTime = DateTime.now();
-    TextEditingController _apptdatetimeController = TextEditingController();
-    TextEditingController _commentController = TextEditingController();
-    TextEditingController _titleController = TextEditingController();
+    TextEditingController apptdatetimeController = TextEditingController();
+    TextEditingController commentController = TextEditingController();
+    TextEditingController titleController = TextEditingController();
     String dropdownValue = '15 Minutes';
 
     showDialog(
@@ -89,7 +106,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     margin: const EdgeInsets.symmetric(
                         horizontal: 10.0, vertical: 10.0),
                     child: TextFormField(
-                      controller: _titleController,
+                      controller: titleController,
                       validator: (value) {
                         if (value!.isNotEmpty) {
                           if (value.length < 5 || value.length > 40) {
@@ -126,7 +143,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     margin: const EdgeInsets.symmetric(
                         horizontal: 10.0, vertical: 10.0),
                     child: TextFormField(
-                      controller: _apptdatetimeController,
+                      controller: apptdatetimeController,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Date and time should be set.';
@@ -177,7 +194,7 @@ class _CalendarPageState extends State<CalendarPage> {
                               pickedTime.hour,
                               pickedTime.minute,
                             );
-                            _apptdatetimeController.text =
+                            apptdatetimeController.text =
                                 selectedDateTime.toString();
                           }
                         }
@@ -188,7 +205,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     margin: const EdgeInsets.symmetric(
                         horizontal: 10.0, vertical: 10.0),
                     child: TextFormField(
-                      controller: _commentController,
+                      controller: commentController,
                       validator: (value) {
                         if (value!.isNotEmpty) {
                           if (value.length < 5 || value.length > 40) {
