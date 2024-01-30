@@ -74,6 +74,13 @@ class _CalendarPageState extends State<CalendarPage> {
   Widget build(BuildContext context) {
     return SfCalendar(
       view: CalendarView.day,
+      allowedViews: const [
+        CalendarView.day,
+        CalendarView.month,
+        CalendarView.week,
+        CalendarView.workWeek,
+        CalendarView.schedule
+      ],
       onTap: (CalendarTapDetails details) {
         if (details.targetElement == CalendarElement.calendarCell) {
           _showDateTimeDialog(context);
