@@ -1430,9 +1430,6 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                     child: Column(
                       children: [
                         Container(
-                          margin: const EdgeInsets.only(top: 20.0),
-                        ),
-                        Container(
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
@@ -1510,7 +1507,6 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                           ),
                         ),
                         Container(
-                          width: 400.0,
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
@@ -1581,90 +1577,74 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                             ),
                           ),
                         ),
-                        Row(
-                          children: [
-                            const Text(
-                              '*',
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Container(
-                              width: 400.0,
-                              margin: const EdgeInsets.only(
-                                  left: 20.0,
-                                  right: 10.0,
-                                  top: 10.0,
-                                  bottom: 10.0),
-                              child: InputDecorator(
-                                decoration: InputDecoration(
-                                  border: const OutlineInputBorder(),
-                                  labelText: 'سن',
-                                  enabledBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey)),
-                                  focusedBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue)),
-                                  errorText: PatientInfo.ageDropDown == 0 &&
-                                          !PatientInfo.ageSelected
-                                      ? 'Please select an age'
-                                      : null,
-                                  errorBorder: OutlineInputBorder(
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(50.0),
-                                    ),
-                                    borderSide: BorderSide(
-                                        color: !PatientInfo.ageSelected
-                                            ? Colors.red
-                                            : Colors.grey),
-                                  ),
+                        Container(
+                          margin: const EdgeInsets.only(
+                              left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: 'سن',
+                              enabledBorder: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorText: PatientInfo.ageDropDown == 0 &&
+                                      !PatientInfo.ageSelected
+                                  ? 'Please select an age'
+                                  : null,
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(50.0),
                                 ),
-                                child: DropdownButtonHideUnderline(
-                                  child: SizedBox(
-                                    height: 26.0,
-                                    child: DropdownButton(
-                                      isExpanded: true,
-                                      icon: const Icon(Icons.arrow_drop_down),
-                                      value: PatientInfo.ageDropDown,
-                                      items: <DropdownMenuItem<int>>[
-                                        const DropdownMenuItem(
-                                          value: 0,
-                                          child: Text('No age selected'),
-                                        ),
-                                        ...PatientInfo.getAges()
-                                            .map((int ageItems) {
-                                          return DropdownMenuItem(
-                                            alignment: Alignment.centerRight,
-                                            value: ageItems,
-                                            child: Directionality(
-                                              textDirection: isEnglish
-                                                  ? TextDirection.ltr
-                                                  : TextDirection.rtl,
-                                              child: Text('$ageItems سال'),
-                                            ),
-                                          );
-                                        }).toList(),
-                                      ],
-                                      onChanged: (int? newValue) {
-                                        if (newValue != 0) {
-                                          // Ignore the 'Please select an age' option
-                                          setState(() {
-                                            PatientInfo.ageDropDown = newValue!;
-                                            PatientInfo.ageSelected = true;
-                                          });
-                                        }
-                                      },
+                                borderSide: BorderSide(
+                                    color: !PatientInfo.ageSelected
+                                        ? Colors.red
+                                        : Colors.grey),
+                              ),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: SizedBox(
+                                height: 26.0,
+                                child: DropdownButton(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: PatientInfo.ageDropDown,
+                                  items: <DropdownMenuItem<int>>[
+                                    const DropdownMenuItem(
+                                      value: 0,
+                                      child: Text('No age selected'),
                                     ),
-                                  ),
+                                    ...PatientInfo.getAges()
+                                        .map((int ageItems) {
+                                      return DropdownMenuItem(
+                                        alignment: Alignment.centerRight,
+                                        value: ageItems,
+                                        child: Directionality(
+                                          textDirection: isEnglish
+                                              ? TextDirection.ltr
+                                              : TextDirection.rtl,
+                                          child: Text('$ageItems سال'),
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ],
+                                  onChanged: (int? newValue) {
+                                    if (newValue != 0) {
+                                      // Ignore the 'Please select an age' option
+                                      setState(() {
+                                        PatientInfo.ageDropDown = newValue!;
+                                        PatientInfo.ageSelected = true;
+                                      });
+                                    }
+                                  },
                                 ),
                               ),
                             ),
-                          ],
+                          ),
                         ),
                         Container(
                           margin: const EdgeInsets.only(
@@ -1725,7 +1705,6 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                           ),
                         ),
                         Container(
-                          width: 400.0,
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
@@ -1767,7 +1746,6 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                           ),
                         ),
                         Container(
-                          width: 400.0,
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
@@ -1839,7 +1817,6 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                           ),
                         ),
                         Container(
-                          width: 400.0,
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
@@ -1881,7 +1858,6 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                           ),
                         ),
                         Container(
-                          width: 400.0,
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: Column(
