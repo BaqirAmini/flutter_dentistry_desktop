@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:io';
+import 'dart:ui';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_dentistry/views/patients/patient_history.dart';
 import 'package:flutter_dentistry/views/patients/xrays.dart';
 import 'package:flutter_dentistry/views/settings/settings_menu.dart';
 import 'package:flutter_dentistry/views/sf_calendar/syncfusion_calendar.dart';
+import 'package:flutter_dentistry/views/staff/staff.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:galileo_mysql/galileo_mysql.dart';
@@ -147,6 +149,7 @@ class _PatientProfile extends StatefulWidget {
 class _PatientProfileState extends State<_PatientProfile> {
   bool _isLoadingPhoto = false;
   late ImageProvider _image;
+  final ValueNotifier<bool> _isHovering = ValueNotifier<bool>(false);
 // This method is to update profile picture of a patient
   void _onUpdatePatientPhoto() async {
     setState(() {
@@ -250,62 +253,70 @@ class _PatientProfileState extends State<_PatientProfile> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Stack(
-                children: [
-                  FutureBuilder(
-                    future: _onFetchPatientPhoto(PatientInfo.patID!),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else {
-                        return CircleAvatar(
-                            radius: 30.0,
-                            backgroundImage: _image = (uint8list != null)
-                                ? MemoryImage(uint8list!)
-                                : const AssetImage(
-                                        'assets/graphics/user_profile2.jpg')
-                                    as ImageProvider);
-                      }
-                    },
-                  ),
-                  Positioned(
-                    top: top,
-                    right: right,
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.05,
-                      height: MediaQuery.of(context).size.height * 0.05,
-                      child: Card(
-                        shape: const CircleBorder(),
-                        child: Center(
-                          child: InkWell(
-                            customBorder: const CircleBorder(),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: _isLoadingPhoto
-                                  ? const SizedBox(
-                                      height: 18.0,
-                                      width: 18.0,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 3.0,
+              FutureBuilder(
+                future: _onFetchPatientPhoto(PatientInfo.patID!),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    return InkWell(
+                      onTap: _onUpdatePatientPhoto,
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        onEnter: (event) => _isHovering.value = true,
+                        onExit: (event) => _isHovering.value = false,
+                        child: ValueListenableBuilder<bool>(
+                          valueListenable: _isHovering,
+                          builder: (context, isHovering, child) {
+                            return isHovering
+                                ? Stack(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 30.0,
+                                        backgroundImage: _image = (uint8list !=
+                                                null)
+                                            ? MemoryImage(uint8list!)
+                                            : const AssetImage(
+                                                    'assets/graphics/user_profile2.jpg')
+                                                as ImageProvider,
                                       ),
-                                    )
-                                  : const Icon(
-                                      Icons.edit,
-                                      size: 12.0,
-                                      color: Colors.grey,
-                                    ),
-                            ),
-                            onTap: () => _onUpdatePatientPhoto(),
-                          ),
+                                      Positioned.fill(
+                                        child: BackdropFilter(
+                                          filter: ImageFilter.blur(
+                                              sigmaX: 2.5, sigmaY: 2.5),
+                                          child: Container(
+                                            color: Colors.black.withOpacity(0),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned.fill(
+                                        child: Center(
+                                          child: _isLoadingPhoto
+                                              ? const CircularProgressIndicator(color: Colors.white)
+                                              : const Icon(Icons.camera_alt,
+                                                  color: Colors.white),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : CircleAvatar(
+                                    radius: 30.0,
+                                    backgroundImage: _image = (uint8list !=
+                                            null)
+                                        ? MemoryImage(uint8list!)
+                                        : const AssetImage(
+                                                'assets/graphics/user_profile2.jpg')
+                                            as ImageProvider,
+                                  );
+                          },
                         ),
                       ),
-                    ),
-                  ),
-                ],
+                    );
+                  }
+                },
               ),
-              // const SizedBox(width: 10),
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.12,
                 child: Column(
