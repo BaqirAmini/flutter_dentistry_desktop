@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
@@ -133,7 +134,8 @@ class _StaffProfile extends StatefulWidget {
 class _StaffProfileState extends State<_StaffProfile> {
   bool _isLoadingPhoto = false;
   late ImageProvider _image;
-  
+  final ValueNotifier<bool> _isHovering = ValueNotifier<bool>(false);
+
 // This method is to update profile picture of a staff
   void _onUpdateStaffPhoto() async {
     setState(() {
@@ -232,62 +234,73 @@ class _StaffProfileState extends State<_StaffProfile> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Stack(
-                children: [
-                  FutureBuilder(
-                    future: StaffInfo.onFetchStaffPhoto(gStaffID),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else {
-                        return CircleAvatar(
-                            radius: 30.0,
-                            backgroundImage: _image = (StaffInfo.uint8list != null)
-                                ? MemoryImage(StaffInfo.uint8list!)
-                                : const AssetImage(
-                                        'assets/graphics/user_profile2.jpg')
-                                    as ImageProvider);
-                      }
-                    },
-                  ),
-                  Positioned(
-                    top: -5.0,
-                    right: -20.0,
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.05,
-                      height: MediaQuery.of(context).size.height * 0.05,
-                      child: Card(
-                        shape: const CircleBorder(),
-                        child: Center(
-                          child: InkWell(
-                            customBorder: const CircleBorder(),
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: _isLoadingPhoto
-                                  ? const SizedBox(
-                                      height: 18.0,
-                                      width: 18.0,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 3.0,
+              FutureBuilder(
+                future: StaffInfo.onFetchStaffPhoto(gStaffID),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    return InkWell(
+                      onTap: _onUpdateStaffPhoto,
+                      child: MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        onEnter: (event) => _isHovering.value = true,
+                        onExit: (event) => _isHovering.value = false,
+                        child: ValueListenableBuilder<bool>(
+                          valueListenable: _isHovering,
+                          builder: (context, isHovering, child) {
+                            return isHovering
+                                ? Stack(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 30.0,
+                                        backgroundImage: _image = (StaffInfo
+                                                    .uint8list !=
+                                                null)
+                                            ? MemoryImage(StaffInfo.uint8list!)
+                                            : const AssetImage(
+                                                    'assets/graphics/user_profile2.jpg')
+                                                as ImageProvider,
                                       ),
-                                    )
-                                  : const Icon(
-                                      Icons.edit,
-                                      size: 12.0,
-                                      color: Colors.grey,
-                                    ),
-                            ),
-                            onTap: () => _onUpdateStaffPhoto(),
-                          ),
+                                      Positioned.fill(
+                                        child: BackdropFilter(
+                                          filter: ImageFilter.blur(
+                                              sigmaX: 2.5, sigmaY: 2.5),
+                                          child: Container(
+                                            color: Colors.black.withOpacity(0),
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned.fill(
+                                        child: Center(
+                                          child: _isLoadingPhoto
+                                              ? const CircularProgressIndicator(
+                                                  color: Colors.white)
+                                              : const Icon(Icons.camera_alt,
+                                                  color: Colors.white),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : CircleAvatar(
+                                    radius: 30.0,
+                                    backgroundImage: _image = (StaffInfo
+                                                .uint8list !=
+                                            null)
+                                        ? MemoryImage(StaffInfo.uint8list!)
+                                        : const AssetImage(
+                                                'assets/graphics/user_profile2.jpg')
+                                            as ImageProvider,
+                                  );
+                          },
                         ),
                       ),
-                    ),
-                  ),
-                ],
+                    );
+                  }
+                },
               ),
-              // const SizedBox(width: 10),
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.12,
                 child: Column(
