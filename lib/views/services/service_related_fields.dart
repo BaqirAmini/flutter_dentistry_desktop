@@ -83,34 +83,20 @@ class _ServiceFormState extends State<ServiceForm> {
 
   List<Map<String, dynamic>> services = [];
 
-  // Fetch staff which will be needed later.
-  Future<void> fetchStaff() async {
-    // Fetch staff for purchased by fields
-    var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?',
-        ['داکتر دندان']);
-
-    setState(() {
-      staffList = results
-          .map((result) => {
-                'staff_ID': result[0].toString(),
-                'firstname': result[1],
-                'lastname': result[2] ?? ''
-              })
-          .toList();
-      ServiceInfo.selectedDentistID =
-          staffList.isNotEmpty ? int.parse(staffList[0]['staff_ID']) : null;
-    });
-
-    await conn.close();
-  }
+// Create an instance GlobalUsage to be access its method
+  GlobalUsage gu = GlobalUsage();
 
   @override
   void initState() {
     super.initState();
     fetchServices();
-    fetchStaff();
+    gu.fetchStaff().then((staff) {
+      setState(() {
+        staffList = staff;
+        ServiceInfo.selectedDentistID =
+            staffList.isNotEmpty ? int.parse(staffList[0]['staff_ID']) : null;
+      });
+    });
   }
 
   Future<void> fetchServices() async {
