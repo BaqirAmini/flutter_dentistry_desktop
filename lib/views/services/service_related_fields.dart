@@ -89,7 +89,14 @@ class _ServiceFormState extends State<ServiceForm> {
   @override
   void initState() {
     super.initState();
-    fetchServices();
+    gu.fetchServices().then((service) {
+      setState(() {
+        services = service;
+        ServiceInfo.selectedServiceID =
+            services.isNotEmpty ? int.parse(services[0]['ser_ID']) : null;
+      });
+    });
+    // Call to fetch staff
     gu.fetchStaff().then((staff) {
       setState(() {
         staffList = staff;
@@ -99,20 +106,6 @@ class _ServiceFormState extends State<ServiceForm> {
     });
   }
 
-  Future<void> fetchServices() async {
-    var conn = await onConnToDb();
-    var queryService =
-        await conn.query('SELECT ser_ID, ser_name FROM services WHERE ser_ID');
-    setState(() {
-      services = queryService
-          .map((result) =>
-              {'ser_ID': result[0].toString(), 'ser_name': result[1]})
-          .toList();
-    });
-    ServiceInfo.selectedServiceID =
-        services.isNotEmpty ? int.parse(services[0]['ser_ID']) : null;
-    await conn.close();
-  }
 
   // Set controllers for textfields
   final _meetController = TextEditingController();
