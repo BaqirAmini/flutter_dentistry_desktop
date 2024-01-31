@@ -2032,6 +2032,9 @@ class _PatientDataTableState extends State<PatientDataTable> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _fetchData());
   }
 
+// Create instance of this class to its members
+  final GlobalUsage _gu = GlobalUsage();
+
   @override
   Widget build(BuildContext context) {
     // Create a new instance of the PatientDataSource class and pass it the _filteredData list
@@ -2264,8 +2267,9 @@ class _PatientDataTableState extends State<PatientDataTable> {
                       ),
                   ],
                   source: dataSource,
-                  rowsPerPage:
-                      _filteredData.length < 8 ? _filteredData.length : 8,
+                  rowsPerPage: _filteredData.length < 8
+                      ? _gu.calculateRowsPerPage(context)
+                      : _gu.calculateRowsPerPage(context),
                 )
             ],
           ),
