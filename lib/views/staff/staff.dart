@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
@@ -126,12 +127,8 @@ class _MyDataTableState extends State<MyDataTable> {
     });
   }
 
-  int calculateRowsPerPage() {
-    double screenHeight = MediaQuery.of(context).size.height;
-    int rowsPerPage =
-        (screenHeight / 50).floor(); // assuming each row is 50 pixels high
-    return rowsPerPage;
-  }
+  // Create instance of this class to its members
+  final GlobalUsage _gu = GlobalUsage();
 
 // The text editing controller for the search TextField
   final TextEditingController _searchController = TextEditingController();
@@ -377,9 +374,10 @@ class _MyDataTableState extends State<MyDataTable> {
                         ),
                       ),
                   ],
-                  rowsPerPage: _filteredData.length < calculateRowsPerPage()
-                      ? _filteredData.length
-                      : calculateRowsPerPage(),
+                  rowsPerPage:
+                      _filteredData.length < _gu.calculateRowsPerPage(context)
+                          ? _filteredData.length
+                          : _gu.calculateRowsPerPage(context),
                 )
             ],
           ),
