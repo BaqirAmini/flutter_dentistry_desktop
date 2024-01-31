@@ -44,7 +44,7 @@ class CalendarApp extends StatelessWidget {
           actions: [
             IconButton(
                 onPressed: showWithLargeImage,
-                icon: Icon(Icons.notification_add))
+                icon: const Icon(Icons.notification_add))
           ],
         ),
         body: const CalendarPage(),
@@ -80,7 +80,7 @@ class _CalendarPageState extends State<CalendarPage> {
   List<Map<String, dynamic>> staffList = [];
   // This list is to be assigned services
   List<Map<String, dynamic>> services = [];
-  late List<Meeting> _appointments;
+  late List<PatientAppointment> _appointments;
   final _calFormKey = GlobalKey<FormState>();
 // Create an instance GlobalUsage to be access its method
   final GlobalUsage _gu = GlobalUsage();
@@ -88,7 +88,6 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   void initState() {
     super.initState();
-    _appointments = _getAppointments();
     _gu.fetchStaff().then((staff) {
       setState(() {
         staffList = staff;
@@ -107,37 +106,43 @@ class _CalendarPageState extends State<CalendarPage> {
     });
   }
 
-  List<Meeting> _getAppointments() {
-    final List<Meeting> meetings = <Meeting>[];
-    final DateTime today = DateTime.now();
-    final DateTime startTime = DateTime(today.year, today.month, today.day, 9);
-    final DateTime endTime = startTime.add(const Duration(hours: 2));
-    meetings.add(Meeting(
-        'Conference', startTime, endTime, const Color(0xFF0F8644), false));
-    return meetings;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return SfCalendar(
-      view: CalendarView.day,
-      allowedViews: const [
-        CalendarView.day,
-        CalendarView.month,
-        CalendarView.week,
-        CalendarView.workWeek,
-        CalendarView.schedule
-      ],
-      onTap: (CalendarTapDetails details) {
-        if (details.targetElement == CalendarElement.calendarCell) {
-          DateTime? selectedDate = details.date;
-          _showAppointmentDialog(context, selectedDate!);
+    return FutureBuilder<AppointmentDataSource>(
+      future: _getCalendarDataSource(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator(); // Show a loading spinner while waiting
+        } else if (snapshot.hasError) {
+          return Text(
+              'Error: ${snapshot.error}'); // Show error message if something went wrong
+        } else {
+          return SfCalendar(
+            dataSource: snapshot.data,
+            view: CalendarView.day,
+            allowedViews: const [
+              CalendarView.day,
+              CalendarView.month,
+              CalendarView.week,
+              CalendarView.workWeek,
+              CalendarView.schedule
+            ],
+            onTap: (CalendarTapDetails details) {
+              if (details.targetElement == CalendarElement.calendarCell) {
+                DateTime? selectedDate = details.date;
+                _showAppointmentDialog(context, selectedDate!, () {
+                  setState(() {});
+                });
+              }
+            },
+          );
         }
       },
     );
   }
 
-  _showAppointmentDialog(BuildContext context, DateTime selectedDate) async {
+  _showAppointmentDialog(
+      BuildContext context, DateTime selectedDate, Function refresh) async {
     DateTime selectedDateTime = DateTime.now();
     TextEditingController apptdatetimeController = TextEditingController();
     TextEditingController commentController = TextEditingController();
@@ -153,7 +158,7 @@ class _CalendarPageState extends State<CalendarPage> {
             return AlertDialog(
               title: const Text('Set Details'),
               content: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.5,
+                height: MediaQuery.of(context).size.height * 0.6,
                 width: MediaQuery.of(context).size.width * 0.3,
                 child: Form(
                   key: _calFormKey,
@@ -302,6 +307,7 @@ class _CalendarPageState extends State<CalendarPage> {
                             if (pickedDate != null) {
                               // ignore: use_build_context_synchronously
                               final TimeOfDay? pickedTime =
+                                  // ignore: use_build_context_synchronously
                                   await showTimePicker(
                                 context: context,
                                 initialTime: TimeOfDay.now(),
@@ -443,6 +449,7 @@ class _CalendarPageState extends State<CalendarPage> {
                           // ignore: use_build_context_synchronously
                           _onShowSnack(
                               Colors.green, 'Appointment scheduled!', context);
+                          refresh();
                         }
                         await conn.close();
                       } catch (e) {
@@ -458,72 +465,106 @@ class _CalendarPageState extends State<CalendarPage> {
       },
     );
   }
+
+  // This function fetches the scheduled appointments from database
+  Future<List<PatientAppointment>> _fetchAppointments() async {
+    try {
+      final conn = await onConnToDb();
+      final results = await conn.query(
+          '''SELECT firstname, lastname, ser_name, details, meet_date FROM staff st 
+             INNER JOIN appointments a ON st.staff_ID = a.staff_ID 
+             INNER JOIN services s ON a.service_ID = s.ser_ID WHERE a.status = ? AND a.pat_ID = ?''',
+          ['Pending', PatientInfo.patID]);
+      return results
+          .map((row) => PatientAppointment(
+              dentistFName: row[0].toString(),
+              dentistLName: row[1].toString(),
+              serviceName: row[2].toString(),
+              comments: row[3] == null ? '' : row[3].toString(),
+              visitTime: row[4] as DateTime))
+          .toList();
+    } catch (e) {
+      print('The scheduled appoinments cannot be retrieved: $e');
+      return [];
+    }
+  }
+
+  Future<AppointmentDataSource> _getCalendarDataSource() async {
+    List<PatientAppointment> appointments = await _fetchAppointments();
+    List<Meeting> meetings = appointments.map((appointment) {
+      return Meeting(
+        from: appointment.visitTime,
+        to: appointment.visitTime.add(const Duration(hours: 1)),
+        eventName:
+            'Appointment with Dentist ${appointment.dentistFName} ${appointment.dentistLName}',
+        description: appointment.comments,
+      );
+    }).toList();
+
+    return AppointmentDataSource(meetings);
+  }
 }
 
-/// An object to set the appointment collection data source to calendar, which
-/// used to map the custom appointment data to the calendar appointment, and
-/// allows to add, remove or reset the appointment collection.
-class MeetingDataSource extends CalendarDataSource {
-  /// Creates a meeting data source, which used to set the appointment
-  /// collection to the calendar
-  MeetingDataSource(List<Meeting> source) {
+class Meeting {
+  Meeting({
+    required this.from,
+    required this.to,
+    required this.eventName,
+    required this.description,
+    this.background = const Color.fromARGB(255, 211, 40, 34),
+  });
+
+  DateTime from;
+  DateTime to;
+  String eventName;
+  String description;
+  Color background;
+}
+
+class AppointmentDataSource extends CalendarDataSource {
+  AppointmentDataSource(List<Meeting> source) {
     appointments = source;
   }
 
   @override
   DateTime getStartTime(int index) {
-    return _getMeetingData(index).from;
+    return appointments![index].from;
   }
 
   @override
   DateTime getEndTime(int index) {
-    return _getMeetingData(index).to;
+    return appointments![index].to;
   }
 
   @override
   String getSubject(int index) {
-    return _getMeetingData(index).eventName;
+    return appointments![index].eventName;
   }
 
   @override
   Color getColor(int index) {
-    return _getMeetingData(index).background;
+    return appointments![index].background;
   }
 
   @override
   bool isAllDay(int index) {
-    return _getMeetingData(index).isAllDay;
-  }
-
-  Meeting _getMeetingData(int index) {
-    final dynamic meeting = appointments![index];
-    late final Meeting meetingData;
-    if (meeting is Meeting) {
-      meetingData = meeting;
-    }
-
-    return meetingData;
+    return false;
   }
 }
 
 /// Custom business object class which contains properties to hold the detailed
 /// information about the event data which will be rendered in calendar.
-class Meeting {
-  /// Creates a meeting class with required details.
-  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
+class PatientAppointment {
+  final String dentistFName;
+  final String dentistLName;
+  final String serviceName;
+  final String comments;
+  final DateTime visitTime;
 
-  /// Event name which is equivalent to subject property of [Appointment].
-  String eventName;
-
-  /// From which is equivalent to start time property of [Appointment].
-  DateTime from;
-
-  /// To which is equivalent to end time property of [Appointment].
-  DateTime to;
-
-  /// Background which is equivalent to color property of [Appointment].
-  Color background;
-
-  /// IsAllDay which is equivalent to isAllDay property of [Appointment].
-  bool isAllDay;
+  PatientAppointment(
+      {required this.dentistFName,
+      required this.dentistLName,
+      required this.serviceName,
+      required this.comments,
+      required this.visitTime});
 }
