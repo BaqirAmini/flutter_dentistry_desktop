@@ -47,4 +47,26 @@ class GlobalUsage {
 
     return staffList;
   }
+
+// Declare this function to fetch services from services table to be used globally
+  Future<List<Map<String, dynamic>>> fetchServices() async {
+    var conn = await onConnToDb();
+    var queryService =
+        await conn.query('SELECT ser_ID, ser_name FROM services WHERE ser_ID');
+
+    List<Map<String, dynamic>> services = queryService
+        .map(
+            (result) => {'ser_ID': result[0].toString(), 'ser_name': result[1]})
+        .toList();
+
+    await conn.close();
+    return services;
+  }
+
+    // Create this function to make number of records responsive
+  int calculateRowsPerPage(BuildContext context) {
+    var minHeight = MediaQuery.of(context).size.height;
+    int rowsPerPage = (minHeight / 50).floor();
+    return rowsPerPage;
+  }
 }
