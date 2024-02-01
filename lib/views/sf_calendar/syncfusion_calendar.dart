@@ -49,6 +49,7 @@ class CalendarApp extends StatelessWidget {
         ),
         body: const CalendarPage(),
       ),
+      theme: ThemeData(useMaterial3: false),
     );
   }
 
@@ -130,11 +131,33 @@ class _CalendarPageState extends State<CalendarPage> {
             onTap: (CalendarTapDetails details) {
               if (details.targetElement == CalendarElement.calendarCell) {
                 DateTime? selectedDate = details.date;
-                _showAppointmentDialog(context, selectedDate!, () {
+                _scheduleAppointment(context, selectedDate!, () {
                   setState(() {});
                 });
               } else if (details.targetElement == CalendarElement.appointment) {
-                print('Edit or delete it.');
+                // Access members of PatientAppointment class
+                Meeting meeting = details.appointments![0];
+                PatientAppointment appointment = meeting.patientAppointment;
+                int aptId = appointment.apptId;
+                String dentistFName = appointment.dentistFName;
+                String dentistLName = appointment.dentistLName.isEmpty
+                    ? ''
+                    : appointment.dentistLName;
+                String serviceName = appointment.serviceName;
+                DateTime scheduleTime = appointment.visitTime;
+                String description =
+                    appointment.comments.isEmpty ? '' : appointment.comments;
+                String notifFreq = appointment.notifFreq;
+                // Call this function to see more details of an schedule appointment
+                _showAppoinmentDetails(
+                    context,
+                    aptId,
+                    dentistFName,
+                    dentistLName,
+                    serviceName,
+                    scheduleTime,
+                    description,
+                    notifFreq);
               }
             },
           );
@@ -143,7 +166,8 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  _showAppointmentDialog(
+// Create this function to schedule an appointment
+  _scheduleAppointment(
       BuildContext context, DateTime selectedDate, Function refresh) async {
     DateTime selectedDateTime = DateTime.now();
     TextEditingController apptdatetimeController = TextEditingController();
@@ -468,12 +492,115 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
+// This function is show scheduled appointment details
+  _showAppoinmentDetails(
+      BuildContext context,
+      int aptId,
+      String firstName,
+      String lastName,
+      String service,
+      DateTime time,
+      String description,
+      String frequency) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              IconButton(
+                  splashRadius: 25.0,
+                  onPressed: () {},
+                  icon: const Icon(Icons.edit_outlined,
+                      size: 18.0, color: Colors.blue)),
+              const SizedBox(width: 10.0),
+              IconButton(
+                  splashRadius: 25.0,
+                  onPressed: () {},
+                  icon: const Icon(Icons.delete_outline,
+                      size: 18.0, color: Colors.blue)),
+            ],
+          ),
+          content: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.2,
+            height: MediaQuery.of(context).size.height * 0.3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.calendar_month_outlined,
+                          color: Colors.grey),
+                      const SizedBox(width: 15.0),
+                      Text(time.toString())
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.title_outlined, color: Colors.grey),
+                      const SizedBox(width: 15.0),
+                      Text(service.toString()),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.person_3_outlined, color: Colors.grey),
+                      const SizedBox(width: 15.0),
+                      Text('$firstName $lastName'),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.notifications_active_outlined,
+                          color: Colors.grey),
+                      const SizedBox(width: 15.0),
+                      Text(frequency),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.info_outlined, color: Colors.grey),
+                      const SizedBox(width: 15.0),
+                      Text(description)
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text('Save'),
+              onPressed: () async {},
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // This function fetches the scheduled appointments from database
   Future<List<PatientAppointment>> _fetchAppointments() async {
     try {
       final conn = await onConnToDb();
       final results = await conn.query(
-          '''SELECT firstname, lastname, ser_name, details, meet_date, apt_ID FROM staff st 
+          '''SELECT firstname, lastname, ser_name, details, meet_date, apt_ID, notification FROM staff st 
              INNER JOIN appointments a ON st.staff_ID = a.staff_ID 
              INNER JOIN services s ON a.service_ID = s.ser_ID WHERE a.status = ? AND a.pat_ID = ?''',
           ['Pending', PatientInfo.patID]);
@@ -484,7 +611,8 @@ class _CalendarPageState extends State<CalendarPage> {
               serviceName: row[2].toString(),
               comments: row[3] == null ? '' : row[3].toString(),
               visitTime: row[4] as DateTime,
-              apptId: row[5] as int))
+              apptId: row[5] as int,
+              notifFreq: row[6].toString()))
           .toList();
     } catch (e) {
       print('The scheduled appoinments cannot be retrieved: $e');
@@ -502,6 +630,7 @@ class _CalendarPageState extends State<CalendarPage> {
         eventName:
             'Appointment with Dentist ${appointment.dentistFName} ${appointment.dentistLName}',
         description: appointment.comments,
+        patientAppointment: appointment,
       );
     }).toList();
 
@@ -515,6 +644,7 @@ class Meeting {
     required this.to,
     required this.eventName,
     required this.description,
+    required this.patientAppointment,
     this.background = const Color.fromARGB(255, 211, 40, 34),
   });
 
@@ -522,6 +652,7 @@ class Meeting {
   DateTime to;
   String eventName;
   String description;
+  PatientAppointment patientAppointment;
   Color background;
 }
 
@@ -565,6 +696,7 @@ class PatientAppointment {
   final String serviceName;
   final String comments;
   final DateTime visitTime;
+  final String notifFreq;
 
   PatientAppointment(
       {required this.apptId,
@@ -572,5 +704,6 @@ class PatientAppointment {
       required this.dentistLName,
       required this.serviceName,
       required this.comments,
-      required this.visitTime});
+      required this.visitTime,
+      required this.notifFreq});
 }
