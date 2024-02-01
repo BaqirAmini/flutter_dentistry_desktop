@@ -7,6 +7,7 @@ import 'package:flutter_dentistry/views/services/service_related_fields.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:windows_notification/notification_message.dart';
 import 'package:windows_notification/windows_notification.dart';
+import 'package:intl/intl.dart' as intl2;
 
 // This is shows snackbar when called
 void _onShowSnack(Color backColor, String msg, BuildContext context) {
@@ -145,6 +146,8 @@ class _CalendarPageState extends State<CalendarPage> {
                     : appointment.dentistLName;
                 String serviceName = appointment.serviceName;
                 DateTime scheduleTime = appointment.visitTime;
+                String formattedTime =
+                    intl2.DateFormat('yyyy-MM-dd hh:mm a').format(scheduleTime);
                 String description =
                     appointment.comments.isEmpty ? '' : appointment.comments;
                 String notifFreq = appointment.notifFreq;
@@ -155,7 +158,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     dentistFName,
                     dentistLName,
                     serviceName,
-                    scheduleTime,
+                    formattedTime,
                     description,
                     notifFreq);
               }
@@ -182,7 +185,7 @@ class _CalendarPageState extends State<CalendarPage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Set Details'),
+              title: const Text('Schedule an appointment'),
               content: SizedBox(
                 height: MediaQuery.of(context).size.height * 0.6,
                 width: MediaQuery.of(context).size.width * 0.3,
@@ -492,14 +495,14 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-// This function is show scheduled appointment details
+// This function is to show scheduled appointment details
   _showAppoinmentDetails(
       BuildContext context,
       int aptId,
       String firstName,
       String lastName,
       String service,
-      DateTime time,
+      String time,
       String description,
       String frequency) async {
     showDialog(
@@ -517,7 +520,12 @@ class _CalendarPageState extends State<CalendarPage> {
               const SizedBox(width: 10.0),
               IconButton(
                   splashRadius: 25.0,
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _onDeleteAppointment(context, aptId, () {
+                      setState(() {});
+                    });
+                  },
                   icon: const Icon(Icons.delete_outline,
                       size: 18.0, color: Colors.blue)),
             ],
@@ -586,12 +594,57 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
           actions: <Widget>[
             ElevatedButton(
-              child: const Text('Save'),
-              onPressed: () async {},
+              child: const Text('OK'),
+              onPressed: () => Navigator.pop(context),
             ),
           ],
         );
       },
+    );
+  }
+
+// This function deletes a schedule appointment
+  _onDeleteAppointment(BuildContext context, int apptId, Function refresh) {
+    return showDialog(
+      useRootNavigator: true,
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: const Text('Delete a scheduled appointment'),
+            ),
+            content: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: const Text(
+                  'Are you sure you want to delete this scheduled appointment'),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final conn = await onConnToDb();
+                  final deleteResult = await conn.query(
+                      'DELETE FROM appointments WHERE apt_ID = ?', [apptId]);
+                  if (deleteResult.affectedRows! > 0) {
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context).pop();
+                    // ignore: use_build_context_synchronously
+                    _onShowSnack(Colors.green, 'جلسه موفقانه حذف شد.', context);
+                    refresh();
+                  }
+                  await conn.close();
+                },
+                child: const Text('Delete'),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
