@@ -133,6 +133,7 @@ class _ServiceState extends State<Service> {
           ),
         ),
       ),
+      theme: ThemeData(useMaterial3: false),
     );
   }
 

@@ -120,6 +120,7 @@ class StaffDetail extends StatelessWidget {
           ),
         ),
       ),
+      theme: ThemeData(useMaterial3: false),
     );
   }
 }

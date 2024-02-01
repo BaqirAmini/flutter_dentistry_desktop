@@ -187,6 +187,7 @@ class _LoginState extends State<Login> {
 
     return MaterialApp(
       // routes: {'/dashboard': (context) => const Dashboard()},
+
       debugShowCheckedModeBanner: false,
       home: Directionality(
         textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
@@ -497,6 +498,7 @@ class _LoginState extends State<Login> {
         ),
       ),
       theme: ThemeData(
+        useMaterial3: false,
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
             .copyWith(background: Colors.white),
       ),

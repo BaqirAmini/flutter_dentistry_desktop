@@ -547,6 +547,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
             ),
+            theme: ThemeData(useMaterial3: false),
           );
         });
   }

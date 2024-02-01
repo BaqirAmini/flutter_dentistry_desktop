@@ -94,6 +94,7 @@ class _ExpenseListState extends State<ExpenseList> {
           ),
         ),
       ),
+      theme: ThemeData(useMaterial3: false),
     );
   }
 

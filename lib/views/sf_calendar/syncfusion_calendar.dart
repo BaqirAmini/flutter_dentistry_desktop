@@ -133,6 +133,8 @@ class _CalendarPageState extends State<CalendarPage> {
                 _showAppointmentDialog(context, selectedDate!, () {
                   setState(() {});
                 });
+              } else if (details.targetElement == CalendarElement.appointment) {
+                print('Edit or delete it.');
               }
             },
           );
@@ -471,7 +473,7 @@ class _CalendarPageState extends State<CalendarPage> {
     try {
       final conn = await onConnToDb();
       final results = await conn.query(
-          '''SELECT firstname, lastname, ser_name, details, meet_date FROM staff st 
+          '''SELECT firstname, lastname, ser_name, details, meet_date, apt_ID FROM staff st 
              INNER JOIN appointments a ON st.staff_ID = a.staff_ID 
              INNER JOIN services s ON a.service_ID = s.ser_ID WHERE a.status = ? AND a.pat_ID = ?''',
           ['Pending', PatientInfo.patID]);
@@ -481,7 +483,8 @@ class _CalendarPageState extends State<CalendarPage> {
               dentistLName: row[1].toString(),
               serviceName: row[2].toString(),
               comments: row[3] == null ? '' : row[3].toString(),
-              visitTime: row[4] as DateTime))
+              visitTime: row[4] as DateTime,
+              apptId: row[5] as int))
           .toList();
     } catch (e) {
       print('The scheduled appoinments cannot be retrieved: $e');
@@ -489,6 +492,7 @@ class _CalendarPageState extends State<CalendarPage> {
     }
   }
 
+// Dislay the scheduled appointment
   Future<AppointmentDataSource> _getCalendarDataSource() async {
     List<PatientAppointment> appointments = await _fetchAppointments();
     List<Meeting> meetings = appointments.map((appointment) {
@@ -555,6 +559,7 @@ class AppointmentDataSource extends CalendarDataSource {
 /// Custom business object class which contains properties to hold the detailed
 /// information about the event data which will be rendered in calendar.
 class PatientAppointment {
+  final int apptId;
   final String dentistFName;
   final String dentistLName;
   final String serviceName;
@@ -562,7 +567,8 @@ class PatientAppointment {
   final DateTime visitTime;
 
   PatientAppointment(
-      {required this.dentistFName,
+      {required this.apptId,
+      required this.dentistFName,
       required this.dentistLName,
       required this.serviceName,
       required this.comments,

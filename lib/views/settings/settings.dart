@@ -27,6 +27,7 @@ class Settings extends StatelessWidget {
           body: const SettingsMenu(),
         ),
       ),
+      theme: ThemeData(useMaterial3: false),
     );
   }
 }

@@ -135,6 +135,7 @@ class _PatientDetailState extends State<PatientDetail> {
           ),
         ),
       ),
+      theme: ThemeData(useMaterial3: false),
     );
   }
 }
@@ -239,7 +240,6 @@ class _PatientProfileState extends State<_PatientProfile> {
 
   @override
   Widget build(BuildContext context) {
-
     return Card(
       elevation: 0.5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -290,7 +290,8 @@ class _PatientProfileState extends State<_PatientProfile> {
                                       Positioned.fill(
                                         child: Center(
                                           child: _isLoadingPhoto
-                                              ? const CircularProgressIndicator(color: Colors.white)
+                                              ? const CircularProgressIndicator(
+                                                  color: Colors.white)
                                               : const Icon(Icons.camera_alt,
                                                   color: Colors.white),
                                         ),

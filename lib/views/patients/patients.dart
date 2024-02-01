@@ -1296,6 +1296,7 @@ class _PatientState extends State<Patient> {
               body: const PatientDataTable()),
         ),
       ),
+      theme: ThemeData(useMaterial3: false),
     );
   }
 }

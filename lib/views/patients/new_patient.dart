@@ -1860,6 +1860,7 @@ class _NewPatientState extends State<NewPatient> {
           ),
         ),
       ),
+      theme: ThemeData(useMaterial3: false),
     );
   }
 

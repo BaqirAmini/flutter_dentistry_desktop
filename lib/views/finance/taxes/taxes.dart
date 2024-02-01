@@ -28,6 +28,7 @@ class TaxList extends StatelessWidget {
           body: const TaxDataTable(),
         ),
       ),
+      theme: ThemeData(useMaterial3: false),
     );
   }
 }

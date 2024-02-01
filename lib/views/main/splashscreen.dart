@@ -18,6 +18,7 @@ class DCMISApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'My App',
         theme: ThemeData(
+          useMaterial3: false,
           primarySwatch: Colors.blue,
         ),
         home: const SplashScreen(),
