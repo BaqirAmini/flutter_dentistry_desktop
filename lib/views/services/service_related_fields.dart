@@ -106,9 +106,8 @@ class _ServiceFormState extends State<ServiceForm> {
     });
   }
 
-
   // Set controllers for textfields
-  final _meetController = TextEditingController();
+  final _visitTimeController = TextEditingController();
   final _noteController = TextEditingController();
 
   @override
@@ -118,7 +117,8 @@ class _ServiceFormState extends State<ServiceForm> {
     selectedLanguage = languageProvider.selectedLanguage;
     isEnglish = selectedLanguage == 'English'; */
     ServiceInfo.serviceNote = _noteController.text;
-    ServiceInfo.meetingDate = _meetController.text.toString();
+    ServiceInfo.meetingDate = _visitTimeController.text.toString();
+    DateTime selectedDateTime = DateTime.now();
     return Form(
       key: widget.formKey,
       child: Center(
@@ -146,10 +146,10 @@ class _ServiceFormState extends State<ServiceForm> {
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
-                            controller: _meetController,
+                            controller: _visitTimeController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'لطفا تاریخ مراجعه مریض را انتخاب کنید.';
+                                return 'لطفا زمان مراجعه مریض را انتخاب کنید.';
                               }
                               return null;
                             },
@@ -157,17 +157,32 @@ class _ServiceFormState extends State<ServiceForm> {
                               FocusScope.of(context).requestFocus(
                                 FocusNode(),
                               );
-                              final DateTime? dateTime = await showDatePicker(
+
+                              final DateTime? pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2100),
+                              );
+                              if (pickedDate != null) {
+                                // ignore: use_build_context_synchronously
+                                final TimeOfDay? pickedTime =
+                                    // ignore: use_build_context_synchronously
+                                    await showTimePicker(
                                   context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime(1900),
-                                  lastDate: DateTime(2100));
-                              if (dateTime != null) {
-                                final intl2.DateFormat formatter =
-                                    intl2.DateFormat('yyyy-MM-dd');
-                                final String formattedDate =
-                                    formatter.format(dateTime);
-                                _meetController.text = formattedDate;
+                                  initialTime: TimeOfDay.now(),
+                                );
+                                if (pickedTime != null) {
+                                  selectedDateTime = DateTime(
+                                    pickedDate.year,
+                                    pickedDate.month,
+                                    pickedDate.day,
+                                    pickedTime.hour,
+                                    pickedTime.minute,
+                                  );
+                                  _visitTimeController.text =
+                                      selectedDateTime.toString();
+                                }
                               }
                             },
                             inputFormatters: [
@@ -176,7 +191,7 @@ class _ServiceFormState extends State<ServiceForm> {
                             ],
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: 'تاریخ اولین مراجعه',
+                              labelText: 'زمان اولین مراجعه',
                               suffixIcon: Icon(Icons.calendar_month_outlined),
                               enabledBorder: OutlineInputBorder(
                                   borderRadius:

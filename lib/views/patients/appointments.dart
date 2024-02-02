@@ -675,7 +675,7 @@ Future<List<Map>> _getAppointment() async {
     final conn = await onConnToDb();
 
     const query =
-        '''SELECT a.apt_ID, s.ser_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y"), a.round, a.installment, a.discount, a.total_fee, s.ser_name, st.staff_ID, st.firstname, st.lastname
+        '''SELECT a.apt_ID, s.ser_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y %h:%m %p"), a.round, a.installment, a.discount, a.total_fee, s.ser_name, st.staff_ID, st.firstname, st.lastname
           FROM appointments a 
           INNER JOIN services s ON a.service_ID = s.ser_ID
           INNER JOIN staff st ON a.staff_ID = st.staff_ID
