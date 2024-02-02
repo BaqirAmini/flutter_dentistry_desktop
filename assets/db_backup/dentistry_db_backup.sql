@@ -3,14 +3,12 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 31, 2024 at 12:18 PM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.0.25
-
+-- Generation Time: Feb 02, 2024 at 06:29 PM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.1.6
 -- Create database
 CREATE DATABASE IF NOT EXISTS dentistry_db;
 USE dentistry_db;
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -45,7 +43,7 @@ CREATE TABLE `appointments` (
   `status` varchar(64) DEFAULT NULL,
   `notification` varchar(64) DEFAULT NULL,
   `details` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `appointments`
@@ -67,11 +65,20 @@ INSERT INTO `appointments` (`apt_ID`, `cli_ID`, `pat_ID`, `service_ID`, `install
 (112, 0, 94, 12, 0, 2, 0.00, '2000.00', '2024-01-31 00:00:00', 29, NULL, NULL, NULL),
 (113, 0, 97, 13, 0, 1, 0.00, '1500.00', '2024-01-06 00:00:00', 31, NULL, NULL, NULL),
 (114, 0, 76, 1, 0, 1, 0.00, '700.00', '2024-01-07 00:00:00', 26, NULL, NULL, NULL),
-(115, 0, 98, 8, 2, 1, 2.00, '1176.00', '2024-01-31 00:00:00', 29, NULL, NULL, NULL),
-(118, 0, 98, 5, 1, 1, NULL, '0.00', '2023-12-31 06:00:00', 29, 'Pending', '15 Minutes', 'Testing comments'),
+(118, 0, 98, 5, 1, 1, NULL, '0.00', '2023-12-30 11:03:00', 29, 'Pending', '15 Minutes', 'Testing comments'),
 (119, 0, 93, 1, 1, 1, NULL, '0.00', '2024-02-01 00:00:00', 26, 'Pending', '30 Minutes', 'dffffffffffff'),
 (120, 0, 93, 9, 1, 1, NULL, '0.00', '2024-02-01 07:00:00', 29, 'Pending', '15 Minutes', 'Testing weekly appointment'),
-(121, 0, 98, 5, 1, 1, NULL, '0.00', '2024-01-30 15:32:00', 31, 'Pending', '2 Hours', 'Testing a new value');
+(121, 0, 98, 3, 1, 1, NULL, '0.00', '2024-01-31 10:58:00', 31, 'Pending', '2 Hours', 'Testing a new value sddddddddddddddddd'),
+(123, 0, 93, 1, 1, 1, NULL, '0.00', '2024-01-31 12:00:00', 26, 'Pending', '15 Minutes', NULL),
+(125, 0, 95, 1, 1, 1, NULL, '0.00', '2024-01-31 11:00:00', 29, 'Pending', '15 Minutes', 'Testing a schedule'),
+(126, 0, 95, 1, 1, 1, NULL, '0.00', '2024-01-31 18:00:00', 26, 'Pending', '15 Minutes', NULL),
+(127, 0, 75, 1, 1, 1, NULL, '0.00', '2024-02-14 08:00:00', 29, 'Pending', '30 Minutes', 'ماه آینده باید انجام شود'),
+(128, 0, 93, 7, 1, 1, NULL, '0.00', '2024-02-02 11:00:00', 31, 'Pending', '15 Minutes', NULL),
+(130, 0, 98, 1, 0, 2, 0.00, '1500.00', '2024-02-02 00:00:00', 26, NULL, NULL, NULL),
+(131, 0, 98, 1, 0, 3, 0.00, '1000.00', '2024-02-02 20:47:00', 26, NULL, NULL, NULL),
+(132, 0, 86, 9, 3, 1, 2.00, '2940.00', '2023-02-01 15:00:00', 29, NULL, NULL, NULL),
+(133, 0, 86, 15, 0, 2, 0.00, '1300.00', '2024-02-02 11:20:00', 26, NULL, NULL, NULL),
+(134, 0, 86, 7, 0, 3, 0.00, '1200.00', '2024-02-02 21:56:00', 26, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -86,7 +93,7 @@ CREATE TABLE `clinics` (
   `open_date` date DEFAULT NULL,
   `cli_addr` varchar(64) DEFAULT NULL,
   `founder` varchar(64) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `clinics`
@@ -104,7 +111,7 @@ INSERT INTO `clinics` (`cli_ID`, `cli_logo`, `cli_name`, `open_date`, `cli_addr`
 CREATE TABLE `conditions` (
   `cond_ID` int(11) NOT NULL,
   `name` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `conditions`
@@ -135,7 +142,7 @@ CREATE TABLE `condition_details` (
   `diagnosis_date` date DEFAULT NULL,
   `pat_ID` int(128) DEFAULT NULL,
   `notes` tinytext DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `condition_details`
@@ -313,7 +320,7 @@ CREATE TABLE `expenses` (
   `exp_ID` int(128) NOT NULL,
   `cli_ID` int(128) NOT NULL,
   `exp_name` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `expenses`
@@ -344,7 +351,7 @@ CREATE TABLE `expense_detail` (
   `purchase_date` date NOT NULL,
   `invoice` varchar(128) DEFAULT NULL,
   `note` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `expense_detail`
@@ -365,38 +372,45 @@ INSERT INTO `expense_detail` (`exp_detail_ID`, `exp_ID`, `cli_ID`, `purchased_by
 CREATE TABLE `fee_payments` (
   `payment_ID` int(11) NOT NULL,
   `installment_counter` int(11) DEFAULT 1,
-  `payment_date` date NOT NULL,
+  `payment_date` datetime NOT NULL,
   `paid_amount` decimal(12,2) NOT NULL DEFAULT 0.00,
   `due_amount` decimal(12,2) DEFAULT 0.00,
   `whole_fee_paid` tinyint(1) DEFAULT 0,
   `staff_ID` int(11) DEFAULT NULL,
   `apt_ID` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `fee_payments`
 --
 
 INSERT INTO `fee_payments` (`payment_ID`, `installment_counter`, `payment_date`, `paid_amount`, `due_amount`, `whole_fee_paid`, `staff_ID`, `apt_ID`) VALUES
-(19, 1, '2023-12-31', '470.00', '1000.00', 0, 17, 93),
-(21, 1, '2024-01-02', '680.00', '1120.00', 0, 17, 95),
-(22, 1, '2024-01-02', '500.00', '0.00', 0, 17, 96),
-(24, 2, '2024-01-01', '500.00', '500.00', 0, 26, 93),
-(25, 3, '2024-01-02', '500.00', '0.00', 1, 17, 93),
-(26, 1, '2023-12-31', '750.00', '0.00', 0, 17, 98),
-(27, 1, '2023-10-16', '500.00', '1000.00', 0, 17, 99),
-(30, 1, '2024-01-05', '1800.00', '0.00', 0, 17, 101),
-(31, 1, '2024-01-23', '920.00', '3000.00', 0, 17, 102),
-(32, 1, '2024-01-10', '1700.00', '0.00', 0, 35, 103),
-(33, 1, '2024-01-24', '1000.00', '470.00', 0, 29, 108),
-(34, 1, '2024-01-23', '500.00', '0.00', 0, 29, 109),
-(35, 1, '2024-01-24', '700.00', '0.00', 0, 26, 110),
-(36, 1, '2024-01-24', '700.00', '0.00', 0, 26, 111),
-(37, 2, '2024-01-25', '3000.00', '0.00', 1, 26, 102),
-(38, 1, '2024-01-31', '2000.00', '0.00', 0, 29, 112),
-(39, 1, '2024-01-06', '1500.00', '0.00', 0, 31, 113),
-(40, 1, '2024-01-07', '700.00', '0.00', 0, 26, 114),
-(41, 1, '2024-01-31', '500.00', '676.00', 0, 29, 115);
+(19, 1, '2023-12-31 00:00:00', '470.00', '1000.00', 0, 17, 93),
+(21, 1, '2024-01-02 00:00:00', '680.00', '1120.00', 0, 17, 95),
+(22, 1, '2024-01-02 00:00:00', '500.00', '0.00', 0, 17, 96),
+(24, 2, '2024-01-01 00:00:00', '500.00', '500.00', 0, 26, 93),
+(25, 3, '2024-01-02 00:00:00', '500.00', '0.00', 1, 17, 93),
+(26, 1, '2023-12-31 00:00:00', '750.00', '0.00', 0, 17, 98),
+(27, 1, '2023-10-16 00:00:00', '500.00', '1000.00', 0, 17, 99),
+(30, 1, '2024-01-05 00:00:00', '1800.00', '0.00', 0, 17, 101),
+(31, 1, '2024-01-23 00:00:00', '920.00', '3000.00', 0, 17, 102),
+(32, 1, '2024-01-10 00:00:00', '1700.00', '0.00', 0, 35, 103),
+(33, 1, '2024-01-24 00:00:00', '1000.00', '470.00', 0, 29, 108),
+(34, 1, '2024-01-23 00:00:00', '500.00', '0.00', 0, 29, 109),
+(35, 1, '2024-01-24 00:00:00', '700.00', '0.00', 0, 26, 110),
+(36, 1, '2024-01-24 00:00:00', '700.00', '0.00', 0, 26, 111),
+(37, 2, '2024-01-25 00:00:00', '3000.00', '0.00', 1, 26, 102),
+(38, 1, '2024-01-31 00:00:00', '2000.00', '0.00', 0, 29, 112),
+(39, 1, '2024-01-06 00:00:00', '1500.00', '0.00', 0, 31, 113),
+(40, 1, '2024-01-07 00:00:00', '700.00', '0.00', 0, 26, 114),
+(42, 1, '2024-02-02 00:00:00', '1500.00', '0.00', 0, 26, 130),
+(43, 1, '2024-02-02 00:00:00', '1000.00', '0.00', 0, 26, 131),
+(44, 1, '2023-02-01 00:00:00', '940.00', '2000.00', 0, 29, 132),
+(45, 2, '2024-02-01 06:00:00', '1000.00', '1000.00', 0, 26, 132),
+(46, 3, '2024-02-02 18:00:00', '1000.00', '0.00', 1, 31, 132),
+(47, 1, '2024-02-02 11:20:00', '1300.00', '0.00', 0, 26, 133),
+(48, 2, '2024-02-02 21:51:00', '1000.00', '0.00', 1, 26, 99),
+(49, 1, '2024-02-02 21:56:00', '1200.00', '0.00', 0, 26, 134);
 
 -- --------------------------------------------------------
 
@@ -418,7 +432,7 @@ CREATE TABLE `patients` (
   `blood_group` varchar(12) DEFAULT NULL,
   `address` varchar(128) DEFAULT NULL,
   `photo` mediumblob DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `patients`
@@ -455,7 +469,7 @@ CREATE TABLE `patient_services` (
   `ser_ID` int(11) NOT NULL,
   `req_ID` int(11) NOT NULL,
   `value` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `patient_services`
@@ -491,7 +505,18 @@ INSERT INTO `patient_services` (`apt_ID`, `pat_ID`, `ser_ID`, `req_ID`, `value`)
 (113, 97, 13, 2, ''),
 (114, 76, 1, 1, 'Q3-5'),
 (114, 76, 1, 2, 'Testing to confirm'),
-(115, 98, 8, 2, '');
+(130, 98, 1, 1, 'Q2-7'),
+(130, 98, 1, 2, 'Testing description'),
+(131, 98, 1, 1, 'Q2-7'),
+(131, 98, 1, 2, ''),
+(132, 86, 9, 2, 'Full denture is required'),
+(132, 86, 9, 3, 'Full'),
+(132, 86, 9, 7, 'هردو'),
+(133, 86, 15, 1, 'Q1-3'),
+(133, 86, 15, 2, 'Testing an implant'),
+(134, 86, 7, 1, 'Q2-3'),
+(134, 86, 7, 2, 'Abscess treatment has been done'),
+(134, 86, 7, 3, 'Abscess Treatment');
 
 -- --------------------------------------------------------
 
@@ -506,7 +531,7 @@ CREATE TABLE `patient_xrays` (
   `xray_type` varchar(64) NOT NULL,
   `reg_date` date NOT NULL,
   `description` tinytext DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `patient_xrays`
@@ -547,7 +572,7 @@ CREATE TABLE `services` (
   `ser_ID` int(128) NOT NULL,
   `ser_name` varchar(64) NOT NULL,
   `ser_fee` decimal(10,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `services`
@@ -578,7 +603,7 @@ INSERT INTO `services` (`ser_ID`, `ser_name`, `ser_fee`) VALUES
 CREATE TABLE `service_requirements` (
   `req_ID` int(11) NOT NULL,
   `req_name` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `service_requirements`
@@ -615,7 +640,7 @@ CREATE TABLE `staff` (
   `address` varchar(128) DEFAULT NULL,
   `family_phone2` varchar(10) DEFAULT NULL,
   `file_type` varchar(16) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `staff`
@@ -651,7 +676,7 @@ CREATE TABLE `staff_auth` (
   `username` varchar(64) NOT NULL,
   `password` varchar(64) NOT NULL,
   `role` varchar(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `staff_auth`
@@ -673,7 +698,7 @@ CREATE TABLE `taxes` (
   `total_annual_tax` decimal(15,2) NOT NULL,
   `TIN` char(10) DEFAULT NULL,
   `tax_for_year` int(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `taxes`
@@ -705,7 +730,7 @@ CREATE TABLE `tax_payments` (
   `note` mediumtext DEFAULT NULL,
   `modified_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `docs` blob DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Indexes for dumped tables
@@ -836,7 +861,7 @@ ALTER TABLE `tax_payments`
 -- AUTO_INCREMENT for table `appointments`
 --
 ALTER TABLE `appointments`
-  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
+  MODIFY `apt_ID` int(128) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
 
 --
 -- AUTO_INCREMENT for table `clinics`
@@ -872,7 +897,7 @@ ALTER TABLE `expense_detail`
 -- AUTO_INCREMENT for table `fee_payments`
 --
 ALTER TABLE `fee_payments`
-  MODIFY `payment_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `payment_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `patients`
