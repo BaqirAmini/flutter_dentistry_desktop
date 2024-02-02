@@ -84,6 +84,7 @@ class FeeRecord extends StatelessWidget {
           ),
         ),
       ),
+      theme: ThemeData(useMaterial3: false),
     );
   }
 }

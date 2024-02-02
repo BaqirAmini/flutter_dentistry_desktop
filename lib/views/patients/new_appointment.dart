@@ -306,6 +306,7 @@ class _NewAppointmentState extends State<NewAppointment> {
           ),
         ),
       ),
+      theme: ThemeData(useMaterial3: false),
     );
   }
 }

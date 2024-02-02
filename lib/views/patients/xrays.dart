@@ -8,8 +8,6 @@ import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
-import 'package:flutter_dentistry/views/settings/settings_menu.dart';
-import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:intl/intl.dart' as intl2;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -86,6 +84,7 @@ class XRayUploadScreen extends StatelessWidget {
           ),
         ),
       ),
+      theme: ThemeData(useMaterial3: false),
     );
   }
 }
