@@ -137,6 +137,7 @@ class _AppointmentState extends State<Appointment> {
           ),
         ),
       ),
+      theme: ThemeData(useMaterial3: false),
     );
   }
 }
@@ -670,37 +671,43 @@ class ExpandableCard extends StatelessWidget {
 
 // This function fetches records of patients, appointments, staff and services using JOIN
 Future<List<Map>> _getAppointment() async {
-  final conn = await onConnToDb();
+  try {
+    final conn = await onConnToDb();
 
-  const query =
-      '''SELECT a.apt_ID, s.ser_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y"), a.round, a.installment, a.discount, a.total_fee, s.ser_name, st.staff_ID, st.firstname, st.lastname
+    const query =
+        '''SELECT a.apt_ID, s.ser_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y"), a.round, a.installment, a.discount, a.total_fee, s.ser_name, st.staff_ID, st.firstname, st.lastname
           FROM appointments a 
           INNER JOIN services s ON a.service_ID = s.ser_ID
           INNER JOIN staff st ON a.staff_ID = st.staff_ID
-          WHERE a.pat_ID = ? ORDER BY a.meet_date DESC, a.round DESC''';
+          WHERE a.pat_ID = ? AND a.status IS NULL ORDER BY a.meet_date DESC, a.round DESC''';
 
-  final results = await conn.query(query, [PatientInfo.patID]);
+// a.status = 'Pending' means it is scheduled in calendar not completed.
+    final results = await conn.query(query, [PatientInfo.patID]);
 
-  List<Map> appointments = [];
+    List<Map> appointments = [];
 
-  for (var row in results) {
-    appointments.add({
-      'staffID': row[8],
-      'meetDate': row[2].toString(),
-      'round': row[3],
-      'installment': row[4],
-      'discount': row[5],
-      'apptID': row[0],
-      'staffFName': row[9].toString(),
-      'staffLName': row[10].toString(),
-      'serviceName': row[7].toString(),
-      'serviceID': row[1],
-      'totalFee': row[6]
-    });
+    for (var row in results) {
+      appointments.add({
+        'staffID': row[8],
+        'meetDate': row[2].toString(),
+        'round': row[3],
+        'installment': row[4],
+        'discount': row[5],
+        'apptID': row[0],
+        'staffFName': row[9].toString(),
+        'staffLName': row[10].toString(),
+        'serviceName': row[7].toString(),
+        'serviceID': row[1],
+        'totalFee': row[6]
+      });
+    }
+
+    await conn.close();
+    return appointments;
+  } catch (e) {
+    print('Error with retrieving appointments: $e');
+    return [];
   }
-
-  await conn.close();
-  return appointments;
 }
 
 // Create a data model to set/get appointment details
