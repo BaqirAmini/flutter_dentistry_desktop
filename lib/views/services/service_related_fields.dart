@@ -157,7 +157,6 @@ class _ServiceFormState extends State<ServiceForm> {
                               FocusScope.of(context).requestFocus(
                                 FocusNode(),
                               );
-
                               final DateTime? pickedDate = await showDatePicker(
                                 context: context,
                                 initialDate: DateTime.now(),

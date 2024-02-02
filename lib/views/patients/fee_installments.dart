@@ -113,6 +113,7 @@ class _FeeContentState extends State<FeeContent> {
     // Any time a payment is made, installment should be incremented.
     int instIncrement = ++instCounter;
     _installmentController.text = '$instIncrement / $totalInstallment';
+    DateTime selectedDateTime = DateTime.now();
 
     return showDialog(
         context: context,
@@ -193,20 +194,32 @@ class _FeeContentState extends State<FeeContent> {
                                           onTap: () async {
                                             FocusScope.of(context)
                                                 .requestFocus(FocusNode());
-                                            final DateTime? dateTime =
+                                            final DateTime? pickedDate =
                                                 await showDatePicker(
-                                                    context: context,
-                                                    initialDate: DateTime.now(),
-                                                    firstDate: DateTime(1900),
-                                                    lastDate: DateTime(2100));
-                                            if (dateTime != null) {
-                                              final intl2.DateFormat formatter =
-                                                  intl2.DateFormat(
-                                                      'yyyy-MM-dd');
-                                              final String formattedDate =
-                                                  formatter.format(dateTime);
-                                              _payDateController.text =
-                                                  formattedDate;
+                                              context: context,
+                                              initialDate: DateTime.now(),
+                                              firstDate: DateTime(2000),
+                                              lastDate: DateTime(2100),
+                                            );
+                                            if (pickedDate != null) {
+                                              // ignore: use_build_context_synchronously
+                                              final TimeOfDay? pickedTime =
+                                                  // ignore: use_build_context_synchronously
+                                                  await showTimePicker(
+                                                context: context,
+                                                initialTime: TimeOfDay.now(),
+                                              );
+                                              if (pickedTime != null) {
+                                                selectedDateTime = DateTime(
+                                                  pickedDate.year,
+                                                  pickedDate.month,
+                                                  pickedDate.day,
+                                                  pickedTime.hour,
+                                                  pickedTime.minute,
+                                                );
+                                                _payDateController.text =
+                                                    selectedDateTime.toString();
+                                              }
                                             }
                                           },
                                           inputFormatters: [
@@ -592,7 +605,7 @@ class _FeeContentState extends State<FeeContent> {
     final conn = await onConnToDb();
     final results = await conn.query(
         '''SELECT s.ser_name, a.installment, a.total_fee, a.round, fp.payment_ID, 
-            fp.installment_counter, DATE_FORMAT(fp.payment_date, '%M %d, %Y'), fp.paid_amount, fp.due_amount, fp.whole_fee_paid, fp.apt_ID,
+            fp.installment_counter, fp.payment_date, fp.paid_amount, fp.due_amount, fp.whole_fee_paid, fp.apt_ID,
             st.firstname, st.lastname FROM services s 
             INNER JOIN appointments a ON s.ser_ID = a.service_ID
             INNER JOIN fee_payments fp ON fp.apt_ID = a.apt_ID 
@@ -608,7 +621,7 @@ class _FeeContentState extends State<FeeContent> {
             round: row[3],
             paymentID: row[4],
             instCounter: row[5],
-            paymentDate: row[6].toString(),
+            paymentDateTime: row[6] as DateTime,
             paidAmount: row[7],
             dueAmount: row[8],
             isWholePaid: row[9],
@@ -741,7 +754,7 @@ class _FeeContentState extends State<FeeContent> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  payment.paymentDate,
+                                                  intl2.DateFormat('MMM d, y hh:mm a').format(DateTime.parse(payment.paymentDateTime.toString())) ,
                                                   style: const TextStyle(
                                                       fontSize: 18.0),
                                                 ),
@@ -1008,7 +1021,7 @@ class ApptFeeDataModel {
   final int round;
   final int paymentID;
   final int instCounter;
-  final String paymentDate;
+  final DateTime paymentDateTime;
   final double paidAmount;
   final double dueAmount;
   final int isWholePaid;
@@ -1023,7 +1036,7 @@ class ApptFeeDataModel {
       required this.round,
       required this.paymentID,
       required this.instCounter,
-      required this.paymentDate,
+      required this.paymentDateTime,
       required this.paidAmount,
       required this.dueAmount,
       required this.isWholePaid,

@@ -10,6 +10,7 @@ import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:provider/provider.dart';
 import 'package:collection/collection.dart';
+import 'package:intl/intl.dart' as intl2;
 
 void main() {
   runApp(const Appointment());
@@ -360,13 +361,13 @@ class _AppointmentContentState extends State<_AppointmentContent> {
           } else {
             var data = snapshot.data!;
 
-            var groupedData = groupBy(data, (obj) => obj['meetDate']);
+            var groupedData = groupBy(data, (obj) => obj['visitTime']);
             var groupedRound = groupBy(data, (obj) => obj['round']);
 
             return ListView.builder(
               itemCount: groupedData.keys.length,
               itemBuilder: (context, index) {
-                var meetDate = groupedData.keys.elementAt(index);
+                var visitTime = groupedData.keys.elementAt(index);
                 var round = groupedRound.keys.elementAt(index);
                 return Card(
                   elevation: 0.5,
@@ -382,7 +383,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             Text(
-                              meetDate,
+                              intl2.DateFormat('MMM d, y hh:mm a').format(DateTime.parse(visitTime)),
                               style: const TextStyle(fontSize: 18.0),
                             ),
                             const Spacer(),
@@ -400,7 +401,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                           ],
                         ),
                       ),
-                      ...groupedData[meetDate]!
+                      ...groupedData[visitTime]!
                           .map<Widget>((e) => Column(
                                 children: [
                                   Column(
@@ -675,7 +676,7 @@ Future<List<Map>> _getAppointment() async {
     final conn = await onConnToDb();
 
     const query =
-        '''SELECT a.apt_ID, s.ser_ID, DATE_FORMAT(a.meet_date, "%M %d, %Y %h:%m %p"), a.round, a.installment, a.discount, a.total_fee, s.ser_name, st.staff_ID, st.firstname, st.lastname
+        '''SELECT a.apt_ID, s.ser_ID, a.meet_date, a.round, a.installment, a.discount, a.total_fee, s.ser_name, st.staff_ID, st.firstname, st.lastname
           FROM appointments a 
           INNER JOIN services s ON a.service_ID = s.ser_ID
           INNER JOIN staff st ON a.staff_ID = st.staff_ID
@@ -689,7 +690,7 @@ Future<List<Map>> _getAppointment() async {
     for (var row in results) {
       appointments.add({
         'staffID': row[8],
-        'meetDate': row[2].toString(),
+        'visitTime': row[2].toString(),
         'round': row[3],
         'installment': row[4],
         'discount': row[5],
@@ -718,7 +719,7 @@ class AppointmentDataModel {
   final String staffLastName;
   final String serviceName;
   final int aptID;
-  final String meetDate;
+  final DateTime visitTime;
   final int round;
   final int installment;
   final double totalFee;
@@ -731,7 +732,7 @@ class AppointmentDataModel {
       required this.staffLastName,
       required this.serviceName,
       required this.aptID,
-      required this.meetDate,
+      required this.visitTime,
       required this.round,
       required this.installment,
       required this.totalFee,
@@ -745,7 +746,7 @@ class AppointmentDataModel {
       staffLastName: map['staffLastName'],
       serviceName: map['serviceName'],
       aptID: map['aptID'],
-      meetDate: map['meetDate'],
+      visitTime: map['visitTime'],
       round: map['round'],
       installment: map['installment'],
       totalFee: map['totalFee'],
@@ -761,7 +762,7 @@ class AppointmentDataModel {
       'staffLastName': staffLastName,
       'serviceName': serviceName,
       'aptID': aptID,
-      'meetDate': meetDate,
+      'visitTime': visitTime,
       'round': round,
       'installment': installment,
       'totalFee': totalFee,
