@@ -65,6 +65,7 @@ dependencies:
   syncfusion_flutter_calendar: ^21.2.10
   windows_notification: ^1.0.0
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

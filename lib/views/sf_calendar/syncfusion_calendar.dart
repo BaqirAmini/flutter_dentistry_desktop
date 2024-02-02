@@ -36,7 +36,7 @@ class CalendarApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Patient' 's Appointments Schedule'),
+          title:  Text('Schedule appointment for ${PatientInfo.firstName} ${PatientInfo.lastName}'),
           leading: IconButton(
             splashRadius: 25.0,
             onPressed: () => Navigator.pop(context),
@@ -57,10 +57,12 @@ class CalendarApp extends StatelessWidget {
 // This function is to give notifiction for users
   void showWithLargeImage() async {
     final winNotifyPlugin = WindowsNotification(
+        // Work PC
+        /*  applicationId:
+            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinics MIS\flutter_dentistry.exe"); */
+        // Personal PC
         applicationId:
-            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinics MIS\flutter_dentistry.exe");
-    /* applicationId:
-            r"{D65231B0-B2F1-4857-A4CE-A8E7C6EA7D27}\WindowsPowerShell\v1.0\powershell.exe"); */
+            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinic System\flutter_dentistry.exe");
     NotificationMessage message = NotificationMessage.fromPluginTemplate(
         "moon", "fly to the moon", "we are ready!");
     winNotifyPlugin.showNotificationPluginTemplate(message);
@@ -86,6 +88,9 @@ class _CalendarPageState extends State<CalendarPage> {
   final _calFormKey = GlobalKey<FormState>();
 // Create an instance GlobalUsage to be access its method
   final GlobalUsage _gu = GlobalUsage();
+  // These variable are used for editing schedule appointment
+  int selectedStaffId = 0;
+  int selectedServiceId = 0;
 
   @override
   void initState() {
@@ -93,8 +98,9 @@ class _CalendarPageState extends State<CalendarPage> {
     _gu.fetchStaff().then((staff) {
       setState(() {
         staffList = staff;
-        staffId =
-            staffList.isNotEmpty ? int.parse(staffList[0]['staff_ID']) : null;
+        staffId = staffList.isNotEmpty
+            ? int.parse(staffList[0]['staff_ID'])
+            : selectedStaffId;
       });
     });
 
@@ -102,8 +108,9 @@ class _CalendarPageState extends State<CalendarPage> {
     _gu.fetchServices().then((service) {
       setState(() {
         services = service;
-        serviceId =
-            services.isNotEmpty ? int.parse(services[0]['ser_ID']) : null;
+        serviceId = services.isNotEmpty
+            ? int.parse(services[0]['ser_ID'])
+            : selectedServiceId;
       });
     });
   }
@@ -140,25 +147,27 @@ class _CalendarPageState extends State<CalendarPage> {
                 Meeting meeting = details.appointments![0];
                 PatientAppointment appointment = meeting.patientAppointment;
                 int aptId = appointment.apptId;
+                int serviceID = appointment.serviceID;
+                int dentistID = appointment.staffID;
                 String dentistFName = appointment.dentistFName;
                 String dentistLName = appointment.dentistLName.isEmpty
                     ? ''
                     : appointment.dentistLName;
                 String serviceName = appointment.serviceName;
                 DateTime scheduleTime = appointment.visitTime;
-                String formattedTime =
-                    intl2.DateFormat('yyyy-MM-dd hh:mm a').format(scheduleTime);
                 String description =
                     appointment.comments.isEmpty ? '' : appointment.comments;
                 String notifFreq = appointment.notifFreq;
                 // Call this function to see more details of an schedule appointment
                 _showAppoinmentDetails(
                     context,
+                    dentistID,
+                    serviceID,
                     aptId,
                     dentistFName,
                     dentistLName,
                     serviceName,
-                    formattedTime,
+                    scheduleTime.toString(),
                     description,
                     notifFreq);
               }
@@ -498,6 +507,8 @@ class _CalendarPageState extends State<CalendarPage> {
 // This function is to show scheduled appointment details
   _showAppoinmentDetails(
       BuildContext context,
+      int staffID,
+      int serviceId,
       int aptId,
       String firstName,
       String lastName,
@@ -505,6 +516,8 @@ class _CalendarPageState extends State<CalendarPage> {
       String time,
       String description,
       String frequency) async {
+     String formattedTime =
+                    intl2.DateFormat('yyyy-MM-dd hh:mm a').format(DateTime.parse(time));
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -516,7 +529,8 @@ class _CalendarPageState extends State<CalendarPage> {
                   splashRadius: 25.0,
                   onPressed: () {
                     Navigator.pop(context);
-                    _editAppointmentDetails(context, time , description, () {
+                    _editAppointmentDetails(context, staffID, serviceId, aptId,
+                        time, frequency, description, () {
                       setState(() {});
                     });
                   },
@@ -536,8 +550,8 @@ class _CalendarPageState extends State<CalendarPage> {
             ],
           ),
           content: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.2,
-            height: MediaQuery.of(context).size.height * 0.3,
+            width: MediaQuery.of(context).size.width * 0.3,
+            height: MediaQuery.of(context).size.height * 0.35,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -549,7 +563,7 @@ class _CalendarPageState extends State<CalendarPage> {
                       const Icon(Icons.calendar_month_outlined,
                           color: Colors.grey),
                       const SizedBox(width: 15.0),
-                      Text(time.toString())
+                      Text(formattedTime)
                     ],
                   ),
                 ),
@@ -609,15 +623,25 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
 // This function is to edit scheduled appointment details
-  _editAppointmentDetails(BuildContext context, String selectedDate,
-      String description, Function refresh) async {
+  _editAppointmentDetails(
+      BuildContext context,
+      int dentistID,
+      int selectedSerId,
+      int apptId,
+      String selectedDate,
+      String notifFreq,
+      String description,
+      Function refresh) async {
     DateTime selectedDateTime = DateTime.now();
     TextEditingController editApptTimeController = TextEditingController();
     TextEditingController editCommentController = TextEditingController();
-    String notifFrequency = '15 Minutes';
     editApptTimeController.text = selectedDate.toString();
     int? patientId = PatientInfo.patID;
     editCommentController.text = description;
+
+// Assign this argument to selectedStaffId to display this dentist in edit dialogbox.
+    selectedStaffId = dentistID;
+    selectedServiceId = selectedSerId;
 
     showDialog(
       context: context,
@@ -669,7 +693,7 @@ class _CalendarPageState extends State<CalendarPage> {
                               child: DropdownButton<String>(
                                 isExpanded: true,
                                 icon: const Icon(Icons.arrow_drop_down),
-                                value: staffId.toString(),
+                                value: dentistID.toString(),
                                 style: const TextStyle(color: Colors.black),
                                 items: staffList.map((staff) {
                                   return DropdownMenuItem<String>(
@@ -682,7 +706,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                 }).toList(),
                                 onChanged: (String? newValue) {
                                   setState(() {
-                                    staffId = int.parse(newValue!);
+                                    selectedStaffId = int.parse(newValue!);
                                   });
                                 },
                               ),
@@ -712,7 +736,7 @@ class _CalendarPageState extends State<CalendarPage> {
                               child: DropdownButton<String>(
                                 isExpanded: true,
                                 icon: const Icon(Icons.arrow_drop_down),
-                                value: serviceId.toString(),
+                                value: selectedSerId.toString(),
                                 items: services.map((service) {
                                   return DropdownMenuItem<String>(
                                     value: service['ser_ID'],
@@ -723,8 +747,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                 onChanged: (String? newValue) {
                                   setState(() {
                                     // Assign the selected service id into the static one.
-                                    serviceId = int.parse(newValue!);
-                                    print('Selected service: $serviceId');
+                                    selectedServiceId = int.parse(newValue!);
                                   });
                                 },
                               ),
@@ -769,7 +792,7 @@ class _CalendarPageState extends State<CalendarPage> {
                           onTap: () async {
                             final DateTime? pickedDate = await showDatePicker(
                               context: context,
-                              initialDate: selectedDate as DateTime,
+                              initialDate: DateTime.parse(selectedDate),
                               firstDate: DateTime(2000),
                               lastDate: DateTime(2100),
                             );
@@ -865,7 +888,7 @@ class _CalendarPageState extends State<CalendarPage> {
                               child: DropdownButton(
                                 // isExpanded: true,
                                 icon: const Icon(Icons.arrow_drop_down),
-                                value: notifFrequency,
+                                value: notifFreq,
                                 items: <String>[
                                   '5 Minutes',
                                   '15 Minutes',
@@ -880,7 +903,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                 }).toList(),
                                 onChanged: (String? newValue) {
                                   setState(() {
-                                    notifFrequency = newValue!;
+                                    notifFreq = newValue!;
                                   });
                                 },
                               ),
@@ -900,25 +923,32 @@ class _CalendarPageState extends State<CalendarPage> {
                       try {
                         final conn = await onConnToDb();
                         final results = await conn.query(
-                            'UPDATE appointments SET service_ID = ?, staff_ID = ?, meet_date = ?, notification = ?, details = ?',
+                            'UPDATE appointments SET service_ID = ?, staff_ID = ?, meet_date = ?, notification = ?, details = ? WHERE apt_ID = ?',
                             [
-                              serviceId,
+                              selectedServiceId,
+                              selectedStaffId,
                               editApptTimeController.text.toString(),
-                              staffId,
-                              'Pending',
-                              notifFrequency,
+                              notifFreq,
                               editCommentController.text.isEmpty
                                   ? null
-                                  : editCommentController.text
+                                  : editCommentController.text,
+                              apptId
                             ]);
                         if (results.affectedRows! > 0) {
                           // ignore: use_build_context_synchronously
                           Navigator.of(context).pop();
                           // ignore: use_build_context_synchronously
-                          _onShowSnack(
-                              Colors.green, 'Appointment scheduled!', context);
+                          _onShowSnack(Colors.green,
+                              'The scheduled appointment updated.', context);
                           refresh();
+                        } else {
+                          // ignore: use_build_context_synchronously
+                          Navigator.of(context).pop();
+                          // ignore: use_build_context_synchronously
+                          _onShowSnack(
+                              Colors.red, 'No changes applied.', context);
                         }
+
                         await conn.close();
                       } catch (e) {
                         print('Appointment scheduling failed: $e');
@@ -984,7 +1014,7 @@ class _CalendarPageState extends State<CalendarPage> {
     try {
       final conn = await onConnToDb();
       final results = await conn.query(
-          '''SELECT firstname, lastname, ser_name, details, meet_date, apt_ID, notification FROM staff st 
+          '''SELECT firstname, lastname, ser_name, details, meet_date, apt_ID, notification, a.service_ID, a.staff_ID FROM staff st 
              INNER JOIN appointments a ON st.staff_ID = a.staff_ID 
              INNER JOIN services s ON a.service_ID = s.ser_ID WHERE a.status = ? AND a.pat_ID = ?''',
           ['Pending', PatientInfo.patID]);
@@ -996,7 +1026,9 @@ class _CalendarPageState extends State<CalendarPage> {
               comments: row[3] == null ? '' : row[3].toString(),
               visitTime: row[4] as DateTime,
               apptId: row[5] as int,
-              notifFreq: row[6].toString()))
+              notifFreq: row[6].toString(),
+              serviceID: row[7] as int,
+              staffID: row[8] as int))
           .toList();
     } catch (e) {
       print('The scheduled appoinments cannot be retrieved: $e');
@@ -1074,7 +1106,9 @@ class AppointmentDataSource extends CalendarDataSource {
 /// Custom business object class which contains properties to hold the detailed
 /// information about the event data which will be rendered in calendar.
 class PatientAppointment {
+  final int staffID;
   final int apptId;
+  final int serviceID;
   final String dentistFName;
   final String dentistLName;
   final String serviceName;
@@ -1083,7 +1117,9 @@ class PatientAppointment {
   final String notifFreq;
 
   PatientAppointment(
-      {required this.apptId,
+      {required this.staffID,
+      required this.apptId,
+      required this.serviceID,
       required this.dentistFName,
       required this.dentistLName,
       required this.serviceName,
