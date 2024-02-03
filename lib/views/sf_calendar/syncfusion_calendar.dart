@@ -46,28 +46,13 @@ class CalendarApp extends StatelessWidget {
           ),
           actions: [
             IconButton(
-                onPressed: showWithLargeImage,
-                icon: const Icon(Icons.notification_add))
+                onPressed: () {}, icon: const Icon(Icons.notification_add))
           ],
         ),
         body: const CalendarPage(),
       ),
       theme: ThemeData(useMaterial3: false),
     );
-  }
-
-// This function is to give notifiction for users
-  void showWithLargeImage() async {
-    final winNotifyPlugin = WindowsNotification(
-        // Work PC
-        /*  applicationId:
-            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinics MIS\flutter_dentistry.exe"); */
-        // Personal PC
-        applicationId:
-            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinic System\flutter_dentistry.exe");
-    NotificationMessage message = NotificationMessage.fromPluginTemplate(
-        "moon", "fly to the moon", "we are ready!");
-    winNotifyPlugin.showNotificationPluginTemplate(message);
   }
 }
 
@@ -129,6 +114,8 @@ class _CalendarPageState extends State<CalendarPage> {
               'Error: ${snapshot.error}'); // Show error message if something went wrong
         } else {
           return SfCalendar(
+            allowViewNavigation: true,
+            allowDragAndDrop: true,
             dataSource: snapshot.data,
             view: CalendarView.day,
             allowedViews: const [
@@ -172,12 +159,33 @@ class _CalendarPageState extends State<CalendarPage> {
                     scheduleTime.toString(),
                     description,
                     notifFreq);
+
+                _alertUpcomingAppointment(meeting);
               }
             },
           );
         }
       },
     );
+  }
+
+// This function is to give notifiction for users
+  Future<void> _alertUpcomingAppointment(Meeting meeting) async {
+    final notificationTime = meeting.from.subtract(Duration(minutes: 5));
+    final delay = notificationTime.difference(DateTime.now());
+    if (delay > Duration.zero) {
+      await Future.delayed(delay);
+      final winNotifyPlugin = WindowsNotification(
+          // Work PC
+          /*  applicationId:
+            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinics MIS\flutter_dentistry.exe"); */
+          // Personal PC
+          applicationId:
+              r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinic System\flutter_dentistry.exe");
+      NotificationMessage message = NotificationMessage.fromPluginTemplate(
+          "appointment", "Upcoming Appointment", "You have an appointment");
+      winNotifyPlugin.showNotificationPluginTemplate(message);
+    }
   }
 
 // Create this function to schedule an appointment
@@ -612,7 +620,9 @@ class _CalendarPageState extends State<CalendarPage> {
                     children: [
                       const Icon(Icons.info_outlined, color: Colors.grey),
                       const SizedBox(width: 15.0),
-                      Text(description)
+                      SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.2,
+                          child: Text(description))
                     ],
                   ),
                 ),
@@ -1054,6 +1064,25 @@ class _CalendarPageState extends State<CalendarPage> {
   Future<AppointmentDataSource> _getCalendarDataSource() async {
     List<PatientAppointment> appointments = await _fetchAppointments();
     List<Meeting> meetings = appointments.map((appointment) {
+      Color bgColor;
+
+      switch (appointment.apptId % 5) {
+        case 0:
+          bgColor = Colors.red;
+          break;
+        case 1:
+          bgColor = Colors.green;
+          break;
+        case 2:
+          bgColor = Colors.blue;
+          break;
+        case 3:
+          bgColor = const Color.fromARGB(255, 46, 12, 236);
+          break;
+        default:
+          bgColor = Colors.purple;
+      }
+
       return Meeting(
         from: appointment.visitTime,
         to: appointment.visitTime.add(const Duration(hours: 1)),
@@ -1061,6 +1090,7 @@ class _CalendarPageState extends State<CalendarPage> {
             'Appointment with Dentist ${appointment.dentistFName} ${appointment.dentistLName}',
         description: appointment.comments,
         patientAppointment: appointment,
+        background: bgColor,
       );
     }).toList();
 
