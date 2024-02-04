@@ -206,7 +206,7 @@ class _CalendarPageState extends State<CalendarPage> {
             return AlertDialog(
               title: const Text('Schedule an appointment'),
               content: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
+                height: MediaQuery.of(context).size.height * 0.4,
                 width: MediaQuery.of(context).size.width * 0.3,
                 child: SingleChildScrollView(
                   child: Form(

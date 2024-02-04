@@ -16,7 +16,7 @@ import 'package:flutter_dentistry/views/patients/fee_installments.dart';
 import 'package:flutter_dentistry/views/patients/patient_history.dart';
 import 'package:flutter_dentistry/views/patients/xrays.dart';
 import 'package:flutter_dentistry/views/settings/settings_menu.dart';
-import 'package:flutter_dentistry/views/sf_calendar/syncfusion_calendar.dart';
+import 'package:flutter_dentistry/views/sf_calendar/patient_specific_sfcalendar.dart';
 import 'package:flutter_dentistry/views/staff/staff.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
