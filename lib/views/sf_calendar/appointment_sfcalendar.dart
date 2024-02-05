@@ -2,15 +2,26 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
+import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:flutter_dentistry/views/services/service_related_fields.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:galileo_mysql/galileo_mysql.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:windows_notification/notification_message.dart';
 import 'package:windows_notification/windows_notification.dart';
 import 'package:intl/intl.dart' as intl2;
 
 void main() => runApp(const CalendarApp());
+
+// ignore: prefer_typing_uninitialized_variables
+var selectedLanguage;
+// ignore: prefer_typing_uninitialized_variables
+var isEnglish;
 
 // This is shows snackbar when called
 void _onShowSnack(Color backColor, String msg, BuildContext context) {
@@ -53,7 +64,7 @@ class _CalendarAppState extends State<CalendarApp> {
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 labelText: 'Search patients...',
-                labelStyle: TextStyle(color: Colors.white),
+                labelStyle: const TextStyle(color: Colors.white),
                 suffixIcon: IconButton(
                   splashRadius: 25.0,
                   icon: const Icon(Icons.clear, color: Colors.white),
@@ -73,7 +84,7 @@ class _CalendarAppState extends State<CalendarApp> {
               ),
               onChanged: (value) {
                 setState(() {
-                 /*  _filteredData = _data
+                  /*  _filteredData = _data
                       .where((element) => element.firstName
                           .toLowerCase()
                           .contains(value.toLowerCase()))
@@ -108,14 +119,17 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
+  // Declare these variable since they are need to be inserted into appointments.
   late int? serviceId;
   late int? staffId;
+  int? selectedPatientID;
   // This is to fetch staff list
   List<Map<String, dynamic>> staffList = [];
   // This list is to be assigned services
   List<Map<String, dynamic>> services = [];
   late List<PatientAppointment> _appointments;
-  final _calFormKey = GlobalKey<FormState>();
+  final _apptCalFormKey = GlobalKey<FormState>();
+  final _editApptCalFormKey = GlobalKey<FormState>();
 // Create an instance GlobalUsage to be access its method
   final GlobalUsage _gu = GlobalUsage();
   // These variable are used for editing schedule appointment
@@ -147,6 +161,11 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
+
     return FutureBuilder<AppointmentDataSource>(
       future: _getCalendarDataSource(),
       builder: (context, snapshot) {
@@ -237,9 +256,9 @@ class _CalendarPageState extends State<CalendarPage> {
     DateTime selectedDateTime = DateTime.now();
     TextEditingController apptdatetimeController = TextEditingController();
     TextEditingController commentController = TextEditingController();
+    TextEditingController patientSearchableController = TextEditingController();
     String notifFrequency = '15 Minutes';
     apptdatetimeController.text = selectedDate.toString();
-    int? patientId = PatientInfo.patID;
 
     showDialog(
       context: context,
@@ -249,14 +268,132 @@ class _CalendarPageState extends State<CalendarPage> {
             return AlertDialog(
               title: const Text('Schedule an appointment'),
               content: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.4,
+                height: MediaQuery.of(context).size.height * 0.5,
                 width: MediaQuery.of(context).size.width * 0.3,
                 child: SingleChildScrollView(
                   child: Form(
-                    key: _calFormKey,
+                    key: _apptCalFormKey,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
+                        Tooltip(
+                          message: 'New Patient',
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const NewPatient()));
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.blue, width: 2.0),
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.all(10.0),
+                                child: Icon(
+                                  Icons.person_add_alt,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 10.0),
+                          child: Column(
+                            children: [
+                              TypeAheadField(
+                                suggestionsCallback: (search) async {
+                                  try {
+                                    final conn = await onConnToDb();
+                                    var results = await conn.query(
+                                        'SELECT pat_ID, firstname, lastname, phone FROM patients WHERE firstname LIKE ?',
+                                        ['%$search%']);
+
+                                    // Convert the results into a list of Patient objects
+                                    var suggestions = results
+                                        .map((row) => PatientDataModel(
+                                              patientId: row[0] as int,
+                                              patientFName: row[1],
+                                              patentLName: row[2],
+                                              patientPhone: row[3],
+                                            ))
+                                        .toList();
+                                    return suggestions;
+                                  } catch (e) {
+                                    print(
+                                        'Something wrong with patient searchable dropdown: $e');
+                                    return [];
+                                  }
+                                },
+                                builder: (context, controller, focusNode) {
+                                  patientSearchableController = controller;
+                                  return TextFormField(
+                                    controller: controller,
+                                    focusNode: focusNode,
+                                    autofocus: true,
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return 'Patient not selected';
+                                      }
+                                      return null;
+                                    },
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'انتخاب مریض',
+                                      labelStyle: TextStyle(color: Colors.grey),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.red)),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide: BorderSide(
+                                              color: Colors.red, width: 1.5)),
+                                    ),
+                                  );
+                                },
+                                itemBuilder: (context, patient) {
+                                  return Directionality(
+                                    textDirection: TextDirection.rtl,
+                                    child: ListTile(
+                                      title: Text(
+                                          '${patient.patientFName} ${patient.patentLName}'),
+                                      subtitle: Text(patient.patientPhone),
+                                    ),
+                                  );
+                                },
+                                onSelected: (patient) {
+                                  setState(
+                                    () {
+                                      patientSearchableController.text =
+                                          '${patient.patientFName} ${patient.patentLName}';
+                                      selectedPatientID = patient.patientId;
+                                    },
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
                         Container(
                           margin: const EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 10.0),
@@ -524,13 +661,13 @@ class _CalendarPageState extends State<CalendarPage> {
                 ElevatedButton(
                   child: const Text('Save'),
                   onPressed: () async {
-                    if (_calFormKey.currentState!.validate()) {
+                    if (_apptCalFormKey.currentState!.validate()) {
                       try {
                         final conn = await onConnToDb();
                         final results = await conn.query(
                             'INSERT INTO appointments (pat_ID, service_ID, meet_date, staff_ID, status, notification, details) VALUES (?, ?, ?, ?, ?, ?, ?)',
                             [
-                              patientId,
+                              selectedPatientID,
                               serviceId,
                               apptdatetimeController.text.toString(),
                               staffId,
@@ -716,7 +853,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 width: MediaQuery.of(context).size.width * 0.3,
                 child: SingleChildScrollView(
                   child: Form(
-                    key: _calFormKey,
+                    key: _editApptCalFormKey,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
@@ -986,7 +1123,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 ElevatedButton(
                   child: const Text('Save'),
                   onPressed: () async {
-                    if (_calFormKey.currentState!.validate()) {
+                    if (_editApptCalFormKey.currentState!.validate()) {
                       try {
                         final conn = await onConnToDb();
                         final results = await conn.query(
@@ -1213,4 +1350,18 @@ class PatientAppointment {
       required this.comments,
       required this.visitTime,
       required this.notifFreq});
+}
+
+class PatientDataModel {
+  final int patientId;
+  final String patientFName;
+  final String patentLName;
+  final String patientPhone;
+
+  PatientDataModel({
+    required this.patientId,
+    required this.patientFName,
+    required this.patentLName,
+    required this.patientPhone,
+  });
 }
