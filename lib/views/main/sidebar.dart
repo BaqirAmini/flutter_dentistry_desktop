@@ -4,6 +4,7 @@ import 'package:flutter_dentistry/views/finance/expenses/expenses.dart';
 import 'package:flutter_dentistry/views/patients/xrays.dart';
 import 'package:flutter_dentistry/views/services/services.dart';
 import 'package:flutter_dentistry/views/settings/settings.dart';
+import 'package:flutter_dentistry/views/sf_calendar/appointment_sfcalendar.dart';
 import 'package:flutter_dentistry/views/staff/staff.dart';
 import 'package:flutter_dentistry/views/finance/taxes/taxes.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
@@ -177,6 +178,19 @@ class _SidebarState extends State<Sidebar> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => const Service(),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.medical_services),
+            title: Text('Calendar'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CalendarApp(),
                 ),
               );
             },
