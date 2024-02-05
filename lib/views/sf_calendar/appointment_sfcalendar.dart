@@ -6,10 +6,7 @@ import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
-import 'package:flutter_dentistry/views/patients/patients.dart';
-import 'package:flutter_dentistry/views/services/service_related_fields.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:galileo_mysql/galileo_mysql.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:windows_notification/notification_message.dart';
@@ -17,6 +14,9 @@ import 'package:windows_notification/windows_notification.dart';
 import 'package:intl/intl.dart' as intl2;
 
 void main() => runApp(const CalendarApp());
+
+// Add a state variable for the search term
+ValueNotifier<String> _searchTermNotifier = ValueNotifier<String>('');
 
 // ignore: prefer_typing_uninitialized_variables
 var selectedLanguage;
@@ -50,6 +50,7 @@ class CalendarApp extends StatefulWidget {
 
 class _CalendarAppState extends State<CalendarApp> {
   final TextEditingController _searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -71,7 +72,7 @@ class _CalendarAppState extends State<CalendarApp> {
                   onPressed: () {
                     setState(() {
                       _searchController.clear();
-                      // _filteredData = _data;
+                      _searchTermNotifier.value = '';
                     });
                   },
                 ),
@@ -84,11 +85,7 @@ class _CalendarAppState extends State<CalendarApp> {
               ),
               onChanged: (value) {
                 setState(() {
-                  /*  _filteredData = _data
-                      .where((element) => element.firstName
-                          .toLowerCase()
-                          .contains(value.toLowerCase()))
-                      .toList(); */
+                  _searchTermNotifier.value = value;
                 });
               },
             ),
@@ -166,67 +163,73 @@ class _CalendarPageState extends State<CalendarPage> {
     selectedLanguage = languageProvider.selectedLanguage;
     isEnglish = selectedLanguage == 'English';
 
-    return FutureBuilder<AppointmentDataSource>(
-      future: _getCalendarDataSource(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator(); // Show a loading spinner while waiting
-        } else if (snapshot.hasError) {
-          return Text(
-              'Error: ${snapshot.error}'); // Show error message if something went wrong
-        } else {
-          return SfCalendar(
-            allowViewNavigation: true,
-            allowDragAndDrop: true,
-            dataSource: snapshot.data,
-            view: CalendarView.day,
-            allowedViews: const [
-              CalendarView.day,
-              CalendarView.month,
-              CalendarView.week,
-              CalendarView.workWeek,
-              CalendarView.schedule
-            ],
-            onTap: (CalendarTapDetails details) {
-              if (details.targetElement == CalendarElement.calendarCell) {
-                DateTime? selectedDate = details.date;
-                _scheduleAppointment(context, selectedDate!, () {
-                  setState(() {});
-                });
-              } else if (details.targetElement == CalendarElement.appointment) {
-                // Access members of PatientAppointment class
-                Meeting meeting = details.appointments![0];
-                PatientAppointment appointment = meeting.patientAppointment;
-                int aptId = appointment.apptId;
-                int serviceID = appointment.serviceID;
-                int dentistID = appointment.staffID;
-                String dentistFName = appointment.dentistFName;
-                String dentistLName = appointment.dentistLName.isEmpty
-                    ? ''
-                    : appointment.dentistLName;
-                String serviceName = appointment.serviceName;
-                DateTime scheduleTime = appointment.visitTime;
-                String description =
-                    appointment.comments.isEmpty ? '' : appointment.comments;
-                String notifFreq = appointment.notifFreq;
-                // Call this function to see more details of an schedule appointment
-                _showAppoinmentDetails(
-                    context,
-                    dentistID,
-                    serviceID,
-                    aptId,
-                    dentistFName,
-                    dentistLName,
-                    serviceName,
-                    scheduleTime.toString(),
-                    description,
-                    notifFreq);
+    return ValueListenableBuilder(
+      valueListenable: _searchTermNotifier,
+      builder: (context, value, child) {
+        return FutureBuilder<AppointmentDataSource>(
+          future: _getCalendarDataSource(searchTerm: value),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              return SfCalendar(
+                allowViewNavigation: true,
+                allowDragAndDrop: true,
+                dataSource: snapshot.data,
+                view: CalendarView.day,
+                allowedViews: const [
+                  CalendarView.day,
+                  CalendarView.month,
+                  CalendarView.week,
+                  CalendarView.workWeek,
+                  CalendarView.schedule
+                ],
+                onTap: (CalendarTapDetails details) {
+                  if (details.targetElement == CalendarElement.calendarCell) {
+                    DateTime? selectedDate = details.date;
+                    _scheduleAppointment(context, selectedDate!, () {
+                      setState(() {});
+                    });
+                  } else if (details.targetElement ==
+                      CalendarElement.appointment) {
+                    // Access members of PatientAppointment class
+                    Meeting meeting = details.appointments![0];
+                    PatientAppointment appointment = meeting.patientAppointment;
+                    int aptId = appointment.apptId;
+                    int serviceID = appointment.serviceID;
+                    int dentistID = appointment.staffID;
+                    String dentistFName = appointment.dentistFName;
+                    String dentistLName = appointment.dentistLName.isEmpty
+                        ? ''
+                        : appointment.dentistLName;
+                    String serviceName = appointment.serviceName;
+                    DateTime scheduleTime = appointment.visitTime;
+                    String description = appointment.comments.isEmpty
+                        ? ''
+                        : appointment.comments;
+                    String notifFreq = appointment.notifFreq;
+                    // Call this function to see more details of an schedule appointment
+                    _showAppoinmentDetails(
+                        context,
+                        dentistID,
+                        serviceID,
+                        aptId,
+                        dentistFName,
+                        dentistLName,
+                        serviceName,
+                        scheduleTime.toString(),
+                        description,
+                        notifFreq);
 
-                _alertUpcomingAppointment(meeting);
-              }
-            },
-          );
-        }
+                    _alertUpcomingAppointment(meeting);
+                  }
+                },
+              );
+            }
+          },
+        );
       },
     );
   }
@@ -1214,14 +1217,19 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   // This function fetches the scheduled appointments from database
-  Future<List<PatientAppointment>> _fetchAppointments() async {
+  Future<List<PatientAppointment>> _fetchAppointments(
+      {String searchTerm = ''}) async {
     try {
       final conn = await onConnToDb();
       final results = await conn.query(
           '''SELECT firstname, lastname, ser_name, details, meet_date, apt_ID, notification, a.service_ID, a.staff_ID FROM staff st 
              INNER JOIN appointments a ON st.staff_ID = a.staff_ID 
-             INNER JOIN services s ON a.service_ID = s.ser_ID WHERE a.status = ?''',
-          ['Pending']);
+             INNER JOIN services s ON a.service_ID = s.ser_ID WHERE (LOWER(firstname) LIKE ? OR ? = '')''',
+          [
+            
+            '%$searchTerm%'.toLowerCase(),
+            searchTerm.isEmpty ? '' : '%$searchTerm%'.toLowerCase()
+          ]);
       return results
           .map((row) => PatientAppointment(
               dentistFName: row[0].toString(),
@@ -1241,8 +1249,10 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
 // Dislay the scheduled appointment
-  Future<AppointmentDataSource> _getCalendarDataSource() async {
-    List<PatientAppointment> appointments = await _fetchAppointments();
+  Future<AppointmentDataSource> _getCalendarDataSource(
+      {String searchTerm = ''}) async {
+    List<PatientAppointment> appointments =
+        await _fetchAppointments(searchTerm: searchTerm);
     List<Meeting> meetings = appointments.map((appointment) {
       Color bgColor;
 
