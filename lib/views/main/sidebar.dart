@@ -184,7 +184,7 @@ class _SidebarState extends State<Sidebar> {
           ),
           ListTile(
             leading: const Icon(Icons.medical_services),
-            title: Text('Calendar'),
+            title: Text((translations[selectedLanguage]?['UpcomingAppt'] ?? '').toString()),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
