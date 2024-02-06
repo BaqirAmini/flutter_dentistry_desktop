@@ -116,6 +116,7 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
+  final CalendarView _calendarView = CalendarView.day;
   // Declare these variable since they are need to be inserted into appointments.
   late int? serviceId;
   late int? staffId;
@@ -178,7 +179,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 allowViewNavigation: true,
                 allowDragAndDrop: true,
                 dataSource: snapshot.data,
-                view: CalendarView.day,
+                view: _calendarView,
                 allowedViews: const [
                   CalendarView.day,
                   CalendarView.month,
@@ -1222,25 +1223,30 @@ class _CalendarPageState extends State<CalendarPage> {
     try {
       final conn = await onConnToDb();
       final results = await conn.query(
-          '''SELECT firstname, lastname, ser_name, details, meet_date, apt_ID, notification, a.service_ID, a.staff_ID FROM staff st 
+          '''SELECT st.firstname, st.lastname, s.ser_name, a.details, a.meet_date, a.apt_ID, a.notification, a.service_ID, a.staff_ID, p.pat_ID, p.firstname, p.lastname FROM staff st 
              INNER JOIN appointments a ON st.staff_ID = a.staff_ID 
-             INNER JOIN services s ON a.service_ID = s.ser_ID WHERE (LOWER(firstname) LIKE ? OR ? = '')''',
+             INNER JOIN patients p ON p.pat_ID = a.pat_ID
+             INNER JOIN services s ON a.service_ID = s.ser_ID WHERE a.status = ? AND (LOWER(p.firstname) LIKE ? OR ? = '')''',
           [
-            
+            'Pending',
             '%$searchTerm%'.toLowerCase(),
             searchTerm.isEmpty ? '' : '%$searchTerm%'.toLowerCase()
           ]);
       return results
           .map((row) => PatientAppointment(
-              dentistFName: row[0].toString(),
-              dentistLName: row[1].toString(),
-              serviceName: row[2].toString(),
-              comments: row[3] == null ? '' : row[3].toString(),
-              visitTime: row[4] as DateTime,
-              apptId: row[5] as int,
-              notifFreq: row[6].toString(),
-              serviceID: row[7] as int,
-              staffID: row[8] as int))
+                dentistFName: row[0].toString(),
+                dentistLName: row[1].toString(),
+                serviceName: row[2].toString(),
+                comments: row[3] == null ? '' : row[3].toString(),
+                visitTime: row[4] as DateTime,
+                apptId: row[5] as int,
+                notifFreq: row[6].toString(),
+                serviceID: row[7] as int,
+                staffID: row[8] as int,
+                patientID: row[9] as int,
+                patientFName: row[10],
+                patientLName: row[11] == null ? '' : row[11].toString(),
+              ))
           .toList();
     } catch (e) {
       print('The scheduled appoinments cannot be retrieved: $e');
@@ -1343,9 +1349,12 @@ class PatientAppointment {
   final int staffID;
   final int apptId;
   final int serviceID;
+  final int patientID;
   final String dentistFName;
   final String dentistLName;
   final String serviceName;
+  final String patientFName;
+  final String patientLName;
   final String comments;
   final DateTime visitTime;
   final String notifFreq;
@@ -1354,9 +1363,12 @@ class PatientAppointment {
       {required this.staffID,
       required this.apptId,
       required this.serviceID,
+      required this.patientID,
       required this.dentistFName,
       required this.dentistLName,
       required this.serviceName,
+      required this.patientFName,
+      required this.patientLName,
       required this.comments,
       required this.visitTime,
       required this.notifFreq});
