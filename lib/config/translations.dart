@@ -29,6 +29,7 @@ final Map<String, Map<String, String>> translations = {
     'Taxes': 'Taxes',
     'Settings': 'Settings',
     'Logout': 'Log out',
+    'UpcomingAppt': 'Upcoming Appointments',
     /*-----/.SIDEBAR  -----*/
     /*----- UNITS -----*/
     'People': 'person',
@@ -148,6 +149,7 @@ final Map<String, Map<String, String>> translations = {
     'Taxes': 'مالیات',
     'Settings': 'تنظیمات',
     'Logout': 'خروج',
+    'UpcomingAppt': 'جلسات آینده',
     /*-----/. SIDEBAR -----*/
     /*----- UNITS -----*/
     'People': 'نفر',
@@ -268,6 +270,7 @@ final Map<String, Map<String, String>> translations = {
     'Taxes': 'مالیات',
     'Settings': 'ترتیبات',
     'Logout': 'وتل',
+    'UpcomingAppt': 'راتلونکې ګمارنې',
     /*-----/. SIDEBAR -----*/
     /*----- UNITS -----*/
     'People': 'کسان',
