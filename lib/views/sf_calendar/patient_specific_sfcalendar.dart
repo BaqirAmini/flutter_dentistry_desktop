@@ -711,7 +711,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                 child: DropdownButton<String>(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: dentistID.toString(),
+                                  value: selectedStaffId.toString(),
                                   style: const TextStyle(color: Colors.black),
                                   items: staffList.map((staff) {
                                     return DropdownMenuItem<String>(
@@ -754,7 +754,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                 child: DropdownButton<String>(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: selectedSerId.toString(),
+                                  value: selectedServiceId.toString(),
                                   items: services.map((service) {
                                     return DropdownMenuItem<String>(
                                       value: service['ser_ID'],

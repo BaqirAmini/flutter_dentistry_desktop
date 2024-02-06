@@ -4,8 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
+import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -90,14 +92,18 @@ class _CalendarAppState extends State<CalendarApp> {
               },
             ),
           ),
-          leading: IconButton(
-            splashRadius: 25.0,
-            onPressed: () {},
-            icon: const BackButtonIcon(),
-          ),
           actions: [
             IconButton(
-                onPressed: () {}, icon: const Icon(Icons.notification_add))
+              tooltip: 'Go to dashboard',
+              splashRadius: 25.0,
+              icon: const Icon(Icons.home_outlined),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const Dashboard(),
+                ),
+              ),
+            ),
           ],
         ),
         body: const CalendarPage(),
@@ -171,7 +177,7 @@ class _CalendarPageState extends State<CalendarPage> {
           future: _getCalendarDataSource(searchTerm: value),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
@@ -211,6 +217,9 @@ class _CalendarPageState extends State<CalendarPage> {
                         ? ''
                         : appointment.comments;
                     String notifFreq = appointment.notifFreq;
+                    int pID = appointment.patientID;
+                    String pFirstName = appointment.patientFName;
+                    String pLastName = appointment.patientLName;
                     // Call this function to see more details of an schedule appointment
                     _showAppoinmentDetails(
                         context,
@@ -219,6 +228,9 @@ class _CalendarPageState extends State<CalendarPage> {
                         aptId,
                         dentistFName,
                         dentistLName,
+                        pID,
+                        pFirstName,
+                        pLastName,
                         serviceName,
                         scheduleTime.toString(),
                         description,
@@ -710,8 +722,11 @@ class _CalendarPageState extends State<CalendarPage> {
       int staffID,
       int serviceId,
       int aptId,
-      String firstName,
-      String lastName,
+      String dentistFName,
+      String dentistLName,
+      int patientID,
+      String patientFName,
+      String patientLName,
       String service,
       String time,
       String description,
@@ -723,30 +738,45 @@ class _CalendarPageState extends State<CalendarPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(
-                  splashRadius: 25.0,
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _editAppointmentDetails(context, staffID, serviceId, aptId,
-                        time, frequency, description, () {
-                      setState(() {});
-                    });
-                  },
-                  icon: const Icon(Icons.edit_outlined,
-                      size: 18.0, color: Colors.blue)),
-              const SizedBox(width: 10.0),
-              IconButton(
-                  splashRadius: 25.0,
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _onDeleteAppointment(context, aptId, () {
-                      setState(() {});
-                    });
-                  },
-                  icon: const Icon(Icons.delete_outline,
-                      size: 18.0, color: Colors.blue)),
+              Text('Patient Full Name: $patientFName $patientLName',
+                  style: const TextStyle(color: Colors.blue, fontSize: 15.0)),
+              Row(
+                children: [
+                  IconButton(
+                      splashRadius: 25.0,
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _editAppointmentDetails(
+                            context,
+                            staffID,
+                            serviceId,
+                            aptId,
+                            patientID,
+                            patientFName,
+                            patientLName,
+                            time,
+                            frequency,
+                            description, () {
+                          setState(() {});
+                        });
+                      },
+                      icon: const Icon(Icons.edit_outlined,
+                          size: 18.0, color: Colors.blue)),
+                  const SizedBox(width: 10.0),
+                  IconButton(
+                      splashRadius: 25.0,
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _onDeleteAppointment(context, aptId, () {
+                          setState(() {});
+                        });
+                      },
+                      icon: const Icon(Icons.delete_outline,
+                          size: 18.0, color: Colors.blue)),
+                ],
+              )
             ],
           ),
           content: SizedBox(
@@ -783,7 +813,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     children: [
                       const Icon(Icons.person_3_outlined, color: Colors.grey),
                       const SizedBox(width: 15.0),
-                      Text('$firstName $lastName'),
+                      Text('$dentistFName $dentistLName'),
                     ],
                   ),
                 ),
@@ -830,6 +860,9 @@ class _CalendarPageState extends State<CalendarPage> {
       int dentistID,
       int selectedSerId,
       int apptId,
+      int patientId,
+      String patientFName,
+      String patientLName,
       String selectedDate,
       String notifFreq,
       String description,
@@ -837,10 +870,10 @@ class _CalendarPageState extends State<CalendarPage> {
     DateTime selectedDateTime = DateTime.now();
     TextEditingController editApptTimeController = TextEditingController();
     TextEditingController editCommentController = TextEditingController();
+    TextEditingController editPSearchableCntr = TextEditingController();
     editApptTimeController.text = selectedDate.toString();
-    int? patientId = PatientInfo.patID;
     editCommentController.text = description;
-
+    int currentPatID = patientId;
 // Assign this argument to selectedStaffId to display this dentist in edit dialogbox.
     selectedStaffId = dentistID;
     selectedServiceId = selectedSerId;
@@ -851,7 +884,7 @@ class _CalendarPageState extends State<CalendarPage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Schedule an appointment'),
+              title: const Text('Edit Appointment'),
               content: SizedBox(
                 height: MediaQuery.of(context).size.height * 0.6,
                 width: MediaQuery.of(context).size.width * 0.3,
@@ -861,6 +894,91 @@ class _CalendarPageState extends State<CalendarPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 10.0),
+                          child: Column(
+                            children: [
+                              TypeAheadField(
+                                suggestionsCallback: (search) async {
+                                  try {
+                                    final conn = await onConnToDb();
+                                    var results = await conn.query(
+                                        'SELECT pat_ID, firstname, lastname, phone FROM patients WHERE firstname LIKE ? OR CONCAT(firstname, " ", lastname) LIKE ?',
+                                        ['%$search%', '%$search%']);
+
+                                    // Convert the results into a list of Patient objects
+                                    var suggestions = results
+                                        .map((row) => PatientDataModel(
+                                              patientId: row[0] as int,
+                                              patientFName: row[1],
+                                              patentLName: row[2],
+                                              patientPhone: row[3],
+                                            ))
+                                        .toList();
+                                    return suggestions;
+                                  } catch (e) {
+                                    print(
+                                        'Something wrong with patient searchable dropdown in edit dialog (General Calendar): $e');
+                                    return [];
+                                  }
+                                },
+                                builder: (context, controller, focusNode) {
+                                  editPSearchableCntr = controller;
+                                  return TextFormField(
+                                    controller: controller,
+                                    focusNode: focusNode,
+                                    autofocus: true,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'انتخاب مریض',
+                                      labelStyle: TextStyle(color: Colors.grey),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.red)),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide: BorderSide(
+                                              color: Colors.red, width: 1.5)),
+                                    ),
+                                  );
+                                },
+                                itemBuilder: (context, patient) {
+                                  return Directionality(
+                                    textDirection: TextDirection.rtl,
+                                    child: ListTile(
+                                      title: Text(
+                                          '${patient.patientFName} ${patient.patentLName}'),
+                                      subtitle: Text(patient.patientPhone),
+                                    ),
+                                  );
+                                },
+                                onSelected: (patient) {
+                                  setState(
+                                    () {
+                                      editPSearchableCntr.text =
+                                          '${patient.patientFName} ${patient.patentLName}';
+                                      currentPatID = patient.patientId;
+                                    },
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
                         Container(
                           margin: const EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 10.0),
@@ -895,7 +1013,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                 child: DropdownButton<String>(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: dentistID.toString(),
+                                  value: selectedStaffId.toString(),
                                   style: const TextStyle(color: Colors.black),
                                   items: staffList.map((staff) {
                                     return DropdownMenuItem<String>(
@@ -938,7 +1056,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                 child: DropdownButton<String>(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
-                                  value: selectedSerId.toString(),
+                                  value: selectedServiceId.toString(),
                                   items: services.map((service) {
                                     return DropdownMenuItem<String>(
                                       value: service['ser_ID'],
@@ -1127,12 +1245,16 @@ class _CalendarPageState extends State<CalendarPage> {
                 ElevatedButton(
                   child: const Text('Save'),
                   onPressed: () async {
+                    currentPatID = editPSearchableCntr.text.isEmpty
+                        ? patientId
+                        : currentPatID;
                     if (_editApptCalFormKey.currentState!.validate()) {
                       try {
                         final conn = await onConnToDb();
                         final results = await conn.query(
-                            'UPDATE appointments SET service_ID = ?, staff_ID = ?, meet_date = ?, notification = ?, details = ? WHERE apt_ID = ?',
+                            'UPDATE appointments SET pat_ID = ?, service_ID = ?, staff_ID = ?, meet_date = ?, notification = ?, details = ? WHERE apt_ID = ?',
                             [
+                              currentPatID,
                               selectedServiceId,
                               selectedStaffId,
                               editApptTimeController.text.toString(),
@@ -1159,7 +1281,8 @@ class _CalendarPageState extends State<CalendarPage> {
 
                         await conn.close();
                       } catch (e) {
-                        print('Appointment scheduling failed: $e');
+                        print(
+                            'Appointment scheduling failed (General Calendar): $e');
                       }
                     }
                   },
