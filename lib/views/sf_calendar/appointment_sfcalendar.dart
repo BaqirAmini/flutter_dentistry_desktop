@@ -7,13 +7,9 @@ import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
-import 'package:flutter_dentistry/views/patients/patient_info.dart';
-import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:windows_notification/notification_message.dart';
-import 'package:windows_notification/windows_notification.dart';
 import 'package:intl/intl.dart' as intl2;
 
 void main() => runApp(const CalendarApp());
@@ -240,8 +236,6 @@ class _CalendarPageState extends State<CalendarPage> {
                         scheduleTime.toString(),
                         description,
                         notifFreq);
-
-                    _alertUpcomingAppointment(meeting);
                   }
                 },
               );
@@ -250,25 +244,6 @@ class _CalendarPageState extends State<CalendarPage> {
         );
       },
     );
-  }
-
-// This function is to give notifiction for users
-  Future<void> _alertUpcomingAppointment(Meeting meeting) async {
-    final notificationTime = meeting.from.subtract(const Duration(minutes: 5));
-    final delay = notificationTime.difference(DateTime.now());
-    if (delay > Duration.zero) {
-      await Future.delayed(delay);
-      final winNotifyPlugin = WindowsNotification(
-          // Work PC
-          /*  applicationId:
-            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinics MIS\flutter_dentistry.exe"); */
-          // Personal PC
-          applicationId:
-              r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinic System\flutter_dentistry.exe");
-      NotificationMessage message = NotificationMessage.fromPluginTemplate(
-          "appointment", "Upcoming Appointment", "You have an appointment");
-      winNotifyPlugin.showNotificationPluginTemplate(message);
-    }
   }
 
 // Create this function to schedule an appointment
