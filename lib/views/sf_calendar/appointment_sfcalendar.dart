@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
@@ -59,40 +60,44 @@ class _CalendarAppState extends State<CalendarApp> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: SizedBox(
-            width: 400.0,
-            height: 40.0,
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'Search patients...',
-                labelStyle: const TextStyle(color: Colors.white),
-                suffixIcon: IconButton(
-                  splashRadius: 25.0,
-                  icon: const Icon(Icons.clear, color: Colors.white),
-                  onPressed: () {
-                    setState(() {
-                      _searchController.clear();
-                      _searchTermNotifier.value = '';
-                    });
-                  },
-                ),
-                enabledBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                    borderSide: BorderSide(color: Colors.white)),
-                focusedBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                    borderSide: BorderSide(color: Colors.white)),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  _searchTermNotifier.value = value;
-                });
-              },
-            ),
-          ),
+          title: Text(translations[selectedLanguage]?['UpcomingAppt'] ?? ''),
           actions: [
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 7.0),
+              width: MediaQuery.of(context).size.width * 0.3,
+              child: TextField(
+                style: const TextStyle(color: Colors.white),
+                cursorColor: Colors.white,
+                controller: _searchController,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: 'Search patients...',
+                  labelStyle: const TextStyle(color: Colors.white),
+                  suffixIcon: IconButton(
+                    splashRadius: 25.0,
+                    icon: const Icon(Icons.clear, color: Colors.white),
+                    onPressed: () {
+                      setState(() {
+                        _searchController.clear();
+                        _searchTermNotifier.value = '';
+                      });
+                    },
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                      borderSide: BorderSide(color: Colors.white)),
+                  focusedBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                      borderSide: BorderSide(color: Colors.white)),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _searchTermNotifier.value = value;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(width: 50.0),
             IconButton(
               tooltip: 'Go to dashboard',
               splashRadius: 25.0,
@@ -1415,7 +1420,7 @@ class _CalendarPageState extends State<CalendarPage> {
         from: appointment.visitTime,
         to: appointment.visitTime.add(const Duration(hours: 1)),
         eventName:
-            'Appointment with Dentist ${appointment.dentistFName} ${appointment.dentistLName}',
+            'Appointment with ${appointment.dentistFName} ${appointment.dentistLName}',
         description: appointment.comments,
         patientAppointment: appointment,
         background: bgColor,
