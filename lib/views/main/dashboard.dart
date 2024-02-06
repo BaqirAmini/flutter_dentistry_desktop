@@ -1,7 +1,7 @@
 import 'dart:io';
+import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -162,8 +162,47 @@ class _DashboardState extends State<Dashboard> {
     _PieData('Feb', 15000, 'آب'),
     _PieData('Mar', 100000, 'مالیات'),
   ]; */
+  Future<void> _alertNotification() async {
+    try {
+      final conn = await onConnToDb();
+      final results = await conn.query(
+          'SELECT * FROM appointments WHERE status = ? AND meet_date > NOW()',
+          ['Pending']);
 
-  SideMenuController sideMenu = SideMenuController();
+      // Loop through the results
+      for (final row in results) {
+        // Get the notification frequency for this appointment
+        final notificationFrequency = row['notification'];
+
+        // Calculate the time until the notification should be shown
+        final appointmentTime = row['meet_date'];
+        DateTime? timeUntilNotification;
+
+        if (notificationFrequency == '15 Minutes') {
+          timeUntilNotification =
+              appointmentTime.subtract(const Duration(minutes: 15));
+        } else if (notificationFrequency == '5 Minutes') {
+          timeUntilNotification =
+              appointmentTime.subtract(const Duration(minutes: 5));
+        } else if (notificationFrequency == '1 Hour') {
+          timeUntilNotification =
+              appointmentTime.subtract(const Duration(hours: 1));
+        } else if (notificationFrequency == '2 Hours') {
+          timeUntilNotification =
+              appointmentTime.subtract(const Duration(hours: 2));
+        }
+
+        // Schedule the notification
+        if (timeUntilNotification != null) {
+          // Create an instance of this class to access its method to alert for upcoming notification
+          GlobalUsage _gu = GlobalUsage();
+          _gu.alertUpcomingAppointment();
+        }
+      }
+    } catch (e) {
+      print('Error occured with notification: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +210,7 @@ class _DashboardState extends State<Dashboard> {
         ModalRoute.of(context)!.settings.arguments as Map<String, String>;
     final staffId = userData["staffID"];
     final staffRole = userData["role"]; */
-
+    _alertNotification();
     return ChangeNotifierProvider(
         create: (_) => LanguageProvider(),
         builder: (context, child) {
