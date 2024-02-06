@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:windows_notification/notification_message.dart';
+import 'package:windows_notification/windows_notification.dart';
 
 class GlobalUsage {
   // A toast message to be used anywhere required
@@ -63,10 +65,24 @@ class GlobalUsage {
     return services;
   }
 
-    // Create this function to make number of records responsive
+  // Create this function to make number of records responsive
   int calculateRowsPerPage(BuildContext context) {
     var minHeight = MediaQuery.of(context).size.height;
     int rowsPerPage = (minHeight / 50).floor();
     return rowsPerPage;
+  }
+
+  // This function is to give notifiction for users
+  void alertUpcomingAppointment() {
+    final winNotifyPlugin = WindowsNotification(
+        // Work PC
+        /*  applicationId:
+            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinics MIS\flutter_dentistry.exe"); */
+        // Personal PC
+        applicationId:
+            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinic System\flutter_dentistry.exe");
+    NotificationMessage message = NotificationMessage.fromPluginTemplate(
+        "appointment", "Upcoming Appointment", "You have an appointment");
+    winNotifyPlugin.showNotificationPluginTemplate(message);
   }
 }
