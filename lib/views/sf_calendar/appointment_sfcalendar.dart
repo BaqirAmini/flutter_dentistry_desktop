@@ -185,7 +185,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 allowViewNavigation: true,
                 allowDragAndDrop: true,
                 dataSource: snapshot.data,
-                view: _calendarView,
+                view: CalendarView.day,
                 allowedViews: const [
                   CalendarView.day,
                   CalendarView.month,
@@ -745,6 +745,7 @@ class _CalendarPageState extends State<CalendarPage> {
               Row(
                 children: [
                   IconButton(
+                      tooltip: 'Edit',
                       splashRadius: 25.0,
                       onPressed: () {
                         Navigator.pop(context);
@@ -766,10 +767,11 @@ class _CalendarPageState extends State<CalendarPage> {
                           size: 18.0, color: Colors.blue)),
                   const SizedBox(width: 10.0),
                   IconButton(
+                      tooltip: 'Delete',
                       splashRadius: 25.0,
                       onPressed: () {
                         Navigator.pop(context);
-                        _onDeleteAppointment(context, aptId, () {
+                        _onDeleteAppointment(context, aptId, patientID, () {
                           setState(() {});
                         });
                       },
@@ -1296,7 +1298,8 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
 // This function deletes a schedule appointment
-  _onDeleteAppointment(BuildContext context, int apptId, Function refresh) {
+  _onDeleteAppointment(
+      BuildContext context, int apptId, int patientId, Function refresh) {
     return showDialog(
       useRootNavigator: true,
       context: context,
@@ -1319,17 +1322,23 @@ class _CalendarPageState extends State<CalendarPage> {
               ),
               TextButton(
                 onPressed: () async {
-                  final conn = await onConnToDb();
-                  final deleteResult = await conn.query(
-                      'DELETE FROM appointments WHERE apt_ID = ?', [apptId]);
-                  if (deleteResult.affectedRows! > 0) {
-                    // ignore: use_build_context_synchronously
-                    Navigator.of(context).pop();
-                    // ignore: use_build_context_synchronously
-                    _onShowSnack(Colors.green, 'جلسه موفقانه حذف شد.', context);
-                    refresh();
+                  try {
+                    final conn = await onConnToDb();
+                    final deleteResult = await conn.query(
+                        'DELETE FROM appointments WHERE apt_ID = ? AND pat_ID = ?',
+                        [apptId, patientId]);
+                    if (deleteResult.affectedRows! > 0) {
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop();
+                      // ignore: use_build_context_synchronously
+                      _onShowSnack(
+                          Colors.green, 'جلسه موفقانه حذف شد.', context);
+                      refresh();
+                    }
+                    await conn.close();
+                  } catch (e) {
+                    print('Deleting appointment faield (General Calendar): $e');
                   }
-                  await conn.close();
                 },
                 child: const Text('Delete'),
               ),
