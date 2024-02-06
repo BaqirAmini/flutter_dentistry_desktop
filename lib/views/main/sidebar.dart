@@ -183,7 +183,7 @@ class _SidebarState extends State<Sidebar> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.medical_services),
+            leading: const Icon(Icons.more_time_rounded),
             title: Text((translations[selectedLanguage]?['UpcomingAppt'] ?? '').toString()),
             onTap: () {
               Navigator.pop(context);
