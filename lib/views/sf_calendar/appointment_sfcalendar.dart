@@ -332,7 +332,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                         .map((row) => PatientDataModel(
                                               patientId: row[0] as int,
                                               patientFName: row[1],
-                                              patentLName: row[2],
+                                              patentLName: row[2] ?? '',
                                               patientPhone: row[3],
                                             ))
                                         .toList();
@@ -909,7 +909,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                         .map((row) => PatientDataModel(
                                               patientId: row[0] as int,
                                               patientFName: row[1],
-                                              patentLName: row[2],
+                                              patentLName: row[2] ?? '',
                                               patientPhone: row[3],
                                             ))
                                         .toList();
@@ -1987,7 +1987,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   ElevatedButton(
                       onPressed: () async {
                         try {
-                          if (_sfNewPatientFormKey.currentState!.validate()) {
+                          if (_sfNewPatientFormKey.currentState!.validate() && PatientInfo.ageSelected) {
                             final conn = await onConnToDb();
                             String firstName = _firstNameController.text;
                             String? lastName = _lastNameController.text.isEmpty
