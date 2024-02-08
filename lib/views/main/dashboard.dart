@@ -132,8 +132,8 @@ class _DashboardState extends State<Dashboard> {
   late List<_PieData> pieData;
 // Fetch the expenses of last three months into pie char
   Future<void> _getPieData() async {
-    final conn = await onConnToDb();
     try {
+      final conn = await onConnToDb();
       // Execute the query
       final results = await conn.query(
           "SELECT A.exp_name, DATE_FORMAT(B.purchase_date, '%M'), SUM(B.total) FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID WHERE B.purchase_date >= CURDATE() - INTERVAL 3 MONTH GROUP BY A.exp_name");
