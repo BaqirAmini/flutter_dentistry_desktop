@@ -195,7 +195,7 @@ class _CalendarPageState extends State<CalendarPage> {
           future: _getCalendarDataSource(searchTerm: value),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
+              return const Center(child: const CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
@@ -1987,7 +1987,8 @@ class _CalendarPageState extends State<CalendarPage> {
                   ElevatedButton(
                       onPressed: () async {
                         try {
-                          if (_sfNewPatientFormKey.currentState!.validate() && PatientInfo.ageSelected) {
+                          if (_sfNewPatientFormKey.currentState!.validate() &&
+                              PatientInfo.ageSelected) {
                             final conn = await onConnToDb();
                             String firstName = _firstNameController.text;
                             String? lastName = _lastNameController.text.isEmpty
@@ -2001,33 +2002,48 @@ class _CalendarPageState extends State<CalendarPage> {
                             String? address = _addrController.text.isEmpty
                                 ? null
                                 : _addrController.text;
-                            final results = await conn.query(
-                                'INSERT INTO patients (staff_ID, firstname, lastname, age, sex, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                                [
-                                  staffId,
-                                  firstName,
-                                  lastName,
-                                  selectedAge,
-                                  selectedSex,
-                                  marital,
-                                  phone,
-                                  bloodGroup,
-                                  address
-                                ]);
-                            if (results.affectedRows! > 0) {
-                              Navigator.of(context, rootNavigator: true).pop();
-
-                              _onShowSnack(Colors.green,
-                                  'معلومات مریض موفقانه تغییر کرد.', context);
-                              onRefresh();
+                            final checkForDuplicate = await conn.query(
+                                'SELECT phone FROM patients WHERE phone = ?',
+                                [phone]);
+                            if (checkForDuplicate.isNotEmpty) {
+                              _onShowSnack(
+                                  Colors.red,
+                                  'مریض با این نمبر تماس در سیستم وجود دارد.',
+                                  context);
                             } else {
-                              Navigator.of(context, rootNavigator: true).pop();
-                              _onShowSnack(Colors.red,
-                                  'شما هیچ تغییراتی نیاوردید.', context);
+                              final results = await conn.query(
+                                  'INSERT INTO patients (staff_ID, firstname, lastname, age, sex, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                  [
+                                    staffId,
+                                    firstName,
+                                    lastName,
+                                    selectedAge,
+                                    selectedSex,
+                                    marital,
+                                    phone,
+                                    bloodGroup,
+                                    address
+                                  ]);
+                              if (results.affectedRows! > 0) {
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop();
+
+                                _onShowSnack(Colors.green,
+                                    'معلومات مریض موفقانه تغییر کرد.', context);
+                                onRefresh();
+                              } else {
+                                Navigator.of(context, rootNavigator: true)
+                                    .pop();
+                                _onShowSnack(
+                                    Colors.red,
+                                    'افزودن مریض ناکام شد. دوباره سعی کنید.',
+                                    context);
+                              }
                             }
                           }
                         } catch (e) {
-                          print('Creating the new patient failed (General Calendar): $e');
+                          print(
+                              'Creating the new patient failed (General Calendar): $e');
                         }
                       },
                       child: const Text('تغییر')),
