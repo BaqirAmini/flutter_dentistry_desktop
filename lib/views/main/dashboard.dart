@@ -166,13 +166,16 @@ class _DashboardState extends State<Dashboard> {
     try {
       final conn = await onConnToDb();
       final results = await conn.query(
-          'SELECT * FROM appointments WHERE status = ? AND meet_date > NOW()',
+          'SELECT * FROM appointments a INNER JOIN patients p ON a.pat_ID = p.pat_ID WHERE status = ? AND meet_date > NOW()',
           ['Pending']);
 
       // Loop through the results
       for (final row in results) {
         // Get the notification frequency for this appointment
         final notificationFrequency = row['notification'];
+        final patientId = row['pat_ID'];
+        final patientFName = row['firstname'];
+        final patientLName = row['lastname'] ?? '';
 
         // Calculate the time until the notification should be shown
         final appointmentTime = row['meet_date'];
@@ -192,11 +195,16 @@ class _DashboardState extends State<Dashboard> {
               appointmentTime.subtract(const Duration(hours: 2));
         }
 
+// Make a copy of the variables
+        final patientIdCopy = patientId;
+        final patientFNameCopy = patientFName;
+        final patientLNameCopy = patientLName;
         // Schedule the notification
         if (timeUntilNotification != null) {
           // Create an instance of this class to access its method to alert for upcoming notification
-          GlobalUsage _gu = GlobalUsage();
-          _gu.alertUpcomingAppointment();
+          GlobalUsage gu = GlobalUsage();
+          gu.alertUpcomingAppointment(
+              patientIdCopy, patientFNameCopy, patientLNameCopy);
         }
       }
     } catch (e) {

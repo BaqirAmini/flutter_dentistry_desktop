@@ -46,13 +46,30 @@ class CalendarApp extends StatelessWidget {
           ),
           actions: [
             IconButton(
-                onPressed: () {}, icon: const Icon(Icons.notification_add))
+                onPressed: () {
+                  _alertUpcomingAppointment();
+                },
+                icon: const Icon(Icons.notification_add))
           ],
         ),
         body: const CalendarPage(),
       ),
       theme: ThemeData(useMaterial3: false),
     );
+  }
+
+// This function is to give notifiction for users
+  Future<void> _alertUpcomingAppointment() async {
+    final winNotifyPlugin = WindowsNotification(
+        // Work PC
+        /*  applicationId:
+            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinics MIS\flutter_dentistry.exe"); */
+        // Personal PC
+        applicationId:
+            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinic System\flutter_dentistry.exe");
+    NotificationMessage message = NotificationMessage.fromPluginTemplate(
+        "appointment", "Upcoming Appointment", "You have an appointment with ${PatientInfo.firstName} ${PatientInfo.lastName}");
+    winNotifyPlugin.showNotificationPluginTemplate(message);
   }
 }
 
@@ -159,33 +176,12 @@ class _CalendarPageState extends State<CalendarPage> {
                     scheduleTime.toString(),
                     description,
                     notifFreq);
-
-                _alertUpcomingAppointment(meeting);
               }
             },
           );
         }
       },
     );
-  }
-
-// This function is to give notifiction for users
-  Future<void> _alertUpcomingAppointment(Meeting meeting) async {
-    final notificationTime = meeting.from.subtract(Duration(minutes: 5));
-    final delay = notificationTime.difference(DateTime.now());
-    if (delay > Duration.zero) {
-      await Future.delayed(delay);
-      final winNotifyPlugin = WindowsNotification(
-          // Work PC
-          /*  applicationId:
-            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinics MIS\flutter_dentistry.exe"); */
-          // Personal PC
-          applicationId:
-              r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinic System\flutter_dentistry.exe");
-      NotificationMessage message = NotificationMessage.fromPluginTemplate(
-          "appointment", "Upcoming Appointment", "You have an appointment");
-      winNotifyPlugin.showNotificationPluginTemplate(message);
-    }
   }
 
 // Create this function to schedule an appointment

@@ -31,23 +31,28 @@ class GlobalUsage {
 
   // Fetch staff which will be needed later.
   Future<List<Map<String, dynamic>>> fetchStaff() async {
-    // Fetch staff for purchased by fields
-    var conn = await onConnToDb();
-    var results = await conn.query(
-        'SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?',
-        ['داکتر دندان']);
+    try {
+      // Fetch staff for purchased by fields
+      var conn = await onConnToDb();
+      var results = await conn.query(
+          'SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?',
+          ['داکتر دندان']);
 
-    List<Map<String, dynamic>> staffList = results
-        .map((result) => {
-              'staff_ID': result[0].toString(),
-              'firstname': result[1],
-              'lastname': result[2] ?? ''
-            })
-        .toList();
+      List<Map<String, dynamic>> staffList = results
+          .map((result) => {
+                'staff_ID': result[0].toString(),
+                'firstname': result[1],
+                'lastname': result[2] ?? ''
+              })
+          .toList();
 
-    await conn.close();
+      await conn.close();
 
-    return staffList;
+      return staffList;
+    } catch (e) {
+      print('Error occured fetching staff (Global Usage): $e');
+      return [];
+    }
   }
 
 // Declare this function to fetch services from services table to be used globally
@@ -73,7 +78,7 @@ class GlobalUsage {
   }
 
   // This function is to give notifiction for users
-  void alertUpcomingAppointment() {
+  void alertUpcomingAppointment(int patId, String firstName, String? lastName) {
     final winNotifyPlugin = WindowsNotification(
         // Work PC
         /*  applicationId:
@@ -82,7 +87,9 @@ class GlobalUsage {
         applicationId:
             r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinic System\flutter_dentistry.exe");
     NotificationMessage message = NotificationMessage.fromPluginTemplate(
-        "appointment", "Upcoming Appointment", "You have an appointment");
+        "appointment",
+        "Upcoming Appointment",
+        "You have an appointment with $firstName $lastName");
     winNotifyPlugin.showNotificationPluginTemplate(message);
   }
 }

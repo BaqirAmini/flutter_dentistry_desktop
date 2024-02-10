@@ -380,6 +380,7 @@ onCreatePrescription(BuildContext context) {
                             await Printing.layoutPdf(
                               onLayout: (PdfPageFormat format) async => bytes,
                             ); */
+                            await conn.close();
                           }
                         },
                         child: const Text('ایجاد نسخه'),
@@ -1963,6 +1964,7 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                         _onShowSnack(
                             Colors.red, 'شما هیچ تغییراتی نیاوردید.', context);
                       }
+                      await conn.close();
                     }
                   } catch (e) {
                     print('Editing patient\' info failed: $e');
@@ -2016,7 +2018,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
       );
     }).toList();
     _filteredData = List.from(_data);
-
+    await conn.close();
     // Notify the framework that the state of the widget has changed
     setState(() {});
     // Print the data that was fetched from the database

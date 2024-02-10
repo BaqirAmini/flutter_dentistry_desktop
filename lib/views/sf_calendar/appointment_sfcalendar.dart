@@ -336,6 +336,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                               patientPhone: row[3],
                                             ))
                                         .toList();
+                                    await conn.close();
                                     return suggestions;
                                   } catch (e) {
                                     print(
@@ -913,6 +914,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                               patientPhone: row[3],
                                             ))
                                         .toList();
+                                    await conn.close();
                                     return suggestions;
                                   } catch (e) {
                                     print(
@@ -1359,6 +1361,7 @@ class _CalendarPageState extends State<CalendarPage> {
             '%$searchTerm%'.toLowerCase(),
             searchTerm.isEmpty ? '' : '%$searchTerm%'.toLowerCase()
           ]);
+      await conn.close();
       return results
           .map((row) => PatientAppointment(
                 dentistFName: row[0].toString(),
@@ -2039,6 +2042,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                     'افزودن مریض ناکام شد. دوباره سعی کنید.',
                                     context);
                               }
+                              await conn.close();
                             }
                           }
                         } catch (e) {
