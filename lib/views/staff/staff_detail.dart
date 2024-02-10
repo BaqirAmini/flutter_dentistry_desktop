@@ -194,15 +194,14 @@ class _StaffProfileState extends State<_StaffProfile> {
         });
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.red,
-          content: Center(child: Text('هیچ عکسی را انتخاب نکردید.')),
-        ),
-      );
-      setState(() {
-        _isLoadingPhoto = false;
-      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.red,
+            content: Center(child: Text('هیچ عکسی را انتخاب نکردید.')),
+          ),
+        );
+      }
     }
   }
 
