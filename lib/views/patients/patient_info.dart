@@ -13,6 +13,11 @@ class PatientInfo {
   // Declare a dropdown for ages
   static int ageDropDown = 0;
   static bool ageSelected = false;
+
+  // This is used to hide/show a button in health_histories.dart
+  static bool showElevatedBtn = false;
+  // This is to show/hide the icon in the appbar of patient_history.dart
+  static bool showHHistoryIcon = false;
   // Declare a method to add ages 1 - 100
   static List<int> getAges() {
     // Declare variables to contain from 1 - 100 for ages
