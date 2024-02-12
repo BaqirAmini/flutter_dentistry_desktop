@@ -8,13 +8,13 @@ import 'package:flutter_dentistry/views/finance/fee/fee_related_fields.dart';
 import 'package:flutter_dentistry/views/patients/new_appointment.dart';
 import 'package:flutter_dentistry/views/patients/tooth_selection_info.dart';
 import 'package:flutter_dentistry/views/services/service_related_fields.dart';
-import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:intl/intl.dart' as intl2;
 import 'package:provider/provider.dart';
 
 void main() {
   return runApp(const NewPatient());
 }
+
 
 // Assign default selected staff
 String? defaultSelectedStaff;
