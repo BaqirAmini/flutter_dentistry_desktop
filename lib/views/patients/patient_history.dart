@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
+import 'package:flutter_dentistry/views/patients/health_histories.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -25,14 +26,19 @@ class PatientHistory extends StatelessWidget {
                 onPressed: () => Navigator.pop(context),
                 icon: const BackButtonIcon()),
             actions: [
-              /*  IconButton(
-                onPressed: () {},
+              IconButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HealthHistories(),
+                  ),
+                ),
                 icon: const Icon(Icons.health_and_safety_outlined),
                 tooltip: 'New History',
                 padding: const EdgeInsets.all(3.0),
                 splashRadius: 30.0,
-              ), */
-
+              ),
+              const SizedBox(width: 15.0),
               IconButton(
                 onPressed: () => Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => const Patient()),
@@ -81,69 +87,76 @@ class _HistoryContentState extends State<_HistoryContent> {
     return FutureBuilder(
         future: _getHistory(),
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final histories = snapshot.data;
-            int positiveRecord = 0;
-            List<Widget> hcChildren = [];
-            for (var h in histories!) {
-              if (h.result == 1) {
-                positiveRecord++;
-              }
-              hcChildren.add(
-                HoverCard(
-                  title: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              decoration: const BoxDecoration(
-                                color: Color.fromARGB(255, 34, 145, 38),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Icon(
-                                  FontAwesomeIcons.heartPulse,
-                                  color: Colors.white,
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasData) {
+            if (snapshot.data!.isEmpty) {
+              return Center(
+                  child: Text('No health histories found for this patient.'));
+            } else {
+              final histories = snapshot.data;
+              int positiveRecord = 0;
+              List<Widget> hcChildren = [];
+              for (var h in histories!) {
+                if (h.result == 1) {
+                  positiveRecord++;
+                }
+                hcChildren.add(
+                  HoverCard(
+                    title: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                decoration: const BoxDecoration(
+                                  color: Color.fromARGB(255, 34, 145, 38),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Icon(
+                                    FontAwesomeIcons.heartPulse,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 10.0),
-                            Text(
-                              h.condName.toString(),
-                              style: Theme.of(context).textTheme.bodyLarge,
-                              textAlign: TextAlign.start,
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: h.result == 1 ? Colors.red : Colors.blue,
-                                shape: BoxShape.circle,
+                              const SizedBox(width: 10.0),
+                              Text(
+                                h.condName.toString(),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                                textAlign: TextAlign.start,
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: h.result == 1
-                                    ? const Icon(
-                                        FontAwesomeIcons.plus,
-                                        color: Colors.white,
-                                        size: 14,
-                                      )
-                                    : const Icon(
-                                        FontAwesomeIcons.minus,
-                                        color: Colors.white,
-                                        size: 14,
-                                      ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color:
+                                      h.result == 1 ? Colors.red : Colors.blue,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(5.0),
+                                  child: h.result == 1
+                                      ? const Icon(
+                                          FontAwesomeIcons.plus,
+                                          color: Colors.white,
+                                          size: 14,
+                                        )
+                                      : const Icon(
+                                          FontAwesomeIcons.minus,
+                                          color: Colors.white,
+                                          size: 14,
+                                        ),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        /* SizedBox(
+                            ],
+                          ),
+                          /* SizedBox(
                   width: 100,
                   child: PopupMenuButton(
                     padding: EdgeInsets.zero,
@@ -173,125 +186,130 @@ class _HistoryContentState extends State<_HistoryContent> {
                   ),
                 ),
  */
-                      ],
+                        ],
+                      ),
+                    ),
+                    child: ListTile(
+                      title: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const Text('Diagnosis Date',
+                                    style: TextStyle(
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.bold)),
+                                const SizedBox(width: 15.0),
+                                Expanded(
+                                  child: Text(
+                                    h.dianosisDate!,
+                                    textAlign: TextAlign.end,
+                                    style: const TextStyle(
+                                        color:
+                                            Color.fromARGB(255, 112, 112, 112),
+                                        fontSize: 12.0),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                const Text('Severty',
+                                    style: TextStyle(
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.bold)),
+                                const SizedBox(width: 15.0),
+                                Expanded(
+                                  child: Text(
+                                    h.severty!,
+                                    textAlign: TextAlign.end,
+                                    style: const TextStyle(
+                                        color:
+                                            Color.fromARGB(255, 112, 112, 112),
+                                        fontSize: 12.0),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                const Text('Duration',
+                                    style: TextStyle(
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.bold)),
+                                const SizedBox(width: 15.0),
+                                Expanded(
+                                  child: Text(
+                                    h.duration!,
+                                    textAlign: TextAlign.end,
+                                    style: const TextStyle(
+                                        color:
+                                            Color.fromARGB(255, 112, 112, 112),
+                                        fontSize: 12.0),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                const Text('Description',
+                                    style: TextStyle(
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.bold)),
+                                const SizedBox(width: 15.0),
+                                Expanded(
+                                  child: Text(
+                                    h.notes!.isEmpty || h.notes == null
+                                        ? '--'
+                                        : h.notes.toString(),
+                                    textAlign: TextAlign.end,
+                                    style: const TextStyle(
+                                        color:
+                                            Color.fromARGB(255, 112, 112, 112),
+                                        fontSize: 12.0),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  child: ListTile(
-                    title: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              const Text('Diagnosis Date',
-                                  style: TextStyle(
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.bold)),
-                              const SizedBox(width: 15.0),
-                              Expanded(
-                                child: Text(
-                                  h.dianosisDate!,
-                                  textAlign: TextAlign.end,
-                                  style: const TextStyle(
-                                      color: Color.fromARGB(255, 112, 112, 112),
-                                      fontSize: 12.0),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              const Text('Severty',
-                                  style: TextStyle(
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.bold)),
-                              const SizedBox(width: 15.0),
-                              Expanded(
-                                child: Text(
-                                  h.severty!,
-                                  textAlign: TextAlign.end,
-                                  style: const TextStyle(
-                                      color: Color.fromARGB(255, 112, 112, 112),
-                                      fontSize: 12.0),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              const Text('Duration',
-                                  style: TextStyle(
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.bold)),
-                              const SizedBox(width: 15.0),
-                              Expanded(
-                                child: Text(
-                                  h.duration!,
-                                  textAlign: TextAlign.end,
-                                  style: const TextStyle(
-                                      color: Color.fromARGB(255, 112, 112, 112),
-                                      fontSize: 12.0),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              const Text('Description',
-                                  style: TextStyle(
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.bold)),
-                              const SizedBox(width: 15.0),
-                              Expanded(
-                                child: Text(
-                                  h.notes!.isEmpty || h.notes == null
-                                      ? '--'
-                                      : h.notes.toString(),
-                                  textAlign: TextAlign.end,
-                                  style: const TextStyle(
-                                      color: Color.fromARGB(255, 112, 112, 112),
-                                      fontSize: 12.0),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Visibility(
+                    visible: positiveRecord > 0 ? true : false,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        '$positiveRecord نتیجه مثبت',
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
                     ),
                   ),
-                ),
+                  Expanded(
+                    child: ListView(
+                      children: <Widget>[...hcChildren],
+                    ),
+                  )
+                ],
               );
             }
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Visibility(
-                  visible: positiveRecord > 0 ? true : false,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      '$positiveRecord نتیجه مثبت',
-                      style: Theme.of(context).textTheme.labelMedium,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: ListView(
-                    children: <Widget>[...hcChildren],
-                  ),
-                )
-              ],
-            );
           } else if (snapshot.hasError) {
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
