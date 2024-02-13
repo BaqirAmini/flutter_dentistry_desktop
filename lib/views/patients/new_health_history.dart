@@ -8,21 +8,17 @@ class NewHealthHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const BackButtonIcon()),
-          title: const Text('Add new patient health history'),
-        ),
-        body: const Directionality(
-          textDirection: TextDirection.rtl,
-          child: HealthHistories(),
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const BackButtonIcon()),
+        title: const Text('Add new patient health history'),
       ),
-      theme: ThemeData(useMaterial3: false),
+      body: const Directionality(
+        textDirection: TextDirection.rtl,
+        child: HealthHistories(),
+      ),
     );
   }
 }
