@@ -36,240 +36,256 @@ class HealthHistoriesState extends State<HealthHistories> {
     selectedLanguage = languageProvider.selectedLanguage;
     isEnglish = selectedLanguage == 'English';
 
-    return Center(
-      child: Form(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.95,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'تاریخچه صحی مریض که قبل از خدمات دندان باید جداً درنظر گرفته شود:',
-                    style: TextStyle(
-                        color: Colors.blue, fontWeight: FontWeight.bold),
-                  ),
-                  Tooltip(
-                    message: 'تاریخچه صحی جدید',
-                    child: InkWell(
-                      onTap: () => _onCreateNewHealthHistory(),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.blue, width: 2.0),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(5.0),
-                          child: Icon(
-                            Icons.add,
-                            color: Colors.blue,
+    return ScaffoldMessenger(
+      key: _globalKey2,
+      child: Scaffold(
+        body: Center(
+            child: Form(
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.95,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'تاریخچه صحی مریض که قبل از خدمات دندان باید جداً درنظر گرفته شود:',
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
+                    Tooltip(
+                      message: 'تاریخچه صحی جدید',
+                      child: InkWell(
+                        onTap: () => _onCreateNewHealthHistory(),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.blue, width: 2.0),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(5.0),
+                            child: Icon(
+                              Icons.add,
+                              color: Colors.blue,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              FutureBuilder(
-                future: _onFetchHealthHistory(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final conds = snapshot.data;
-                    List<Widget> conditionWidgets =
-                        []; // Create an empty list of widgets
-                    for (var cond in conds!) {
-                      // Set a dynamic group value for radio buttons
-                      _condResultGV[cond.condID] ??= 0;
-                      // Add each Text widget to the list
-                      conditionWidgets.add(
-                        Container(
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              bottom:
-                                  BorderSide(width: 0.4, color: Colors.grey),
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: Text(' - ${cond.CondName}'),
+                  ],
+                ),
+                FutureBuilder(
+                  future: _onFetchHealthHistory(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final conds = snapshot.data;
+                      List<Widget> conditionWidgets =
+                          []; // Create an empty list of widgets
+                      for (var cond in conds!) {
+                        // Set a dynamic group value for radio buttons
+                        _condResultGV[cond.condID] ??= 0;
+                        // Add each Text widget to the list
+                        conditionWidgets.add(
+                          Container(
+                            decoration: const BoxDecoration(
+                              border: Border(
+                                bottom:
+                                    BorderSide(width: 0.4, color: Colors.grey),
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Expanded(
-                                      flex: 1,
-                                      child: Theme(
-                                        data: Theme.of(context).copyWith(
-                                          listTileTheme:
-                                              const ListTileThemeData(
-                                            horizontalTitleGap: 0.5,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 2,
+                                  child: Text(' - ${cond.CondName}'),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Expanded(
+                                        flex: 1,
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                              horizontalTitleGap: 0.5,
+                                            ),
                                           ),
-                                        ),
-                                        child: RadioListTile(
-                                          title: const Text(
-                                            'مثبت',
-                                            style: TextStyle(fontSize: 14),
+                                          child: RadioListTile(
+                                            title: const Text(
+                                              'مثبت',
+                                              style: TextStyle(fontSize: 14),
+                                            ),
+                                            value: 1,
+                                            groupValue:
+                                                _condResultGV[cond.condID],
+                                            onChanged: (int? value) {
+                                              setState(
+                                                () {
+                                                  _condResultGV[cond.condID] =
+                                                      value!;
+                                                },
+                                              );
+                                            },
                                           ),
-                                          value: 1,
-                                          groupValue:
-                                              _condResultGV[cond.condID],
-                                          onChanged: (int? value) {
-                                            setState(
-                                              () {
-                                                _condResultGV[cond.condID] =
-                                                    value!;
-                                              },
-                                            );
-                                          },
                                         ),
                                       ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Theme(
-                                        data: Theme.of(context).copyWith(
-                                          listTileTheme:
-                                              const ListTileThemeData(
-                                            horizontalTitleGap: 0.5,
+                                      Expanded(
+                                        flex: 1,
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            listTileTheme:
+                                                const ListTileThemeData(
+                                              horizontalTitleGap: 0.5,
+                                            ),
                                           ),
-                                        ),
-                                        child: RadioListTile(
-                                          title: const Text(
-                                            'منفی',
-                                            style: TextStyle(fontSize: 14),
+                                          child: RadioListTile(
+                                            title: const Text(
+                                              'منفی',
+                                              style: TextStyle(fontSize: 14),
+                                            ),
+                                            value: 0,
+                                            groupValue:
+                                                _condResultGV[cond.condID],
+                                            onChanged: (int? value) {
+                                              setState(
+                                                () {
+                                                  _condResultGV[cond.condID] =
+                                                      value!;
+                                                },
+                                              );
+                                            },
                                           ),
-                                          value: 0,
-                                          groupValue:
-                                              _condResultGV[cond.condID],
-                                          onChanged: (int? value) {
-                                            setState(
-                                              () {
-                                                _condResultGV[cond.condID] =
-                                                    value!;
-                                              },
-                                            );
-                                          },
                                         ),
                                       ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: PopupMenuButton(
-                                        icon: const Icon(
-                                          Icons.more_horiz,
-                                          color: Colors.blue,
-                                        ),
-                                        tooltip: 'بیشتر...',
-                                        itemBuilder: (BuildContext context) =>
-                                            <PopupMenuEntry>[
-                                          if (_condResultGV[cond.condID] == 1)
+                                      Expanded(
+                                        flex: 1,
+                                        child: PopupMenuButton(
+                                          icon: const Icon(
+                                            Icons.more_horiz,
+                                            color: Colors.blue,
+                                          ),
+                                          tooltip: 'بیشتر...',
+                                          itemBuilder: (BuildContext context) =>
+                                              <PopupMenuEntry>[
+                                            if (_condResultGV[cond.condID] == 1)
+                                              PopupMenuItem(
+                                                child: Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: ListTile(
+                                                    leading:
+                                                        const Icon(Icons.list),
+                                                    title: const Text(
+                                                        'تکمیل تاریخچه'),
+                                                    onTap: () {
+                                                      _onAddMoreDetailsforHistory(
+                                                          cond.condID);
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            PopupMenuItem(
+                                              child: Directionality(
+                                                textDirection:
+                                                    TextDirection.rtl,
+                                                child: Builder(builder:
+                                                    (BuildContext context) {
+                                                  return ListTile(
+                                                    leading:
+                                                        const Icon(Icons.edit),
+                                                    title: const Text(
+                                                        'تغییر دادن'),
+                                                    onTap: () {
+                                                      _onEditHealthHistory(
+                                                          cond.condID,
+                                                          cond.CondName);
+                                                      Navigator.pop(context);
+                                                    },
+                                                  );
+                                                }),
+                                              ),
+                                            ),
                                             PopupMenuItem(
                                               child: Directionality(
                                                 textDirection:
                                                     TextDirection.rtl,
                                                 child: ListTile(
-                                                  leading:
-                                                      const Icon(Icons.list),
-                                                  title: const Text(
-                                                      'تکمیل تاریخچه'),
-                                                  onTap: () {
-                                                    _onAddMoreDetailsforHistory(
-                                                        cond.condID);
-                                                    Navigator.pop(context);
-                                                  },
-                                                ),
+                                                    leading: const Icon(Icons
+                                                        .delete_outline_rounded),
+                                                    title:
+                                                        const Text('حذف کردن'),
+                                                    onTap: () {
+                                                      _onDeleteHealthHistory(
+                                                          cond.condID);
+                                                      Navigator.pop(context);
+                                                    }),
                                               ),
                                             ),
-                                          PopupMenuItem(
-                                            child: Directionality(
-                                              textDirection: TextDirection.rtl,
-                                              child: Builder(builder:
-                                                  (BuildContext context) {
-                                                return ListTile(
-                                                  leading:
-                                                      const Icon(Icons.edit),
-                                                  title:
-                                                      const Text('تغییر دادن'),
-                                                  onTap: () {
-                                                    _onEditHealthHistory(
-                                                        cond.condID,
-                                                        cond.CondName);
-                                                    Navigator.pop(context);
-                                                  },
-                                                );
-                                              }),
-                                            ),
-                                          ),
-                                          PopupMenuItem(
-                                            child: Directionality(
-                                              textDirection: TextDirection.rtl,
-                                              child: ListTile(
-                                                  leading: const Icon(Icons
-                                                      .delete_outline_rounded),
-                                                  title: const Text('حذف کردن'),
-                                                  onTap: () {
-                                                    _onDeleteHealthHistory(
-                                                        cond.condID);
-                                                    Navigator.pop(context);
-                                                  }),
-                                            ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    // Add your second RadioListTile here
-                                  ],
+                                      // Add your second RadioListTile here
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                      // Return a Column with all the widgets
+                      return Container(
+                        height: MediaQuery.of(context).size.height * 0.56,
+                        margin: const EdgeInsets.all(10),
+                        child: SingleChildScrollView(
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(20.0),
+                                  ),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment
+                                  .start, // Align text to the left
+                              // For right alignment, use CrossAxisAlignment.end
+                              children: conditionWidgets,
+                            ),
                           ),
                         ),
                       );
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      return const CircularProgressIndicator();
                     }
-                    // Return a Column with all the widgets
-                    return Container(
-                      height: MediaQuery.of(context).size.height * 0.56,
-                      margin: const EdgeInsets.all(10),
-                      child: SingleChildScrollView(
-                        child: InputDecorator(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(20.0),
-                                ),
-                                borderSide: BorderSide(color: Colors.grey)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment
-                                .start, // Align text to the left
-                            // For right alignment, use CrossAxisAlignment.end
-                            children: conditionWidgets,
-                          ),
-                        ),
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    return const CircularProgressIndicator();
-                  }
-                },
-              ),
-              if (PatientInfo.showElevatedBtn)
-                ElevatedButton(
-                    onPressed: () => onAddPatientHistory(PatientInfo.patID),
-                    child: Text('Add Changes'))
-            ],
+                  },
+                ),
+                if (PatientInfo.showElevatedBtn)
+                  ElevatedButton(
+                      onPressed: () async {
+                        if (await onAddPatientHistory(PatientInfo.patID)) {
+                          _onShowSnack(
+                              Colors.green, 'Patient health histories added.');
+                          Navigator.of(context).pop();
+                        } else {
+                          _onShowSnack(Colors.red,
+                              'Adding patient health histories failed. Plear try again.');
+                        }
+                      },
+                      child: const Text('Add Changes'))
+              ],
+            ),
           ),
-        ),
+        )),
       ),
     );
   }
@@ -920,34 +936,30 @@ class HealthHistoriesState extends State<HealthHistories> {
       // Start a transaction
       await conn.transaction((ctx) async {
         for (var condID in _condResultGV.keys) {
-          try {
-            // Prepare an insert query
-            var query =
-                'INSERT INTO condition_details (cond_ID, result, severty, duration, diagnosis_date, pat_ID, notes) VALUES (?, ?, ?, ?, ?, ?, ?)';
-            // Get the selected value ('مثبت' or 'منفی')
-            var selectedResult = _condResultGV[condID] == 1 ? 1 : 0;
-            var histDate = selectedResult == 1
-                ? _histDiagDateController[condID]?.text
-                : null;
-            var histSeverty =
-                selectedResult == 1 ? _histCondGroupValue[condID] : null;
-            var histDuration =
-                selectedResult == 1 ? _durationGroupValue[condID] : null;
-            var histNotes =
-                selectedResult == 1 ? _histNoteController[condID]?.text : null;
+          // Prepare an insert query
+          var query =
+              'INSERT INTO condition_details (cond_ID, result, severty, duration, diagnosis_date, pat_ID, notes) VALUES (?, ?, ?, ?, ?, ?, ?)';
+          // Get the selected value ('مثبت' or 'منفی')
+          var selectedResult = _condResultGV[condID] == 1 ? 1 : 0;
+          var histDate = selectedResult == 1
+              ? _histDiagDateController[condID]?.text
+              : null;
+          var histSeverty =
+              selectedResult == 1 ? _histCondGroupValue[condID] : null;
+          var histDuration =
+              selectedResult == 1 ? _durationGroupValue[condID] : null;
+          var histNotes =
+              selectedResult == 1 ? _histNoteController[condID]?.text : null;
 
-            await conn.query(query, [
-              condID,
-              selectedResult.toInt(),
-              histSeverty,
-              histDuration,
-              histDate,
-              patientID,
-              histNotes
-            ]);
-          } catch (e) {
-            print('Error occured while inserting histories: $e');
-          }
+          await conn.query(query, [
+            condID,
+            selectedResult.toInt(),
+            histSeverty,
+            histDuration,
+            histDate,
+            patientID,
+            histNotes
+          ]);
         }
       });
 

@@ -10,9 +10,14 @@ void main() {
   runApp(const PatientHistory());
 }
 
-class PatientHistory extends StatelessWidget {
+class PatientHistory extends StatefulWidget {
   const PatientHistory({Key? key}) : super(key: key);
 
+  @override
+  State<PatientHistory> createState() => _PatientHistoryState();
+}
+
+class _PatientHistoryState extends State<PatientHistory> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -35,7 +40,9 @@ class PatientHistory extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => const NewHealthHistory(),
                       ),
-                    );
+                    ).then((_) {
+                      setState(() {});
+                    });
                   },
                   icon: const Icon(Icons.health_and_safety_outlined),
                   tooltip: 'New History',

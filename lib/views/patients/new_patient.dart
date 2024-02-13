@@ -641,10 +641,16 @@ class _NewPatientState extends State<NewPatient> {
           ),
         ),
         Step(
-            state: _currentStep <= 1 ? StepState.editing : StepState.complete,
-            isActive: _currentStep >= 1,
-            title: const Text('تاریخچه صحی مریض'),
-            content: const HealthHistories()),
+          state: _currentStep <= 1 ? StepState.editing : StepState.complete,
+          isActive: _currentStep >= 1,
+          title: const Text('تاریخچه صحی مریض'),
+          content: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: const Center(
+              child: HealthHistories(),
+            ),
+          ),
+        ),
         Step(
           state: _currentStep <= 2 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 2,
@@ -666,7 +672,6 @@ class _NewPatientState extends State<NewPatient> {
   HealthHistoriesState healthHistory = HealthHistoriesState();
 // Add a new patient
   Future<void> onAddNewPatient(BuildContext context) async {
-    healthHistory.onAddPatientHistory(86);
     var firstName = _nameController.text;
     var lastName = _lNameController.text;
     var sex = _sexGroupValue;
