@@ -85,7 +85,8 @@ class _PatientDetailState extends State<PatientDetail> {
             ),
           ),
           appBar: AppBar(
-            title: const Text('سوابق مریض'),
+            title: Text(
+                'سوابق مریض: ${PatientInfo.firstName} ${PatientInfo.lastName}'),
             leading: IconButton(
               onPressed: () => Navigator.pop(context),
               icon: const BackButtonIcon(),

@@ -26,7 +26,7 @@ class _PatientHistoryState extends State<PatientHistory> {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Patient Health History'),
+            title: Text('${PatientInfo.firstName} ${PatientInfo.lastName} Health History'),
             leading: IconButton(
                 onPressed: () => Navigator.pop(context),
                 icon: const BackButtonIcon()),
