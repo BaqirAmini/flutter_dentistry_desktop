@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +10,7 @@ import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:intl/intl.dart' as intl2;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
 
 void main() => runApp(const XRayUploadScreen());
 
@@ -25,7 +25,8 @@ class XRayUploadScreen extends StatelessWidget {
         length: 3,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('X-Ray Categories'),
+            title:
+                Text('${PatientInfo.firstName} ${PatientInfo.lastName} X-Rays'),
             leading: IconButton(
                 splashRadius: 27.0,
                 onPressed: () => Navigator.pop(context),
@@ -637,9 +638,6 @@ class ImageViewer extends StatefulWidget {
 class _ImageViewerState extends State<ImageViewer> {
   int counter = 0;
   late PageController controller;
-  final TransformationController _transformationController =
-      TransformationController();
-
   @override
   void initState() {
     super.initState();
@@ -650,7 +648,8 @@ class _ImageViewerState extends State<ImageViewer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('X-Ray Viewer'),
+        title: Text(
+            'Details of ${PatientInfo.firstName} ${PatientInfo.lastName} X-Ray'),
       ),
       body: Stack(
         children: <Widget>[
@@ -659,66 +658,70 @@ class _ImageViewerState extends State<ImageViewer> {
             itemCount: widget.images.length,
             onPageChanged: (index) {
               setState(() {
-                counter = index == widget.images.length - 1
-                    ? widget.images.length - 1
-                    : index > 0
-                        ? index
-                        : 0;
+                try {
+                  counter = index == widget.images.length - 1
+                      ? widget.images.length - 1
+                      : index > 0
+                          ? index
+                          : 0;
+                } catch (e) {
+                  print('Image not found: $e');
+                }
               });
             },
             itemBuilder: (context, index) {
-              return MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: InteractiveViewer(
-                  transformationController: _transformationController,
-                  onInteractionEnd: _onInteractionEnd,
-                  boundaryMargin: const EdgeInsets.all(20.0),
-                  minScale: 0.1,
-                  maxScale: 2.0,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        width: MediaQuery.of(context).size.width * 0.43,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Date Added:',
-                              style: Theme.of(context).textTheme.labelLarge,
-                            ),
-                            Text(
-                              widget.images[index].xrayDate,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ],
+              // This widget contains date, description and the image itself.
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    width: MediaQuery.of(context).size.width * 0.43,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Date Added:',
+                          style: Theme.of(context).textTheme.labelLarge,
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        width: MediaQuery.of(context).size.width * 0.43,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Description:',
-                                style: Theme.of(context).textTheme.labelLarge),
-                            Text(widget.images[index].xrayDescription,
-                                style: Theme.of(context).textTheme.bodyLarge),
-                          ],
+                        Text(
+                          widget.images[index].xrayDate,
+                          style: Theme.of(context).textTheme.bodyLarge,
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        width: MediaQuery.of(context).size.width * 0.7,
-                        height: MediaQuery.of(context).size.height * 0.7,
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    width: MediaQuery.of(context).size.width * 0.43,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Description:',
+                            style: Theme.of(context).textTheme.labelLarge),
+                        Text(widget.images[index].xrayDescription,
+                            style: Theme.of(context).textTheme.bodyLarge),
+                      ],
+                    ),
+                  ),
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      // When tapped, it opens the image using windows default image viewer.
+                      onTap: () =>
+                          OpenFile.open(widget.images[index].xrayImage),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black)),
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        height: MediaQuery.of(context).size.height * 0.5,
                         child: Image.file(File(widget.images[index].xrayImage),
                             fit: BoxFit.contain),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               );
             },
           ),
@@ -735,16 +738,19 @@ class _ImageViewerState extends State<ImageViewer> {
                     icon: const Icon(Icons.arrow_back_ios_new_rounded,
                         color: Colors.grey),
                     onPressed: () {
-                      if (counter > 0) {
-                        controller.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                        setState(() {
-                          counter--;
-                        });
+                      try {
+                        if (counter > 0) {
+                          controller.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                          setState(() {
+                            counter--;
+                          });
+                        }
+                      } catch (e) {
+                        print('No previous image. View next.');
                       }
-                      print('Previous index: $counter');
                     }),
               ),
             ),
@@ -762,16 +768,19 @@ class _ImageViewerState extends State<ImageViewer> {
                     icon: const Icon(Icons.arrow_forward_ios_rounded,
                         color: Colors.grey),
                     onPressed: () {
-                      if (counter < widget.images.length - 1) {
-                        controller.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                        setState(() {
-                          counter++;
-                        });
+                      try {
+                        if (counter < widget.images.length - 1) {
+                          controller.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                          setState(() {
+                            counter++;
+                          });
+                        }
+                      } catch (e) {
+                        print('No next image. View previous');
                       }
-                      print('Current index: $counter');
                     }),
               ),
             ),
@@ -779,11 +788,6 @@ class _ImageViewerState extends State<ImageViewer> {
         ],
       ),
     );
-  }
-
-// This function controls the zooming when it goes beyond the scale specified.
-  void _onInteractionEnd(ScaleEndDetails details) {
-    _transformationController.value = Matrix4.identity();
   }
 }
 
