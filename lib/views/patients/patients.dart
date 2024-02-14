@@ -345,17 +345,17 @@ onCreatePrescription(BuildContext context) {
             content: Form(
               key: formKeyPresc,
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.3,
+                width: MediaQuery.of(context).size.width * 0.35,
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.26,
+                        width: MediaQuery.of(context).size.width * 0.30,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                              width: MediaQuery.of(context).size.width * 0.12,
+                              width: MediaQuery.of(context).size.width * 0.14,
                               margin: const EdgeInsets.symmetric(
                                   horizontal: 5.0, vertical: 10.0),
                               child: InputDecorator(
@@ -416,7 +416,7 @@ onCreatePrescription(BuildContext context) {
                               ),
                             ),
                             Container(
-                              width: MediaQuery.of(context).size.width * 0.12,
+                              width: MediaQuery.of(context).size.width * 0.14,
                               margin: const EdgeInsets.symmetric(
                                   horizontal: 5.0, vertical: 10.0),
                               child: Column(
@@ -523,7 +523,7 @@ onCreatePrescription(BuildContext context) {
                       ),
                       ...medicines.map((medicine) {
                         return SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.28,
+                          width: MediaQuery.of(context).size.width * 0.31,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
