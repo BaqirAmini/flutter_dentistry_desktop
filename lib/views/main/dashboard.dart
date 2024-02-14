@@ -353,7 +353,7 @@ class _DashboardState extends State<Dashboard> {
                                                             'CurrentMonthExpenses'] ??
                                                         '')
                                                     .toString(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontSize: 16.0,
                                                     color: Colors.white)),
                                             Text(
@@ -401,7 +401,7 @@ class _DashboardState extends State<Dashboard> {
                                                             'CurrentYearTaxes'] ??
                                                         '')
                                                     .toString(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontSize: 16.0,
                                                     color: Colors.white)),
                                             Text(
@@ -447,7 +447,7 @@ class _DashboardState extends State<Dashboard> {
                                                             ?['AllPatients'] ??
                                                         '')
                                                     .toString(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     fontSize: 16.0,
                                                     color: Colors.white)),
                                             Text(
@@ -562,7 +562,7 @@ class _DashboardState extends State<Dashboard> {
                                             format:
                                                 'point.y ${(translations[languageProvider.selectedLanguage]?['Afn'] ?? '').toString()} : point.x',
                                           ),
-                                          series: <PieSeries<_PieData, String>>[
+                                          /*  series: <PieSeries<_PieData, String>>[
                                             PieSeries<_PieData, String>(
                                                 explode: true,
                                                 explodeIndex: 0,
@@ -579,6 +579,42 @@ class _DashboardState extends State<Dashboard> {
                                                 dataLabelSettings:
                                                     const DataLabelSettings(
                                                         isVisible: true)),
+                                          ], */
+                                          annotations: [
+                                            CircularChartAnnotation(
+                                              widget: const Text(
+                                                '300000 افغانی',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
+                                          ],
+                                          series: <DoughnutSeries<_PieData,
+                                              String>>[
+                                            DoughnutSeries<_PieData, String>(
+                                              innerRadius: '70%',
+                                              dataSource: <_PieData>[
+                                                _PieData('Earnings', 200000),
+                                                _PieData('Expenses', -50000),
+                                              ],
+                                              xValueMapper:
+                                                  (_PieData data, _) =>
+                                                      data.xData,
+                                              yValueMapper:
+                                                  (_PieData data, _) =>
+                                                      data.yData,
+                                              dataLabelSettings:
+                                                  const DataLabelSettings(
+                                                isVisible: false,
+                                                textStyle:
+                                                    TextStyle(fontSize: 8.0),
+                                              ),
+                                              selectionBehavior:
+                                                  SelectionBehavior(
+                                                      enable: true,
+                                                      selectedBorderWidth: 2.0),
+                                            ),
                                           ],
                                         ),
                                     ],
