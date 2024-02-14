@@ -15,7 +15,6 @@ void main() {
   return runApp(const NewPatient());
 }
 
-
 // Assign default selected staff
 String? defaultSelectedStaff;
 List<Map<String, dynamic>> staffList = [];
@@ -786,25 +785,23 @@ class _NewPatientState extends State<NewPatient> {
                                             itemBuilder:
                                                 (BuildContext context) =>
                                                     <PopupMenuEntry>[
-                                              if (_condResultGV[cond.condID] ==
-                                                  1)
-                                                PopupMenuItem(
-                                                  child: Directionality(
-                                                    textDirection:
-                                                        TextDirection.rtl,
-                                                    child: ListTile(
-                                                      leading: const Icon(
-                                                          Icons.list),
-                                                      title: const Text(
-                                                          'تکمیل تاریخچه'),
-                                                      onTap: () {
-                                                        _onAddMoreDetailsforHistory(
-                                                            cond.condID);
-                                                        Navigator.pop(context);
-                                                      },
-                                                    ),
+                                              PopupMenuItem(
+                                                child: Directionality(
+                                                  textDirection:
+                                                      TextDirection.rtl,
+                                                  child: ListTile(
+                                                    leading:
+                                                        const Icon(Icons.list),
+                                                    title: const Text(
+                                                        'تکمیل تاریخچه'),
+                                                    onTap: () {
+                                                      _onAddMoreDetailsforHistory(
+                                                          cond.condID);
+                                                      Navigator.pop(context);
+                                                    },
                                                   ),
                                                 ),
+                                              ),
                                               PopupMenuItem(
                                                 child: Directionality(
                                                   textDirection:
@@ -922,15 +919,10 @@ class _NewPatientState extends State<NewPatient> {
                 'INSERT INTO condition_details (cond_ID, result, severty, duration, diagnosis_date, pat_ID, notes) VALUES (?, ?, ?, ?, ?, ?, ?)';
             // Get the selected value ('مثبت' or 'منفی')
             var selectedResult = _condResultGV[condID] == 1 ? 1 : 0;
-            var histDate = selectedResult == 1
-                ? _histDiagDateController[condID]?.text
-                : null;
-            var histSeverty =
-                selectedResult == 1 ? _histCondGroupValue[condID] : null;
-            var histDuration =
-                selectedResult == 1 ? _durationGroupValue[condID] : null;
-            var histNotes =
-                selectedResult == 1 ? _histNoteController[condID]?.text : null;
+            var histDate = _histDiagDateController[condID]?.text;
+            var histSeverty = _histCondGroupValue[condID];
+            var histDuration = _durationGroupValue[condID];
+            var histNotes = _histNoteController[condID]?.text;
 
             await conn.query(query, [
               condID,

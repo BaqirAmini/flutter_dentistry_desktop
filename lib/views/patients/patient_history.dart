@@ -26,7 +26,8 @@ class _PatientHistoryState extends State<PatientHistory> {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
-            title: Text('${PatientInfo.firstName} ${PatientInfo.lastName} Health History'),
+            title: Text(
+                '${PatientInfo.firstName} ${PatientInfo.lastName} Health History'),
             leading: IconButton(
                 onPressed: () => Navigator.pop(context),
                 icon: const BackButtonIcon()),
@@ -306,6 +307,15 @@ class _HistoryContentState extends State<_HistoryContent> {
                               ],
                             ),
                           ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            child: IconButton(
+                              tooltip: 'Edit',
+                              splashRadius: 23,
+                              onPressed: () {},
+                              icon: const Icon(Icons.edit, size: 16.0),
+                            ),
+                          )
                         ],
                       ),
                     ),
