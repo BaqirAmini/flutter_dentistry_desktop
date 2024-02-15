@@ -14,6 +14,8 @@ import 'package:open_file/open_file.dart';
 
 void main() => runApp(const XRayUploadScreen());
 
+int counter = 0;
+
 class XRayUploadScreen extends StatelessWidget {
   const XRayUploadScreen({Key? key}) : super(key: key);
 
@@ -200,34 +202,42 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                         mainAxisSpacing: 10.0, // Adjust vertical spacing
                       ),
                       itemBuilder: (context, index) {
-                        final xray = xrayData[index];
-                        return MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ImageViewer(
-                                      images: xrayData, initialIndex: index),
-                                ),
-                              );
-                            },
-                            child: Visibility(
-                              visible: File(xray.xrayImage).existsSync()
-                                  ? true
-                                  : false,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.blue)),
-                                child: Image.file(
-                                  File(xray.xrayImage),
-                                  fit: BoxFit.cover,
-                                ),
+                        try {
+                          final xray = xrayData[index];
+                          return MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  counter =
+                                      index; // Update the counter to the selected index
+                                });
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ImageViewer(
+                                        images: xrayData, initialIndex: index),
+                                  ),
+                                );
+                              },
+                              child: Visibility(
+                                visible: File(xray.xrayImage).existsSync()
+                                    ? true
+                                    : false,
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.blue)),
+                                    child: Image.file(
+                                      File(xray.xrayImage),
+                                      fit: BoxFit.cover,
+                                    )),
                               ),
                             ),
-                          ),
-                        );
+                          );
+                        } catch (e) {
+                          print('Final image: $e');
+                        }
+                        return null;
                       },
                     ),
                   ),
@@ -636,7 +646,6 @@ class ImageViewer extends StatefulWidget {
 }
 
 class _ImageViewerState extends State<ImageViewer> {
-  int counter = 0;
   late PageController controller;
   @override
   void initState() {
@@ -658,71 +667,93 @@ class _ImageViewerState extends State<ImageViewer> {
             itemCount: widget.images.length,
             onPageChanged: (index) {
               setState(() {
-                try {
-                  counter = index == widget.images.length - 1
-                      ? widget.images.length - 1
-                      : index > 0
-                          ? index
-                          : 0;
-                } catch (e) {
-                  print('Image not found: $e');
-                }
+                counter = index;
               });
             },
             itemBuilder: (context, index) {
-              // This widget contains date, description and the image itself.
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    width: MediaQuery.of(context).size.width * 0.43,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Date Added:',
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        Text(
-                          widget.images[index].xrayDate,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    width: MediaQuery.of(context).size.width * 0.43,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Description:',
-                            style: Theme.of(context).textTheme.labelLarge),
-                        Text(widget.images[index].xrayDescription,
-                            style: Theme.of(context).textTheme.bodyLarge),
-                      ],
-                    ),
-                  ),
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      // When tapped, it opens the image using windows default image viewer.
-                      onTap: () =>
-                          OpenFile.open(widget.images[index].xrayImage),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black)),
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        height: MediaQuery.of(context).size.height * 0.5,
-                        child: Image.file(File(widget.images[index].xrayImage),
-                            fit: BoxFit.contain),
+              try {
+                // This widget contains date, description and the image itself.
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      width: MediaQuery.of(context).size.width * 0.43,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Date Added:',
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                          Text(
+                            widget.images[index].xrayDate,
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
-              );
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      width: MediaQuery.of(context).size.width * 0.43,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Description:',
+                              style: Theme.of(context).textTheme.labelLarge),
+                          Text(widget.images[index].xrayDescription,
+                              style: Theme.of(context).textTheme.bodyLarge),
+                        ],
+                      ),
+                    ),
+                    MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        // When tapped, it opens the image using windows default image viewer.
+                        onTap: () =>
+                            OpenFile.open(widget.images[index].xrayImage),
+                        child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black)),
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            child: FutureBuilder(
+                              future: File(widget.images[index].xrayImage)
+                                  .exists()
+                                  .then((exists) {
+                                if (exists) {
+                                  return File(widget.images[index].xrayImage);
+                                } else {
+                                  throw Exception('Image file not found');
+                                }
+                              }),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<File> snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  if (snapshot.hasError) {
+                                    // If there's an error, return a message
+                                    return const Center(
+                                        child: Text('Image not found.'));
+                                  } else {
+                                    // If the file exists, display it
+                                    return Image.file(snapshot.data!,
+                                        fit: BoxFit.fill);
+                                  }
+                                } else {
+                                  // While the file is being checked, display a loading spinner
+                                  return const CircularProgressIndicator();
+                                }
+                              },
+                            )),
+                      ),
+                    ),
+                  ],
+                );
+              } catch (e) {
+                print('The last image: $e');
+              }
             },
           ),
           Positioned(
@@ -732,24 +763,21 @@ class _ImageViewerState extends State<ImageViewer> {
             child: Container(
               margin: const EdgeInsets.only(left: 30.0),
               child: Visibility(
-                visible: counter > 0 ? true : false,
+                visible: counter > 0,
                 child: IconButton(
+                    tooltip: 'Previous Image',
                     splashRadius: 30.0,
                     icon: const Icon(Icons.arrow_back_ios_new_rounded,
                         color: Colors.grey),
                     onPressed: () {
-                      try {
-                        if (counter > 0) {
-                          controller.previousPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                          setState(() {
-                            counter--;
-                          });
-                        }
-                      } catch (e) {
-                        print('No previous image. View next.');
+                      if (counter > 0) {
+                        controller.previousPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                        setState(() {
+                          counter--;
+                        });
                       }
                     }),
               ),
@@ -762,24 +790,21 @@ class _ImageViewerState extends State<ImageViewer> {
             child: Container(
               margin: const EdgeInsets.only(right: 30.0),
               child: Visibility(
-                visible: counter < widget.images.length - 1 ? true : false,
+                visible: counter < widget.images.length - 1,
                 child: IconButton(
+                    tooltip: 'Next Image',
                     splashRadius: 30.0,
                     icon: const Icon(Icons.arrow_forward_ios_rounded,
                         color: Colors.grey),
                     onPressed: () {
-                      try {
-                        if (counter < widget.images.length - 1) {
-                          controller.nextPage(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                          setState(() {
-                            counter++;
-                          });
-                        }
-                      } catch (e) {
-                        print('No next image. View previous');
+                      if (counter < widget.images.length - 1) {
+                        controller.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                        );
+                        setState(() {
+                          counter++;
+                        });
                       }
                     }),
               ),
