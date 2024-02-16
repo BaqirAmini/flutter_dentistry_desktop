@@ -75,7 +75,8 @@ class _AppointmentState extends State<Appointment> {
             ),
           ),
           appBar: AppBar(
-            title: const Text('Appointment'),
+            title: Text(
+                '${PatientInfo.firstName} ${PatientInfo.lastName} Appointments'),
             leading: IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const BackButtonIcon()),
@@ -383,7 +384,8 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             Text(
-                              intl2.DateFormat('MMM d, y hh:mm a').format(DateTime.parse(visitTime)),
+                              intl2.DateFormat('MMM d, y hh:mm a')
+                                  .format(DateTime.parse(visitTime)),
                               style: const TextStyle(fontSize: 18.0),
                             ),
                             const Spacer(),
@@ -555,10 +557,33 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                   ),
                                                                   Expanded(
                                                                     child: Text(
+                                                                      req.reqName ==
+                                                                              'Teeth Selection'
+                                                                          ? convertMultiQuadrant(req
+                                                                              .reqValue)
+                                                                          : req
+                                                                              .reqValue,
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .end,
+                                                                      style:
+                                                                          const TextStyle(
+                                                                        color: Color.fromARGB(
+                                                                            255,
+                                                                            112,
+                                                                            112,
+                                                                            112),
+                                                                        fontSize:
+                                                                            12.0,
+                                                                      ),
+                                                                    ),
+                                                                  )
+                                                                  /* Expanded(
+                                                                    child: Text(
                                                                       req.reqValue ==
                                                                               'Teeth Selection'
                                                                           ? (e['reqValue'] != null
-                                                                              ? e['reqValue'].split(', ').toSet().map(codeToDescription).join(
+                                                                              ? e['reqValue'].split(', ').toSet().map(convertSingleQuadrant).join(
                                                                                   ', ')
                                                                               : '')
                                                                           // ignore: unnecessary_null_comparison
@@ -579,7 +604,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                             12.0,
                                                                       ),
                                                                     ),
-                                                                  )
+                                                                  ) */
                                                                 ],
                                                               ),
                                                             ),
@@ -825,55 +850,28 @@ Map<String, String> quadrantDescriptions = {
   'Q3': 'Bottom-Right',
   'Q4': 'Bottom-Left',
 };
-// Function to convert code to description
-String codeToDescription(String code) {
-  var parts = code.split('-');
+// This function takes a single code (like ‘Q1-4’) and converts it to a description (like ‘Top-Left, Tooth 4’).
+String convertSingleQuadrant(String quadTooth) {
+  var parts = quadTooth.split('-');
   var quadrant = quadrantDescriptions[parts[0]];
   var tooth = parts[1];
   return '$quadrant, Tooth $tooth';
 }
 
-// This is to display an alert dialog to delete a patient
-onAddRoundforService(BuildContext context,
-    /* Function onDelete */ String service, int oldRound) {
-  int? patientId = PatientInfo.patID;
-  String? fName = PatientInfo.firstName;
-  String? lName = PatientInfo.lastName;
-
-  return showDialog(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: Directionality(
-        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-        child: Text('Adding Rounds for $service with $oldRound'),
-      ),
-      content: Directionality(
-        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-        child: const Text('Contents'),
-      ),
-      actions: [
-        SizedBox(
-          width: double.infinity,
-          child: Row(
-            mainAxisAlignment:
-                !isEnglish ? MainAxisAlignment.start : MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () =>
-                    Navigator.of(context, rootNavigator: true).pop(),
-                child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
-              ),
-              TextButton(
-                onPressed: () async {
-                  // ignore: use_build_context_synchronously
-                  Navigator.of(context, rootNavigator: true).pop();
-                },
-                child: const Text('لغو'),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
+// This takes a string of multiple codes (like ‘Q1-4, Q2-3, Q4-1’), splits it into individual codes,
+String convertMultiQuadrant(String quadTeeth) {
+  // Split the input string into individual codes
+  var quadrantList =
+      quadTeeth.split(',').map((quadrant) => quadrant.trim()).toList();
+  // This will hold the descriptions
+  var descriptionList = <String>[];
+  // For each code in the list...
+  for (var quadrant in quadrantList) {
+    // Convert the code to a description
+    var description = convertSingleQuadrant(quadrant);
+    // And add it to the list of descriptions
+    descriptionList.add(description);
+  }
+  // Join the descriptions back together into a single string
+  return descriptionList.join(', ');
 }
