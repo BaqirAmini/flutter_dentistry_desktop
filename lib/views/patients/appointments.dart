@@ -457,7 +457,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                       18.0),
                                                         ),
                                                         Text(
-                                                          'تحت نظر: ${e['staffFName']} ${e['staffLName']}',
+                                                          'داکتر معالج: ${e['staffFName']} ${e['staffLName']}',
                                                           style:
                                                               const TextStyle(
                                                                   color: Colors
@@ -855,19 +855,19 @@ String convertSingleQuadrant(String quadTooth) {
   var parts = quadTooth.split('-');
   var quadrant = quadrantDescriptions[parts[0]];
   var tooth = parts[1];
-  return '$quadrant, Tooth $tooth';
+  return '$quadrant Tooth $tooth';
 }
 
 // This takes a string of multiple codes (like ‘Q1-4, Q2-3, Q4-1’), splits it into individual codes,
 String convertMultiQuadrant(String quadTeeth) {
-  // Split the input string into individual codes
+  // Split the input string into individual quadrants
   var quadrantList =
       quadTeeth.split(',').map((quadrant) => quadrant.trim()).toList();
   // This will hold the descriptions
   var descriptionList = <String>[];
-  // For each code in the list...
+  // For each quadrant in the list...
   for (var quadrant in quadrantList) {
-    // Convert the code to a description
+    // Convert the quadrant to a description
     var description = convertSingleQuadrant(quadrant);
     // And add it to the list of descriptions
     descriptionList.add(description);
