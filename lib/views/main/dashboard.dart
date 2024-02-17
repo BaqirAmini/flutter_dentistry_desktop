@@ -107,7 +107,7 @@ class _DashboardState extends State<Dashboard> {
   Future<void> _getLastSixMonthPatient() async {
     final conn = await onConnToDb();
     final results = await conn.query(
-        'SELECT MONTHNAME(reg_date), COUNT(*) FROM patients WHERE (reg_date >= CURDATE() - INTERVAL 6 MONTH) GROUP BY MONTH(reg_date)');
+        'SELECT DATE_FORMAT(reg_date, "%b %d, %Y"), COUNT(*) FROM patients WHERE (reg_date >= CURDATE() - INTERVAL 6 MONTH) GROUP BY MONTH(reg_date)');
 
     for (var row in results) {
       patientData.add(
