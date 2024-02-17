@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +7,6 @@ import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
-import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
@@ -70,7 +68,9 @@ class _CalendarAppState extends State<CalendarApp> {
                 controller: _searchController,
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
-                  labelText: 'Search patients...',
+                  labelText: 'Search Appointment...',
+                  hintText: 'Enter patients\' name or dentists\' name',
+                  hintStyle: TextStyle(color: Colors.white54, fontSize: 14.0),
                   labelStyle: const TextStyle(color: Colors.white),
                   suffixIcon: IconButton(
                     splashRadius: 25.0,
@@ -195,7 +195,7 @@ class _CalendarPageState extends State<CalendarPage> {
           future: _getCalendarDataSource(searchTerm: value),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: const CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
@@ -1355,9 +1355,10 @@ class _CalendarPageState extends State<CalendarPage> {
           '''SELECT st.firstname, st.lastname, s.ser_name, a.details, a.meet_date, a.apt_ID, a.notification, a.service_ID, a.staff_ID, p.pat_ID, p.firstname, p.lastname FROM staff st 
              INNER JOIN appointments a ON st.staff_ID = a.staff_ID 
              INNER JOIN patients p ON p.pat_ID = a.pat_ID
-             INNER JOIN services s ON a.service_ID = s.ser_ID WHERE a.status = ? AND (LOWER(p.firstname) LIKE ? OR ? = '')''',
+             INNER JOIN services s ON a.service_ID = s.ser_ID WHERE a.status = ? AND (LOWER(p.firstname) LIKE ? OR LOWER(st.firstname) LIKE ? OR ? = '')''',
           [
             'Pending',
+            '%$searchTerm%'.toLowerCase(),
             '%$searchTerm%'.toLowerCase(),
             searchTerm.isEmpty ? '' : '%$searchTerm%'.toLowerCase()
           ]);
@@ -1400,7 +1401,7 @@ class _CalendarPageState extends State<CalendarPage> {
           bgColor = Colors.green;
           break;
         case 2:
-          bgColor = Colors.blue;
+          bgColor = Colors.brown;
           break;
         case 3:
           bgColor = const Color.fromARGB(255, 46, 12, 236);
