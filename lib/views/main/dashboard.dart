@@ -274,7 +274,7 @@ class _DashboardState extends State<Dashboard> {
                           child: Row(
                             children: [
                               Card(
-                                color: Colors.blue,
+                                color: Colors.indigo,
                                 child: SizedBox(
                                   height:
                                       MediaQuery.of(context).size.height * 0.16,
@@ -284,7 +284,7 @@ class _DashboardState extends State<Dashboard> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       CircleAvatar(
-                                        backgroundColor: Colors.blue[400],
+                                        backgroundColor: Colors.indigo[400],
                                         child: const Icon(
                                             Icons.supervised_user_circle,
                                             color: Colors.white),
