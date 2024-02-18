@@ -578,33 +578,6 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                       ),
                                                                     ),
                                                                   )
-                                                                  /* Expanded(
-                                                                    child: Text(
-                                                                      req.reqValue ==
-                                                                              'Teeth Selection'
-                                                                          ? (e['reqValue'] != null
-                                                                              ? e['reqValue'].split(', ').toSet().map(convertSingleQuadrant).join(
-                                                                                  ', ')
-                                                                              : '')
-                                                                          // ignore: unnecessary_null_comparison
-                                                                          : (req.reqValue != null
-                                                                              ? req.reqValue.split(', ').join(', ')
-                                                                              : ''),
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .end,
-                                                                      style:
-                                                                          const TextStyle(
-                                                                        color: Color.fromARGB(
-                                                                            255,
-                                                                            112,
-                                                                            112,
-                                                                            112),
-                                                                        fontSize:
-                                                                            12.0,
-                                                                      ),
-                                                                    ),
-                                                                  ) */
                                                                 ],
                                                               ),
                                                             ),
@@ -621,14 +594,20 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                     .spaceEvenly,
                                                             children: [
                                                               IconButton(
-                                                                tooltip: 'Edit',
+                                                                tooltip:
+                                                                    'Retreatment',
                                                                 splashRadius:
                                                                     23,
-                                                                onPressed:
-                                                                    () {},
+                                                                onPressed: () {
+                                                                  print(
+                                                                      'Retreatment: ${e['apptID']}');
+                                                                },
                                                                 icon: const Icon(
-                                                                    Icons.edit,
-                                                                    size: 16.0),
+                                                                    Icons
+                                                                        .repeat_outlined,
+                                                                    size: 16.0,
+                                                                    color: Colors
+                                                                        .red),
                                                               ),
                                                               IconButton(
                                                                 tooltip:
@@ -646,7 +625,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                 icon: const Icon(
                                                                     Icons
                                                                         .delete_forever_outlined,
-                                                                    size: 16.0),
+                                                                    size: 16.0, color: Colors.red),
                                                               )
                                                             ],
                                                           ),
