@@ -2,6 +2,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/views/finance/expenses/expenses.dart';
 import 'package:flutter_dentistry/views/patients/xrays.dart';
+import 'package:flutter_dentistry/views/reports/financial_report.dart';
+import 'package:flutter_dentistry/views/reports/production_report.dart';
 import 'package:flutter_dentistry/views/services/services.dart';
 import 'package:flutter_dentistry/views/settings/settings.dart';
 import 'package:flutter_dentistry/views/sf_calendar/appointment_sfcalendar.dart';
@@ -184,7 +186,8 @@ class _SidebarState extends State<Sidebar> {
           ),
           ListTile(
             leading: const Icon(Icons.more_time_rounded),
-            title: Text((translations[selectedLanguage]?['UpcomingAppt'] ?? '').toString()),
+            title: Text((translations[selectedLanguage]?['UpcomingAppt'] ?? '')
+                .toString()),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -224,6 +227,53 @@ class _SidebarState extends State<Sidebar> {
                 ),
               );
             },
+          ),
+          ExpansionTile(
+            leading: const Icon(Icons.bar_chart),
+            title: const Text('Reports'),
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.pie_chart_outline),
+                title: const Text('Production Report'),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProductionReport(),
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.line_axis),
+                title: const Text('Write-offs Report'),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FinancialSummaryReport(),
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.area_chart),
+                title: const Text('Collections Report'),
+                onTap: () {
+                  // Navigate to the Collections Report screen
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.show_chart),
+                title: const Text('Accounts Receivable Report'),
+                onTap: () {
+                  // Navigate to the Accounts Receivable Report screen
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.insert_chart_outlined_sharp),
+                title: const Text('Daily Deposit Report'),
+                onTap: () {
+                  // Navigate to the Daily Deposit Report screen
+                },
+              ),
+            ],
           ),
           ListTile(
             leading: const Icon(Icons.settings),
