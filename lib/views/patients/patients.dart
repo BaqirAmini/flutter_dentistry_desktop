@@ -932,8 +932,9 @@ class _PatientState extends State<Patient> {
   Future<void> fetchStaff() async {
     // Fetch staff for purchased by fields
     var conn = await onConnToDb();
-    var results =
-        await conn.query('SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?', ['داکتر دندان']);
+    var results = await conn.query(
+        'SELECT staff_ID, firstname, lastname FROM staff WHERE position = ?',
+        ['داکتر دندان']);
     defaultSelectedStaff =
         staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
     // setState(() {
@@ -986,31 +987,13 @@ class _PatientState extends State<Patient> {
     // Call the function to list staff in the dropdown.
     fetchStaff();
     fetchPatients();
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Directionality(
-          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-          child: Scaffold(
-              appBar: AppBar(
-                leading: Tooltip(
-                  message: 'رفتن به داشبورد',
-                  child: IconButton(
-                    splashRadius: 25.0,
-                    icon: const Icon(Icons.home_outlined),
-                    onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Dashboard())),
-                  ),
-                ),
-                title:
-                    Text(translations[selectedLanguage]?['AllPatients'] ?? ''),
-              ),
-              body: const PatientDataTable()),
-        ),
-      ),
-      theme: ThemeData(useMaterial3: false),
+    return Directionality(
+      textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+      child: Scaffold(
+          appBar: AppBar(
+            title: Text(translations[selectedLanguage]?['AllPatients'] ?? ''),
+          ),
+          body: const PatientDataTable()),
     );
   }
 }

@@ -143,11 +143,8 @@ class _SidebarState extends State<Sidebar> {
             title: Text(
               (translations[selectedLanguage]?['Patients'] ?? '').toString(),
             ),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const Patient()));
-            },
+            onTap: () =>  Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const Patient())),
           ),
           /* ListTile(
             leading: const Icon(FontAwesomeIcons.xRay),
