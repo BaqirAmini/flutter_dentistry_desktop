@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
@@ -151,8 +152,46 @@ class _AppointmentContent extends StatefulWidget {
 }
 
 class _AppointmentContentState extends State<_AppointmentContent> {
+// Create an instance GlobalUsage to be access its method
+  final GlobalUsage _gu = GlobalUsage();
+  // Declare these variable since they are need to be inserted into appointments.
+  // These variable are used for editing schedule appointment
+  int selectedStaffId = 0;
+  int selectedServiceId = 0;
+  late int? serviceId;
+  late int? staffId;
+  int? selectedPatientID;
+  // This list is to be assigned services
+  List<Map<String, dynamic>> services = [];
+  final _retreatFormKey = GlobalKey<FormState>();
+
+  // TextEditingController
+
+  @override
+  void initState() {
+    super.initState();
+    _gu.fetchStaff().then((staff) {
+      setState(() {
+        staffList = staff;
+        staffId = staffList.isNotEmpty
+            ? int.parse(staffList[0]['staff_ID'])
+            : selectedStaffId;
+      });
+    });
+
+    // Access the function to fetch services
+    _gu.fetchServices().then((service) {
+      setState(() {
+        services = service;
+        serviceId = services.isNotEmpty
+            ? int.parse(services[0]['ser_ID'])
+            : selectedServiceId;
+      });
+    });
+  }
+
 // This function deletes an appointment after opening a dialog box.
-  onDeleteAppointment(BuildContext context, int id, Function refresh) {
+  _onDeleteAppointment(BuildContext context, int id, Function refresh) {
     return showDialog(
       useRootNavigator: true,
       context: context,
@@ -188,6 +227,356 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                   await conn.close();
                 },
                 child: Text(translations[selectedLanguage]?['Delete'] ?? ''),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+// This function creates a retreatment for any appointment
+  _onAddRetreatment(BuildContext context) {
+    DateTime selectedDateTime = DateTime.now();
+    TextEditingController apptdatetimeController = TextEditingController();
+    TextEditingController retreatReasonController = TextEditingController();
+    TextEditingController retreatFeeController = TextEditingController();
+    TextEditingController retreatOutcomeController = TextEditingController();
+
+    apptdatetimeController.text = selectedDateTime.toString();
+
+    return showDialog(
+      useRootNavigator: true,
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            title: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: const Text(
+                'Create Retreament for Implant',
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
+            content: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.5,
+                width: MediaQuery.of(context).size.width * 0.35,
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: _retreatFormKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 10.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'انتخاب داکتر',
+                              labelStyle: TextStyle(color: Colors.blueAccent),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide:
+                                      BorderSide(color: Colors.blueAccent)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: Container(
+                                height: 26.0,
+                                padding: EdgeInsets.zero,
+                                child: DropdownButton<String>(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: staffId.toString(),
+                                  style: const TextStyle(color: Colors.black),
+                                  items: staffList.map((staff) {
+                                    return DropdownMenuItem<String>(
+                                      value: staff['staff_ID'],
+                                      alignment: Alignment.centerRight,
+                                      child: Text(staff['firstname'] +
+                                          ' ' +
+                                          staff['lastname']),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      staffId = int.parse(newValue!);
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 10.0),
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'خدمات مورد نیاز',
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: SizedBox(
+                                height: 26.0,
+                                child: DropdownButton<String>(
+                                  isExpanded: true,
+                                  icon: const Icon(Icons.arrow_drop_down),
+                                  value: serviceId.toString(),
+                                  items: services.map((service) {
+                                    return DropdownMenuItem<String>(
+                                      value: service['ser_ID'],
+                                      alignment: Alignment.centerRight,
+                                      child: Text(service['ser_name']),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      // Assign the selected service id into the static one.
+                                      serviceId = int.parse(newValue!);
+                                      print('Selected service: $serviceId');
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 10.0),
+                          child: TextFormField(
+                            controller: apptdatetimeController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Date and time should be set.';
+                              }
+                              return null;
+                            },
+                            readOnly: true,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'تاریخ و زمان عودی',
+                              suffixIcon: Icon(Icons.access_time),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                            onTap: () async {
+                              final DateTime? pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: selectedDateTime,
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2100),
+                              );
+                              if (pickedDate != null) {
+                                // ignore: use_build_context_synchronously
+                                final TimeOfDay? pickedTime =
+                                    // ignore: use_build_context_synchronously
+                                    await showTimePicker(
+                                  context: context,
+                                  initialTime: TimeOfDay.now(),
+                                );
+                                if (pickedTime != null) {
+                                  selectedDateTime = DateTime(
+                                    pickedDate.year,
+                                    pickedDate.month,
+                                    pickedDate.day,
+                                    pickedTime.hour,
+                                    pickedTime.minute,
+                                  );
+                                  apptdatetimeController.text =
+                                      selectedDateTime.toString();
+                                }
+                              }
+                            },
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 10.0),
+                          child: TextFormField(
+                            controller: retreatReasonController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'علت عودی را باید درج کنید.';
+                              } else if (value.length < 5 ||
+                                  value.length > 40 ||
+                                  value.length < 5) {
+                                return 'علت عودی باید حداقل 5 و حداکثر 40 حرف باشد.';
+                              }
+                              return null;
+                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(GlobalUsage.allowedEPChar))
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'علت عودی',
+                              suffixIcon: Icon(Icons.description_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 1.5),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 10.0),
+                          child: TextFormField(
+                            controller: retreatFeeController,
+                            validator: (value) {
+                              if (value!.isNotEmpty) {
+                                if (value.length < 5 || value.length > 40) {
+                                  return 'Details should at least 5 and at most 40 characters.';
+                                }
+                                return null;
+                              }
+                              return null;
+                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(GlobalUsage.allowedEPChar))
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'فیس عودی',
+                              suffixIcon: Icon(Icons.description_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 1.5),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 10.0, vertical: 10.0),
+                          child: TextFormField(
+                            controller: retreatOutcomeController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'نتایج عودی را باید درج کنید.';
+                              } else if (value.length < 5 ||
+                                  value.length > 40 ||
+                                  value.length < 5) {
+                                return 'نتایج عودی باید حداقل 5 و حداکثر 40 حرف باشد.';
+                              }
+                              return null;
+                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(GlobalUsage.allowedEPChar))
+                            ],
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'نتایج عودی',
+                              suffixIcon: Icon(Icons.description_outlined),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50.0)),
+                                borderSide:
+                                    BorderSide(color: Colors.red, width: 1.5),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
+              ),
+              TextButton(
+                onPressed: () async {
+                  if (_retreatFormKey.currentState!.validate()) {}
+                },
+                child: Text('Save'),
               ),
             ],
           );
@@ -599,8 +988,8 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                 splashRadius:
                                                                     23,
                                                                 onPressed: () {
-                                                                  print(
-                                                                      'Retreatment: ${e['apptID']}');
+                                                                  _onAddRetreatment(
+                                                                      context);
                                                                 },
                                                                 icon: const Icon(
                                                                     Icons
@@ -615,7 +1004,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                 splashRadius:
                                                                     23,
                                                                 onPressed: () =>
-                                                                    onDeleteAppointment(
+                                                                    _onDeleteAppointment(
                                                                         context,
                                                                         e['apptID'],
                                                                         () {
@@ -625,7 +1014,9 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                 icon: const Icon(
                                                                     Icons
                                                                         .delete_forever_outlined,
-                                                                    size: 16.0, color: Colors.red),
+                                                                    size: 16.0,
+                                                                    color: Colors
+                                                                        .red),
                                                               )
                                                             ],
                                                           ),
