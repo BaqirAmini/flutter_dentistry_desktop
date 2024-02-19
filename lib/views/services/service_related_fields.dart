@@ -86,51 +86,6 @@ class _ServiceFormState extends State<ServiceForm> {
 // Create an instance GlobalUsage to be access its method
   GlobalUsage gu = GlobalUsage();
 
-  // Create a bool for retreatment
-  bool _retreatmentRequired = false;
-  // This is to display an alert dialog to expenses details
-  _onAddRetreatment(BuildContext context) {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text(
-                'جزییات مصارف',
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
-              ),
-            ),
-            content: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Text('Hey Retreatment')),
-            ),
-            actions: [
-              Row(
-                children: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        setState(() {
-                          _retreatmentRequired = false;
-                        });
-                      },
-                      child: const Text('لغو')),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('تایید'),
-                  ),
-                ],
-              ),
-            ],
-            actionsAlignment: MainAxisAlignment.start,
-          );
-        });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -303,29 +258,6 @@ class _ServiceFormState extends State<ServiceForm> {
                           ),
                         ),
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: 150.0,
-                          child: CheckboxListTile(
-                            value: _retreatmentRequired,
-                            onChanged: (bool? value) {
-                              setState(() {
-                                _retreatmentRequired = value!;
-                                if (_retreatmentRequired) {
-                                  _onAddRetreatment(context);
-                                }
-                              });
-                            },
-                            title: const Text('Retreatment'),
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 8.0, vertical: 0),
-                          ),
-                        ),
-                        SizedBox(width: 220.0, child: Container()),
-                      ],
                     ),
                     Visibility(
                       visible:
@@ -1183,7 +1115,8 @@ class _ServiceFormState extends State<ServiceForm> {
                     ),
                     Container(
                       width: 400.0,
-                      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
                       child: InputDecorator(
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(),
