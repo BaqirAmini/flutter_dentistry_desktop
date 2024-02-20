@@ -78,7 +78,7 @@ class _RetreatmentState extends State<Retreatment> {
  */
           appBar: AppBar(
             title: Text(
-                '${PatientInfo.firstName} ${PatientInfo.lastName} Appointments'),
+                '${PatientInfo.firstName} ${PatientInfo.lastName} Retreatments'),
             leading: IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const BackButtonIcon()),
@@ -192,7 +192,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
   }
 
 // This function deletes an appointment after opening a dialog box.
-  _onDeleteAppointment(BuildContext context, int id, Function refresh) {
+  _onDeleteRetreatment(BuildContext context, int id, Function refresh) {
     return showDialog(
       useRootNavigator: true,
       context: context,
@@ -201,12 +201,12 @@ class _AppointmentContentState extends State<_AppointmentContent> {
           return AlertDialog(
             title: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text('Delete an appointment'),
+              child: const Text('Delete a retreatment'),
             ),
             content: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: const Text(
-                  'Are you sure you want to delete this appointment'),
+                  'Are you sure you want to delete this retreatment'),
             ),
             actions: [
               TextButton(
@@ -215,17 +215,22 @@ class _AppointmentContentState extends State<_AppointmentContent> {
               ),
               TextButton(
                 onPressed: () async {
-                  final conn = await onConnToDb();
-                  final deleteResult = await conn
-                      .query('DELETE FROM retreatments WHERE apt_ID = ?', [id]);
-                  if (deleteResult.affectedRows! > 0) {
-                    // ignore: use_build_context_synchronously
-                    Navigator.of(context).pop();
-                    // ignore: use_build_context_synchronously
-                    _onShowSnack(Colors.green, 'جلسه مریض حذف گردید.', context);
-                    refresh();
+                  try {
+                    final conn = await onConnToDb();
+                    final deleteResult = await conn.query(
+                        'DELETE FROM retreatments WHERE retreat_ID = ?', [id]);
+                    if (deleteResult.affectedRows! > 0) {
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pop();
+                      // ignore: use_build_context_synchronously
+                      _onShowSnack(
+                          Colors.green, 'عودی مریض حذف گردید.', context);
+                      refresh();
+                    }
+                    await conn.close();
+                  } catch (e) {
+                    print('Deleting retreatment: $e');
                   }
-                  await conn.close();
                 },
                 child: Text(translations[selectedLanguage]?['Delete'] ?? ''),
               ),
@@ -402,14 +407,14 @@ class _AppointmentContentState extends State<_AppointmentContent> {
           } else {
             var data = snapshot.data!;
 
-            var groupedData = groupBy(data, (obj) => obj['visitTime']);
-            var groupedRound = groupBy(data, (obj) => obj['round']);
+            var groupedRetDateTime = groupBy(data, (obj) => obj['retreatDate']);
+            // var groupedRound = groupBy(data, (obj) => obj['round']);
 
             return ListView.builder(
-              itemCount: groupedData.keys.length,
+              itemCount: groupedRetDateTime.keys.length,
               itemBuilder: (context, index) {
-                var visitTime = groupedData.keys.elementAt(index);
-                var round = groupedRound.keys.elementAt(index);
+                var retreatDTime = groupedRetDateTime.keys.elementAt(index);
+                // var round = groupedRound.keys.elementAt(index);
                 return Card(
                   elevation: 0.5,
                   child: Column(
@@ -425,7 +430,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                           children: [
                             Text(
                               intl2.DateFormat('MMM d, y hh:mm a')
-                                  .format(DateTime.parse(visitTime)),
+                                  .format(DateTime.parse(retreatDTime)),
                               style: const TextStyle(fontSize: 18.0),
                             ),
                             const Spacer(),
@@ -435,7 +440,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                               elevation: 0.5,
                               child: Padding(
                                 padding: const EdgeInsets.all(5.0),
-                                child: Text('Round: $round',
+                                child: Text('Round: ',
                                     style:
                                         Theme.of(context).textTheme.labelSmall),
                               ),
@@ -443,7 +448,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                           ],
                         ),
                       ),
-                      ...groupedData[visitTime]!
+                      ...groupedRetDateTime[retreatDTime]!
                           .map<Widget>((e) => Column(
                                 children: [
                                   Column(
@@ -467,10 +472,10 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                   children: [
                                                     Container(
                                                       decoration: BoxDecoration(
-                                                        color: Colors.green,
+                                                        color: Colors.purple,
                                                         shape: BoxShape.circle,
                                                         border: Border.all(
-                                                            color: Colors.green,
+                                                            color: Colors.purple,
                                                             width: 2.0),
                                                       ),
                                                       child: const Padding(
@@ -478,7 +483,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                             EdgeInsets.all(8.0),
                                                         child: Icon(
                                                           Icons
-                                                              .calendar_today_outlined,
+                                                              .repeat_rounded,
                                                           color: Colors.white,
                                                         ),
                                                       ),
@@ -497,7 +502,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                       18.0),
                                                         ),
                                                         Text(
-                                                          'داکتر معالج: ${e['staffFName']} ${e['staffLName']}',
+                                                          'داکتر معالج: ${e['staffFirstName']} ${e['staffLastName']}',
                                                           style:
                                                               const TextStyle(
                                                                   color: Colors
@@ -512,146 +517,183 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                               ],
                                             ),
                                           ),
-                                          child: FutureBuilder(
-                                            future:
-                                                _getServiceDetails(e['apptID']),
-                                            builder: (context, snapshot) {
-                                              if (snapshot.connectionState ==
-                                                  ConnectionState.waiting) {
-                                                return const Center(
-                                                    child: Center(
-                                                        child:
-                                                            CircularProgressIndicator()));
-                                              } else if (snapshot.hasError) {
-                                                return Text(
-                                                    'Error with service requirements: ${snapshot.error}');
-                                              } else {
-                                                if (snapshot.data!.isEmpty) {
-                                                  return const Center(
-                                                      child: Padding(
-                                                    padding:
-                                                        EdgeInsets.all(8.0),
-                                                    child: Text(
-                                                        'No requirements found.'),
-                                                  ));
-                                                } else {
-                                                  var reqData = snapshot.data;
-                                                  return ListTile(
-                                                    title: Column(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              const Text(
-                                                                'Service Name',
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        12.0,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
-                                                              ),
-                                                              Text(
-                                                                e['serviceName'],
-                                                                style:
-                                                                    const TextStyle(
-                                                                  color: Color
-                                                                      .fromARGB(
-                                                                          255,
-                                                                          112,
-                                                                          112,
-                                                                          112),
-                                                                  fontSize:
-                                                                      12.0,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
+                                          child: ListTile(
+                                            title: Column(
+                                              children: [
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        'Service Name',
+                                                        style: TextStyle(
+                                                            fontSize: 12.0,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text(
+                                                        e['serviceName'],
+                                                        style: const TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              112,
+                                                              112,
+                                                              112),
+                                                          fontSize: 12.0,
                                                         ),
-                                                        for (var req
-                                                            in reqData!)
-                                                          Column(children: [
-                                                            Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child: Row(
-                                                                children: [
-                                                                  Text(
-                                                                    req.reqName ==
-                                                                            'Teeth Selection'
-                                                                        ? 'Teeth Selected'
-                                                                        : req
-                                                                            .reqName,
-                                                                    style: const TextStyle(
-                                                                        fontSize:
-                                                                            12.0,
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                                                  Expanded(
-                                                                    child: Text(
-                                                                      req.reqName ==
-                                                                              'Teeth Selection'
-                                                                          ? convertMultiQuadrant(req
-                                                                              .reqValue)
-                                                                          : req
-                                                                              .reqValue,
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .end,
-                                                                      style:
-                                                                          const TextStyle(
-                                                                        color: Color.fromARGB(
-                                                                            255,
-                                                                            112,
-                                                                            112,
-                                                                            112),
-                                                                        fontSize:
-                                                                            12.0,
-                                                                      ),
-                                                                    ),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                            ),
-                                                          ]),
-                                                        SizedBox(
-                                                          width: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width *
-                                                              0.3,
-                                                          child: IconButton(
-                                                            tooltip: 'Delete',
-                                                            splashRadius: 23,
-                                                            onPressed: () =>
-                                                                _onDeleteAppointment(
-                                                                    context,
-                                                                    e['apptID'],
-                                                                    () {
-                                                              setState(() {});
-                                                            }),
-                                                            icon: const Icon(
-                                                                Icons
-                                                                    .delete_forever_outlined,
-                                                                size: 16.0,
-                                                                color:
-                                                                    Colors.red),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  );
-                                                }
-                                              }
-                                            },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        'Reason',
+                                                        style: TextStyle(
+                                                            fontSize: 12.0,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text(
+                                                        e['retreatReason'],
+                                                        style: const TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              112,
+                                                              112,
+                                                              112),
+                                                          fontSize: 12.0,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        'Outcomes',
+                                                        style: TextStyle(
+                                                            fontSize: 12.0,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text(
+                                                        e['retreatOutcome'],
+                                                        style: const TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              112,
+                                                              112,
+                                                              112),
+                                                          fontSize: 12.0,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        'Details',
+                                                        style: TextStyle(
+                                                            fontSize: 12.0,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text(
+                                                        e['retreatDetails'] ??
+                                                            '--',
+                                                        style: const TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              112,
+                                                              112,
+                                                              112),
+                                                          fontSize: 12.0,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      const Text(
+                                                        'Fee Earned',
+                                                        style: TextStyle(
+                                                            fontSize: 12.0,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      Text(
+                                                        e['retreatFee'] <= 0 ? 'For free' : '${e['retreatFee'].toString()} افغانی',
+                                                        style: const TextStyle(
+                                                          color: Color.fromARGB(
+                                                              255,
+                                                              112,
+                                                              112,
+                                                              112),
+                                                          fontSize: 12.0,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.3,
+                                                  child: IconButton(
+                                                    tooltip: 'Delete',
+                                                    splashRadius: 23,
+                                                    onPressed: () =>
+                                                        _onDeleteRetreatment(
+                                                            context,
+                                                            e['retreatID'], () {
+                                                      setState(() {});
+                                                    }),
+                                                    icon: const Icon(
+                                                        Icons
+                                                            .delete_forever_outlined,
+                                                        size: 16.0,
+                                                        color: Colors.red),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -695,9 +737,10 @@ Future<List<Map>> _getRetreatment() async {
   try {
     final conn = await onConnToDb();
 
-    const query = ''' SELECT apt_ID, service_ID, retreat_date, 
-          
-        ''';
+    const query =
+        '''SELECT r.apt_ID, r.service_ID, r.retreat_date, s.ser_name, r.retreat_cost, r.retreat_reason, r.retreat_outcome, r.outcome_details, st.staff_ID, st.firstname, st.lastname, r.retreat_ID FROM retreatments r 
+                    INNER JOIN staff st ON r.staff_ID = st.staff_ID
+                    INNER JOIN services s ON r.service_ID = s.ser_ID WHERE r.pat_ID = ? ORDER BY r.retreat_date DESC''';
 
 // a.status = 'Pending' means it is scheduled in calendar not completed.
     final results = await conn.query(query, [PatientInfo.patID]);
@@ -706,17 +749,18 @@ Future<List<Map>> _getRetreatment() async {
 
     for (var row in results) {
       retreatments.add({
-        'staffID': row[8],
-        'visitTime': row[2].toString(),
-        'round': row[3],
-        'installment': row[4],
-        'discount': row[5],
+        'retreatDate': row[2].toString(),
         'apptID': row[0],
-        'staffFName': row[9].toString(),
-        'staffLName': row[10].toString(),
-        'serviceName': row[7].toString(),
+        'serviceName': row[3].toString(),
         'serviceID': row[1],
-        'totalFee': row[6]
+        'retreatFee': row[4],
+        'retreatReason': row[5],
+        'retreatOutcome': row[6],
+        'retreatDetails': row[7],
+        'staffID': row[8],
+        'staffFirstName': row[9],
+        'staffLastName': row[10],
+        'retreatID': row[11]
       });
     }
 
@@ -835,37 +879,4 @@ class ServiceDetailDataModel {
     required this.reqName,
     required this.reqValue,
   });
-}
-
-// This function makes name structure using the four qoudrants (Q1, Q2, Q3 & Q4)
-Map<String, String> quadrantDescriptions = {
-  'Q1': 'Top-Left',
-  'Q2': 'Top-Right',
-  'Q3': 'Bottom-Right',
-  'Q4': 'Bottom-Left',
-};
-// This function takes a single code (like ‘Q1-4’) and converts it to a description (like ‘Top-Left, Tooth 4’).
-String convertSingleQuadrant(String quadTooth) {
-  var parts = quadTooth.split('-');
-  var quadrant = quadrantDescriptions[parts[0]];
-  var tooth = parts[1];
-  return '$quadrant Tooth $tooth';
-}
-
-// This takes a string of multiple codes (like ‘Q1-4, Q2-3, Q4-1’), splits it into individual codes,
-String convertMultiQuadrant(String quadTeeth) {
-  // Split the input string into individual quadrants
-  var quadrantList =
-      quadTeeth.split(',').map((quadrant) => quadrant.trim()).toList();
-  // This will hold the descriptions
-  var descriptionList = <String>[];
-  // For each quadrant in the list...
-  for (var quadrant in quadrantList) {
-    // Convert the quadrant to a description
-    var description = convertSingleQuadrant(quadrant);
-    // And add it to the list of descriptions
-    descriptionList.add(description);
-  }
-  // Join the descriptions back together into a single string
-  return descriptionList.join(', ');
 }
