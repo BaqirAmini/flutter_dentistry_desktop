@@ -14,6 +14,7 @@ import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/appointments.dart';
 import 'package:flutter_dentistry/views/patients/fee_installments.dart';
 import 'package:flutter_dentistry/views/patients/patient_history.dart';
+import 'package:flutter_dentistry/views/patients/retreatments.dart';
 import 'package:flutter_dentistry/views/patients/xrays.dart';
 import 'package:flutter_dentistry/views/settings/settings_menu.dart';
 import 'package:flutter_dentistry/views/sf_calendar/patient_specific_sfcalendar.dart';
@@ -434,11 +435,10 @@ class _NavigationArea extends StatelessWidget {
             ),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.3,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: HoverCard(
-                  title: const Row(
+                  title: Row(
                     children: [
                       Icon(FontAwesomeIcons.moneyBill1),
                       SizedBox(width: 10.0),
@@ -456,11 +456,10 @@ class _NavigationArea extends StatelessWidget {
           children: [
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.3,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: HoverCard(
-                  title: const Row(
+                  title: Row(
                     children: [
                       Icon(FontAwesomeIcons.heartPulse),
                       SizedBox(width: 10.0),
@@ -473,11 +472,10 @@ class _NavigationArea extends StatelessWidget {
             ),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.3,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: HoverCard(
-                  title: const Row(
+                  title: Row(
                     children: [
                       Icon(FontAwesomeIcons.fileImage),
                       SizedBox(width: 10.0),
@@ -490,7 +488,22 @@ class _NavigationArea extends StatelessWidget {
             ),
           ],
         ),
-        // Add more cards here for each setting
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.3,
+          child: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            child: HoverCard(
+              title: Row(
+                children: [
+                  Icon(FontAwesomeIcons.heartPulse),
+                  SizedBox(width: 10.0),
+                  Text('درمان مجدد / عودی'),
+                ],
+              ),
+              indexNum: 104,
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -500,7 +513,7 @@ class HoverCard extends StatefulWidget {
   final Widget title;
   final int indexNum;
 
-  HoverCard({required this.title, required this.indexNum});
+  const HoverCard({super.key, required this.title, required this.indexNum});
 
   @override
   _HoverCardState createState() => _HoverCardState();
@@ -549,11 +562,18 @@ class _HoverCardState extends State<HoverCard> {
                       builder: (context) => const FeeRecord(),
                     ),
                   );
-                } else {
+                } else if (widget.indexNum == 103) {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const XRayUploadScreen(),
+                      ));
+                } else {
+                  
+                   Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Retreatment(),
                       ));
                 }
               },
