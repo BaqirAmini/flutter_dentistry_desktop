@@ -165,7 +165,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
   List<Map<String, dynamic>> services = [];
   final _retreatFormKey = GlobalKey<FormState>();
 
-  // TextEditingController
+  bool _feeNotRequired = false;
 
   @override
   void initState() {
@@ -236,14 +236,17 @@ class _AppointmentContentState extends State<_AppointmentContent> {
   }
 
 // This function creates a retreatment for any appointment
-  _onAddRetreatment(BuildContext context) {
+  _onAddRetreatment(
+      BuildContext context, int apptId, int serviceId, String serviceName) {
     DateTime selectedDateTime = DateTime.now();
-    TextEditingController apptdatetimeController = TextEditingController();
+    TextEditingController retreatDateTimeController = TextEditingController();
     TextEditingController retreatReasonController = TextEditingController();
     TextEditingController retreatFeeController = TextEditingController();
     TextEditingController retreatOutcomeController = TextEditingController();
-
-    apptdatetimeController.text = selectedDateTime.toString();
+    String retreateOutCome = 'Successful';
+    String dateTimeNotFormatted = selectedDateTime.toString();
+    retreatDateTimeController.text = intl2.DateFormat('yyyy-MM-dd hh:mm a')
+        .format(DateTime.parse(selectedDateTime.toString()));
 
     return showDialog(
       useRootNavigator: true,
@@ -253,315 +256,410 @@ class _AppointmentContentState extends State<_AppointmentContent> {
           return AlertDialog(
             title: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text(
-                'Create Retreament for Implant',
-                style: TextStyle(color: Colors.blue),
+              child: Text(
+                'Create Retreament for $serviceName',
+                style: const TextStyle(color: Colors.blue),
               ),
             ),
             content: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.5,
+                height: MediaQuery.of(context).size.height * 0.6,
                 width: MediaQuery.of(context).size.width * 0.35,
-                child: SingleChildScrollView(
-                  child: Form(
-                    key: _retreatFormKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'انتخاب داکتر',
-                              labelStyle: TextStyle(color: Colors.blueAccent),
-                              enabledBorder: OutlineInputBorder(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: _retreatFormKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'انتخاب داکتر',
+                                labelStyle: TextStyle(color: Colors.blueAccent),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide:
+                                        BorderSide(color: Colors.blueAccent)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: Container(
+                                  height: 26.0,
+                                  padding: EdgeInsets.zero,
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: staffId.toString(),
+                                    style: const TextStyle(color: Colors.black),
+                                    items: staffList.map((staff) {
+                                      return DropdownMenuItem<String>(
+                                        value: staff['staff_ID'],
+                                        alignment: Alignment.centerRight,
+                                        child: Text(staff['firstname'] +
+                                            ' ' +
+                                            staff['lastname']),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        staffId = int.parse(newValue!);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'خدمات مورد نیاز',
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: SizedBox(
+                                  height: 26.0,
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: serviceId.toString(),
+                                    items: services.map((service) {
+                                      return DropdownMenuItem<String>(
+                                        value: service['ser_ID'],
+                                        alignment: Alignment.centerRight,
+                                        child: Text(service['ser_name']),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        // Assign the selected service id into the static one.
+                                        serviceId = int.parse(newValue!);
+                                        print('Selected service: $serviceId');
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: TextFormField(
+                              textDirection: TextDirection.ltr,
+                              controller: retreatDateTimeController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Date and time should be set.';
+                                }
+                                return null;
+                              },
+                              readOnly: true,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'تاریخ و زمان عودی',
+                                suffixIcon: Icon(Icons.access_time),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                              onTap: () async {
+                                final DateTime? pickedDate =
+                                    await showDatePicker(
+                                  context: context,
+                                  initialDate: selectedDateTime,
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime(2100),
+                                );
+                                if (pickedDate != null) {
+                                  // ignore: use_build_context_synchronously
+                                  final TimeOfDay? pickedTime =
+                                      // ignore: use_build_context_synchronously
+                                      await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.now(),
+                                  );
+                                  if (pickedTime != null) {
+                                    selectedDateTime = DateTime(
+                                      pickedDate.year,
+                                      pickedDate.month,
+                                      pickedDate.day,
+                                      pickedTime.hour,
+                                      pickedTime.minute,
+                                    );
+                                    retreatDateTimeController.text =
+                                        intl2.DateFormat('yyyy-MM-dd hh:mm a')
+                                            .format(DateTime.parse(
+                                                selectedDateTime.toString()));
+                                    dateTimeNotFormatted =
+                                        selectedDateTime.toString();
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: TextFormField(
+                              controller: retreatReasonController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'علت عودی را باید درج کنید.';
+                                } else if (value.length < 5 ||
+                                    value.length > 40 ||
+                                    value.length < 5) {
+                                  return 'علت عودی باید حداقل 5 و حداکثر 40 حرف باشد.';
+                                }
+                                return null;
+                              },
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(GlobalUsage.allowedEPChar))
+                              ],
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'علت عودی',
+                                suffixIcon: Icon(Icons.note_alt_outlined),
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide:
-                                      BorderSide(color: Colors.blueAccent)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: Container(
-                                height: 26.0,
-                                padding: EdgeInsets.zero,
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: staffId.toString(),
-                                  style: const TextStyle(color: Colors.black),
-                                  items: staffList.map((staff) {
-                                    return DropdownMenuItem<String>(
-                                      value: staff['staff_ID'],
-                                      alignment: Alignment.centerRight,
-                                      child: Text(staff['firstname'] +
-                                          ' ' +
-                                          staff['lastname']),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      staffId = int.parse(newValue!);
-                                    });
-                                  },
+                                      BorderSide(color: Colors.red, width: 1.5),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'خدمات مورد نیاز',
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
+                          if (!_feeNotRequired)
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10.0, vertical: 10.0),
+                              child: TextFormField(
+                                controller: retreatFeeController,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'لطفاً مقدار فیس را وارد کنید.';
+                                  } else if (value.isNotEmpty) {
+                                    if (double.parse(value) < 50 ||
+                                        double.parse(value) > 10000) {
+                                      return 'فیس نمی تواند کمتر از 50 افغانی و بیشتر از 10000 افغانی باشد.';
+                                    }
+                                  }
+                                  return null;
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(GlobalUsage.allowedDigPeriod))
+                                ],
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'فیس عودی',
+                                  suffixIcon: Icon(Icons.attach_money_rounded),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5),
+                                  ),
+                                ),
+                              ),
                             ),
-                            child: DropdownButtonHideUnderline(
-                              child: SizedBox(
-                                height: 26.0,
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: serviceId.toString(),
-                                  items: services.map((service) {
-                                    return DropdownMenuItem<String>(
-                                      value: service['ser_ID'],
-                                      alignment: Alignment.centerRight,
-                                      child: Text(service['ser_name']),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
+                          Row(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    bottom: 10.0, right: 15, left: 15),
+                                width: 140.0,
+                                child: CheckboxListTile(
+                                  value: _feeNotRequired,
+                                  onChanged: (bool? value) {
                                     setState(() {
-                                      // Assign the selected service id into the static one.
-                                      serviceId = int.parse(newValue!);
-                                      print('Selected service: $serviceId');
+                                      _feeNotRequired = value!;
                                     });
                                   },
+                                  title: const Text('بطور رایگان',
+                                      style: TextStyle(color: Colors.blue)),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 10.0, vertical: 0),
+                                ),
+                              ),
+                              Container()
+                            ],
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                labelText: 'نتایج عودی',
+                                suffixIcon: Icon(Icons.repeat_rounded),
+                                border: OutlineInputBorder(),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red),
+                                ),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: SizedBox(
+                                  height: 26.0,
+                                  child: DropdownButton(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: retreateOutCome,
+                                    items: <String>[
+                                      'Successful',
+                                      'Partially Succesful',
+                                      'Unsuccessful',
+                                      'Problems Encoutered',
+                                      'Aditional Visit Required',
+                                      'Other'
+                                    ].map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        retreateOutCome = newValue!;
+                                      });
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: TextFormField(
-                            controller: apptdatetimeController,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Date and time should be set.';
-                              }
-                              return null;
-                            },
-                            readOnly: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تاریخ و زمان عودی',
-                              suffixIcon: Icon(Icons.access_time),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
-                            ),
-                            onTap: () async {
-                              final DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: selectedDateTime,
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2100),
-                              );
-                              if (pickedDate != null) {
-                                // ignore: use_build_context_synchronously
-                                final TimeOfDay? pickedTime =
-                                    // ignore: use_build_context_synchronously
-                                    await showTimePicker(
-                                  context: context,
-                                  initialTime: TimeOfDay.now(),
-                                );
-                                if (pickedTime != null) {
-                                  selectedDateTime = DateTime(
-                                    pickedDate.year,
-                                    pickedDate.month,
-                                    pickedDate.day,
-                                    pickedTime.hour,
-                                    pickedTime.minute,
-                                  );
-                                  apptdatetimeController.text =
-                                      selectedDateTime.toString();
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: TextFormField(
-                            controller: retreatReasonController,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'علت عودی را باید درج کنید.';
-                              } else if (value.length < 5 ||
-                                  value.length > 40 ||
-                                  value.length < 5) {
-                                return 'علت عودی باید حداقل 5 و حداکثر 40 حرف باشد.';
-                              }
-                              return null;
-                            },
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(GlobalUsage.allowedEPChar))
-                            ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'علت عودی',
-                              suffixIcon: Icon(Icons.description_outlined),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide:
-                                    BorderSide(color: Colors.red, width: 1.5),
+                          if (retreateOutCome == 'Other')
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10.0, vertical: 10.0),
+                              child: TextFormField(
+                                controller: retreatOutcomeController,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'لطفاً راجع به این مورد شرح دهید.';
+                                  } else if (value.length < 5 ||
+                                      value.length > 40 ||
+                                      value.length < 5) {
+                                    return 'توضیحات باید حداقل 5 و حداکثر 40 حرف باشد.';
+                                  }
+                                  return null;
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(GlobalUsage.allowedEPChar))
+                                ],
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'توضیحات',
+                                  suffixIcon: Icon(Icons.description_outlined),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: TextFormField(
-                            controller: retreatFeeController,
-                            validator: (value) {
-                              if (value!.isNotEmpty) {
-                                if (value.length < 5 || value.length > 40) {
-                                  return 'Details should at least 5 and at most 40 characters.';
-                                }
-                                return null;
-                              }
-                              return null;
-                            },
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(GlobalUsage.allowedEPChar))
-                            ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'فیس عودی',
-                              suffixIcon: Icon(Icons.description_outlined),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide:
-                                    BorderSide(color: Colors.red, width: 1.5),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: TextFormField(
-                            controller: retreatOutcomeController,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'نتایج عودی را باید درج کنید.';
-                              } else if (value.length < 5 ||
-                                  value.length > 40 ||
-                                  value.length < 5) {
-                                return 'نتایج عودی باید حداقل 5 و حداکثر 40 حرف باشد.';
-                              }
-                              return null;
-                            },
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(GlobalUsage.allowedEPChar))
-                            ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'نتایج عودی',
-                              suffixIcon: Icon(Icons.description_outlined),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide:
-                                    BorderSide(color: Colors.red, width: 1.5),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -572,11 +670,54 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
               ),
-              TextButton(
+              ElevatedButton(
                 onPressed: () async {
-                  if (_retreatFormKey.currentState!.validate()) {}
+                  if (_retreatFormKey.currentState!.validate()) {
+                    try {
+                      double retreatCost = _feeNotRequired
+                          ? 0
+                          : double.parse(retreatFeeController.text);
+                      final conn = await onConnToDb();
+                      var results = await conn.query(
+                          '''INSERT INTO retreatments (apt_ID, pat_ID, service_ID, staff_ID, retreat_date, retreat_cost, retreat_reason, retreat_outcome, outcome_details)
+                      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+                      ''',
+                          [
+                            apptId,
+                            PatientInfo.patID,
+                            serviceId,
+                            staffId,
+                            dateTimeNotFormatted,
+                            retreatCost,
+                            retreatReasonController.text,
+                            retreateOutCome,
+                            retreatOutcomeController.text.isEmpty
+                                ? null
+                                : retreatOutcomeController.text
+                          ]);
+                      if (results.affectedRows! > 0) {
+                        // ignore: use_build_context_synchronously
+                        Navigator.of(context, rootNavigator: true).pop();
+                        // ignore: use_build_context_synchronously
+                        _onShowSnack(Colors.green,
+                            'عودی مربوط این جلسه ثبت گردید.', context);
+                      } else {
+                        // ignore: use_build_context_synchronously
+                        Navigator.of(context, rootNavigator: true).pop();
+                        // ignore: use_build_context_synchronously
+                        _onShowSnack(
+                            Colors.red,
+                            'ثبت عودی مربوط این جلسه ناکام شد. دوباره سعی کنید.',
+                            context);
+                      }
+
+                      await conn.close();
+                    } catch (e) {
+                      print('Creating retreatment failed: $e');
+                    }
+                  }
                 },
-                child: Text('Save'),
+                child: const Text('Save'),
               ),
             ],
           );
@@ -989,7 +1130,10 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                     23,
                                                                 onPressed: () {
                                                                   _onAddRetreatment(
-                                                                      context);
+                                                                      context,
+                                                                      e['apptID'],
+                                                                      e['serviceID'],
+                                                                      e['serviceName']);
                                                                 },
                                                                 icon: const Icon(
                                                                     Icons
