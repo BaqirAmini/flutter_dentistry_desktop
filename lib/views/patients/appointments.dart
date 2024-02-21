@@ -237,7 +237,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
 
 // This function creates a retreatment for any appointment
   _onAddRetreatment(
-      BuildContext context, int apptId, int serviceId, String serviceName) {
+      BuildContext context, int apptId, int damageSerId, String serviceName) {
     DateTime selectedDateTime = DateTime.now();
     TextEditingController retreatDateTimeController = TextEditingController();
     TextEditingController retreatReasonController = TextEditingController();
@@ -264,7 +264,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
             content: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
+                height: MediaQuery.of(context).size.height * 0.7,
                 width: MediaQuery.of(context).size.width * 0.35,
                 child: Center(
                   child: SingleChildScrollView(
@@ -679,13 +679,14 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                           : double.parse(retreatFeeController.text);
                       final conn = await onConnToDb();
                       var results = await conn.query(
-                          '''INSERT INTO retreatments (apt_ID, pat_ID, service_ID, staff_ID, retreat_date, retreat_cost, retreat_reason, retreat_outcome, outcome_details)
-                      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+                          '''INSERT INTO retreatments (apt_ID, pat_ID, help_service_ID, damage_service_ID, staff_ID, retreat_date, retreat_cost, retreat_reason, retreat_outcome, outcome_details)
+                      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                       ''',
                           [
                             apptId,
                             PatientInfo.patID,
                             serviceId,
+                            damageSerId,
                             staffId,
                             dateTimeNotFormatted,
                             retreatCost,
