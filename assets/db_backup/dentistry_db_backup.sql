@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 20, 2024 at 11:59 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.0.25
+-- Generation Time: Feb 21, 2024 at 06:40 PM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.1.6
 -- Create Database
 CREATE DATABASE IF NOT EXISTS dentistry_db;
 USE dentistry_db;
@@ -43,7 +43,7 @@ CREATE TABLE `appointments` (
   `status` varchar(64) DEFAULT NULL,
   `notification` varchar(64) DEFAULT NULL,
   `details` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `appointments`
@@ -92,7 +92,7 @@ CREATE TABLE `clinics` (
   `open_date` date DEFAULT NULL,
   `cli_addr` varchar(64) DEFAULT NULL,
   `founder` varchar(64) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `clinics`
@@ -110,7 +110,7 @@ INSERT INTO `clinics` (`cli_ID`, `cli_logo`, `cli_name`, `open_date`, `cli_addr`
 CREATE TABLE `conditions` (
   `cond_ID` int(11) NOT NULL,
   `name` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `conditions`
@@ -142,7 +142,7 @@ CREATE TABLE `condition_details` (
   `diagnosis_date` date DEFAULT NULL,
   `pat_ID` int(128) DEFAULT NULL,
   `notes` tinytext DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `condition_details`
@@ -357,7 +357,7 @@ CREATE TABLE `expenses` (
   `exp_ID` int(128) NOT NULL,
   `cli_ID` int(128) NOT NULL,
   `exp_name` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `expenses`
@@ -388,7 +388,7 @@ CREATE TABLE `expense_detail` (
   `purchase_date` date NOT NULL,
   `invoice` varchar(128) DEFAULT NULL,
   `note` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `expense_detail`
@@ -415,7 +415,7 @@ CREATE TABLE `fee_payments` (
   `whole_fee_paid` tinyint(1) DEFAULT 0,
   `staff_ID` int(11) DEFAULT NULL,
   `apt_ID` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `fee_payments`
@@ -470,7 +470,7 @@ CREATE TABLE `patients` (
   `blood_group` varchar(12) DEFAULT NULL,
   `address` varchar(128) DEFAULT NULL,
   `photo` mediumblob DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `patients`
@@ -511,7 +511,7 @@ CREATE TABLE `patient_services` (
   `ser_ID` int(11) NOT NULL,
   `req_ID` int(11) NOT NULL,
   `value` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `patient_services`
@@ -576,7 +576,7 @@ CREATE TABLE `patient_xrays` (
   `xray_type` varchar(64) NOT NULL,
   `reg_date` date NOT NULL,
   `description` tinytext DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `patient_xrays`
@@ -617,27 +617,25 @@ CREATE TABLE `retreatments` (
   `retreat_ID` int(11) NOT NULL,
   `apt_ID` int(11) DEFAULT NULL,
   `pat_ID` int(11) DEFAULT NULL,
-  `service_ID` int(11) DEFAULT NULL,
+  `help_service_ID` int(11) DEFAULT NULL,
+  `damage_service_ID` int(11) DEFAULT NULL,
   `staff_ID` int(11) DEFAULT NULL,
   `retreat_date` datetime NOT NULL,
   `retreat_cost` decimal(12,2) DEFAULT 0.00,
   `retreat_reason` varchar(128) NOT NULL,
   `retreat_outcome` varchar(64) NOT NULL,
   `outcome_details` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `retreatments`
 --
 
-INSERT INTO `retreatments` (`retreat_ID`, `apt_ID`, `pat_ID`, `service_ID`, `staff_ID`, `retreat_date`, `retreat_cost`, `retreat_reason`, `retreat_outcome`, `outcome_details`) VALUES
-(1, 132, 86, 9, 31, '2024-02-20 10:34:56', '400.20', 'درد شدید دندان بعد ازین عملیه', 'Successful', NULL),
-(2, 132, 86, 9, 29, '2024-02-20 10:38:36', '0.00', 'آماس بیره ها', 'Other', 'فقط برای آزمایش'),
-(3, 95, 92, 11, 26, '2024-02-20 10:41:03', '0.00', 'dssssssssssdfd', 'Successful', NULL),
-(4, 95, 92, 11, 26, '2024-02-20 10:46:45', '500.50', 'sdsggggggggggggggg', 'Unsuccessful', NULL),
-(5, 111, 93, 8, 29, '2024-02-20 10:49:24', '500.60', 'درد شدید بیره ها', 'Successful', NULL),
-(6, 93, 93, 1, 29, '2024-02-20 10:57:09', '600.60', 'sdfkkkkkkkkkkkkkkkkk', 'Other', 'some text here to test'),
-(7, 102, 94, 9, 26, '2024-02-20 11:38:40', '0.00', 'سردردی شدید', 'Other', 'ممکن حساسیت به دنبال داشته باشد');
+INSERT INTO `retreatments` (`retreat_ID`, `apt_ID`, `pat_ID`, `help_service_ID`, `damage_service_ID`, `staff_ID`, `retreat_date`, `retreat_cost`, `retreat_reason`, `retreat_outcome`, `outcome_details`) VALUES
+(12, 132, 86, 8, 9, 29, '2024-02-21 21:17:56', '0.00', 'درد شدید دندانها', 'Aditional Visit Required', NULL),
+(13, 133, 86, 11, 15, 26, '2024-02-21 21:20:41', '1000.00', 'دو دندان تازه کاشته شده درد دارد', 'Successful', NULL),
+(14, 132, 86, 1, 9, 31, '2024-02-10 08:00:00', '0.00', 'حساسیت بیره ها', 'Aditional Visit Required', NULL),
+(15, 132, 86, 5, 9, 26, '2024-01-01 22:01:00', '0.00', 'فک بالا کج شده است', 'Partially Succesful', NULL);
 
 -- --------------------------------------------------------
 
@@ -649,7 +647,7 @@ CREATE TABLE `services` (
   `ser_ID` int(128) NOT NULL,
   `ser_name` varchar(64) NOT NULL,
   `ser_fee` decimal(10,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `services`
@@ -680,7 +678,7 @@ INSERT INTO `services` (`ser_ID`, `ser_name`, `ser_fee`) VALUES
 CREATE TABLE `service_requirements` (
   `req_ID` int(11) NOT NULL,
   `req_name` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `service_requirements`
@@ -717,7 +715,7 @@ CREATE TABLE `staff` (
   `address` varchar(128) DEFAULT NULL,
   `family_phone2` varchar(10) DEFAULT NULL,
   `file_type` varchar(16) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `staff`
@@ -753,7 +751,7 @@ CREATE TABLE `staff_auth` (
   `username` varchar(64) NOT NULL,
   `password` varchar(64) NOT NULL,
   `role` varchar(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `staff_auth`
@@ -775,7 +773,7 @@ CREATE TABLE `taxes` (
   `total_annual_tax` decimal(15,2) NOT NULL,
   `TIN` char(10) DEFAULT NULL,
   `tax_for_year` int(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `taxes`
@@ -807,7 +805,7 @@ CREATE TABLE `tax_payments` (
   `note` mediumtext DEFAULT NULL,
   `modified_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `docs` blob DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Indexes for dumped tables
@@ -897,9 +895,10 @@ ALTER TABLE `patient_xrays`
 ALTER TABLE `retreatments`
   ADD PRIMARY KEY (`retreat_ID`),
   ADD KEY `appt_retreat_id_fk` (`apt_ID`),
-  ADD KEY `service_retreat_id_fk` (`service_ID`),
+  ADD KEY `service_retreat_id_fk` (`help_service_ID`),
   ADD KEY `pat_retreat_id_fk` (`pat_ID`),
-  ADD KEY `staff_retreat_id_fk` (`staff_ID`);
+  ADD KEY `staff_retreat_id_fk` (`staff_ID`),
+  ADD KEY `damage_service_retreat_id_fk` (`damage_service_ID`);
 
 --
 -- Indexes for table `services`
@@ -1002,7 +1001,7 @@ ALTER TABLE `patient_xrays`
 -- AUTO_INCREMENT for table `retreatments`
 --
 ALTER TABLE `retreatments`
-  MODIFY `retreat_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `retreat_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `services`
@@ -1099,8 +1098,9 @@ ALTER TABLE `patient_xrays`
 --
 ALTER TABLE `retreatments`
   ADD CONSTRAINT `appt_retreat_id_fk` FOREIGN KEY (`apt_ID`) REFERENCES `appointments` (`apt_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `damage_service_retreat_id_fk` FOREIGN KEY (`damage_service_ID`) REFERENCES `services` (`ser_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `help_service_retreat_id_fk` FOREIGN KEY (`help_service_ID`) REFERENCES `services` (`ser_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `pat_retreat_id_fk` FOREIGN KEY (`pat_ID`) REFERENCES `patients` (`pat_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `service_retreat_id_fk` FOREIGN KEY (`service_ID`) REFERENCES `services` (`ser_ID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `staff_retreat_id_fk` FOREIGN KEY (`staff_ID`) REFERENCES `staff` (`staff_ID`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
