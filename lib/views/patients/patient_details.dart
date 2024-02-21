@@ -417,16 +417,14 @@ class _NavigationArea extends StatelessWidget {
           children: [
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.3,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: HoverCard(
                   title: Row(
                     children: [
-                      const Icon(FontAwesomeIcons.userDoctor),
-                      const SizedBox(width: 10.0),
-                      Text('جلسات',
-                          style: Theme.of(context).textTheme.bodyLarge),
+                      Icon(FontAwesomeIcons.userDoctor, color: Colors.blue),
+                      SizedBox(width: 10.0),
+                      Text('جلسات', style: TextStyle(color: Colors.blue)),
                     ],
                   ),
                   indexNum: 100,
@@ -440,9 +438,10 @@ class _NavigationArea extends StatelessWidget {
                 child: HoverCard(
                   title: Row(
                     children: [
-                      Icon(FontAwesomeIcons.moneyBill1),
+                      Icon(FontAwesomeIcons.moneyBill1, color: Colors.blue),
                       SizedBox(width: 10.0),
-                      Text('فیس / اقساط'),
+                      Text('فیس / اقساط',
+                          style: TextStyle(color: Colors.blue, fontSize: 18.0)),
                     ],
                   ),
                   indexNum: 101,
@@ -461,9 +460,10 @@ class _NavigationArea extends StatelessWidget {
                 child: HoverCard(
                   title: Row(
                     children: [
-                      Icon(FontAwesomeIcons.heartPulse),
+                      Icon(FontAwesomeIcons.heartPulse, color: Colors.blue),
                       SizedBox(width: 10.0),
-                      Text('تاریخچه صحی مریض'),
+                      Text('تاریخچه صحی مریض',
+                          style: TextStyle(color: Colors.blue, fontSize: 18.0)),
                     ],
                   ),
                   indexNum: 102,
@@ -477,9 +477,10 @@ class _NavigationArea extends StatelessWidget {
                 child: HoverCard(
                   title: Row(
                     children: [
-                      Icon(FontAwesomeIcons.fileImage),
+                      Icon(FontAwesomeIcons.fileImage, color: Colors.blue),
                       SizedBox(width: 10.0),
-                      Text('X-Rays / Files'),
+                      Text('X-Rays / Files',
+                          style: TextStyle(color: Colors.blue, fontSize: 18.0)),
                     ],
                   ),
                   indexNum: 103,
@@ -495,9 +496,10 @@ class _NavigationArea extends StatelessWidget {
             child: HoverCard(
               title: Row(
                 children: [
-                  Icon(FontAwesomeIcons.heartPulse),
+                  Icon(Icons.repeat, color: Colors.blue),
                   SizedBox(width: 10.0),
-                  Text('درمان مجدد / عودی'),
+                  Text('درمان مجدد / عودی',
+                      style: TextStyle(color: Colors.blue, fontSize: 18.0)),
                 ],
               ),
               indexNum: 104,
@@ -538,12 +540,14 @@ class _HoverCardState extends State<HoverCard> {
           height: 60,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.2),
-            border: Border.all(color: Colors.grey, width: 0.5),
+            border: Border.all(color: Colors.blue, width: 0.5),
           ),
           child: Center(
             child: ListTile(
+              hoverColor: Colors.transparent,
               title: widget.title,
-              trailing: const Icon(Icons.arrow_forward_ios_sharp),
+              trailing:
+                  const Icon(Icons.arrow_forward_ios_sharp, color: Colors.blue),
               onTap: () {
                 if (widget.indexNum == 100) {
                   Navigator.push(
@@ -569,8 +573,7 @@ class _HoverCardState extends State<HoverCard> {
                         builder: (context) => const XRayUploadScreen(),
                       ));
                 } else {
-                  
-                   Navigator.push(
+                  Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const Retreatment(),
