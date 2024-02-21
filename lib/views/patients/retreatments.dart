@@ -1,12 +1,10 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
-import 'package:flutter_dentistry/views/patients/new_appointment.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:provider/provider.dart';
@@ -159,14 +157,11 @@ class _AppointmentContentState extends State<_AppointmentContent> {
   // These variable are used for editing schedule appointment
   int selectedStaffId = 0;
   int selectedServiceId = 0;
-  late int? serviceId;
+  late int? helpServiceID;
   late int? staffId;
   int? selectedPatientID;
   // This list is to be assigned services
   List<Map<String, dynamic>> services = [];
-  final _retreatFormKey = GlobalKey<FormState>();
-
-  bool _feeNotRequired = false;
 
   @override
   void initState() {
@@ -184,14 +179,14 @@ class _AppointmentContentState extends State<_AppointmentContent> {
     _gu.fetchServices().then((service) {
       setState(() {
         services = service;
-        serviceId = services.isNotEmpty
+        helpServiceID = services.isNotEmpty
             ? int.parse(services[0]['ser_ID'])
             : selectedServiceId;
       });
     });
   }
 
-// This function deletes an appointment after opening a dialog box.
+// This function deletes a retreatment after opening a dialog box.
   _onDeleteRetreatment(BuildContext context, int id, Function refresh) {
     return showDialog(
       useRootNavigator: true,
@@ -241,157 +236,6 @@ class _AppointmentContentState extends State<_AppointmentContent> {
     );
   }
 
-// This function edits an appointment
-  /* onEditAppointment(BuildContext context, int id, String date, double paidAmount, double dueAmount) {
-// The global for the form
-    final formKey = GlobalKey<FormState>();
-// The text editing controllers for the TextFormFields
-    final dateController = TextEditingController();
-    final paidController = TextEditingController();
-    final dueController = TextEditingController();
-
-  
-
-    return showDialog(
-      context: context,
-      builder: ((context) {
-        return AlertDialog(
-          title: const Directionality(
-            textDirection: TextDirection.rtl,
-            child: Text(
-              'تغییر سرویس',
-              style: TextStyle(color: Colors.blue),
-            ),
-          ),
-          content: Directionality(
-            textDirection: TextDirection.rtl,
-            child: Form(
-              key: formKey,
-              child: SizedBox(
-                width: 500.0,
-                height: 190.0,
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.all(15.0),
-                      child: TextFormField(
-                        controller: nameController,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'نام سرویس الزامی میباشد.';
-                          } else if (value.length < 5 || value.length > 30) {
-                            return 'نام سرویس باید 5 الی 30 حرف شد.';
-                          }
-                        },
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(regExOnlyAbc),
-                          ),
-                        ],
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'نام سرویس (خدمات)',
-                          suffixIcon: Icon(Icons.medical_services_sharp),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                          errorBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.red)),
-                          focusedErrorBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide:
-                                  BorderSide(color: Colors.red, width: 1.5)),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(15.0),
-                      child: TextFormField(
-                        controller: feeController,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
-                        ],
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'فیس تعیین شده',
-                          suffixIcon: Icon(Icons.money),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blue)),
-                          errorBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.red)),
-                          focusedErrorBorder: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(50.0)),
-                              borderSide:
-                                  BorderSide(color: Colors.red, width: 1.5)),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          actions: [
-            Directionality(
-              textDirection: TextDirection.rtl,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('لغو')),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (formKey.currentState!.validate()) {
-                        String serName = nameController.text;
-                        double serFee = feeController.text.isNotEmpty
-                            ? double.parse(feeController.text)
-                            : 0;
-                        final conn = await onConnToDb();
-                        final results = await conn.query(
-                            'UPDATE services SET ser_name = ?, ser_fee = ? WHERE ser_ID = ?',
-                            [serName, serFee, serviceId]);
-                        if (results.affectedRows! > 0) {
-                          _onShowSnack(
-                              Colors.green, 'سرویس موفقانه تغییر کرد.');
-                          setState(() {});
-                        } else {
-                          _onShowSnack(Colors.red,
-                              'شما هیچ تغییراتی به این سرویس نیاوردید.');
-                        }
-                        // ignore: use_build_context_synchronously
-                        Navigator.of(context, rootNavigator: true).pop();
-                        await conn.close();
-                      }
-                    },
-                    child: const Text(' تغییر دادن'),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
-      }),
-    );
-  }
- */
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -406,15 +250,11 @@ class _AppointmentContentState extends State<_AppointmentContent> {
             return const Center(child: Text('No retreatments found.'));
           } else {
             var data = snapshot.data!;
-
-            var groupedRetDateTime = groupBy(data, (obj) => obj['retreatDate']);
-            // var groupedRound = groupBy(data, (obj) => obj['round']);
-
+            var groupedDSName = groupBy(data, (obj) => obj['damageSName']);
             return ListView.builder(
-              itemCount: groupedRetDateTime.keys.length,
+              itemCount: groupedDSName.keys.length,
               itemBuilder: (context, index) {
-                var retreatDTime = groupedRetDateTime.keys.elementAt(index);
-                // var round = groupedRound.keys.elementAt(index);
+                var damageServiceName = groupedDSName.keys.elementAt(index);
                 return Card(
                   elevation: 0.5,
                   child: Column(
@@ -425,30 +265,12 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                         color: Colors.grey[200],
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 5.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Text(
-                              intl2.DateFormat('MMM d, y hh:mm a')
-                                  .format(DateTime.parse(retreatDTime)),
-                              style: const TextStyle(fontSize: 18.0),
-                            ),
-                            const Spacer(),
-                            Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30.0)),
-                              elevation: 0.5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Text('Round: ',
-                                    style:
-                                        Theme.of(context).textTheme.labelSmall),
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          damageServiceName,
+                          style: const TextStyle(fontSize: 18.0),
                         ),
                       ),
-                      ...groupedRetDateTime[retreatDTime]!
+                      ...groupedDSName[damageServiceName]!
                           .map<Widget>((e) => Column(
                                 children: [
                                   Column(
@@ -475,15 +297,15 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                         color: Colors.purple,
                                                         shape: BoxShape.circle,
                                                         border: Border.all(
-                                                            color: Colors.purple,
+                                                            color:
+                                                                Colors.purple,
                                                             width: 2.0),
                                                       ),
                                                       child: const Padding(
                                                         padding:
                                                             EdgeInsets.all(8.0),
                                                         child: Icon(
-                                                          Icons
-                                                              .repeat_rounded,
+                                                          Icons.repeat_rounded,
                                                           color: Colors.white,
                                                         ),
                                                       ),
@@ -495,11 +317,11 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                               .start,
                                                       children: [
                                                         Text(
-                                                          e['serviceName'],
+                                                          e['retreatDate'],
                                                           style:
                                                               const TextStyle(
                                                                   fontSize:
-                                                                      18.0),
+                                                                      16.0),
                                                         ),
                                                         Text(
                                                           'داکتر معالج: ${e['staffFirstName']} ${e['staffLastName']}',
@@ -529,7 +351,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                             .spaceBetween,
                                                     children: [
                                                       const Text(
-                                                        'Service Name',
+                                                        'Service required for retreatment',
                                                         style: TextStyle(
                                                             fontSize: 12.0,
                                                             fontWeight:
@@ -537,7 +359,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                     .bold),
                                                       ),
                                                       Text(
-                                                        e['serviceName'],
+                                                        e['helpSName'],
                                                         style: const TextStyle(
                                                           color: Color.fromARGB(
                                                               255,
@@ -658,7 +480,9 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                     .bold),
                                                       ),
                                                       Text(
-                                                        e['retreatFee'] <= 0 ? 'For free' : '${e['retreatFee'].toString()} افغانی',
+                                                        e['retreatFee'] <= 0
+                                                            ? 'For free'
+                                                            : '${e['retreatFee'].toString()} افغانی',
                                                         style: const TextStyle(
                                                           color: Color.fromARGB(
                                                               255,
@@ -738,9 +562,13 @@ Future<List<Map>> _getRetreatment() async {
     final conn = await onConnToDb();
 
     const query =
-        '''SELECT r.apt_ID, r.service_ID, r.retreat_date, s.ser_name, r.retreat_cost, r.retreat_reason, r.retreat_outcome, r.outcome_details, st.staff_ID, st.firstname, st.lastname, r.retreat_ID FROM retreatments r 
+        '''SELECT r.apt_ID, r.help_service_ID, r.retreat_date, hs.ser_name, r.retreat_cost, r.retreat_reason, 
+        r.retreat_outcome, r.outcome_details, st.staff_ID, st.firstname, st.lastname, r.retreat_ID, ds.ser_ID, 
+        ds.ser_name FROM retreatments r 
                     INNER JOIN staff st ON r.staff_ID = st.staff_ID
-                    INNER JOIN services s ON r.service_ID = s.ser_ID WHERE r.pat_ID = ? ORDER BY r.retreat_date DESC''';
+                    INNER JOIN services hs ON r.help_service_ID = hs.ser_ID 
+                    INNER JOIN services ds ON r.damage_service_ID = ds.ser_ID
+                    WHERE r.pat_ID = ? ORDER BY r.retreat_date DESC''';
 
 // a.status = 'Pending' means it is scheduled in calendar not completed.
     final results = await conn.query(query, [PatientInfo.patID]);
@@ -749,10 +577,11 @@ Future<List<Map>> _getRetreatment() async {
 
     for (var row in results) {
       retreatments.add({
-        'retreatDate': row[2].toString(),
+        'retreatDate': intl2.DateFormat('yyyy-MM-dd hh:mm a')
+            .format(DateTime.parse(row[2].toString())),
         'apptID': row[0],
-        'serviceName': row[3].toString(),
-        'serviceID': row[1],
+        'helpSName': row[3].toString(),
+        'helpServiceID': row[1],
         'retreatFee': row[4],
         'retreatReason': row[5],
         'retreatOutcome': row[6],
@@ -760,7 +589,9 @@ Future<List<Map>> _getRetreatment() async {
         'staffID': row[8],
         'staffFirstName': row[9],
         'staffLastName': row[10],
-        'retreatID': row[11]
+        'retreatID': row[11],
+        'damageServiceID': row[12],
+        'damageSName': row[13],
       });
     }
 
@@ -773,13 +604,17 @@ Future<List<Map>> _getRetreatment() async {
 }
 
 // Create a data model to set/get appointment details
+/* NOTE: damageServiceID belongs to the service which requires retreatments (which causes issues) 
+and helpServiceID belongs to services which are required to fix the issues */
 class RetreatmentDataModel {
   final int retreatID;
-  final int serviceID;
+  final int helpServiceID;
+  final int damageServiceID;
   final int staffID;
   final String staffFirstName;
   final String staffLastName;
-  final String serviceName;
+  final String helpSName;
+  final String damageSName;
   final int aptID;
   final DateTime retreatDate;
   final double retreatFee;
@@ -789,11 +624,13 @@ class RetreatmentDataModel {
 
   RetreatmentDataModel(
       {required this.retreatID,
-      required this.serviceID,
+      required this.helpServiceID,
+      required this.damageServiceID,
       required this.staffID,
       required this.staffFirstName,
       required this.staffLastName,
-      required this.serviceName,
+      required this.helpSName,
+      required this.damageSName,
       required this.aptID,
       required this.retreatDate,
       required this.retreatFee,
@@ -803,27 +640,31 @@ class RetreatmentDataModel {
 
   factory RetreatmentDataModel.fromMap(Map<String, dynamic> map) {
     return RetreatmentDataModel(
-        retreatID: map['retreatID'],
-        serviceID: map['serviceID'],
-        staffID: map['staffID'],
-        staffFirstName: map['staffFirstName'], // and this line
-        staffLastName: map['staffLastName'],
-        serviceName: map['serviceName'],
-        aptID: map['aptID'],
-        retreatDate: map['retreatDate'],
-        retreatFee: map['retreatFee'],
-        retreatReason: map['retreatReason'],
-        retreatOutcome: map['retreatOutcome'],
-        retreatDetails: map['retreatDetails']);
+      retreatID: map['retreatID'],
+      helpServiceID: map['helpServiceID'],
+      staffID: map['staffID'],
+      staffFirstName: map['staffFirstName'], // and this line
+      staffLastName: map['staffLastName'],
+      helpSName: map['helpSName'],
+      damageSName: map['damageSName'],
+      aptID: map['aptID'],
+      retreatDate: map['retreatDate'],
+      retreatFee: map['retreatFee'],
+      retreatReason: map['retreatReason'],
+      retreatOutcome: map['retreatOutcome'],
+      retreatDetails: map['retreatDetails'],
+      damageServiceID: map['damageServiceID'],
+    );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'staffID': staffID,
-      'serviceID': serviceID,
+      'helpServiceID': helpServiceID,
       'staffFirstName': staffFirstName,
       'staffLastName': staffLastName,
-      'serviceName': serviceName,
+      'helpSName': helpSName,
+      'damageSName': damageSName,
       'aptID': aptID,
       'retreatDate': retreatDate,
       'retreatFee': retreatFee,
@@ -832,51 +673,4 @@ class RetreatmentDataModel {
       'retreatDetails': retreatDetails
     };
   }
-}
-
-// This function fetches records from service_requirments, patient_services, services and patients using JOIN
-Future<List<ServiceDetailDataModel>> _getServiceDetails(
-    int appointmentID) async {
-  final conn = await onConnToDb();
-
-  const query =
-      ''' SELECT sr.req_name, ps.value, ps.apt_ID, ps.pat_ID, ps.apt_ID, ps.req_ID FROM service_requirements sr 
-          INNER JOIN patient_services ps ON sr.req_ID = ps.req_ID 
-          WHERE ps.pat_ID = ? AND ps.apt_ID = ?
-          GROUP BY sr.req_name;''';
-
-  final results = await conn.query(query, [PatientInfo.patID, appointmentID]);
-
-  final requirements = results
-      .map(
-        (row) => ServiceDetailDataModel(
-            appointmentID: row[2],
-            patID: row[3],
-            serviceID: row[4],
-            reqID: row[5],
-            reqName: row[0],
-            reqValue: row[1]),
-      )
-      .toList();
-  await conn.close();
-  return requirements;
-}
-
-// Create the second data model for services including (service_requirements & patient_services tables)
-class ServiceDetailDataModel {
-  final int appointmentID;
-  final int patID;
-  final int serviceID;
-  final int reqID;
-  final String reqName;
-  final String reqValue;
-
-  ServiceDetailDataModel({
-    required this.appointmentID,
-    required this.patID,
-    required this.serviceID,
-    required this.reqID,
-    required this.reqName,
-    required this.reqValue,
-  });
 }
