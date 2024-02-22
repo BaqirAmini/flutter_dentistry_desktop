@@ -26,6 +26,8 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   int _allPatients = 0;
   int _todaysPatients = 0;
+  // This variable is to set the first filter value of doughnut chart dropdown
+  String incomeFreq = '1 Month';
 // This function fetch patients' records
   Future<void> _fetchAllPatient() async {
     try {
@@ -129,39 +131,41 @@ class _DashboardState extends State<Dashboard> {
     _PatientsData('Jun', 35)
   ]; */
 
-  late List<_PieData> pieData;
+  late List<_PieDataIncome> pieData;
 // Fetch the expenses of last three months into pie char
-  Future<void> _getPieData() async {
+  Future<List<_PieDataIncome>> _getPieData() async {
     try {
       final conn = await onConnToDb();
-      // Execute the query
-      final results = await conn.query(
-          "SELECT A.exp_name, DATE_FORMAT(B.purchase_date, '%M'), SUM(B.total) FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID WHERE B.purchase_date >= CURDATE() - INTERVAL 3 MONTH GROUP BY A.exp_name");
+      var results = await conn.query('SELECT total_fee FROM appointments');
 
-      // Close the connection
-      await conn.close();
+      var totalFee = results
+          .map((row) => row['total_fee'])
+          .reduce((value, element) => value + element);
 
-      // Map the results to a list of _PieData objects
-      pieData = results
-          .map((row) =>
-              _PieData(row[0].toString(), row[2] as double, row[1].toString()))
-          .toList();
+      results = await conn.query('SELECT total FROM expense_detail');
+      var totalExpenses = results
+          .map((row) => row['total'])
+          .reduce((value, element) => value + element);
+
+      var earnings = totalFee - totalExpenses;
 
       // Set _isPieDataInitialized to true
       _isPieDataInitialized = true;
       setState(() {});
+      await conn.close();
+      return [
+        _PieDataIncome('Expenses', totalExpenses, Colors.red),
+        _PieDataIncome('Earnings', earnings, Colors.green),
+      ];
     } on SocketException catch (e) {
       print('Error in dashboard: $e');
+      return [];
     } catch (e) {
       print('Error in dashboard: $e');
+      return [];
     }
   }
 
-/*   List<_PieData> pieData = [
-    _PieData('Jan', 9000, 'خوراک'),
-    _PieData('Feb', 15000, 'آب'),
-    _PieData('Mar', 100000, 'مالیات'),
-  ]; */
   Future<void> _alertNotification() async {
     try {
       final conn = await onConnToDb();
@@ -536,87 +540,133 @@ class _DashboardState extends State<Dashboard> {
                                       MediaQuery.of(context).size.width * 0.3,
                                   child: Column(
                                     children: [
-                                      if (!_isPieDataInitialized)
-                                        const CircularProgressIndicator()
-                                      else
-                                        SfCircularChart(
-                                          title: ChartTitle(
-                                              text: (translations[languageProvider
-                                                              .selectedLanguage]
-                                                          ?[
-                                                          'LastThreeMonthExpenses'] ??
-                                                      '')
-                                                  .toString()),
-                                          // Enable legend
-                                          legend: Legend(
-                                            isVisible: true,
-                                            width: '75',
-                                            height: '100',
-                                            position: LegendPosition.left,
-                                            textStyle:
-                                                const TextStyle(fontSize: 10.0),
-                                          ),
-                                          // Enable tooltip
-                                          tooltipBehavior: TooltipBehavior(
-                                            enable: true,
-                                            format:
-                                                'point.y ${(translations[languageProvider.selectedLanguage]?['Afn'] ?? '').toString()} : point.x',
-                                          ),
-                                          /*  series: <PieSeries<_PieData, String>>[
-                                            PieSeries<_PieData, String>(
-                                                explode: true,
-                                                explodeIndex: 0,
-                                                dataSource: pieData,
-                                                xValueMapper:
-                                                    (_PieData data, _) =>
-                                                        data.xData,
-                                                yValueMapper:
-                                                    (_PieData data, _) =>
-                                                        data.yData,
-                                                dataLabelMapper:
-                                                    (_PieData data, _) =>
-                                                        data.text,
-                                                dataLabelSettings:
-                                                    const DataLabelSettings(
-                                                        isVisible: true)),
-                                          ], */
-                                          annotations: [
-                                            CircularChartAnnotation(
-                                              widget: const Text(
-                                                '300000 افغانی',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(15.0),
+                                            child: Container(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.1,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.05,
+                                              margin: const EdgeInsets.only(
+                                                  top: 6.0, left: 6.0),
+                                              child: InputDecorator(
+                                                decoration:
+                                                    const InputDecoration(
+                                                  border: OutlineInputBorder(),
+                                                  labelText: 'Frequency',
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          10.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .grey)),
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          10.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .blue)),
+                                                ),
+                                                child:
+                                                    DropdownButtonHideUnderline(
+                                                  child: SizedBox(
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.02,
+                                                    child: ButtonTheme(
+                                                      alignedDropdown: true,
+                                                      child: DropdownButton(
+                                                        // isExpanded: true,
+                                                        icon: const Icon(Icons
+                                                            .arrow_drop_down),
+                                                        value: incomeFreq,
+                                                        items: <String>[
+                                                          '1 Month',
+                                                          '3 Months',
+                                                          '6 Months',
+                                                          '9 Months',
+                                                          'Custom'
+                                                        ].map<
+                                                            DropdownMenuItem<
+                                                                String>>((String
+                                                            value) {
+                                                          return DropdownMenuItem<
+                                                              String>(
+                                                            value: value,
+                                                            child: Text(value),
+                                                          );
+                                                        }).toList(),
+                                                        onChanged:
+                                                            (String? newValue) {
+                                                          setState(() {
+                                                            incomeFreq =
+                                                                newValue!;
+                                                          });
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ],
-                                          series: <DoughnutSeries<_PieData,
-                                              String>>[
-                                            DoughnutSeries<_PieData, String>(
-                                              innerRadius: '70%',
-                                              dataSource: <_PieData>[
-                                                _PieData('Earnings', 200000),
-                                                _PieData('Expenses', -50000),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.05),
+                                      FutureBuilder<List<_PieDataIncome>>(
+                                        future: _getPieData(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            return SfCircularChart(
+                                              series: <CircularSeries>[
+                                                DoughnutSeries<_PieDataIncome,
+                                                    String>(
+                                                  dataSource: snapshot.data,
+                                                  pointColorMapper:
+                                                      (_PieDataIncome data,
+                                                              _) =>
+                                                          data.color,
+                                                  xValueMapper:
+                                                      (_PieDataIncome data,
+                                                              _) =>
+                                                          data.x,
+                                                  yValueMapper:
+                                                      (_PieDataIncome data,
+                                                              _) =>
+                                                          data.y,
+                                                )
                                               ],
-                                              xValueMapper:
-                                                  (_PieData data, _) =>
-                                                      data.xData,
-                                              yValueMapper:
-                                                  (_PieData data, _) =>
-                                                      data.yData,
-                                              dataLabelSettings:
-                                                  const DataLabelSettings(
-                                                isVisible: false,
-                                                textStyle:
-                                                    TextStyle(fontSize: 8.0),
-                                              ),
-                                              selectionBehavior:
-                                                  SelectionBehavior(
-                                                      enable: true,
-                                                      selectedBorderWidth: 2.0),
-                                            ),
-                                          ],
-                                        ),
+                                            );
+                                          } else if (snapshot.hasError) {
+                                            return Text("${snapshot.error}");
+                                          }
+                                          return CircularProgressIndicator();
+                                        },
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -643,10 +693,9 @@ class _PatientsData {
   final double numberOfPatient;
 }
 
-class _PieData {
-  _PieData(this.xData, this.yData, [this.text]);
-
-  final String xData;
-  final num yData;
-  final String? text;
+class _PieDataIncome {
+  _PieDataIncome(this.x, this.y, this.color);
+  final String x;
+  final num y;
+  final Color color;
 }
