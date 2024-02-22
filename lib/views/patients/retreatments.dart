@@ -262,12 +262,17 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                     children: [
                       Container(
                         width: double.infinity,
-                        color: Colors.grey[200],
+                        color: Colors.purple[200],
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 5.0),
-                        child: Text(
-                          damageServiceName,
-                          style: const TextStyle(fontSize: 18.0),
+                        child: Center(
+                          child: Tooltip(
+                            message: 'This service caused issues for ${PatientInfo.firstName}.',
+                            child: Text(
+                              damageServiceName,
+                              style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Colors.white),
+                            ),
+                          ),
                         ),
                       ),
                       ...groupedDSName[damageServiceName]!
@@ -294,11 +299,11 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                   children: [
                                                     Container(
                                                       decoration: BoxDecoration(
-                                                        color: Colors.purple,
+                                                        color: Colors.green,
                                                         shape: BoxShape.circle,
                                                         border: Border.all(
                                                             color:
-                                                                Colors.purple,
+                                                                Colors.green,
                                                             width: 2.0),
                                                       ),
                                                       child: const Padding(
@@ -351,7 +356,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                             .spaceBetween,
                                                     children: [
                                                       const Text(
-                                                        'Service required for retreatment',
+                                                        'Action required',
                                                         style: TextStyle(
                                                             fontSize: 12.0,
                                                             fontWeight:
