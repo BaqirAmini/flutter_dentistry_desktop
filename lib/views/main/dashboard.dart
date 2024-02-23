@@ -87,8 +87,9 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
-  bool _isPieDataInitialized = false;
   bool _isPatientDataInitialized = false;
+  // Declare to assign total income to use it in the doughnut chart
+  double totalIncome = 0;
 
   @override
   void initState() {
@@ -136,22 +137,16 @@ class _DashboardState extends State<Dashboard> {
   Future<List<_PieDataIncome>> _getPieData() async {
     try {
       final conn = await onConnToDb();
-      var results = await conn.query('SELECT total_fee FROM appointments');
+      var result =
+          await conn.query('SELECT SUM(total_fee) as sum FROM appointments');
+      var totalFee = result.first['sum'];
 
-      var totalFee = results
-          .map((row) => row['total_fee'])
-          .reduce((value, element) => value + element);
-
-      results = await conn.query('SELECT total FROM expense_detail');
-      var totalExpenses = results
-          .map((row) => row['total'])
-          .reduce((value, element) => value + element);
+      result = await conn.query('SELECT SUM(total) as sum FROM expense_detail');
+      var totalExpenses = result.first['sum'];
 
       var earnings = totalFee - totalExpenses;
-
-      // Set _isPieDataInitialized to true
-      _isPieDataInitialized = true;
-      setState(() {});
+      // Total Income
+      totalIncome = totalExpenses + totalFee;
       await conn.close();
       return [
         _PieDataIncome('Expenses', totalExpenses, Colors.red),
@@ -546,7 +541,7 @@ class _DashboardState extends State<Dashboard> {
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.all(15.0),
-                                            child: Container(
+                                            child: SizedBox(
                                               width: MediaQuery.of(context)
                                                       .size
                                                       .width *
@@ -554,12 +549,13 @@ class _DashboardState extends State<Dashboard> {
                                               height: MediaQuery.of(context)
                                                       .size
                                                       .height *
-                                                  0.05,
-                                              margin: const EdgeInsets.only(
-                                                  top: 6.0, left: 6.0),
+                                                  0.06,
                                               child: InputDecorator(
                                                 decoration:
                                                     const InputDecoration(
+                                                  contentPadding:
+                                                      EdgeInsets.symmetric(
+                                                          horizontal: 8.0),
                                                   border: OutlineInputBorder(),
                                                   labelText: 'Frequency',
                                                   enabledBorder:
@@ -592,19 +588,23 @@ class _DashboardState extends State<Dashboard> {
                                                         MediaQuery.of(context)
                                                                 .size
                                                                 .height *
-                                                            0.02,
+                                                            0.03,
                                                     child: ButtonTheme(
                                                       alignedDropdown: true,
                                                       child: DropdownButton(
+                                                        padding:
+                                                            EdgeInsets.zero,
                                                         // isExpanded: true,
                                                         icon: const Icon(Icons
                                                             .arrow_drop_down),
                                                         value: incomeFreq,
+
                                                         items: <String>[
                                                           '1 Month',
                                                           '3 Months',
                                                           '6 Months',
                                                           '9 Months',
+                                                          '12 Months',
                                                           'Custom'
                                                         ].map<
                                                             DropdownMenuItem<
@@ -613,7 +613,11 @@ class _DashboardState extends State<Dashboard> {
                                                           return DropdownMenuItem<
                                                               String>(
                                                             value: value,
-                                                            child: Text(value),
+                                                            child: Text(value,
+                                                                style: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodyMedium),
                                                           );
                                                         }).toList(),
                                                         onChanged:
@@ -632,39 +636,84 @@ class _DashboardState extends State<Dashboard> {
                                           ),
                                         ],
                                       ),
-                                      SizedBox(
+                                      /* SizedBox(
                                           height: MediaQuery.of(context)
                                                   .size
                                                   .height *
                                               0.05),
+ */
                                       FutureBuilder<List<_PieDataIncome>>(
                                         future: _getPieData(),
                                         builder: (context, snapshot) {
                                           if (snapshot.hasData) {
-                                            return SfCircularChart(
-                                              series: <CircularSeries>[
-                                                DoughnutSeries<_PieDataIncome,
-                                                    String>(
-                                                  dataSource: snapshot.data,
-                                                  pointColorMapper:
-                                                      (_PieDataIncome data,
-                                                              _) =>
-                                                          data.color,
-                                                  xValueMapper:
-                                                      (_PieDataIncome data,
-                                                              _) =>
-                                                          data.x,
-                                                  yValueMapper:
-                                                      (_PieDataIncome data,
-                                                              _) =>
-                                                          data.y,
-                                                )
-                                              ],
+                                            return SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.4,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.4,
+                                              child: SfCircularChart(
+                                                legend: Legend(isVisible: true),
+                                                tooltipBehavior:
+                                                    TooltipBehavior(
+                                                  color: const Color.fromARGB(
+                                                      255, 106, 105, 105),
+                                                  enable: true,
+                                                  format:
+                                                      'point.x: point.y افغانی',
+                                                ),
+                                                annotations: [
+                                                  CircularChartAnnotation(
+                                                    widget: Text(
+                                                      '${totalIncome.toString()} افغانی',
+                                                      style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  ),
+                                                ],
+                                                series: <CircularSeries>[
+                                                  DoughnutSeries<_PieDataIncome,
+                                                      String>(
+                                                    explode: true,
+                                                    explodeOffset: '10%',
+                                                    enableTooltip: true,
+                                                    dataSource: snapshot.data,
+                                                    innerRadius: '70%',
+                                                    pointColorMapper:
+                                                        (_PieDataIncome data,
+                                                                _) =>
+                                                            data.color,
+                                                    xValueMapper:
+                                                        (_PieDataIncome data,
+                                                                _) =>
+                                                            data.x,
+                                                    yValueMapper:
+                                                        (_PieDataIncome data,
+                                                                _) =>
+                                                            data.y,
+                                                    dataLabelSettings:
+                                                        const DataLabelSettings(
+                                                      isVisible: false,
+                                                      textStyle: TextStyle(
+                                                          fontSize: 8.0),
+                                                    ),
+                                                    selectionBehavior:
+                                                        SelectionBehavior(
+                                                            enable: true,
+                                                            selectedBorderWidth:
+                                                                2.0),
+                                                  )
+                                                ],
+                                              ),
                                             );
                                           } else if (snapshot.hasError) {
                                             return Text("${snapshot.error}");
                                           }
-                                          return CircularProgressIndicator();
+                                          return const CircularProgressIndicator();
                                         },
                                       ),
                                     ],
