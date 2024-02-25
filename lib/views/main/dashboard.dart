@@ -136,17 +136,34 @@ class _DashboardState extends State<Dashboard> {
 // Fetch the expenses of last three months into pie char
   Future<List<_PieDataIncome>> _getPieData() async {
     try {
+      int numberOnly = int.parse(incomeFreq.split(' ')[0]);
       final conn = await onConnToDb();
-      var result =
-          await conn.query('SELECT SUM(total_fee) as sum FROM appointments');
-      var totalFee = result.first['sum'];
+      var result = await conn.query(
+          'SELECT SUM(total_fee) as sum FROM appointments WHERE (meet_date >= CURDATE() - INTERVAL ? MONTH)',
+          [numberOnly]);
+      double totalFee = result.first['sum'] ?? 0;
 
-      result = await conn.query('SELECT SUM(total) as sum FROM expense_detail');
-      var totalExpenses = result.first['sum'];
+      result = await conn.query('SELECT SUM(total) as sum FROM expense_detail  WHERE (purchase_date >= CURDATE() - INTERVAL ? MONTH)', [numberOnly]);
+      double totalExpenses = result.first['sum'] ?? 0;
 
-      var earnings = totalFee - totalExpenses;
+      // Whole due amount on patients
+      result = await conn.query('''
+                          SELECT SUM(due_amount) as due_amount 
+                          FROM (
+                              SELECT due_amount 
+                              FROM fee_payments 
+                              WHERE (payment_ID, apt_ID) IN (
+                                  SELECT MAX(payment_ID), apt_ID 
+                                  FROM fee_payments 
+                                   WHERE payment_date >= DATE_SUB(CURDATE(), INTERVAL ? MONTH)
+                                  GROUP BY apt_ID
+                              )
+                          ) AS total_due_amount''', [numberOnly]);
+      double totalDueAmount = result.first['due_amount'] ?? 0;
+
+      var earnings = totalFee - (totalExpenses + totalDueAmount);
       // Total Income
-      totalIncome = totalExpenses + totalFee;
+      totalIncome = totalExpenses + totalFee - totalDueAmount;
       await conn.close();
       return [
         _PieDataIncome('Expenses', totalExpenses, Colors.red),
@@ -604,8 +621,7 @@ class _DashboardState extends State<Dashboard> {
                                                           '3 Months',
                                                           '6 Months',
                                                           '9 Months',
-                                                          '12 Months',
-                                                          'Custom'
+                                                          '12 Months'
                                                         ].map<
                                                             DropdownMenuItem<
                                                                 String>>((String
@@ -625,6 +641,7 @@ class _DashboardState extends State<Dashboard> {
                                                           setState(() {
                                                             incomeFreq =
                                                                 newValue!;
+                                                            _getPieData();
                                                           });
                                                         },
                                                       ),
