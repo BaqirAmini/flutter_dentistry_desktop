@@ -89,7 +89,7 @@ class _DashboardState extends State<Dashboard> {
 
   bool _isPatientDataInitialized = false;
   // Declare to assign total income to use it in the doughnut chart
-  double totalIncome = 0;
+  double netIncome = 0;
 
   @override
   void initState() {
@@ -138,12 +138,16 @@ class _DashboardState extends State<Dashboard> {
     try {
       int numberOnly = int.parse(incomeFreq.split(' ')[0]);
       final conn = await onConnToDb();
+      // Fetch total fee
       var result = await conn.query(
           'SELECT SUM(total_fee) as sum FROM appointments WHERE (meet_date >= CURDATE() - INTERVAL ? MONTH)',
           [numberOnly]);
-      double totalFee = result.first['sum'] ?? 0;
+      double totalEarnings = result.first['sum'] ?? 0;
 
-      result = await conn.query('SELECT SUM(total) as sum FROM expense_detail  WHERE (purchase_date >= CURDATE() - INTERVAL ? MONTH)', [numberOnly]);
+      // Fetch total expenses
+      result = await conn.query(
+          'SELECT SUM(total) as sum FROM expense_detail  WHERE (purchase_date >= CURDATE() - INTERVAL ? MONTH)',
+          [numberOnly]);
       double totalExpenses = result.first['sum'] ?? 0;
 
       // Whole due amount on patients
@@ -160,14 +164,13 @@ class _DashboardState extends State<Dashboard> {
                               )
                           ) AS total_due_amount''', [numberOnly]);
       double totalDueAmount = result.first['due_amount'] ?? 0;
-
-      var earnings = totalFee - (totalExpenses + totalDueAmount);
       // Total Income
-      totalIncome = totalExpenses + totalFee - totalDueAmount;
+      netIncome = totalEarnings - totalExpenses;
       await conn.close();
       return [
         _PieDataIncome('Expenses', totalExpenses, Colors.red),
-        _PieDataIncome('Earnings', earnings, Colors.green),
+        _PieDataIncome('Earnings', totalEarnings, Colors.green),
+        _PieDataIncome('Receivable', totalDueAmount, Colors.indigo),
       ];
     } on SocketException catch (e) {
       print('Error in dashboard: $e');
@@ -680,12 +683,12 @@ class _DashboardState extends State<Dashboard> {
                                                       255, 106, 105, 105),
                                                   enable: true,
                                                   format:
-                                                      'point.x: point.y افغانی',
+                                                      'point.x : point.y افغانی',
                                                 ),
                                                 annotations: [
                                                   CircularChartAnnotation(
                                                     widget: Text(
-                                                      '${totalIncome.toString()} افغانی',
+                                                      '${netIncome.toString()} افغانی',
                                                       style: const TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold),
