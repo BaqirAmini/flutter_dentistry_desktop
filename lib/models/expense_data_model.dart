@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/global_usage.dart';
 import '/views/finance/expenses/expense_details.dart';
 import 'package:intl/intl.dart' as intl2;
 import '/views/finance/expenses/expense_info.dart';
@@ -123,6 +124,9 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+// Create instance of this class to its members
+  final GlobalUsage _gu = GlobalUsage();
 
   @override
   Widget build(BuildContext context) {
@@ -420,7 +424,9 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                 ],
                 source: dataSource,
                 rowsPerPage:
-                    _filteredData.length < 8 ? _filteredData.length : 8,
+                    _filteredData.length < _gu.calculateRowsPerPage(context)
+                        ? _filteredData.length
+                        : _gu.calculateRowsPerPage(context),
               )
           ],
         ),
