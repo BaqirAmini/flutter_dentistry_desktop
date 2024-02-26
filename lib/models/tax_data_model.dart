@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/global_usage.dart';
 import '../views/finance/taxes/tax_details.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:flutter_dentistry/models/db_conn.dart';
@@ -796,6 +797,9 @@ class TaxDataTableState extends State<TaxDataTable> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _fetchData());
   }
 
+// Create instance of this class to its members
+  final GlobalUsage _gu = GlobalUsage();
+
   @override
   Widget build(BuildContext context) {
     TaxInfo.onAddTax = _fetchData;
@@ -1019,8 +1023,9 @@ class TaxDataTableState extends State<TaxDataTable> {
                               fontWeight: FontWeight.bold))),
                 ],
                 source: dataSource,
-                rowsPerPage:
-                    _filteredData.length < 8 ? _filteredData.length : 8,
+                rowsPerPage: _filteredData.length < 8
+                    ? _gu.calculateRowsPerPage(context)
+                    : _gu.calculateRowsPerPage(context),
               )
           ],
         ),
