@@ -65,7 +65,8 @@ dependencies:
   syncfusion_flutter_calendar: ^21.2.10
   windows_notification: ^1.0.0
   flutter_typeahead: ^5.1.0
-  excel: ^4.0.2
+  syncfusion_flutter_xlsio: ^21.2.10
+  syncfusion_flutter_pdf: ^21.2.10
 
 
 dev_dependencies:
