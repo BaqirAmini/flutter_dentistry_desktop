@@ -144,60 +144,88 @@ class _HistoryContentState extends State<_HistoryContent> {
                     child: SizedBox(
                       height: MediaQuery.of(context).size.height * 0.55,
                       width: MediaQuery.of(context).size.width * 0.4,
-                      child: SingleChildScrollView(
-                        child: Form(
-                          key: _patientHistEditFK,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 10.0),
-                                    border: OutlineInputBorder(),
-                                    labelText: 'نتیجه معاینه',
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
+                      child: Center(
+                        child: SingleChildScrollView(
+                          child: Form(
+                            key: _patientHistEditFK,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      contentPadding: EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 10.0),
+                                      border: OutlineInputBorder(),
+                                      labelText: 'نتیجه معاینه',
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0),
+                                        ),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey),
                                       ),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0),
+                                        ),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue),
                                       ),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
                                     ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                              horizontalTitleGap: 0.5,
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          flex: 1,
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                horizontalTitleGap: 0.5,
+                                              ),
+                                            ),
+                                            child: SizedBox(
+                                              width: 100,
+                                              child: RadioListTile(
+                                                title: const Text(
+                                                  'مثبت',
+                                                  style: TextStyle(fontSize: 14),
+                                                ),
+                                                value: 1,
+                                                groupValue: _editHCondResultGV,
+                                                onChanged: (int? value) {
+                                                  setState(
+                                                    () {
+                                                      _editHCondResultGV = value!;
+                                                    },
+                                                  );
+                                                },
+                                              ),
                                             ),
                                           ),
-                                          child: SizedBox(
-                                            width: 100,
+                                        ),
+                                        Expanded(
+                                          flex: 1,
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                horizontalTitleGap: 0.5,
+                                              ),
+                                            ),
                                             child: RadioListTile(
                                               title: const Text(
-                                                'مثبت',
+                                                'منفی',
                                                 style: TextStyle(fontSize: 14),
                                               ),
-                                              value: 1,
+                                              value: 0,
                                               groupValue: _editHCondResultGV,
                                               onChanged: (int? value) {
                                                 setState(
@@ -209,404 +237,378 @@ class _HistoryContentState extends State<_HistoryContent> {
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                              horizontalTitleGap: 0.5,
-                                            ),
-                                          ),
-                                          child: RadioListTile(
-                                            title: const Text(
-                                              'منفی',
-                                              style: TextStyle(fontSize: 14),
-                                            ),
-                                            value: 0,
-                                            groupValue: _editHCondResultGV,
-                                            onChanged: (int? value) {
-                                              setState(
-                                                () {
-                                                  _editHCondResultGV = value!;
-                                                },
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: TextFormField(
-                                  controller: _editHDateController,
-                                  onTap: () async {
-                                    FocusScope.of(context).requestFocus(
-                                      FocusNode(),
-                                    );
-                                    final DateTime? dateTime =
-                                        await showDatePicker(
-                                            context: context,
-                                            initialDate: DateTime.now(),
-                                            firstDate: DateTime(1900),
-                                            lastDate: DateTime(2100));
-                                    if (dateTime != null) {
-                                      final intl2.DateFormat formatter =
-                                          intl2.DateFormat('yyyy-MM-dd');
-                                      final String formattedDate =
-                                          formatter.format(dateTime);
-                                      _editHDateController.text = formattedDate;
-                                    }
-                                  },
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'[0-9.]'))
-                                  ],
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'تاریخ تشخیص / معاینه',
-                                    suffixIcon:
-                                        Icon(Icons.calendar_month_outlined),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                    errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5)),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 10.0),
-                                    border: OutlineInputBorder(),
-                                    labelText: 'شدت / سطح',
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
+                                      ],
                                     ),
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'خفیف',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'خفیف',
-                                              groupValue: _editHCondGV,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _editHCondGV = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'متوسط',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'متوسط',
-                                              groupValue: _editHCondGV,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _editHCondGV = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'شدید',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'شدید',
-                                              groupValue: _editHCondGV,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _editHCondGV = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'نامعلوم',
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                              value: 'نامعلوم',
-                                              groupValue: _editHCondGV,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _editHCondGV = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                                 ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 10.0),
-                                    border: OutlineInputBorder(),
-                                    labelText: 'سابقه / مدت',
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(50.0),
-                                      ),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                '1 هفته',
-                                                style: TextStyle(fontSize: 10),
-                                              ),
-                                              value: '1 هفته',
-                                              groupValue: _editHDurationGV,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _editHDurationGV = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                '1 ماه',
-                                                style: TextStyle(fontSize: 10),
-                                              ),
-                                              value: '1 ماه',
-                                              groupValue: _editHDurationGV,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _editHDurationGV = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                '6 ماه',
-                                                style: TextStyle(fontSize: 10),
-                                              ),
-                                              value: '6 ماه',
-                                              groupValue: _editHDurationGV,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _editHDurationGV = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'بیشتر',
-                                                style: TextStyle(fontSize: 10),
-                                              ),
-                                              value: 'بیشتر از یک سال',
-                                              groupValue: _editHDurationGV,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _editHDurationGV = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Theme(
-                                          data: Theme.of(context).copyWith(
-                                            listTileTheme:
-                                                const ListTileThemeData(
-                                                    horizontalTitleGap: 0.5),
-                                          ),
-                                          child: RadioListTile(
-                                              title: const Text(
-                                                'نامعلوم',
-                                                style: TextStyle(fontSize: 10),
-                                              ),
-                                              value: 'نامعلوم',
-                                              groupValue: _editHDurationGV,
-                                              onChanged: (String? value) {
-                                                setState(() {
-                                                  _editHDurationGV = value!;
-                                                });
-                                              }),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: TextFormField(
-                                  controller: _editHDetailsController,
-                                  validator: (value) {
-                                    if (value!.isNotEmpty) {
-                                      if (value.length > 40 ||
-                                          value.length < 10) {
-                                        return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: TextFormField(
+                                    controller: _editHDateController,
+                                    onTap: () async {
+                                      FocusScope.of(context).requestFocus(
+                                        FocusNode(),
+                                      );
+                                      final DateTime? dateTime =
+                                          await showDatePicker(
+                                              context: context,
+                                              initialDate: DateTime.now(),
+                                              firstDate: DateTime(1900),
+                                              lastDate: DateTime(2100));
+                                      if (dateTime != null) {
+                                        final intl2.DateFormat formatter =
+                                            intl2.DateFormat('yyyy-MM-dd');
+                                        final String formattedDate =
+                                            formatter.format(dateTime);
+                                        _editHDateController.text = formattedDate;
                                       }
-                                    }
-                                    return null;
-                                  },
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                      RegExp(GlobalUsage.allowedEPChar),
+                                    },
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r'[0-9.]'))
+                                    ],
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'تاریخ تشخیص / معاینه',
+                                      suffixIcon:
+                                          Icon(Icons.calendar_month_outlined),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.red)),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide: BorderSide(
+                                              color: Colors.red, width: 1.5)),
                                     ),
-                                  ],
-                                  minLines: 1,
-                                  maxLines: 2,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'توضیحات',
-                                    suffixIcon: Icon(Icons.note_alt_outlined),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                    errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5)),
                                   ),
                                 ),
-                              ),
-                            ],
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      contentPadding: EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 10.0),
+                                      border: OutlineInputBorder(),
+                                      labelText: 'شدت / سطح',
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0),
+                                        ),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0),
+                                        ),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                      horizontalTitleGap: 0.5),
+                                            ),
+                                            child: RadioListTile(
+                                                title: const Text(
+                                                  'خفیف',
+                                                  style: TextStyle(fontSize: 14),
+                                                ),
+                                                value: 'خفیف',
+                                                groupValue: _editHCondGV,
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    _editHCondGV = value!;
+                                                  });
+                                                }),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                      horizontalTitleGap: 0.5),
+                                            ),
+                                            child: RadioListTile(
+                                                title: const Text(
+                                                  'متوسط',
+                                                  style: TextStyle(fontSize: 14),
+                                                ),
+                                                value: 'متوسط',
+                                                groupValue: _editHCondGV,
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    _editHCondGV = value!;
+                                                  });
+                                                }),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                      horizontalTitleGap: 0.5),
+                                            ),
+                                            child: RadioListTile(
+                                                title: const Text(
+                                                  'شدید',
+                                                  style: TextStyle(fontSize: 14),
+                                                ),
+                                                value: 'شدید',
+                                                groupValue: _editHCondGV,
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    _editHCondGV = value!;
+                                                  });
+                                                }),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                      horizontalTitleGap: 0.5),
+                                            ),
+                                            child: RadioListTile(
+                                                title: const Text(
+                                                  'نامعلوم',
+                                                  style: TextStyle(fontSize: 14),
+                                                ),
+                                                value: 'نامعلوم',
+                                                groupValue: _editHCondGV,
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    _editHCondGV = value!;
+                                                  });
+                                                }),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: InputDecorator(
+                                    decoration: const InputDecoration(
+                                      contentPadding: EdgeInsets.symmetric(
+                                          vertical: 10.0, horizontal: 10.0),
+                                      border: OutlineInputBorder(),
+                                      labelText: 'سابقه / مدت',
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0),
+                                        ),
+                                        borderSide:
+                                            BorderSide(color: Colors.grey),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0),
+                                        ),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                      horizontalTitleGap: 0.5),
+                                            ),
+                                            child: RadioListTile(
+                                                title: const Text(
+                                                  '1 هفته',
+                                                  style: TextStyle(fontSize: 10),
+                                                ),
+                                                value: '1 هفته',
+                                                groupValue: _editHDurationGV,
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    _editHDurationGV = value!;
+                                                  });
+                                                }),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                      horizontalTitleGap: 0.5),
+                                            ),
+                                            child: RadioListTile(
+                                                title: const Text(
+                                                  '1 ماه',
+                                                  style: TextStyle(fontSize: 10),
+                                                ),
+                                                value: '1 ماه',
+                                                groupValue: _editHDurationGV,
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    _editHDurationGV = value!;
+                                                  });
+                                                }),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                      horizontalTitleGap: 0.5),
+                                            ),
+                                            child: RadioListTile(
+                                                title: const Text(
+                                                  '6 ماه',
+                                                  style: TextStyle(fontSize: 10),
+                                                ),
+                                                value: '6 ماه',
+                                                groupValue: _editHDurationGV,
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    _editHDurationGV = value!;
+                                                  });
+                                                }),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                      horizontalTitleGap: 0.5),
+                                            ),
+                                            child: RadioListTile(
+                                                title: const Text(
+                                                  'بیشتر',
+                                                  style: TextStyle(fontSize: 10),
+                                                ),
+                                                value: 'بیشتر از یک سال',
+                                                groupValue: _editHDurationGV,
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    _editHDurationGV = value!;
+                                                  });
+                                                }),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              listTileTheme:
+                                                  const ListTileThemeData(
+                                                      horizontalTitleGap: 0.5),
+                                            ),
+                                            child: RadioListTile(
+                                                title: const Text(
+                                                  'نامعلوم',
+                                                  style: TextStyle(fontSize: 10),
+                                                ),
+                                                value: 'نامعلوم',
+                                                groupValue: _editHDurationGV,
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    _editHDurationGV = value!;
+                                                  });
+                                                }),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 20.0,
+                                      right: 20.0,
+                                      top: 10.0,
+                                      bottom: 10.0),
+                                  child: TextFormField(
+                                    controller: _editHDetailsController,
+                                    validator: (value) {
+                                      if (value!.isNotEmpty) {
+                                        if (value.length > 40 ||
+                                            value.length < 10) {
+                                          return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                        }
+                                      }
+                                      return null;
+                                    },
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                        RegExp(GlobalUsage.allowedEPChar),
+                                      ),
+                                    ],
+                                    minLines: 1,
+                                    maxLines: 2,
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'توضیحات',
+                                      suffixIcon: Icon(Icons.note_alt_outlined),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.grey)),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.blue)),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide:
+                                              BorderSide(color: Colors.red)),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(50.0)),
+                                          borderSide: BorderSide(
+                                              color: Colors.red, width: 1.5)),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
