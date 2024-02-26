@@ -132,17 +132,28 @@ class _DashboardState extends State<Dashboard> {
     _PatientsData('Jun', 35)
   ]; */
 
+  Widget onAddCustomTooltip(String msg) {
+    return Text(msg);
+  }
+
   late List<_PieDataIncome> pieData;
 // Fetch the expenses of last three months into pie char
   Future<List<_PieDataIncome>> _getPieData() async {
     try {
       int numberOnly = int.parse(incomeFreq.split(' ')[0]);
       final conn = await onConnToDb();
-      // Fetch total fee
+      // Fetch total paid amount
       var result = await conn.query(
-          'SELECT SUM(total_fee) as sum FROM appointments WHERE (meet_date >= CURDATE() - INTERVAL ? MONTH)',
+          'SELECT SUM(paid_amount) as total_paid_amount FROM fee_payments WHERE (payment_date >= CURDATE() - INTERVAL ? MONTH)',
           [numberOnly]);
-      double totalEarnings = result.first['sum'] ?? 0;
+      double totalEarnings = result.first['total_paid_amount'] ?? 0;
+
+      // Fetch total fee (whole may be earned are still due)
+      result = await conn.query(
+          'SELECT SUM(total_fee) as totalFee FROM appointments WHERE (meet_date >= CURDATE() - INTERVAL ? MONTH)',
+          [numberOnly]);
+
+      double totalFee = result.first['totalFee'] ?? 0;
 
       // Fetch total expenses
       result = await conn.query(
@@ -165,7 +176,7 @@ class _DashboardState extends State<Dashboard> {
                           ) AS total_due_amount''', [numberOnly]);
       double totalDueAmount = result.first['due_amount'] ?? 0;
       // Total Income
-      netIncome = totalEarnings - totalExpenses;
+      netIncome = totalFee - totalExpenses - totalDueAmount;
       await conn.close();
       return [
         _PieDataIncome('Expenses', totalExpenses, Colors.red),
@@ -687,11 +698,21 @@ class _DashboardState extends State<Dashboard> {
                                                 ),
                                                 annotations: [
                                                   CircularChartAnnotation(
-                                                    widget: Text(
-                                                      '${netIncome.toString()} افغانی',
-                                                      style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold),
+                                                    widget: Column(
+                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      children: [
+                                                        Padding(
+                                                          padding: const EdgeInsets.all(3.0),
+                                                          child: Text('Net Income', style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold)),
+                                                        ),
+                                                        Padding(
+                                                          padding: const EdgeInsets.all(3.0),
+                                                          child: Text(
+                                                            '${netIncome.toString()} افغانی',
+                                                            style: Theme.of(context).textTheme.labelLarge,
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
                                                 ],
