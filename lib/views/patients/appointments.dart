@@ -1332,7 +1332,7 @@ Future<List<ServiceDetailDataModel>> _getServiceDetails(
             serviceID: row[4],
             reqID: row[5],
             reqName: row[0],
-            reqValue: row[1]),
+            reqValue: row[1] ?? ''),
       )
       .toList();
   await conn.close();

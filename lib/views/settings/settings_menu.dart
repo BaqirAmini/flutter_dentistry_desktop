@@ -1254,11 +1254,6 @@ onRestoreData() {
                           } else {
                             // Line is data, insert into table
                             var values = line.split(',');
-                            var valueString = values
-                                .map((value) => value.toString())
-                                .join(', ');
-                            var insertSql =
-                                "INSERT IGNORE INTO $currentTable VALUES ($valueString)";
                             if (currentTable == 'patient_services') {
                               var keys = primaryKeys[currentTable];
                               if (keys != null && keys is List<String>) {
@@ -1269,26 +1264,36 @@ onRestoreData() {
                                 var keyValues =
                                     allKeys.map((key) => '?').join(', ');
                                 var insertSql =
-                                    "INSERT IGNORE INTO $currentTable ($keyNames) VALUES ($keyValues)";
-                                var valuesForInsert = values
-                                    .take(allKeys.length)
-                                    .toList(); // Take only the first five values
+                                    "INSERT IGNORE INTO $currentTable ($keyNames) VALUES (?, ?, ?, ?, ?)";
+                                // Take only the first four values for the keys
+                                List<dynamic> valuesForInsert =
+                                    values.take(4).toList();
+
+                                // The rest of the line is the 'value'
+                                var value = values.skip(4).join(',');
+                                valuesForInsert.add(value);
                                 // Check if the value is a string and remove the single quotes
                                 for (int i = 0;
                                     i < valuesForInsert.length;
                                     i++) {
                                   if (valuesForInsert[i] == "''") {
-                                    valuesForInsert[i] = "NULL";
+                                    valuesForInsert[i] =
+                                        ''; // Change this line
                                   } else {
                                     valuesForInsert[i] =
                                         valuesForInsert[i].replaceAll("'", "");
                                   }
                                 }
-                                var restoreDone = await conn.query(
-                                    insertSql, valuesForInsert);
+                                var restoreDone = await conn.query(insertSql,
+                                    valuesForInsert); // Change this line
                                 insertedRecords += restoreDone.affectedRows!;
                               }
                             } else {
+                              var valueString = values
+                                  .map((value) => value.toString())
+                                  .join(', ');
+                              var insertSql =
+                                  "INSERT IGNORE INTO $currentTable VALUES ($valueString)";
                               var restoreDone = await conn.query(insertSql);
                               insertedRecords += restoreDone.affectedRows!;
                             }
