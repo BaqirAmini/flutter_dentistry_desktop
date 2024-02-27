@@ -841,6 +841,7 @@ onBackUpData() {
                         'staff',
                         'staff_auth',
                         'patients',
+                        'service_requirements',
                         'patient_services',
                         'patient_xrays',
                         'retreatments',
@@ -849,7 +850,6 @@ onBackUpData() {
                         'conditions',
                         'condition_details',
                         'services',
-                        'service_requirements',
                         'expenses',
                         'expense_detail',
                         'taxes',
@@ -1195,6 +1195,7 @@ onRestoreData() {
                           'staff',
                           'staff_auth',
                           'patients',
+                          'service_requirements',
                           'patient_services',
                           'patient_xrays',
                           'retreatments',
@@ -1203,7 +1204,6 @@ onRestoreData() {
                           'conditions',
                           'condition_details',
                           'services',
-                          'service_requirements',
                           'expenses',
                           'expense_detail',
                           'taxes',
@@ -1216,6 +1216,7 @@ onRestoreData() {
                           'staff': 'staff_ID',
                           'staff_auth': 'auth_ID',
                           'patients': 'pat_ID',
+                          'service_requirements': 'req_ID',
                           'patient_services': [
                             'apt_ID',
                             'pat_ID',
@@ -1229,7 +1230,6 @@ onRestoreData() {
                           'conditions': 'cond_ID',
                           'condition_details': 'cond_detail_ID',
                           'services': 'ser_ID',
-                          'service_requirements': 'req_ID',
                           'expenses': 'exp_ID',
                           'expense_detail': 'exp_detail_ID',
                           'taxes': 'tax_ID',
@@ -1277,8 +1277,7 @@ onRestoreData() {
                                     i < valuesForInsert.length;
                                     i++) {
                                   if (valuesForInsert[i] == "''") {
-                                    valuesForInsert[i] =
-                                        ''; // Change this line
+                                    valuesForInsert[i] = ''; // Change this line
                                   } else {
                                     valuesForInsert[i] =
                                         valuesForInsert[i].replaceAll("'", "");
