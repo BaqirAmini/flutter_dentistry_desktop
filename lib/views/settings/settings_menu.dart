@@ -1254,8 +1254,11 @@ onRestoreData() {
                           } else {
                             // Line is data, insert into table
                             var values = line.split(',');
+                            var valueString = values
+                                .map((value) => value.toString())
+                                .join(', ');
                             var insertSql =
-                                "INSERT IGNORE INTO $currentTable VALUES (${values.join(',')})";
+                                "INSERT IGNORE INTO $currentTable VALUES ($valueString)";
                             if (currentTable == 'patient_services') {
                               var keys = primaryKeys[currentTable];
                               if (keys != null && keys is List<String>) {
@@ -1270,15 +1273,28 @@ onRestoreData() {
                                 var valuesForInsert = values
                                     .take(allKeys.length)
                                     .toList(); // Take only the first five values
+                                // Check if the value is a string and remove the single quotes
+                                for (int i = 0;
+                                    i < valuesForInsert.length;
+                                    i++) {
+                                  if (valuesForInsert[i] == "''") {
+                                    valuesForInsert[i] = "NULL";
+                                  } else {
+                                    valuesForInsert[i] =
+                                        valuesForInsert[i].replaceAll("'", "");
+                                  }
+                                }
                                 var restoreDone = await conn.query(
                                     insertSql, valuesForInsert);
                                 insertedRecords += restoreDone.affectedRows!;
                               }
+                            } else {
+                              var restoreDone = await conn.query(insertSql);
+                              insertedRecords += restoreDone.affectedRows!;
                             }
-                            var restoreDone = await conn.query(insertSql);
-                            insertedRecords += restoreDone.affectedRows!;
                           }
                         }
+
                         // Show success or error message after all data has been inserted
                         if (insertedRecords > 0) {
                           _onShowSnack(
