@@ -10,6 +10,7 @@ import 'package:flutter_dentistry/views/patients/new_patient.dart';
 import 'package:flutter_dentistry/views/patients/patient_details.dart';
 import 'package:flutter_dentistry/views/services/service_related_fields.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'patient_info.dart';
 import 'package:pdf/pdf.dart';
@@ -1816,6 +1817,66 @@ class _PatientDataTableState extends State<PatientDataTable> {
             ],
           ),
         ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+          color: Colors.white,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${translations[selectedLanguage]?['AllPatients'] ?? ''} | ',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              SizedBox(
+                width: 80.0,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Tooltip(
+                    message: 'Excel',
+                    child: InkWell(
+                      onTap: () {},
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.blue, width: 2.0),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: Icon(
+                            FontAwesomeIcons.fileExcel,
+                            color: Colors.blue,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Tooltip(
+                    message: 'PDF',
+                    child: InkWell(
+                      onTap: () {},
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.blue, width: 2.0),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: Icon(
+                            FontAwesomeIcons.filePdf,
+                            color: Colors.blue,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ))
+            ],
+          ),
+        ),
         Expanded(
           child: ListView(
             children: [
@@ -1829,8 +1890,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
                 PaginatedDataTable(
                   sortAscending: _sortAscending,
                   sortColumnIndex: _sortColumnIndex,
-                  header: Text(
-                      '${translations[selectedLanguage]?['AllPatients'] ?? ''} | '),
+                  header: null,
                   columns: [
                     DataColumn(
                       label: Text(
