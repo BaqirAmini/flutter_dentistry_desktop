@@ -54,15 +54,13 @@ class TaxDataTableState extends State<TaxDataTable> {
     var conn = await onConnToDb();
     var results =
         await conn.query('SELECT staff_ID, firstname, lastname FROM staff');
-    setState(() {
-      staffList = results
-          .map((result) => {
-                'staff_ID': result[0].toString(),
-                'firstname': result[1],
-                'lastname': result[2]
-              })
-          .toList();
-    });
+    staffList = results
+        .map((result) => {
+              'staff_ID': result[0].toString(),
+              'firstname': result[1],
+              'lastname': result[2]
+            })
+        .toList();
     selectedStaffId = staffList.isNotEmpty ? staffList[0]['staff_ID'] : null;
     TaxInfo.StaffList = staffList;
     TaxInfo.selectedStaff = selectedStaffId;
@@ -139,7 +137,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                 child: Form(
                   key: formKeyNewTax,
                   child: SizedBox(
-                    width: 500.0,
+                    width: MediaQuery.of(context).size.width * 0.35,
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
@@ -604,7 +602,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                             child: InputDecorator(
                               decoration: const InputDecoration(
                                 border: OutlineInputBorder(),
-                                labelText: 'خریداری شده توسط',
+                                labelText: 'تحویل کننده',
                                 enabledBorder: OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
@@ -2185,10 +2183,13 @@ onShowTaxDetails(BuildContext context) {
           ],
         ),
       ),
-      content: const Directionality(
+      content: Directionality(
         textDirection: TextDirection.rtl,
-        child: Directionality(
-            textDirection: TextDirection.rtl, child: TaxDetails()),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.5,
+          child: const Directionality(
+              textDirection: TextDirection.rtl, child: TaxDetails()),
+        ),
       ),
       actions: [
         TextButton(
