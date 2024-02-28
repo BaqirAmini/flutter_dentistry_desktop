@@ -15,19 +15,39 @@ void main() => runApp(const ProductionReport());
 class ProductionReport extends StatelessWidget {
   const ProductionReport({super.key});
 
-// This is function generates excel output
   void createExcel() async {
     final conn = await onConnToDb();
 
     // Query data from the database.
-    var results = await conn.query('SELECT firstname, lastname FROM patients');
+    var results = await conn.query(
+        'SELECT firstname, lastname, age, sex, marital_status, phone, pat_ID, DATE_FORMAT(reg_date, "%Y-%m-%d"), blood_group, address FROM patients ORDER BY reg_date DESC');
 
     // Create a new Excel document.
     final Workbook workbook = Workbook();
     final Worksheet sheet = workbook.worksheets[0];
 
+    // Define column titles.
+    var columnTitles = [
+      'First Name',
+      'Last Name',
+      'Age',
+      'Sex',
+      'Marital Status',
+      'Phone',
+      'Patient ID',
+      'Registration Date',
+      'Blood Group',
+      'Address'
+    ];
+
+    // Write column titles to the first row.
+    for (var i = 0; i < columnTitles.length; i++) {
+      sheet.getRangeByIndex(1, i + 1).setText(columnTitles[i]);
+    }
+
     // Populate the sheet with data from the database.
-    var rowIndex = 0;
+    var rowIndex =
+        1; // Start from the second row as the first row is used for column titles.
     for (var row in results) {
       for (var i = 0; i < row.length; i++) {
         sheet.getRangeByIndex(rowIndex + 1, i + 1).setText(row[i].toString());
@@ -78,8 +98,18 @@ class ProductionReport extends StatelessWidget {
           (await rootBundle.load('assets/fonts/per_sans_font.ttf'));
       final PdfTrueTypeFont ttfFont =
           PdfTrueTypeFont(fontData.buffer.asUint8List(), 12);
+
+      // Define column titles.
+      var columnTitles = ['First Name', 'Last Name'];
+
+      // Add a row for the column titles.
+      final PdfGridRow titleRow = grid.rows.add();
+      for (var i = 0; i < columnTitles.length; i++) {
+        titleRow.cells[i].value = columnTitles[i];
+        titleRow.cells[i].style = PdfGridCellStyle(font: ttfFont);
+      }
+
       // Populate the grid with data from the database.
-      grid.columns.add(count: results.length);
       for (final row in results) {
         final PdfGridRow pdfRow = grid.rows.add();
         for (var i = 0; i < row.length; i++) {
