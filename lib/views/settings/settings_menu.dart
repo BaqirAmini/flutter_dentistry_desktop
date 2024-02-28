@@ -842,26 +842,19 @@ onBackUpData() {
                         'staff_auth',
                         'patients',
                         'service_requirements',
-                        'patient_services',
-                        'patient_xrays',
+                        'services',
                         'retreatments',
                         'appointments',
+                        'patient_services',
+                        'patient_xrays',
                         'fee_payments',
                         'conditions',
                         'condition_details',
-                        'services',
                         'expenses',
                         'expense_detail',
                         'taxes',
                         'tax_payments'
                       ];
-                      // for (var table in tables) {
-                      // Convert results to CSV format
-                      /*     var csvData = '';
-                // ignore: avoid_function_literals_in_foreach_calls
-                results.forEach((row) {
-                  csvData += '${row.join(',')}\n';
-                }); */
 
                       // Get local storage directory
                       var directory = await getApplicationDocumentsDirectory();
@@ -1183,7 +1176,7 @@ onRestoreData() {
                         type: FileType.custom,
                         allowedExtensions: ['csv'],
                       );
-                      PlatformFile file;
+                      
                       if (filePickerResult != null) {
                         // Get Selected file
                         PlatformFile file = filePickerResult!.files.first;
@@ -1195,15 +1188,15 @@ onRestoreData() {
                           'staff',
                           'staff_auth',
                           'patients',
+                          'services',
                           'service_requirements',
-                          'patient_services',
-                          'patient_xrays',
                           'retreatments',
                           'appointments',
+                          'patient_services',
+                          'patient_xrays',
                           'fee_payments',
                           'conditions',
                           'condition_details',
-                          'services',
                           'expenses',
                           'expense_detail',
                           'taxes',
@@ -1216,7 +1209,10 @@ onRestoreData() {
                           'staff': 'staff_ID',
                           'staff_auth': 'auth_ID',
                           'patients': 'pat_ID',
+                          'services': 'ser_ID',
                           'service_requirements': 'req_ID',
+                          'retreatments': 'retreat_ID',
+                          'appointments': 'apt_ID',
                           'patient_services': [
                             'apt_ID',
                             'pat_ID',
@@ -1224,12 +1220,9 @@ onRestoreData() {
                             'req_ID',
                           ],
                           'patient_xrays': 'xray_ID',
-                          'retreatments': 'retreat_ID',
-                          'appointments': 'apt_ID',
                           'fee_payments': 'payment_ID',
                           'conditions': 'cond_ID',
                           'condition_details': 'cond_detail_ID',
-                          'services': 'ser_ID',
                           'expenses': 'exp_ID',
                           'expense_detail': 'exp_detail_ID',
                           'taxes': 'tax_ID',
@@ -1261,8 +1254,6 @@ onRestoreData() {
                                   ..add(
                                       'value'); // Create a new list that includes 'value'
                                 var keyNames = allKeys.join(', ');
-                                var keyValues =
-                                    allKeys.map((key) => '?').join(', ');
                                 var insertSql =
                                     "INSERT IGNORE INTO $currentTable ($keyNames) VALUES (?, ?, ?, ?, ?)";
                                 // Take only the first four values for the keys
@@ -1298,7 +1289,6 @@ onRestoreData() {
                             }
                           }
                         }
-
                         // Show success or error message after all data has been inserted
                         if (insertedRecords > 0) {
                           _onShowSnack(
