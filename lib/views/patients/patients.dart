@@ -19,6 +19,9 @@ import 'package:printing/printing.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xls;
 
 void main() {
   return runApp(const Patient());
@@ -892,6 +895,66 @@ onCreatePrescription(BuildContext context) {
       );
     }),
   );
+}
+
+
+// This function create excel output when called.
+void createExcel() async {
+  final conn = await onConnToDb();
+
+  // Query data from the database.
+  var results = await conn.query( 
+      'SELECT firstname, lastname, CONCAT(age, \' سال \'), sex, marital_status, phone, pat_ID, DATE_FORMAT(reg_date, "%Y-%m-%d"), blood_group, address FROM patients ORDER BY reg_date DESC');
+
+  // Create a new Excel document.
+  final xls.Workbook workbook = xls.Workbook();
+  final xls.Worksheet sheet = workbook.worksheets[0];
+
+  // Define column titles.
+  var columnTitles = [
+    'First Name',
+    'Last Name',
+    'Age',
+    'Sex',
+    'Marital Status',
+    'Phone',
+    'Patient ID',
+    'Registration Date',
+    'Blood Group',
+    'Address'
+  ];
+
+  // Write column titles to the first row.
+  for (var i = 0; i < columnTitles.length; i++) {
+    sheet.getRangeByIndex(1, i + 1).setText(columnTitles[i]);
+  }
+
+  // Populate the sheet with data from the database.
+  var rowIndex =
+      1; // Start from the second row as the first row is used for column titles.
+  for (var row in results) {
+    for (var i = 0; i < row.length; i++) {
+      sheet.getRangeByIndex(rowIndex + 1, i + 1).setText(row[i].toString());
+    }
+    rowIndex++;
+  }
+
+  // Save the Excel file.
+  final List<int> bytes = workbook.saveAsStream();
+
+  // Get the directory to save the Excel file.
+  final Directory directory = await getApplicationDocumentsDirectory();
+  final String path = directory.path;
+  final File file = File('$path/Patients.xlsx');
+
+  // Write the Excel file.
+  await file.writeAsBytes(bytes, flush: true);
+
+  // Open the file
+  await OpenFile.open(file.path);
+
+  // Close the database connection.
+  await conn.close();
 }
 
 bool containsPersian(String input) {
@@ -1828,52 +1891,54 @@ class _PatientDataTableState extends State<PatientDataTable> {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               SizedBox(
-                width: 80.0,
+                  width: 80.0,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Tooltip(
-                    message: 'Excel',
-                    child: InkWell(
-                      onTap: () {},
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.blue, width: 2.0),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(5.0),
-                          child: Icon(
-                            FontAwesomeIcons.fileExcel,
-                            color: Colors.blue,
-                            size: 16,
+                    children: [
+                      Tooltip(
+                        message: 'Excel',
+                        child: InkWell(
+                          onTap: createExcel,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border:
+                                  Border.all(color: Colors.blue, width: 2.0),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(5.0),
+                              child: Icon(
+                                FontAwesomeIcons.fileExcel,
+                                color: Colors.blue,
+                                size: 16,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  Tooltip(
-                    message: 'PDF',
-                    child: InkWell(
-                      onTap: () {},
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.blue, width: 2.0),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.all(5.0),
-                          child: Icon(
-                            FontAwesomeIcons.filePdf,
-                            color: Colors.blue,
-                            size: 16,
+                      Tooltip(
+                        message: 'PDF',
+                        child: InkWell(
+                          onTap: () {},
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border:
+                                  Border.all(color: Colors.blue, width: 2.0),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.all(5.0),
+                              child: Icon(
+                                FontAwesomeIcons.filePdf,
+                                color: Colors.blue,
+                                size: 16,
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ],
-              ))
+                    ],
+                  ))
             ],
           ),
         ),
