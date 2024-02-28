@@ -2043,7 +2043,7 @@ onPayDueTaxes(BuildContext context) {
                           child: InputDecorator(
                             decoration: const InputDecoration(
                               border: OutlineInputBorder(),
-                              labelText: 'خریداری شده توسط',
+                              labelText: 'تحویل کننده',
                               enabledBorder: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
