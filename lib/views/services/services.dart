@@ -73,25 +73,14 @@ class _ServiceState extends State<Service> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Directionality(
-        textDirection: TextDirection.rtl,
-        child: ScaffoldMessenger(
-          key: _globalKeyForService,
-          child: Scaffold(
-            backgroundColor: const Color.fromARGB(255, 234, 231, 231),
-            appBar: AppBar(
-              leading: Tooltip(
-                message: 'رفتن به داشبورد',
-                child: IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(Icons.home_outlined),
-                ),
-              ),
-              actions: [
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: ScaffoldMessenger(
+        key: _globalKeyForService,
+        child: Scaffold(
+          backgroundColor: const Color.fromARGB(255, 234, 231, 231),
+          appBar: AppBar(
+            /*  actions: [
                 IconButton(
                   icon: Icon(_isSearching ? Icons.close : Icons.search),
                   onPressed: () {
@@ -118,22 +107,20 @@ class _ServiceState extends State<Service> {
                   );
                 }),
                 const SizedBox(width: 20),
-              ],
-              title: _isSearching
-                  ? TextField(
-                      controller: _searchQuery,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: const InputDecoration(
-                          hintText: "جستجو...",
-                          hintStyle: TextStyle(color: Colors.white)),
-                    )
-                  : const Text("خدمات ما"),
-            ),
-            body: const ServicesTile(),
+              ], */
+            title: _isSearching
+                ? TextField(
+                    controller: _searchQuery,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                        hintText: "جستجو...",
+                        hintStyle: TextStyle(color: Colors.white)),
+                  )
+                : const Text("خدمات ما"),
           ),
+          body: const ServicesTile(),
         ),
       ),
-      theme: ThemeData(useMaterial3: false),
     );
   }
 

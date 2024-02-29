@@ -53,66 +53,51 @@ class _CalendarAppState extends State<CalendarApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(translations[selectedLanguage]?['UpcomingAppt'] ?? ''),
-          actions: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 7.0),
-              width: MediaQuery.of(context).size.width * 0.3,
-              child: TextField(
-                style: const TextStyle(color: Colors.white),
-                cursorColor: Colors.white,
-                controller: _searchController,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: 'Search Appointment...',
-                  hintText: 'Enter patients\' name or dentists\' name',
-                  hintStyle: TextStyle(color: Colors.white54, fontSize: 14.0),
-                  labelStyle: const TextStyle(color: Colors.white),
-                  suffixIcon: IconButton(
-                    splashRadius: 25.0,
-                    icon: const Icon(Icons.clear, color: Colors.white),
-                    onPressed: () {
-                      setState(() {
-                        _searchController.clear();
-                        _searchTermNotifier.value = '';
-                      });
-                    },
-                  ),
-                  enabledBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                      borderSide: BorderSide(color: Colors.white)),
-                  focusedBorder: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                      borderSide: BorderSide(color: Colors.white)),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(translations[selectedLanguage]?['UpcomingAppt'] ?? ''),
+        actions: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 7.0, horizontal: 10.0),
+            width: MediaQuery.of(context).size.width * 0.3,
+            child: TextField(
+              style: const TextStyle(color: Colors.white),
+              cursorColor: Colors.white,
+              controller: _searchController,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: 'Search Appointment...',
+                hintText: 'Enter patients\' name or dentists\' name',
+                hintStyle: TextStyle(color: Colors.white54, fontSize: 14.0),
+                labelStyle: const TextStyle(color: Colors.white),
+                suffixIcon: IconButton(
+                  splashRadius: 25.0,
+                  icon: const Icon(Icons.clear, color: Colors.white),
+                  onPressed: () {
+                    setState(() {
+                      _searchController.clear();
+                      _searchTermNotifier.value = '';
+                    });
+                  },
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    _searchTermNotifier.value = value;
-                  });
-                },
+                enabledBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                    borderSide: BorderSide(color: Colors.white)),
+                focusedBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                    borderSide: BorderSide(color: Colors.white)),
               ),
+              onChanged: (value) {
+                setState(() {
+                  _searchTermNotifier.value = value;
+                });
+              },
             ),
-            const SizedBox(width: 50.0),
-            IconButton(
-              tooltip: 'Go to dashboard',
-              splashRadius: 25.0,
-              icon: const Icon(Icons.home_outlined),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Dashboard(),
-                ),
-              ),
-            ),
-          ],
-        ),
-        body: const CalendarPage(),
+          ),
+          
+        ],
       ),
-      theme: ThemeData(useMaterial3: false),
+      body: const CalendarPage(),
     );
   }
 }

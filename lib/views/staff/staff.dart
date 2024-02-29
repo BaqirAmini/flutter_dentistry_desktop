@@ -129,12 +129,18 @@ void createPdfForStaff() async {
                 .map((row) => row.map((item) => item.toString()).toList()),
           ],
           border: null, // Remove cell borders
-          headerStyle:
-              pw.TextStyle(font: ttf, fontSize: 10.0, wordSpacing: 3.0, fontWeight: pw.FontWeight.bold,  color: const PdfColor(
-                                                      51 / 255,
-                                                      153 / 255,
-                                                      255 / 255),),
-          cellStyle: pw.TextStyle(font: ttf, fontSize: 10.0, wordSpacing: 3.0, fontWeight: pw.FontWeight.bold),
+          headerStyle: pw.TextStyle(
+            font: ttf,
+            fontSize: 10.0,
+            wordSpacing: 3.0,
+            fontWeight: pw.FontWeight.bold,
+            color: const PdfColor(51 / 255, 153 / 255, 255 / 255),
+          ),
+          cellStyle: pw.TextStyle(
+              font: ttf,
+              fontSize: 10.0,
+              wordSpacing: 3.0,
+              fontWeight: pw.FontWeight.bold),
         ),
       ),
     ],
@@ -185,28 +191,17 @@ class Staff extends StatelessWidget {
     var languageProvider = Provider.of<LanguageProvider>(context);
     selectedLanguage = languageProvider.selectedLanguage;
     isEnglish = selectedLanguage == 'English';
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ScaffoldMessenger(
-        key: _globalKey3,
-        child: Directionality(
-          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-          child: Scaffold(
-            appBar: AppBar(
-              leading: Tooltip(
-                message: translations[selectedLanguage]?['GoToDashboard'] ?? '',
-                child: IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.home_outlined),
-                ),
-              ),
-              title: Text(translations[selectedLanguage]?['Staff'] ?? ''),
-            ),
-            body: const MyDataTable(),
+    return ScaffoldMessenger(
+      key: _globalKey3,
+      child: Directionality(
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(translations[selectedLanguage]?['Staff'] ?? ''),
           ),
+          body: const MyDataTable(),
         ),
       ),
-      theme: ThemeData(useMaterial3: false),
     );
   }
 }

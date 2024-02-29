@@ -40,61 +40,47 @@ class ExpenseList extends StatefulWidget {
 class _ExpenseListState extends State<ExpenseList> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ScaffoldMessenger(
-        key: _globalKey1,
-        child: Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            appBar: AppBar(
-              actions: [
-                Builder(builder: (context) {
-                  return Tooltip(
-                    message: 'افزودن اقلام مصارف',
-                    child: IconButton(
-                      onPressed: () async {
-                        await fetchExpenseTypes();
-                        await fetchStaff();
-                        // ignore: use_build_context_synchronously
-                        await onCreateExpenseItem(context);
-                      },
-                      icon: const Icon(Icons.monetization_on_outlined),
-                    ),
-                  );
-                }),
-                const SizedBox(
-                  width: 10.0,
-                ),
-                Builder(builder: (context) {
-                  return Tooltip(
-                    message: 'افزودن نوعیت مصارف',
-                    child: IconButton(
-                      onPressed: () {
-                        onCreateExpenseType(context);
-                      },
-                      icon: const Icon(Icons.category_outlined),
-                    ),
-                  );
-                }),
-              ],
-              leading: Tooltip(
-                message: 'رفتن به داشبورد',
-                child: IconButton(
-                  onPressed: () => Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const Dashboard())),
-                  icon: const Icon(Icons.home_outlined),
-                ),
+    return ScaffoldMessenger(
+      key: _globalKey1,
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          appBar: AppBar(
+            actions: [
+              Builder(builder: (context) {
+                return Tooltip(
+                  message: 'افزودن اقلام مصارف',
+                  child: IconButton(
+                    onPressed: () async {
+                      await fetchExpenseTypes();
+                      await fetchStaff();
+                      // ignore: use_build_context_synchronously
+                      await onCreateExpenseItem(context);
+                    },
+                    icon: const Icon(Icons.monetization_on_outlined),
+                  ),
+                );
+              }),
+              const SizedBox(
+                width: 10.0,
               ),
-              title: const Text('مصارف داخلی کلینک'),
-            ),
-            body: const ExpenseData(),
+              Builder(builder: (context) {
+                return Tooltip(
+                  message: 'افزودن نوعیت مصارف',
+                  child: IconButton(
+                    onPressed: () {
+                      onCreateExpenseType(context);
+                    },
+                    icon: const Icon(Icons.category_outlined),
+                  ),
+                );
+              }),
+            ],
+            title: const Text('مصارف داخلی کلینک'),
           ),
+          body: const ExpenseData(),
         ),
       ),
-      theme: ThemeData(useMaterial3: false),
     );
   }
 

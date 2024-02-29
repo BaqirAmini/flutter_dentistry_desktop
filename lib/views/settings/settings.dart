@@ -9,25 +9,14 @@ class Settings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          appBar: AppBar(
-            leading: Tooltip(
-              message: 'رفتن به داشبورد',
-              child: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.home_outlined),
-              ),
-            ),
-            title: const Text('تنظیمات'),
-          ),
-          body: const SettingsMenu(),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('تنظیمات'),
         ),
+        body: const SettingsMenu(),
       ),
-      theme: ThemeData(useMaterial3: false),
     );
   }
 }

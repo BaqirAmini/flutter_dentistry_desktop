@@ -9,26 +9,14 @@ class TaxList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          appBar: AppBar(
-            leading: Tooltip(
-              message: 'رفتن به داشبورد',
-              child: IconButton(
-                onPressed: () => Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => const Dashboard())),
-                icon: const Icon(Icons.home_outlined),
-              ),
-            ),
-            title: const Text('مالیات کلینیک'),
-          ),
-          body: const TaxDataTable(),
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('مالیات کلینیک'),
         ),
+        body: const TaxDataTable(),
       ),
-      theme: ThemeData(useMaterial3: false),
     );
   }
 }
