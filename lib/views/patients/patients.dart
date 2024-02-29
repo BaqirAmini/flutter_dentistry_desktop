@@ -898,7 +898,7 @@ onCreatePrescription(BuildContext context) {
 }
 
 // This function create excel output when called.
-void createExcel() async {
+void createExcelForPatients() async {
   final conn = await onConnToDb();
 
   // Query data from the database.
@@ -956,7 +956,8 @@ void createExcel() async {
   await conn.close();
 }
 
-void createPdf() async {
+// This function generates PDF output when called.
+void createPdfForPatients() async {
   final conn = await onConnToDb();
 
   // Query data from the database.
@@ -993,8 +994,8 @@ void createPdf() async {
           context: context,
           data: <List<String>>[
             columnTitles,
-            ...results.map((row) =>
-                row.map((item) => item.toString()).toList()),
+            ...results
+                .map((row) => row.map((item) => item.toString()).toList()),
           ],
           border: null, // Remove cell borders
           headerStyle:
@@ -1951,54 +1952,53 @@ class _PatientDataTableState extends State<PatientDataTable> {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               SizedBox(
-                  width: 80.0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Tooltip(
-                        message: 'Excel',
-                        child: InkWell(
-                          onTap: createExcel,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border:
-                                  Border.all(color: Colors.blue, width: 2.0),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(5.0),
-                              child: Icon(
-                                FontAwesomeIcons.fileExcel,
-                                color: Colors.blue,
-                                size: 16,
-                              ),
+                width: 80.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Tooltip(
+                      message: 'Excel',
+                      child: InkWell(
+                        onTap: createExcelForPatients,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.blue, width: 2.0),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(5.0),
+                            child: Icon(
+                              FontAwesomeIcons.fileExcel,
+                              color: Colors.blue,
+                              size: 16,
                             ),
                           ),
                         ),
                       ),
-                      Tooltip(
-                        message: 'PDF',
-                        child: InkWell(
-                          onTap: createPdf,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border:
-                                  Border.all(color: Colors.blue, width: 2.0),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.all(5.0),
-                              child: Icon(
-                                FontAwesomeIcons.filePdf,
-                                color: Colors.blue,
-                                size: 16,
-                              ),
+                    ),
+                    Tooltip(
+                      message: 'PDF',
+                      child: InkWell(
+                        onTap: createPdfForPatients,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.blue, width: 2.0),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(5.0),
+                            child: Icon(
+                              FontAwesomeIcons.filePdf,
+                              color: Colors.blue,
+                              size: 16,
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ))
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
