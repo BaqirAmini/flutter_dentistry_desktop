@@ -8,15 +8,147 @@ import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/staff/new_staff.dart';
 import 'package:flutter_dentistry/views/staff/staff_detail.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:galileo_mysql/galileo_mysql.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xls;
 import 'staff_info.dart';
 import 'package:intl/intl.dart' as intl2;
 import 'package:path/path.dart' as p;
+import 'package:pdf/widgets.dart' as pw;
 
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKey3 =
     GlobalKey<ScaffoldMessengerState>();
+
+// This function create excel output when called.
+void createExcelForStaff() async {
+  final conn = await onConnToDb();
+
+  // Query data from the database.
+  var results = await conn.query(
+      'SELECT staff_ID, firstname, lastname, position, salary, phone, tazkira_ID, COALESCE(address, \' \'), COALESCE(DATE_FORMAT(hire_date, "%M %d, %Y"), \'--\'), COALESCE(CONCAT(prepayment, \' افغانی \'), \'--\'), family_phone1 FROM staff');
+
+  // Create a new Excel document.
+  final xls.Workbook workbook = xls.Workbook();
+  final xls.Worksheet sheet = workbook.worksheets[0];
+
+  // Define column titles.
+  var columnTitles = [
+    'Staff ID',
+    'First Name',
+    'Last Name',
+    'Position',
+    'Salary',
+    'Phone',
+    'Tazkira ID',
+    'Address',
+    'Hire Date',
+    'Prepayment',
+    'Family Phone'
+  ];
+
+  // Write column titles to the first row.
+  for (var i = 0; i < columnTitles.length; i++) {
+    sheet.getRangeByIndex(1, i + 1).setText(columnTitles[i]);
+  }
+
+  // Populate the sheet with data from the database.
+  var rowIndex =
+      1; // Start from the second row as the first row is used for column titles.
+  for (var row in results) {
+    for (var i = 0; i < row.length; i++) {
+      sheet.getRangeByIndex(rowIndex + 1, i + 1).setText(row[i].toString());
+    }
+    rowIndex++;
+  }
+
+  // Save the Excel file.
+  final List<int> bytes = workbook.saveAsStream();
+
+  // Get the directory to save the Excel file.
+  final Directory directory = await getApplicationDocumentsDirectory();
+  final String path = directory.path;
+  final File file = File('$path/Staff.xlsx');
+
+  // Write the Excel file.
+  await file.writeAsBytes(bytes, flush: true);
+
+  // Open the file
+  await OpenFile.open(file.path);
+
+  // Close the database connection.
+  await conn.close();
+}
+
+// This function generates PDF output when called.
+void createPdfForStaff() async {
+  final conn = await onConnToDb();
+
+  // Query data from the database.
+  var results = await conn.query(
+      'SELECT staff_ID, firstname, lastname, position, salary, phone, tazkira_ID, COALESCE(address, \' \'), COALESCE(DATE_FORMAT(hire_date, "%M %d, %Y"), \'--\'), COALESCE(CONCAT(prepayment, \' افغانی \'), \'--\'), family_phone1 FROM staff');
+
+  // Create a new PDF document.
+  final pdf = pw.Document();
+  final fontData = await rootBundle.load('assets/fonts/per_sans_font.ttf');
+  final ttf = pw.Font.ttf(fontData);
+
+  // Define column titles.
+  var columnTitles = [
+    'Staff ID',
+    'First Name',
+    'Last Name',
+    'Position',
+    'Salary',
+    'Phone',
+    'Tazkira ID',
+    'Address',
+    'Hire Date',
+    'Prepayment',
+    'Family Phone'
+  ];
+
+  // Populate the PDF with data from the database.
+  pdf.addPage(pw.MultiPage(
+    build: (context) => [
+      pw.Directionality(
+        textDirection: pw.TextDirection.rtl,
+        child: pw.TableHelper.fromTextArray(
+          cellPadding: const pw.EdgeInsets.all(3.0),
+          defaultColumnWidth: const pw.FixedColumnWidth(150.0),
+          context: context,
+          data: <List<String>>[
+            columnTitles,
+            ...results
+                .map((row) => row.map((item) => item.toString()).toList()),
+          ],
+          border: null, // Remove cell borders
+          headerStyle:
+              pw.TextStyle(font: ttf, fontSize: 10.0, wordSpacing: 3.0, fontWeight: pw.FontWeight.bold,  color: const PdfColor(
+                                                      51 / 255,
+                                                      153 / 255,
+                                                      255 / 255),),
+          cellStyle: pw.TextStyle(font: ttf, fontSize: 10.0, wordSpacing: 3.0, fontWeight: pw.FontWeight.bold),
+        ),
+      ),
+    ],
+  ));
+
+  // Save the PDF file.
+  final output = await getTemporaryDirectory();
+  final file = File('${output.path}/Staff.pdf');
+  await file.writeAsBytes(await pdf.save(), flush: true);
+
+  // Open the file
+  await OpenFile.open(file.path);
+
+  // Close the database connection.
+  await conn.close();
+}
 
 // This is shows snackbar when called
 void _onShowSnack(Color backColor, String msg) {
@@ -215,6 +347,67 @@ class _MyDataTableState extends State<MyDataTable> {
             ],
           ),
         ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+          color: Colors.white,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${translations[selectedLanguage]?['AllStaff'] ?? ''} | ',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              SizedBox(
+                width: 80.0,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Tooltip(
+                      message: 'Excel',
+                      child: InkWell(
+                        onTap: createExcelForStaff,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.blue, width: 2.0),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(5.0),
+                            child: Icon(
+                              FontAwesomeIcons.fileExcel,
+                              color: Colors.blue,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Tooltip(
+                      message: 'PDF',
+                      child: InkWell(
+                        onTap: createPdfForStaff,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.blue, width: 2.0),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.all(5.0),
+                            child: Icon(
+                              FontAwesomeIcons.filePdf,
+                              color: Colors.blue,
+                              size: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
         Expanded(
           child: ListView(
             children: [
@@ -229,8 +422,7 @@ class _MyDataTableState extends State<MyDataTable> {
               else
                 PaginatedDataTable(
                   source: dataSource,
-                  header: Text(
-                      '${translations[selectedLanguage]?['AllStaff'] ?? ''} |'),
+                  header: null,
                   sortColumnIndex: _sortColumnIndex,
                   sortAscending: _sortAscending,
                   columns: [
