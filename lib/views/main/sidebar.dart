@@ -161,7 +161,7 @@ class _SidebarState extends State<Sidebar> {
               (translations[selectedLanguage]?['Staff'] ?? '').toString(),
             ),
             onTap: () {
-              Navigator.pop(context);
+              
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const Staff()));
             },
@@ -172,7 +172,7 @@ class _SidebarState extends State<Sidebar> {
               (translations[selectedLanguage]?['Services'] ?? '').toString(),
             ),
             onTap: () {
-              Navigator.pop(context);
+              
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -186,7 +186,7 @@ class _SidebarState extends State<Sidebar> {
             title: Text((translations[selectedLanguage]?['UpcomingAppt'] ?? '')
                 .toString()),
             onTap: () {
-              Navigator.pop(context);
+              
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -201,7 +201,7 @@ class _SidebarState extends State<Sidebar> {
               (translations[selectedLanguage]?['Expenses'] ?? '').toString(),
             ),
             onTap: () {
-              Navigator.pop(context);
+              
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -216,7 +216,7 @@ class _SidebarState extends State<Sidebar> {
               (translations[selectedLanguage]?['Taxes'] ?? '').toString(),
             ),
             onTap: () {
-              Navigator.pop(context);
+              
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -278,7 +278,7 @@ class _SidebarState extends State<Sidebar> {
               (translations[selectedLanguage]?['Settings'] ?? '').toString(),
             ),
             onTap: () {
-              Navigator.pop(context);
+              
               Navigator.push(
                 context,
                 MaterialPageRoute(
