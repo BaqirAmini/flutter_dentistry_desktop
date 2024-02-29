@@ -897,6 +897,8 @@ onCreatePrescription(BuildContext context) {
   );
 }
 
+int pdfOutputCounter = 1;
+int excelOutputCounter = 1;
 // This function create excel output when called.
 void createExcelForPatients() async {
   final conn = await onConnToDb();
@@ -944,7 +946,7 @@ void createExcelForPatients() async {
   // Get the directory to save the Excel file.
   final Directory directory = await getApplicationDocumentsDirectory();
   final String path = directory.path;
-  final File file = File('$path/Patients.xlsx');
+  final File file = File('$path/Patients (${excelOutputCounter++}).xlsx');
 
   // Write the Excel file.
   await file.writeAsBytes(bytes, flush: true);
@@ -1008,7 +1010,7 @@ void createPdfForPatients() async {
 
   // Save the PDF file.
   final output = await getTemporaryDirectory();
-  final file = File('${output.path}/Patients.pdf');
+  final file = File('${output.path}/Patients ${pdfOutputCounter++}.pdf');
   await file.writeAsBytes(await pdf.save(), flush: true);
 
   // Open the file
