@@ -24,6 +24,8 @@ import 'package:pdf/widgets.dart' as pw;
 final GlobalKey<ScaffoldMessengerState> _globalKey3 =
     GlobalKey<ScaffoldMessengerState>();
 
+int pdfOutputCounter = 1;
+int excelOutputCounter = 1;
 // This function create excel output when called.
 void createExcelForStaff() async {
   final conn = await onConnToDb();
@@ -72,7 +74,7 @@ void createExcelForStaff() async {
   // Get the directory to save the Excel file.
   final Directory directory = await getApplicationDocumentsDirectory();
   final String path = directory.path;
-  final File file = File('$path/Staff.xlsx');
+  final File file = File('$path/Staff (${excelOutputCounter++}).xlsx');
 
   // Write the Excel file.
   await file.writeAsBytes(bytes, flush: true);
@@ -140,7 +142,7 @@ void createPdfForStaff() async {
 
   // Save the PDF file.
   final output = await getTemporaryDirectory();
-  final file = File('${output.path}/Staff.pdf');
+  final file = File('${output.path}/Staff (${pdfOutputCounter++}).pdf');
   await file.writeAsBytes(await pdf.save(), flush: true);
 
   // Open the file
