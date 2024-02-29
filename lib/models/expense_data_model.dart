@@ -1,14 +1,162 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
 import '/views/finance/expenses/expense_details.dart';
 import 'package:intl/intl.dart' as intl2;
 import '/views/finance/expenses/expense_info.dart';
 import 'db_conn.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xls;
+import 'package:pdf/widgets.dart' as pw;
 
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKeyExpDM =
     GlobalKey<ScaffoldMessengerState>();
+// It increments by 1 by any occurance of outputs (excel or pdf)
+int outputCounter = 1;
+// This function create excel output when called.
+void createExcelForExpenses() async {
+  final conn = await onConnToDb();
+
+  // Query data from the database.
+  // if expFilterValue = 'همه' then it should not use WHERE to filter.
+  final results = expFilterValue == 'همه'
+      ? await conn.query(
+          'SELECT  A.exp_name, B.item_name, B.quantity, CONCAT(B.unit_price, \' افغانی \'), CONCAT(B.total, \' افغانی \'), CONCAT(C.firstname, \' \', C.lastname), DATE_FORMAT(B.purchase_date, "%Y-%m-%d"), B.note FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID INNER JOIN staff C ON B.purchased_by = C.staff_ID ORDER BY B.purchase_date DESC;')
+      : await conn.query(
+          'SELECT  A.exp_name, B.item_name, B.quantity, CONCAT(B.unit_price, \' افغانی \'), CONCAT(B.total, \' افغانی \'), CONCAT(C.firstname, \' \', C.lastname), DATE_FORMAT(B.purchase_date, "%Y-%m-%d"), B.note FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID INNER JOIN staff C ON B.purchased_by = C.staff_ID WHERE A.exp_ID = ? ORDER BY B.purchase_date DESC;',
+          [expFilterValue]);
+
+  // Create a new Excel document.
+  final xls.Workbook workbook = xls.Workbook();
+  final xls.Worksheet sheet = workbook.worksheets[0];
+
+  // Define column titles.
+  var columnTitles = [
+    'Expense Category',
+    'Item Name',
+    'Quantity',
+    'Unit Price',
+    'Total',
+    'Burchased By',
+    'Purchase Date',
+    'Details',
+  ];
+
+  // Write column titles to the first row.
+  for (var i = 0; i < columnTitles.length; i++) {
+    sheet.getRangeByIndex(1, i + 1).setText(columnTitles[i]);
+  }
+
+  // Populate the sheet with data from the database.
+  var rowIndex =
+      1; // Start from the second row as the first row is used for column titles.
+  for (var row in results) {
+    for (var i = 0; i < row.length; i++) {
+      sheet.getRangeByIndex(rowIndex + 1, i + 1).setText(row[i].toString());
+    }
+    rowIndex++;
+  }
+
+  // Save the Excel file.
+  final List<int> bytes = workbook.saveAsStream();
+  // Get the directory to save the Excel file.
+  final Directory directory = await getApplicationDocumentsDirectory();
+  final String path = directory.path;
+  final File file = File('$path/Expenses (${outputCounter++}).xlsx');
+
+  try {
+    // Write the Excel file.
+    await file.writeAsBytes(bytes, flush: true);
+  } catch (e) {
+    print('Creating excel for expenses failed: $e');
+  }
+
+  // Open the file
+  await OpenFile.open(file.path);
+
+  // Close the database connection.
+  await conn.close();
+}
+
+// This function generates PDF output when called.
+void createPdfForExpenses() async {
+  final conn = await onConnToDb();
+
+  // Query data from the database.
+  // if expFilterValue = 'همه' then it should not use WHERE to filter.
+  final results = expFilterValue == 'همه'
+      ? await conn.query(
+          'SELECT  A.exp_name, B.item_name, B.quantity, CONCAT(B.unit_price, \' افغانی \'), CONCAT(B.total, \' افغانی \'), CONCAT(C.firstname, \' \', C.lastname), DATE_FORMAT(B.purchase_date, "%Y-%m-%d"), B.note FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID INNER JOIN staff C ON B.purchased_by = C.staff_ID ORDER BY B.purchase_date DESC;')
+      : await conn.query(
+          'SELECT  A.exp_name, B.item_name, B.quantity, CONCAT(B.unit_price, \' افغانی \'), CONCAT(B.total, \' افغانی \'), CONCAT(C.firstname, \' \', C.lastname), DATE_FORMAT(B.purchase_date, "%Y-%m-%d"), B.note FROM expenses A INNER JOIN expense_detail B ON A.exp_ID = B.exp_ID INNER JOIN staff C ON B.purchased_by = C.staff_ID WHERE A.exp_ID = ? ORDER BY B.purchase_date DESC;',
+          [expFilterValue]);
+
+  // Create a new PDF document.
+  final pdf = pw.Document();
+  final fontData = await rootBundle.load('assets/fonts/per_sans_font.ttf');
+  final ttf = pw.Font.ttf(fontData);
+
+  // Define column titles.
+  var columnTitles = [
+    'Expense Category',
+    'Item Name',
+    'Quantity',
+    'Unit Price',
+    'Total',
+    'Burchased By',
+    'Purchase Date',
+    'Details',
+  ];
+
+  // Populate the PDF with data from the database.
+  pdf.addPage(pw.MultiPage(
+    build: (context) => [
+      pw.Directionality(
+        textDirection: pw.TextDirection.rtl,
+        child: pw.TableHelper.fromTextArray(
+          cellPadding: const pw.EdgeInsets.all(3.0),
+          defaultColumnWidth: const pw.FixedColumnWidth(150.0),
+          context: context,
+          data: <List<String>>[
+            columnTitles,
+            ...results
+                .map((row) => row.map((item) => item.toString()).toList()),
+          ],
+          border: null, // Remove cell borders
+          headerStyle: pw.TextStyle(
+            font: ttf,
+            fontSize: 10.0,
+            wordSpacing: 3.0,
+            fontWeight: pw.FontWeight.bold,
+            color: const PdfColor(51 / 255, 153 / 255, 255 / 255),
+          ),
+          cellStyle: pw.TextStyle(
+              font: ttf,
+              fontSize: 10.0,
+              wordSpacing: 3.0,
+              fontWeight: pw.FontWeight.bold),
+        ),
+      ),
+    ],
+  ));
+
+  // Save the PDF file.
+  final output = await getTemporaryDirectory();
+  final file = File('${output.path}/Expenses (${outputCounter++}).pdf');
+  await file.writeAsBytes(await pdf.save(), flush: true);
+
+  // Open the file
+  await OpenFile.open(file.path);
+
+  // Close the database connection.
+  await conn.close();
+}
 
 // Declare this variable to assign expenses filter value
 String expFilterValue = 'همه';
@@ -247,6 +395,68 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                 ],
               ),
             ),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+              color: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("همه مصارف |",
+                      style: Theme.of(context).textTheme.headlineSmall),
+                  SizedBox(
+                    width: 80.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Tooltip(
+                          message: 'Excel',
+                          child: InkWell(
+                            onTap: createExcelForExpenses,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.blue, width: 2.0),
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.all(5.0),
+                                child: Icon(
+                                  FontAwesomeIcons.fileExcel,
+                                  color: Colors.blue,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Tooltip(
+                          message: 'PDF',
+                          child: InkWell(
+                            onTap: createPdfForExpenses,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.blue, width: 2.0),
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.all(5.0),
+                                child: Icon(
+                                  FontAwesomeIcons.filePdf,
+                                  color: Colors.blue,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
             if (_filteredData.isEmpty)
               const SizedBox(
                 width: 200,
@@ -258,7 +468,8 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
               PaginatedDataTable(
                 sortAscending: _sortAscending,
                 sortColumnIndex: _sortColumnIndex,
-                header: const Text("همه مصارف |"),
+                header: null,
+                // header: const Text("همه مصارف |"),
                 columns: [
                   DataColumn(
                     label: const Text(
