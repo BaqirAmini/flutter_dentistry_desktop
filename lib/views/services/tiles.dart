@@ -64,8 +64,8 @@ class _ServicesTileState extends State<ServicesTile> {
                     return SliverGrid(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 1,
+                        mainAxisSpacing: 1,
                         crossAxisCount: 5,
                       ),
                       delegate: SliverChildBuilderDelegate(
@@ -75,6 +75,9 @@ class _ServicesTileState extends State<ServicesTile> {
                             height: 80.0,
                             width: 80.0,
                             child: Card(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                                  elevation: 0.4,
                               child: Stack(
                                 children: [
                                   Center(
@@ -85,6 +88,8 @@ class _ServicesTileState extends State<ServicesTile> {
                                     top: 8.0,
                                     left: 8.0,
                                     child: PopupMenuButton(
+                                        iconColor: Colors.grey,
+                                        splashRadius: 25.0,
                                         itemBuilder: (BuildContext context) =>
                                             <PopupMenuEntry>[
                                               const PopupMenuItem(
@@ -165,13 +170,13 @@ class _ServicesTileState extends State<ServicesTile> {
   }
 
 // Set icon and text as contents of any tile.
-  onSetTileContent(String myText, double price) {
+  onSetTileContent(String serviceName, double price) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         const CircleAvatar(
-          radius: 25.0,
-          backgroundColor: Colors.blue,
+          radius: 30.0,
+          backgroundColor: Colors.green,
           child: Icon(FontAwesomeIcons.tooth, color: Colors.white),
         ),
         const SizedBox(
@@ -179,8 +184,9 @@ class _ServicesTileState extends State<ServicesTile> {
         ),
         Text(
           textAlign: TextAlign.center,
-          myText,
-          style: const TextStyle(fontSize: 22.0),
+          serviceName,
+          style:
+              Theme.of(context).textTheme.titleLarge!.copyWith(fontSize: 16.0),
         ),
         const SizedBox(
           height: 10.0,
