@@ -1,10 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
 import '../views/finance/taxes/tax_details.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/finance/taxes/tax_info.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xls;
+import 'package:pdf/widgets.dart' as pw;
 
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKeyForTaxes =
@@ -13,6 +21,138 @@ final GlobalKey<ScaffoldMessengerState> _globalKeyForTaxes =
 const regExOnlydigits = "[0-9]";
 const regExpDecimal = r'^\d+\.?\d{0,2}';
 const regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
+// It increments by 1 by any occurance of outputs (excel or pdf)
+int excelOutputCounter = 1;
+int pdfOutputCounter = 1;
+// This function create excel output when called.
+void createExcelForTaxes() async {
+  final conn = await onConnToDb();
+
+  // Query data from the database.
+  var results = await conn.query(
+      'SELECT A.TIN, CONCAT(A.annual_income, \' افغانی \'), CONCAT(A.tax_rate, \'%\'), CONCAT(A.total_annual_tax, \' افغانی \'), CONCAT(B.paid_amount, \' افغانی \'), CONCAT(B.due_amount, \' افغانی \'), DATE_FORMAT(B.paid_date, "%Y-%m-%d"), CONCAT(A.tax_for_year, \' ه.ش \'), CONCAT(C.firstname, \' \', C.lastname), B.note FROM taxes A INNER JOIN tax_payments B ON A.tax_ID = B.tax_ID INNER JOIN staff C ON B.paid_by = C.staff_ID ORDER BY B.modified_at DESC');
+
+  // Create a new Excel document.
+  final xls.Workbook workbook = xls.Workbook();
+  final xls.Worksheet sheet = workbook.worksheets[0];
+
+  // Define column titles.
+  var columnTitles = [
+    'TIN #',
+    'Annual Income',
+    'Tax Rate',
+    'Total Annual Tax',
+    'Tax Paid',
+    'Tax Due',
+    'Tax Paid At',
+    'Tax of Year',
+    'Paid By',
+    'Details'
+  ];
+
+  // Write column titles to the first row.
+  for (var i = 0; i < columnTitles.length; i++) {
+    sheet.getRangeByIndex(1, i + 1).setText(columnTitles[i]);
+  }
+
+  // Populate the sheet with data from the database.
+  var rowIndex =
+      1; // Start from the second row as the first row is used for column titles.
+  for (var row in results) {
+    for (var i = 0; i < row.length; i++) {
+      sheet.getRangeByIndex(rowIndex + 1, i + 1).setText(row[i].toString());
+    }
+    rowIndex++;
+  }
+
+  // Save the Excel file.
+  final List<int> bytes = workbook.saveAsStream();
+
+  // Get the directory to save the Excel file.
+  final Directory directory = await getApplicationDocumentsDirectory();
+  final String path = directory.path;
+  final File file = File('$path/Taxes (${excelOutputCounter++}).xlsx');
+
+  // Write the Excel file.
+  await file.writeAsBytes(bytes, flush: true);
+
+  // Open the file
+  await OpenFile.open(file.path);
+
+  // Close the database connection.
+  await conn.close();
+}
+
+// This function generates PDF output when called.
+void createPdfForTaxes() async {
+  final conn = await onConnToDb();
+
+  // Query data from the database.
+  var results = await conn.query(
+      'SELECT A.TIN, CONCAT(A.annual_income, \' افغانی \'), CONCAT(A.tax_rate, \'%\'), CONCAT(A.total_annual_tax, \' افغانی \'), CONCAT(B.paid_amount, \' افغانی \'), CONCAT(B.due_amount, \' افغانی \'), DATE_FORMAT(B.paid_date, "%Y-%m-%d"), CONCAT(A.tax_for_year, \' ه.ش \'), CONCAT(C.firstname, \' \', C.lastname), B.note FROM taxes A INNER JOIN tax_payments B ON A.tax_ID = B.tax_ID INNER JOIN staff C ON B.paid_by = C.staff_ID ORDER BY B.modified_at DESC');
+
+  // Create a new PDF document.
+  final pdf = pw.Document();
+  final fontData = await rootBundle.load('assets/fonts/per_sans_font.ttf');
+  final ttf = pw.Font.ttf(fontData);
+
+  // Define column titles.
+  var columnTitles = [
+    'TIN #',
+    'Annual Income',
+    'Tax Rate',
+    'Total Annual Tax',
+    'Tax Paid',
+    'Tax Due',
+    'Tax Paid At',
+    'Tax of Year',
+    'Paid By',
+    'Details'
+  ];
+
+  // Populate the PDF with data from the database.
+  pdf.addPage(pw.MultiPage(
+    build: (context) => [
+      pw.Directionality(
+        textDirection: pw.TextDirection.rtl,
+        child: pw.TableHelper.fromTextArray(
+          cellPadding: const pw.EdgeInsets.all(3.0),
+          defaultColumnWidth: const pw.FixedColumnWidth(150.0),
+          context: context,
+          data: <List<String>>[
+            columnTitles,
+            ...results
+                .map((row) => row.map((item) => item.toString()).toList()),
+          ],
+          border: null, // Remove cell borders
+          headerStyle: pw.TextStyle(
+            font: ttf,
+            fontSize: 10.0,
+            wordSpacing: 3.0,
+            fontWeight: pw.FontWeight.bold,
+            color: const PdfColor(51 / 255, 153 / 255, 255 / 255),
+          ),
+          cellStyle: pw.TextStyle(
+              font: ttf,
+              fontSize: 10.0,
+              wordSpacing: 3.0,
+              fontWeight: pw.FontWeight.bold),
+        ),
+      ),
+    ],
+  ));
+
+  // Save the PDF file.
+  final output = await getTemporaryDirectory();
+  final file = File('${output.path}/Taxes (${pdfOutputCounter++}).pdf');
+  await file.writeAsBytes(await pdf.save(), flush: true);
+
+  // Open the file
+  await OpenFile.open(file.path);
+
+  // Close the database connection.
+  await conn.close();
+}
 
 // This is shows snackbar when called
 void _onShowSnack(Color backColor, String msg) {
@@ -809,7 +949,7 @@ class TaxDataTableState extends State<TaxDataTable> {
     return ScaffoldMessenger(
       key: _globalKeyForTaxes,
       child: Scaffold(
-        body: ListView(
+        body: Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -881,150 +1021,228 @@ class TaxDataTableState extends State<TaxDataTable> {
                 ],
               ),
             ),
-            if (_filteredData.isEmpty)
-              const SizedBox(
-                width: 200,
-                height: 200,
-                child:
-                    Center(child: Text('هیچ ریکاردی مربوط مالیات یافت نشد.')),
-              )
-            else
-              PaginatedDataTable(
-                sortAscending: _sortAscending,
-                sortColumnIndex: _sortColumnIndex,
-                header: const Text("همه مالیات |"),
-                columns: [
-                  DataColumn(
-                    label: const Text(
-                      "سالهای مالی",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
-                    onSort: (columnIndex, ascending) {
-                      setState(() {
-                        _sortColumnIndex = columnIndex;
-                        _sortAscending = ascending;
-                        _filteredData
-                            .sort((a, b) => a.taxOfYear.compareTo(b.taxOfYear));
-                        if (!ascending) {
-                          _filteredData = _filteredData.reversed.toList();
-                        }
-                      });
-                    },
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+              color: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "همه مالیات |",
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  DataColumn(
-                    label: const Text(
-                      "عواید سالانه",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
-                    onSort: (columnIndex, ascending) {
-                      setState(() {
-                        _sortColumnIndex = columnIndex;
-                        _sortAscending = ascending;
-                        _filteredData.sort(
-                            (a, b) => a.annualIncom.compareTo(b.annualIncom));
-                        if (!ascending) {
-                          _filteredData = _filteredData.reversed.toList();
-                        }
-                      });
-                    },
-                  ),
-                  DataColumn(
-                    label: const Text(
-                      "فیصدی مالیات",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
-                    onSort: (columnIndex, ascending) {
-                      setState(() {
-                        _sortColumnIndex = columnIndex;
-                        _sortAscending = ascending;
-                        _filteredData
-                            .sort(((a, b) => a.taxRate.compareTo(b.taxRate)));
-                        if (!ascending) {
-                          _filteredData = _filteredData.reversed.toList();
-                        }
-                      });
-                    },
-                  ),
-                  DataColumn(
-                    label: const Text(
-                      "مجموع مالیات سالانه",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
-                    onSort: (columnIndex, ascending) {
-                      setState(() {
-                        _sortColumnIndex = columnIndex;
-                        _sortAscending = ascending;
-                        _filteredData.sort(
-                            ((a, b) => a.annualTaxes.compareTo(b.annualTaxes)));
-                        if (!ascending) {
-                          _filteredData = _filteredData.reversed.toList();
-                        }
-                      });
-                    },
-                  ),
-                  DataColumn(
-                    label: const Text(
-                      "مالیات پرداخت شده",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
-                    onSort: (columnIndex, ascending) {
-                      setState(() {
-                        _sortColumnIndex = columnIndex;
-                        _sortAscending = ascending;
-                        _filteredData.sort(((a, b) =>
-                            a.deliveredTax.compareTo(b.deliveredTax)));
-                        if (!ascending) {
-                          _filteredData = _filteredData.reversed.toList();
-                        }
-                      });
-                    },
-                  ),
-                  DataColumn(
-                    label: const Text(
-                      "تاریخ پرداخت",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
-                    onSort: (columnIndex, ascending) {
-                      setState(() {
-                        _sortColumnIndex = columnIndex;
-                        _sortAscending = ascending;
-                        _filteredData.sort(
-                            ((a, b) => a.deliverDate.compareTo(b.deliverDate)));
-                        if (!ascending) {
-                          _filteredData = _filteredData.reversed.toList();
-                        }
-                      });
-                    },
-                  ),
-                  const DataColumn(
-                    label: Text(
-                      "شرح",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
+                  SizedBox(
+                    width: 80.0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Tooltip(
+                          message: 'Excel',
+                          child: InkWell(
+                            onTap: createExcelForTaxes,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.blue, width: 2.0),
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.all(5.0),
+                                child: Icon(
+                                  FontAwesomeIcons.fileExcel,
+                                  color: Colors.blue,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Tooltip(
+                          message: 'PDF',
+                          child: InkWell(
+                            onTap: createPdfForTaxes,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.blue, width: 2.0),
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.all(5.0),
+                                child: Icon(
+                                  FontAwesomeIcons.filePdf,
+                                  color: Colors.blue,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const DataColumn(
-                      label: Text("تغییر",
-                          style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold))),
-                  const DataColumn(
-                      label: Text("حذف",
-                          style: TextStyle(
-                              color: Colors.blue,
-                              fontWeight: FontWeight.bold))),
                 ],
-                source: dataSource,
-                rowsPerPage: _filteredData.length < 8
-                    ? _gu.calculateRowsPerPage(context)
-                    : _gu.calculateRowsPerPage(context),
-              )
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                children: [
+                  if (_filteredData.isEmpty)
+                    const SizedBox(
+                      width: 200,
+                      height: 200,
+                      child: Center(
+                          child: Text('هیچ ریکاردی مربوط مالیات یافت نشد.')),
+                    )
+                  else
+                    PaginatedDataTable(
+                      sortAscending: _sortAscending,
+                      sortColumnIndex: _sortColumnIndex,
+                      header: null,
+                      // header: const Text("همه مالیات |"),
+                      columns: [
+                        DataColumn(
+                          label: const Text(
+                            "سالهای مالی",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            setState(() {
+                              _sortColumnIndex = columnIndex;
+                              _sortAscending = ascending;
+                              _filteredData.sort(
+                                  (a, b) => a.taxOfYear.compareTo(b.taxOfYear));
+                              if (!ascending) {
+                                _filteredData = _filteredData.reversed.toList();
+                              }
+                            });
+                          },
+                        ),
+                        DataColumn(
+                          label: const Text(
+                            "عواید سالانه",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            setState(() {
+                              _sortColumnIndex = columnIndex;
+                              _sortAscending = ascending;
+                              _filteredData.sort((a, b) =>
+                                  a.annualIncom.compareTo(b.annualIncom));
+                              if (!ascending) {
+                                _filteredData = _filteredData.reversed.toList();
+                              }
+                            });
+                          },
+                        ),
+                        DataColumn(
+                          label: const Text(
+                            "فیصدی مالیات",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            setState(() {
+                              _sortColumnIndex = columnIndex;
+                              _sortAscending = ascending;
+                              _filteredData.sort(
+                                  ((a, b) => a.taxRate.compareTo(b.taxRate)));
+                              if (!ascending) {
+                                _filteredData = _filteredData.reversed.toList();
+                              }
+                            });
+                          },
+                        ),
+                        DataColumn(
+                          label: const Text(
+                            "مجموع مالیات سالانه",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            setState(() {
+                              _sortColumnIndex = columnIndex;
+                              _sortAscending = ascending;
+                              _filteredData.sort(((a, b) =>
+                                  a.annualTaxes.compareTo(b.annualTaxes)));
+                              if (!ascending) {
+                                _filteredData = _filteredData.reversed.toList();
+                              }
+                            });
+                          },
+                        ),
+                        DataColumn(
+                          label: const Text(
+                            "مالیات پرداخت شده",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            setState(() {
+                              _sortColumnIndex = columnIndex;
+                              _sortAscending = ascending;
+                              _filteredData.sort(((a, b) =>
+                                  a.deliveredTax.compareTo(b.deliveredTax)));
+                              if (!ascending) {
+                                _filteredData = _filteredData.reversed.toList();
+                              }
+                            });
+                          },
+                        ),
+                        DataColumn(
+                          label: const Text(
+                            "تاریخ پرداخت",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          onSort: (columnIndex, ascending) {
+                            setState(() {
+                              _sortColumnIndex = columnIndex;
+                              _sortAscending = ascending;
+                              _filteredData.sort(((a, b) =>
+                                  a.deliverDate.compareTo(b.deliverDate)));
+                              if (!ascending) {
+                                _filteredData = _filteredData.reversed.toList();
+                              }
+                            });
+                          },
+                        ),
+                        const DataColumn(
+                          label: Text(
+                            "شرح",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const DataColumn(
+                            label: Text("تغییر",
+                                style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold))),
+                        const DataColumn(
+                            label: Text("حذف",
+                                style: TextStyle(
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.bold))),
+                      ],
+                      source: dataSource,
+                      rowsPerPage: _filteredData.length < 8
+                          ? _gu.calculateRowsPerPage(context)
+                          : _gu.calculateRowsPerPage(context),
+                    )
+                ],
+              ),
+            ),
           ],
         ),
       ),
