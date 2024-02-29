@@ -897,14 +897,13 @@ onCreatePrescription(BuildContext context) {
   );
 }
 
-
 // This function create excel output when called.
 void createExcel() async {
   final conn = await onConnToDb();
 
   // Query data from the database.
-  var results = await conn.query( 
-      'SELECT firstname, lastname, CONCAT(age, \' سال \'), sex, marital_status, phone, pat_ID, DATE_FORMAT(reg_date, "%Y-%m-%d"), blood_group, address FROM patients ORDER BY reg_date DESC');
+  var results = await conn.query(
+      'SELECT firstname, lastname, CONCAT(age, \' سال \'), sex, marital_status, phone, pat_ID, DATE_FORMAT(reg_date, "%Y-%m-%d"), blood_group, COALESCE(address, \' \') FROM patients ORDER BY reg_date DESC');
 
   // Create a new Excel document.
   final xls.Workbook workbook = xls.Workbook();
@@ -949,6 +948,67 @@ void createExcel() async {
 
   // Write the Excel file.
   await file.writeAsBytes(bytes, flush: true);
+
+  // Open the file
+  await OpenFile.open(file.path);
+
+  // Close the database connection.
+  await conn.close();
+}
+
+void createPdf() async {
+  final conn = await onConnToDb();
+
+  // Query data from the database.
+  var results = await conn.query(
+      'SELECT firstname, lastname, CONCAT(age, \' سال \'), sex, marital_status, phone, pat_ID, DATE_FORMAT(reg_date, "%Y-%m-%d"), blood_group, COALESCE(address, \' \') FROM patients ORDER BY reg_date DESC');
+
+  // Create a new PDF document.
+  final pdf = pw.Document();
+  final fontData = await rootBundle.load('assets/fonts/per_sans_font.ttf');
+  final ttf = pw.Font.ttf(fontData);
+
+  // Define column titles.
+  var columnTitles = [
+    'First Name',
+    'Last Name',
+    'Age',
+    'Sex',
+    'Marital Status',
+    'Phone',
+    'Patient ID',
+    'Registration Date',
+    'Blood Group',
+    'Address'
+  ];
+
+  // Populate the PDF with data from the database.
+  pdf.addPage(pw.MultiPage(
+    build: (context) => [
+      pw.Directionality(
+        textDirection: pw.TextDirection.rtl,
+        child: pw.TableHelper.fromTextArray(
+          cellPadding: const pw.EdgeInsets.all(3.0),
+          defaultColumnWidth: const pw.FixedColumnWidth(150.0),
+          context: context,
+          data: <List<String>>[
+            columnTitles,
+            ...results.map((row) =>
+                row.map((item) => item.toString()).toList()),
+          ],
+          border: null, // Remove cell borders
+          headerStyle:
+              pw.TextStyle(font: ttf, fontSize: 10.0, wordSpacing: 3.0),
+          cellStyle: pw.TextStyle(font: ttf, fontSize: 10.0),
+        ),
+      ),
+    ],
+  ));
+
+  // Save the PDF file.
+  final output = await getTemporaryDirectory();
+  final file = File('${output.path}/Patients.pdf');
+  await file.writeAsBytes(await pdf.save(), flush: true);
 
   // Open the file
   await OpenFile.open(file.path);
@@ -1919,7 +1979,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
                       Tooltip(
                         message: 'PDF',
                         child: InkWell(
-                          onTap: () {},
+                          onTap: createPdf,
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
