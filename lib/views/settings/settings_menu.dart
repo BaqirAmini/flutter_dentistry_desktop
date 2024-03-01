@@ -18,6 +18,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 FilePickerResult? filePickerResult;
 File? pickedFile;
 
+// ignore: prefer_typing_uninitialized_variables
+var selectedLanguage;
+// ignore: prefer_typing_uninitialized_variables
+var isEnglish;
+
 bool _isLoadingPhoto = false;
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKeyForProfile =
@@ -56,108 +61,121 @@ class _SettingsMenuState extends State<SettingsMenu> {
   Widget build(BuildContext context) {
     // Assign the method declared above to static function for later use
     StaffInfo.onUpdateProfile = _onUpdate;
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
 
     return ScaffoldMessenger(
       key: _globalKeyForProfile,
       child: Scaffold(
         body: Row(
           children: [
-            Flexible(
-              flex: 1,
-              child: Card(
-                margin: const EdgeInsets.only(left: 0.0),
-                child: ListView(
-                  children: [
-                    const ListTile(
-                      title: Text(
-                        'معلومات شخصی',
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 119, 118, 118),
-                            fontSize: 14),
+            Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: Flexible(
+                flex: 1,
+                child: Card(
+                  margin: const EdgeInsets.only(left: 0.0),
+                  child: ListView(
+                    children: [
+                      ListTile(
+                        title: Text(
+                          translations[selectedLanguage]?['PersonalInfo'] ?? '',
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 119, 118, 118),
+                              fontSize: 14),
+                        ),
                       ),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.person_outline),
-                      title: const Text('پروفایل من'),
-                      onTap: () {
-                        setState(() {
-                          _selectedIndex = 1;
-                        });
-                      },
-                    ),
-                    const Divider(),
-                    const ListTile(
-                      title: Text(
-                        'امنیت',
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 119, 118, 118),
-                            fontSize: 14),
+                      ListTile(
+                        leading: const Icon(Icons.person_outline),
+                        title: Text(
+                            translations[selectedLanguage]?['MyProfile'] ?? ''),
+                        onTap: () {
+                          setState(() {
+                            _selectedIndex = 1;
+                          });
+                        },
                       ),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.key_outlined),
-                      title: const Text('تغییر رمز'),
-                      onTap: () {
-                        setState(() {
-                          _selectedIndex = 2;
-                        });
-                      },
-                    ),
-                    const Divider(),
-                    const ListTile(
-                      title: Text(
-                        'هنگام سازی',
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 119, 118, 118),
-                            fontSize: 14),
+                      const Divider(),
+                      ListTile(
+                        title: Text(
+                          translations[selectedLanguage]?['Security'] ?? '',
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 119, 118, 118),
+                              fontSize: 14),
+                        ),
                       ),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.backup_outlined),
-                      title: const Text('پشتیبان گیری'),
-                      onTap: () {
-                        setState(() {
-                          _selectedIndex = 3;
-                        });
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.restore_outlined),
-                      title: const Text('بازیابی'),
-                      onTap: () {
-                        setState(() {
-                          _selectedIndex = 4;
-                        });
-                      },
-                    ),
-                    const Divider(),
-                    const ListTile(
-                      title: Text(
-                        'مرتبط به سیستم',
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 119, 118, 118),
-                            fontSize: 14),
+                      ListTile(
+                        leading: const Icon(Icons.key_outlined),
+                        title: Text(
+                            translations[selectedLanguage]?['ChangePwd'] ?? ''),
+                        onTap: () {
+                          setState(() {
+                            _selectedIndex = 2;
+                          });
+                        },
                       ),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.color_lens_outlined),
-                      title: const Text('نمایه ها'),
-                      onTap: () {
-                        setState(() {
-                          _selectedIndex = 5;
-                        });
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.language_rounded),
-                      title: const Text('زبان'),
-                      onTap: () {
-                        setState(() {
-                          _selectedIndex = 6;
-                        });
-                      },
-                    ),
-                  ],
+                      const Divider(),
+                      ListTile(
+                        title: Text(
+                          translations[selectedLanguage]?['Sync'] ?? '',
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 119, 118, 118),
+                              fontSize: 14),
+                        ),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.backup_outlined),
+                        title: Text(
+                            translations[selectedLanguage]?['Backup'] ?? ''),
+                        onTap: () {
+                          setState(() {
+                            _selectedIndex = 3;
+                          });
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.restore_outlined),
+                        title: Text(
+                            translations[selectedLanguage]?['Restore'] ?? ''),
+                        onTap: () {
+                          setState(() {
+                            _selectedIndex = 4;
+                          });
+                        },
+                      ),
+                      const Divider(),
+                      ListTile(
+                        title: Text(
+                          translations[selectedLanguage]?['SysRelated'] ?? '',
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 119, 118, 118),
+                              fontSize: 14),
+                        ),
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.color_lens_outlined),
+                        title: Text(
+                            translations[selectedLanguage]?['Theme'] ?? ''),
+                        onTap: () {
+                          setState(() {
+                            _selectedIndex = 5;
+                          });
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.language_rounded),
+                        title: Text(
+                            translations[selectedLanguage]?['Languages'] ?? ''),
+                        onTap: () {
+                          setState(() {
+                            _selectedIndex = 6;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -539,7 +557,9 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                         shape: const CircleBorder(),
                         child: Center(
                           child: Tooltip(
-                            message: 'تغییر عکس پروفایل',
+                            message: translations[selectedLanguage]
+                                    ?['ChangeProfilePhoto'] ??
+                                '',
                             child: IconButton(
                               onPressed: onUpdatePhoto,
                               icon: _isLoadingPhoto
@@ -1176,7 +1196,7 @@ onRestoreData() {
                         type: FileType.custom,
                         allowedExtensions: ['csv'],
                       );
-                      
+
                       if (filePickerResult != null) {
                         // Get Selected file
                         PlatformFile file = filePickerResult!.files.first;

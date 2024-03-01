@@ -225,7 +225,7 @@ class _SidebarState extends State<Sidebar> {
               );
             },
           ),
-          ExpansionTile(
+          /* ExpansionTile(
             leading: const Icon(Icons.bar_chart),
             title: const Text('Reports'),
             children: <Widget>[
@@ -272,7 +272,7 @@ class _SidebarState extends State<Sidebar> {
               ),
             ],
           ),
-          ListTile(
+ */          ListTile(
             leading: const Icon(Icons.settings),
             title: Text(
               (translations[selectedLanguage]?['Settings'] ?? '').toString(),
