@@ -176,7 +176,8 @@ class _DashboardState extends State<Dashboard> {
                           ) AS total_due_amount''', [numberOnly]);
       double totalDueAmount = result.first['due_amount'] ?? 0;
       // Total Income
-      netIncome = totalFee - totalExpenses - totalDueAmount;
+      // netIncome = totalFee - totalExpenses - totalDueAmount;
+      netIncome = totalEarnings - totalExpenses - totalDueAmount;
       await conn.close();
       return [
         _PieDataIncome('Expenses', totalExpenses, Colors.red),
@@ -703,13 +704,13 @@ class _DashboardState extends State<Dashboard> {
                                                       children: [
                                                         Padding(
                                                           padding: const EdgeInsets.all(3.0),
-                                                          child: Text('Net Income', style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold)),
+                                                          child: Text('Net Income', style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.bold)),
                                                         ),
                                                         Padding(
                                                           padding: const EdgeInsets.all(3.0),
                                                           child: Text(
                                                             '${netIncome.toString()} افغانی',
-                                                            style: Theme.of(context).textTheme.labelLarge,
+                                                            style: Theme.of(context).textTheme.labelSmall,
                                                           ),
                                                         ),
                                                       ],
