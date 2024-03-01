@@ -117,7 +117,18 @@ final Map<String, Map<String, String>> translations = {
     'Male': 'Male',
     'Female': 'Female',
     /*-----/. SHARED VALUES -----*/
-    // Add other English translations here
+    /*---- SETTINGS -----*/
+    'PersonalInfo' : 'Personal Info',
+    'MyProfile' : 'My Profile',
+    'Security' : 'Security',
+    'ChangePwd' : 'Change Password',
+    'Sync' : 'Sync',
+    'Backup' : 'Backup',
+    'Restore' : 'Restore',
+    'SysRelated' : 'Related to the System',
+    'Theme' : 'Themes',
+    'Languages' : 'Languages',
+    /*----/. SETTINGS -----*/
   },
   'دری': {
     'chooseLanguage': 'انتخاب زبان',
@@ -238,6 +249,19 @@ final Map<String, Map<String, String>> translations = {
     'Male': 'مرد',
     'Female': 'زن',
     /*-----/. SHARED VALUES -----*/
+    /*---- SETTINGS -----*/
+    'PersonalInfo' : 'معلومات شخصی',
+    'MyProfile' : 'پروفایل من',
+    'Security' : 'امنیت',
+    'ChangePwd' : 'تغییر رمز',
+    'Sync' : 'همگام سازی',
+    'Backup' : 'پشتیبان گیری',
+    'Restore' : 'بازیابی',
+    'SysRelated' : 'مرتبط به سیستم',
+    'Theme' : 'نمایه ها',
+    'Languages' : 'زبان',
+    'ChangeProfilePhoto' : 'تغییر عکس پروفایل',
+    /*----/. SETTINGS -----*/
     // Add other Dari translations here
   },
   'پښتو': {
@@ -360,7 +384,20 @@ final Map<String, Map<String, String>> translations = {
     'Male': 'نارینه',
     'Female': 'ښځه',
     /*-----/. SHARED VALUES -----*/
-    // Add other Dari translations here
+    /*---- SETTINGS -----*/
+    'PersonalInfo' : 'شخصي معلمات',
+    'MyProfile' : 'زما پروفایل',
+    'Security' : 'امنیت',
+    'ChangePwd' : 'پټ نوم بدل کړی',
+    'Sync' : 'همغږي',
+    'Backup' : 'بیک اپ',
+    'Restore' : 'بحال کړئ',
+    'SysRelated' : 'د سیسټم سره تړاو لري',
+    'Theme' : 'موضوعات',
+    'Languages' : 'ژبه',
+    'ChangeProfilePhoto' : 'د پروفایل انځور بدل کړئ',
+    /*----/. SETTINGS -----*/
+    // Add other Pashto translations here
   },
   // Add other languages here
 };
