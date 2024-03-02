@@ -255,7 +255,7 @@ class _CalendarPageState extends State<CalendarPage> {
     TextEditingController apptdatetimeController = TextEditingController();
     TextEditingController commentController = TextEditingController();
     TextEditingController patientSearchableController = TextEditingController();
-    String notifFrequency = '15 Minutes';
+    String notifFrequency = '30 Minutes';
     apptdatetimeController.text = selectedDate.toString();
 
     showDialog(
@@ -623,15 +623,16 @@ class _CalendarPageState extends State<CalendarPage> {
                               child: SizedBox(
                                 height: 26.0,
                                 child: DropdownButton(
-                                  // isExpanded: true,
+                                  isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
                                   value: notifFrequency,
                                   items: <String>[
-                                    '5 Minutes',
-                                    '15 Minutes',
                                     '30 Minutes',
                                     '1 Hour',
-                                    '2 Hours'
+                                    '2 Hours',
+                                    '6 Hours',
+                                    '12 Hours',
+                                    '1 Day',
                                   ].map<DropdownMenuItem<String>>(
                                       (String value) {
                                     return DropdownMenuItem<String>(
@@ -1198,11 +1199,12 @@ class _CalendarPageState extends State<CalendarPage> {
                                   icon: const Icon(Icons.arrow_drop_down),
                                   value: notifFreq,
                                   items: <String>[
-                                    '5 Minutes',
-                                    '15 Minutes',
                                     '30 Minutes',
                                     '1 Hour',
-                                    '2 Hours'
+                                    '2 Hours',
+                                    '6 Hours',
+                                    '12 Hours',
+                                    '1 Day',
                                   ].map<DropdownMenuItem<String>>(
                                       (String value) {
                                     return DropdownMenuItem<String>(
