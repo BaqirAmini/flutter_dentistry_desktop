@@ -323,20 +323,24 @@ onChangePwd() {
                 children: [
                   Container(
                     margin: const EdgeInsets.only(top: 20.0),
-                    child: const Text(
-                      'لطفا رمز فعلی و جدید تانرا با دقت وارد نمایید.',
+                    child: Text(
+                      translations[selectedLanguage]?['LblCurrNewPwd'] ?? '',
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.only(
-                        left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 8.0),
                     child: TextFormField(
-                      textDirection: TextDirection.ltr,
+                      textDirection:
+                          isEnglish ? TextDirection.rtl : TextDirection.ltr,
                       controller: currentPwdController,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'رمز فعلی تان الزامی است.';
+                          return translations[selectedLanguage]
+                                  ?['CurrPwdRequired'] ??
+                              '';
                         }
+                        return null;
                       },
                       obscureText: isHiddenCurrentPwd,
                       decoration: InputDecoration(
@@ -350,7 +354,8 @@ onChangePwd() {
                           ),
                         ),
                         border: const OutlineInputBorder(),
-                        labelText: 'رمز فعلی',
+                        labelText:
+                            translations[selectedLanguage]?['CurrPwd'] ?? '',
                         suffixIcon: const Icon(Icons.password_rounded),
                         enabledBorder: const OutlineInputBorder(
                             borderRadius:
@@ -373,16 +378,19 @@ onChangePwd() {
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.only(
-                        left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 8.0),
                     child: TextFormField(
-                      textDirection: TextDirection.ltr,
+                      textDirection:
+                          isEnglish ? TextDirection.rtl : TextDirection.ltr,
                       controller: newPwdController,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'رمز جدید تانرا وارد کنید.';
+                          return translations[selectedLanguage]
+                                  ?['NewPwdRequired'] ??
+                              '';
                         } else if (value.length < 6) {
-                          return 'رمز تان باید حداقل 6 حرف باشد.';
+                          return translations[selectedLanguage]?['Pwd6'] ?? '';
                         }
                       },
                       obscureText: isHiddenNewPwd,
@@ -397,7 +405,8 @@ onChangePwd() {
                           ),
                         ),
                         border: const OutlineInputBorder(),
-                        labelText: 'رمز جدید',
+                        labelText:
+                            translations[selectedLanguage]?['NewPwd'] ?? '',
                         suffixIcon: const Icon(Icons.password_rounded),
                         enabledBorder: const OutlineInputBorder(
                             borderRadius:
@@ -420,17 +429,22 @@ onChangePwd() {
                     ),
                   ),
                   Container(
-                    margin: const EdgeInsets.only(
-                        left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 8.0),
                     child: TextFormField(
-                      textDirection: TextDirection.ltr,
+                      textDirection:
+                          isEnglish ? TextDirection.rtl : TextDirection.ltr,
                       controller: unConfirmController,
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'لطفا رمز جدید تانرا دوباره وارد کنید.';
+                          return translations[selectedLanguage]
+                                  ?['NewPwdConfirm'] ??
+                              '';
                         } else if (unConfirmController.text !=
                             newPwdController.text) {
-                          return 'تکرار رمز تان با اصل آن مطابقت نمیکند.';
+                          return translations[selectedLanguage]
+                                  ?['NewPwdNotMatch'] ??
+                              '';
                         }
                       },
                       obscureText: isHiddenRetypePwd,
@@ -445,11 +459,13 @@ onChangePwd() {
                           ),
                         ),
                         border: const OutlineInputBorder(),
-                        labelText: 'تکرار رمز جدید',
+                        labelText: translations[selectedLanguage]
+                                ?['ConfirmNewPwd'] ??
+                            '',
                         hintStyle:
-                            const TextStyle(color: Colors.blue, fontSize: 12.0),
+                            const TextStyle(color: Colors.grey, fontSize: 12.0),
                         hintText:
-                            'هر آنچه که در اینجا وارد میکنید باید با رمز تان مطابقت کند',
+                            translations[selectedLanguage]?['PwdHint'] ?? '',
                         suffixIcon: const Icon(Icons.password_rounded),
                         enabledBorder: const OutlineInputBorder(
                             borderRadius:
@@ -472,7 +488,7 @@ onChangePwd() {
                     ),
                   ),
                   Container(
-                    width: 400.0,
+                    width: MediaQuery.of(context).size.width * 0.23,
                     height: 35.0,
                     margin: const EdgeInsets.only(
                         left: 20.0, right: 20.0, top: 15.0, bottom: 15.0),
@@ -501,21 +517,31 @@ onChangePwd() {
                                 [newPwd, StaffInfo.staffID]);
                             if (updatedResult.affectedRows! > 0) {
                               _onShowSnack(
-                                  Colors.green, 'رمز تان موفقانه تغییر کرد.');
+                                  Colors.green,
+                                  translations[selectedLanguage]
+                                          ?['PwdSuccessMsg'] ??
+                                      '');
                               currentPwdController.clear();
                               newPwdController.clear();
                               unConfirmController.clear();
                             } else {
-                              _onShowSnack(Colors.red,
-                                  'شما هیچ تغییراتی در قسمت رمز فعلی تان نیاوردید.');
+                              _onShowSnack(
+                                  Colors.red,
+                                  translations[selectedLanguage]
+                                          ?['StaffEditErrMsg'] ??
+                                      '');
                             }
                           } else {
                             _onShowSnack(
-                                Colors.red, 'رمز فعلی تان نادرست است.');
+                                Colors.red,
+                                translations[selectedLanguage]
+                                        ?['InvalidCurrPwd'] ??
+                                    '');
                           }
                         }
                       },
-                      child: const Text('تغییر دادن'),
+                      child: Text(
+                          translations[selectedLanguage]?['ChangeBtn'] ?? ''),
                     ),
                   )
                 ],
@@ -627,9 +653,9 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'نام',
-                              style: TextStyle(
+                            Text(
+                              translations[selectedLanguage]?['FName'] ?? '',
+                              style: const TextStyle(
                                 fontSize: 14.0,
                                 color: Color.fromARGB(255, 118, 116, 116),
                               ),
@@ -651,9 +677,10 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const Text(
-                                  'تخلص',
-                                  style: TextStyle(
+                                Text(
+                                  translations[selectedLanguage]?['LName'] ??
+                                      '',
+                                  style: const TextStyle(
                                     fontSize: 14.0,
                                     color: Color.fromARGB(255, 118, 116, 116),
                                   ),
@@ -670,9 +697,10 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const Text(
-                                  'وظیفه',
-                                  style: TextStyle(
+                                Text(
+                                  translations[selectedLanguage]?['Position'] ??
+                                      '',
+                                  style: const TextStyle(
                                     fontSize: 14.0,
                                     color: Color.fromARGB(255, 118, 116, 116),
                                   ),
@@ -692,9 +720,9 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'نمبر تذکره',
-                              style: TextStyle(
+                            Text(
+                              translations[selectedLanguage]?['Tazkira'] ?? '',
+                              style: const TextStyle(
                                 fontSize: 14.0,
                                 color: Color.fromARGB(255, 118, 116, 116),
                               ),
@@ -716,9 +744,10 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const Text(
-                                  'معاش',
-                                  style: TextStyle(
+                                Text(
+                                  translations[selectedLanguage]?['Salary'] ??
+                                      '',
+                                  style: const TextStyle(
                                     fontSize: 14.0,
                                     color: Color.fromARGB(255, 118, 116, 116),
                                   ),
@@ -734,9 +763,10 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const Text(
-                                  'نمبر تماس',
-                                  style: TextStyle(
+                                Text(
+                                  translations[selectedLanguage]?['Phone'] ??
+                                      '',
+                                  style: const TextStyle(
                                     fontSize: 14.0,
                                     color: Color.fromARGB(255, 118, 116, 116),
                                   ),
@@ -754,9 +784,9 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'آدرس',
-                              style: TextStyle(
+                            Text(
+                              translations[selectedLanguage]?['Address'] ?? '',
+                              style: const TextStyle(
                                 fontSize: 14.0,
                                 color: Color.fromARGB(255, 118, 116, 116),
                               ),
@@ -767,28 +797,55 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                       ),
                     ],
                   ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    child: SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: Card(
-                        shape: const CircleBorder(),
-                        child: Tooltip(
-                          message: 'تغییر معلومات شخصی',
-                          child: Builder(builder: (BuildContext context) {
-                            return IconButton(
-                              onPressed: () {
-                                onEditProfileInfo(context);
-                              },
-                              icon: const Icon(Icons.edit, size: 16.0),
-                            );
-                          }),
+                  isEnglish
+                      ? Positioned(
+                          top: 0,
+                          right: 0,
+                          child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Card(
+                              shape: const CircleBorder(),
+                              child: Tooltip(
+                                message: translations[selectedLanguage]
+                                        ?['ChgMyPInfo'] ??
+                                    '',
+                                child: Builder(builder: (BuildContext context) {
+                                  return IconButton(
+                                    onPressed: () {
+                                      onEditProfileInfo(context);
+                                    },
+                                    icon: const Icon(Icons.edit, size: 16.0),
+                                  );
+                                }),
+                              ),
+                            ),
+                          ),
+                        )
+                      : Positioned(
+                          top: 0,
+                          left: 0,
+                          child: SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Card(
+                              shape: const CircleBorder(),
+                              child: Tooltip(
+                                message: translations[selectedLanguage]
+                                        ?['ChgMyPInfo'] ??
+                                    '',
+                                child: Builder(builder: (BuildContext context) {
+                                  return IconButton(
+                                    onPressed: () {
+                                      onEditProfileInfo(context);
+                                    },
+                                    icon: const Icon(Icons.edit, size: 16.0),
+                                  );
+                                }),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -809,32 +866,32 @@ onBackUpData() {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const ListTile(
+              ListTile(
                 title: Card(
-                  color: Color.fromARGB(255, 240, 239, 239),
+                  color: const Color.fromARGB(255, 240, 239, 239),
                   child: Padding(
-                    padding: EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.all(10.0),
                     child: Text(
-                      'احتیاط: برای جلوگیری از نابود شدن اطلاعات تان، لطفا فایل پشتیبانی را در یک جای محفوظ که قرار ذیل است ذخیره کنید:',
-                      style: TextStyle(fontSize: 14.0, color: Colors.red),
+                      translations[selectedLanguage]?['BackupCautMsg'] ?? '',
+                      style: const TextStyle(fontSize: 14.0, color: Colors.red),
                     ),
                   ),
                 ),
-                contentPadding: EdgeInsets.symmetric(horizontal: 270.0),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 270.0),
               ),
-              const ListTile(
+              ListTile(
                 title: Text(
-                  '1 - حافظه کلود (ابری ) مثل Google Drive و یا Microsoft OneDrive است.',
-                  style: TextStyle(fontSize: 12.0),
+                  '1 - ${translations[selectedLanguage]?['Storage1'] ?? ''}',
+                  style: const TextStyle(fontSize: 12.0),
                 ),
-                contentPadding: EdgeInsets.symmetric(horizontal: 280.0),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 280.0),
               ),
-              const ListTile(
+              ListTile(
                 title: Text(
-                  '2 - حافظه بیرونی مثل هارددیسک است.',
-                  style: TextStyle(fontSize: 12.0),
+                  '2 - ${translations[selectedLanguage]?['Storage2'] ?? ''}',
+                  style: const TextStyle(fontSize: 12.0),
                 ),
-                contentPadding: EdgeInsets.symmetric(horizontal: 280.0),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 280.0),
               ),
               const SizedBox(
                 height: 20.0,
@@ -925,8 +982,11 @@ onBackUpData() {
                       await conn.close();
                       // Close file
                       await sink.close();
-                      _onShowSnack(Colors.green,
-                          'فایل پشتیبانی در $path موفقانه ایجاد گردید.');
+                      _onShowSnack(
+                          Colors.green,
+                          '${translations[selectedLanguage]
+                                  ?['BackupCreatMsg'] ??
+                              ''}$path');
                       setState(() {
                         isBackupInProg = false;
                       });
@@ -946,8 +1006,9 @@ onBackUpData() {
                         )
                       : const Icon(Icons.backup_outlined),
                   label: isBackupInProg
-                      ? const Text('اندکی صبر...')
-                      : const Text('ایجاد فایل پشتیبانی'),
+                      ? Text(translations[selectedLanguage]?['WaitMsg'] ?? '')
+                      : Text(translations[selectedLanguage]?['CreateBackup'] ??
+                          ''),
                 ),
               ),
               const SizedBox(
@@ -1168,9 +1229,9 @@ onRestoreData() {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'توجه: قبل از انجام بازیابی، از موجودیت فایل پشتیبانی اطمینان حاصل کنید.',
-                style: TextStyle(fontSize: 12.0),
+              Text(
+                translations[selectedLanguage]?['RestoreMsg'] ?? '',
+                style: const TextStyle(fontSize: 12.0),
               ),
               const SizedBox(
                 height: 20.0,
@@ -1312,10 +1373,15 @@ onRestoreData() {
                         // Show success or error message after all data has been inserted
                         if (insertedRecords > 0) {
                           _onShowSnack(
-                              Colors.green, 'بازیابی موفقانه انجام شد.');
+                              Colors.green,
+                              translations[selectedLanguage]
+                                      ?['RestoreSuccessMsg'] ??
+                                  '');
                         } else {
                           _onShowSnack(Colors.red,
-                              'این اطلاعات قبلا در سیستم وجود دارد.');
+                              translations[selectedLanguage]
+                                    ?['RestoreNotNeeded'] ??
+                                '');
                         }
                         setState(() {
                           isRestoreInProg = false;
@@ -1324,8 +1390,11 @@ onRestoreData() {
                         // Close connection
                         await conn.close();
                       } else {
-                        _onShowSnack(Colors.red,
-                            'شما هیچ فایل پشتیبانی را انتخاب نکرده اید.');
+                        _onShowSnack(
+                            Colors.red,
+                            translations[selectedLanguage]
+                                    ?['BackupNotSelected'] ??
+                                '');
                         setState(() {
                           isRestoreInProg = false;
                         });
@@ -1346,8 +1415,11 @@ onRestoreData() {
                         )
                       : const Icon(Icons.restore_outlined),
                   label: isRestoreInProg
-                      ? const Text('لطفاً صبر...')
-                      : const Text('بازیابی فایل اطلاعات'),
+                      ? Text(translations[selectedLanguage]
+                              ?['WaitMsg'] ??
+                          '')
+                      : Text(translations[selectedLanguage]?['RestoreBackup'] ??
+                          ''),
                 ),
               ),
             ],
@@ -1396,15 +1468,15 @@ onEditProfileInfo(BuildContext context) {
       return StatefulBuilder(
         builder: ((context, setState) {
           return AlertDialog(
-            title: const Directionality(
-              textDirection: TextDirection.rtl,
+            title: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: Text(
-                'تغییر معلومات شخصی من',
-                style: TextStyle(color: Colors.blue),
+                translations[selectedLanguage]?['MyProfileHeading'] ?? '',
+                style: const TextStyle(color: Colors.blue),
               ),
             ),
             content: Directionality(
-              textDirection: TextDirection.rtl,
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: Form(
                 key: formKeyEditStaff,
                 child: SizedBox(
@@ -1419,26 +1491,30 @@ onEditProfileInfo(BuildContext context) {
                             controller: nameController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'نام نمی تواند خالی باشد.';
+                                return translations[selectedLanguage]
+                                        ?['FNRequired'] ??
+                                    '';
                               }
                             },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'نام',
-                              suffixIcon: Icon(Icons.person),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['FName'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.person),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1454,27 +1530,32 @@ onEditProfileInfo(BuildContext context) {
                             validator: (value) {
                               if (value!.isNotEmpty) {
                                 if (value.length < 3 || value.length > 10) {
-                                  return 'تخلص باید حداقل 3 و حداکثر 10 حرف باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['FNLength'] ??
+                                      '';
                                 }
                               }
+                              return null;
                             },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تخلص',
-                              suffixIcon: Icon(Icons.person),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['LName'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.person),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1494,37 +1575,47 @@ onEditProfileInfo(BuildContext context) {
                             ],
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'نمبر تماس الزامی است.';
+                                return translations[selectedLanguage]
+                                        ?['PhoneRequired'] ??
+                                    '';
                               } else if (value.startsWith('07')) {
                                 if (value.length < 10 || value.length > 10) {
-                                  return 'نمبر تماس باید 10 عدد باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['Phone10'] ??
+                                      '';
                                 }
                               } else if (value.startsWith('+93')) {
                                 if (value.length < 12 || value.length > 12) {
-                                  return 'نمبر تماس  همراه با کود کشور باید 12 عدد باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['Phone12'] ??
+                                      '';
                                 }
                               } else {
-                                return 'نمبر تماس نا معتبر است.';
+                                return translations[selectedLanguage]
+                                        ?['ValidPhone'] ??
+                                    '';
                               }
                               return null;
                             },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'نمبر تماس',
-                              suffixIcon: Icon(Icons.phone),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['Phone'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.phone),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1541,7 +1632,9 @@ onEditProfileInfo(BuildContext context) {
                               if (value!.isNotEmpty) {
                                 final salary = double.tryParse(value);
                                 if (salary! < 1000 || salary > 100000) {
-                                  return 'مقدار معاش باید بین 1000 افغانی و 100,000 افغانی باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['ValidSalary'] ??
+                                      '';
                                 }
                               }
                               return null;
@@ -1550,23 +1643,24 @@ onEditProfileInfo(BuildContext context) {
                               FilteringTextInputFormatter.allow(
                                   RegExp(r'[0-9.]'))
                             ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'مقدار معاش (به افغانی)',
-                              suffixIcon: Icon(Icons.money),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText:
+                                  '${translations[selectedLanguage]?['Salary'] ?? ''} (${translations[selectedLanguage]?['Afn'] ?? ''})',
+                              suffixIcon: const Icon(Icons.money),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1582,7 +1676,9 @@ onEditProfileInfo(BuildContext context) {
                             validator: (value) {
                               if (value!.isNotEmpty) {
                                 if (!tazkiraPattern.hasMatch(value)) {
-                                  return 'فورمت نمبر تذکره باید xxxx-xxxx-xxxxx باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['ValidTazkira'] ??
+                                      '';
                                 }
                               }
                               return null;
@@ -1593,23 +1689,25 @@ onEditProfileInfo(BuildContext context) {
                                 RegExp(r'[0-9-]'),
                               ),
                             ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'نمبر تذکره',
-                              suffixIcon: Icon(Icons.perm_identity),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['Tazkira'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.perm_identity),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1627,23 +1725,26 @@ onEditProfileInfo(BuildContext context) {
                                 RegExp(regExOnlyAbc),
                               ),
                             ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'آدرس',
-                              suffixIcon: Icon(Icons.location_on_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['Address'] ??
+                                  '',
+                              suffixIcon:
+                                  const Icon(Icons.location_on_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1659,13 +1760,16 @@ onEditProfileInfo(BuildContext context) {
             ),
             actions: [
               Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('لغو')),
+                          child: Text(translations[selectedLanguage]
+                                  ?['CancelBtn'] ??
+                              '')),
                       ElevatedButton(
                         onPressed: () async {
                           if (formKeyEditStaff.currentState!.validate()) {
@@ -1699,8 +1803,11 @@ onEditProfileInfo(BuildContext context) {
                                 ]);
                             await conn.close();
                             if (updateResult.affectedRows! > 0) {
-                              _onShowSnack(Colors.green,
-                                  'معلومات تان موفقانه تغییر کرد.');
+                              _onShowSnack(
+                                  Colors.green,
+                                  translations[selectedLanguage]
+                                          ?['StaffEditMsg'] ??
+                                      '');
                               setState(() {
                                 StaffInfo.firstName = firstName;
                                 StaffInfo.lastName = lastName;
@@ -1712,14 +1819,12 @@ onEditProfileInfo(BuildContext context) {
                                 // Call this function to refresh staff info UI
                                 StaffInfo.onUpdateProfile!();
                               });
-                            } else {
-                              _onShowSnack(
-                                  Colors.red, 'شما هیچ تغییراتی نیاوردید.');
                             }
                             Navigator.pop(context);
                           }
                         },
-                        child: const Text('تغییر'),
+                        child:
+                            Text(translations[selectedLanguage]?['Edit'] ?? ''),
                       ),
                     ],
                   ))
