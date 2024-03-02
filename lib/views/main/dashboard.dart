@@ -102,6 +102,9 @@ class _DashboardState extends State<Dashboard> {
     }
     _getPieData();
     _getLastSixMonthPatient();
+
+    // Alert notifications
+    _alertNotification();
   }
 
   PageController page = PageController();
@@ -200,6 +203,9 @@ class _DashboardState extends State<Dashboard> {
           'SELECT * FROM appointments a INNER JOIN patients p ON a.pat_ID = p.pat_ID WHERE status = ? AND meet_date > NOW()',
           ['Pending']);
 
+      // Get the current time
+      final currentTime = DateTime.now();
+
       // Loop through the results
       for (final row in results) {
         // Get the notification frequency for this appointment
@@ -212,32 +218,42 @@ class _DashboardState extends State<Dashboard> {
         final appointmentTime = row['meet_date'];
         DateTime? timeUntilNotification;
 
-        if (notificationFrequency == '15 Minutes') {
+        if (notificationFrequency == '30 Minutes') {
           timeUntilNotification =
-              appointmentTime.subtract(const Duration(minutes: 15));
-        } else if (notificationFrequency == '5 Minutes') {
-          timeUntilNotification =
-              appointmentTime.subtract(const Duration(minutes: 5));
+              appointmentTime.subtract(const Duration(minutes: 30));
         } else if (notificationFrequency == '1 Hour') {
           timeUntilNotification =
               appointmentTime.subtract(const Duration(hours: 1));
         } else if (notificationFrequency == '2 Hours') {
           timeUntilNotification =
               appointmentTime.subtract(const Duration(hours: 2));
+        } else if (notificationFrequency == '6 Hours') {
+          timeUntilNotification =
+              appointmentTime.subtract(const Duration(hours: 6));
+        } else if (notificationFrequency == '12 Hours') {
+          timeUntilNotification =
+              appointmentTime.subtract(const Duration(hours: 2));
+        } else if (notificationFrequency == '1 Day') {
+          timeUntilNotification =
+              appointmentTime.subtract(const Duration(days: 1));
         }
 
-// Make a copy of the variables
+        // Make a copy of the variables
         final patientIdCopy = patientId;
         final patientFNameCopy = patientFName;
         final patientLNameCopy = patientLName;
+
         // Schedule the notification
-        if (timeUntilNotification != null) {
+        if (timeUntilNotification != null &&
+            (currentTime.isAfter(timeUntilNotification) ||
+                currentTime.isBefore(appointmentTime))) {
           // Create an instance of this class to access its method to alert for upcoming notification
           GlobalUsage gu = GlobalUsage();
           gu.alertUpcomingAppointment(
-              patientIdCopy, patientFNameCopy, patientLNameCopy);
+              patientIdCopy, patientFNameCopy, patientLNameCopy, notificationFrequency);
         }
       }
+      await conn.close();
     } catch (e) {
       print('Error occured with notification: $e');
     }
@@ -249,7 +265,6 @@ class _DashboardState extends State<Dashboard> {
         ModalRoute.of(context)!.settings.arguments as Map<String, String>;
     final staffId = userData["staffID"];
     final staffRole = userData["role"]; */
-    _alertNotification();
     return ChangeNotifierProvider(
         create: (_) => LanguageProvider(),
         builder: (context, child) {
@@ -700,17 +715,35 @@ class _DashboardState extends State<Dashboard> {
                                                 annotations: [
                                                   CircularChartAnnotation(
                                                     widget: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
                                                       children: [
                                                         Padding(
-                                                          padding: const EdgeInsets.all(3.0),
-                                                          child: Text('Net Income', style: Theme.of(context).textTheme.labelSmall!.copyWith(fontWeight: FontWeight.bold)),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(3.0),
+                                                          child: Text(
+                                                              'Net Income',
+                                                              style: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .labelSmall!
+                                                                  .copyWith(
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold)),
                                                         ),
                                                         Padding(
-                                                          padding: const EdgeInsets.all(3.0),
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(3.0),
                                                           child: Text(
                                                             '${netIncome.toString()} افغانی',
-                                                            style: Theme.of(context).textTheme.labelSmall,
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .labelSmall,
                                                           ),
                                                         ),
                                                       ],
