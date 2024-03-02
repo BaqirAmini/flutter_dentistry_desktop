@@ -673,11 +673,24 @@ onCreatePrescription(BuildContext context) {
                                           });
                                         },
                                         items: <String>[
+                                          '15mg',
+                                          '30mg',
                                           '50mg',
+                                          '60mg',
+                                          '75mg',
                                           '100mg',
+                                          '120mg',
                                           '150mg',
+                                          '200mg',
                                           '250mg',
-                                          '500mg'
+                                          '300mg',
+                                          '325mg',
+                                          '400mg',
+                                          '450mg',
+                                          '500mg',
+                                          '650mg',
+                                          '800mg',
+                                          '1000mg'
                                         ].map<DropdownMenuItem<String>>(
                                             (String value) {
                                           return DropdownMenuItem<String>(
