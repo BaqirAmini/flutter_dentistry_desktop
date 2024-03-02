@@ -423,7 +423,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                 height: 26.0,
                                 padding: EdgeInsets.zero,
                                 child: DropdownButton<String>(
-                                  isExpanded: true,
+                                  // isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
                                   value: staffId.toString(),
                                   style: const TextStyle(color: Colors.black),
