@@ -145,9 +145,7 @@ class _SidebarState extends State<Sidebar> {
                 (translations[selectedLanguage]?['Patients'] ?? '').toString(),
               ),
               onTap: () {
-                setState(() {
-                  GlobalUsage.widgetVisible = false;
-                });
+                GlobalUsage.widgetVisible = false;
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => const Patient()));
               }),

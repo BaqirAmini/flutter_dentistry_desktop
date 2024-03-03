@@ -84,9 +84,7 @@ class _AppointmentState extends State<Appointment> {
             actions: [
               IconButton(
                 onPressed: () {
-                  setState(() {
-                    GlobalUsage.widgetVisible = true;
-                  });
+                  GlobalUsage.widgetVisible = true;
                   Navigator.of(context).pushAndRemoveUntil(
                       MaterialPageRoute(builder: (context) => const Patient()),
                       (route) => route.settings.name == 'Patient');
