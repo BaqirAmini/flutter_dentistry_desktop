@@ -19,6 +19,10 @@ final Map<String, Map<String, String>> translations = {
     'LastThreeMonthExpenses': 'Expenses of the last three months',
     'LastSixMonthPatients': 'Visits of patients in the last six months',
     'OpenDrawerMsg': 'Open left Menu',
+    'Profit': 'Profits',
+    'DDLDuration': 'Duration',
+    'Earnings': 'Earnings',
+    'Receivable': 'Receivable',
     /*-----/. DASHBOARD -----*/
     /*----- SIDEBAR -----*/
     'Dashboard': 'Dashboard',
@@ -56,6 +60,34 @@ final Map<String, Map<String, String>> translations = {
     'PrevBtn': 'Previous',
     'AddBtn': 'Register',
     'BloodGroup': 'Blood Group',
+    'SelectAge': 'Please select age.',
+    'NoAge': 'No age selected.',
+    'RegDate': 'Registration Date',
+    'Appointments': 'Appointments',
+    'Histories': 'Patient Health History',
+    'FeeInstallment': 'Fee / Installments',
+    'Retreatment': 'Retreatments',
+    'PatRecords': 'Patient Records',
+    'CreateRet4': 'Create Retreatment for ',
+    'SelectDentist': 'Select Dentist',
+    'RetDateTime': 'Retreatment Date and Time',
+    'RetReason': 'Retreatment Reason',
+    'RetFee': 'Retreatment Fee',
+    'Ret4Free': 'For Free',
+    'RetResult': 'Retreatment Results',
+    'RetDetails': 'Description',
+    'RetReasonRequired': 'The retreatment reason required.',
+    'RetReasonLength':
+        'The retreatment reason must be at leat 5 and at most 40 characters.',
+    'RetFeeRequired': 'Please enter the retreatment fee.',
+    'RetFeeLength': 'Fee cannot be lower than 50 AFN and more than 1000 AFN.',
+    'OtherDDLDetail': 'Please explain about this case.',
+    'OtherDDLLength': 'Details cannot be less than 5 and more than 40 characters.',
+    'RetSuccessMsg': 'Retreatment of this appointment inserted.',
+    'RetFailMsg': 'Adding retreatment failed. Try again.',
+    'DeleteAHeading': 'Delete appointment',
+    'ConfirmDelAppt': 'Are you sure you want to delete this appointment?',
+    'DeleteSuccessMsg': 'Deleted!',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'All Staff',
@@ -116,6 +148,7 @@ final Map<String, Map<String, String>> translations = {
     'NotAvable': 'N/A',
     'Male': 'Male',
     'Female': 'Female',
+    'AddrLength': 'Address must be at least 10 and at most 40 characters.',
     /*-----/. SHARED VALUES -----*/
     /*---- SETTINGS -----*/
     'PersonalInfo': 'Personal Info',
@@ -158,7 +191,8 @@ final Map<String, Map<String, String>> translations = {
         'Attention! Before to restore, please make sure the Backup file is existing.',
     'WaitMsg': 'Please wait...',
     'BackupNotSelected': 'You have not selected any Backup file.',
-    'RestoreNotNeeded': 'Restoration not needed. These records are already existing in the system.',
+    'RestoreNotNeeded':
+        'Restoration not needed. These records are already existing in the system.',
     /*----------/. USER PROFILE -----------*/
   },
   'دری': {
@@ -181,6 +215,10 @@ final Map<String, Map<String, String>> translations = {
     'LastThreeMonthExpenses': 'مصارف سه ماه اخیر',
     'LastSixMonthPatients': 'مراجعه مریض ها در شش ماه اخیر',
     'OpenDrawerMsg': 'باز کردن مینو راست',
+    'Profit': 'مفاد',
+    'DDLDuration': 'مدت',
+    'Earnings': 'عایدات',
+    'Receivable': 'قابل دریافت (قرض)',
     /*-----/. DASHBOARD -----*/
     /*----- SIDEBAR -----*/
     'Dashboard': 'داشبورد',
@@ -218,6 +256,34 @@ final Map<String, Map<String, String>> translations = {
     'PrevBtn': 'قبلی',
     'AddBtn': 'ثبت',
     'BloodGroup': 'گروپ خون',
+    'SelectAge': 'لطفاً سن را انتخاب کنید.',
+    'NoAge': 'هیچ سنی انتخاب نشده است.',
+    'RegDate': 'تاریخ ثبت',
+    'Appointments': 'جلسات',
+    'Histories': 'تاریخچه صحی مریض',
+    'FeeInstallment': 'فیس / اقساط',
+    'Retreatment': 'درمان مجدد / عودی',
+    'PatRecords': 'سوابق مریض',
+    'CreateRet4': 'ایجاد عودی برای',
+    'SelectDentist': 'انتخاب داکتر',
+    'RetDateTime': 'تاریخ و زمان عودی',
+    'RetReason': 'علت عودی',
+    'RetFee': 'فیس عودی',
+    'Ret4Free': 'بطور رایگان',
+    'RetResult': 'نتایج عودی',
+    'RetDetails': 'توضیحات',
+    'RetReasonRequired': 'علت عودی را باید درج کنید.',
+    'RetReasonLength': 'علت عودی باید حداقل 5 و حداکثر 40 حرف باشد.',
+    'RetFeeRequired': 'لطفاً مقدار فیس را وارد کنید.',
+    'RetFeeLength':
+        'فیس نمی تواند کمتر از 50 افغانی و بیشتر از 1000 افغانی باشد.',
+    'OtherDDLDetail': 'لطفاً راجع به این مورد شرح دهید.',
+    'OtherDDLLength': 'توضیحات باید حداقل 5 و حداکثر 40 حرف باشد.',
+    'RetSuccessMsg': 'عودی مربوط به این جلسه ثبت گردید.',
+    'RetFailMsg': 'ثبت عودی ناکام شد. دوباره سعی کنید.',
+     'DeleteAHeading': 'حذف جلسه',
+    'ConfirmDelAppt': 'آیا از حذف این جلسه اطمینان دارید؟',
+    'DeleteSuccessMsg': 'حذف گردید!',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'همه کارمندان',
@@ -279,6 +345,7 @@ final Map<String, Map<String, String>> translations = {
     'NotAvable': 'نامشخص',
     'Male': 'مرد',
     'Female': 'زن',
+    'AddrLength': 'آدرس باید حداقل 10 و حداکثر 40 حرف باشد.',
     /*-----/. SHARED VALUES -----*/
     /*---- SETTINGS -----*/
     'PersonalInfo': 'معلومات شخصی',
@@ -322,7 +389,8 @@ final Map<String, Map<String, String>> translations = {
         'توجه! قبل از انجام بازیابی، از موجودیت فایل پشتیبان اطمینان حاصل کنید.',
     'WaitMsg': 'لطفاً صبر...',
     'BackupNotSelected': 'شما هیچ فایل پشتیبانی را انتخاب نکرده اید.',
-    'RestoreNotNeeded': 'نیازی به بازیابی نیست. این ریکاردها در سیستم وجود دارند.',
+    'RestoreNotNeeded':
+        'نیازی به بازیابی نیست. این ریکاردها در سیستم وجود دارند.',
     /*----------/. USER PROFILE -----------*/
     // Add other Dari translations here
   },
@@ -346,6 +414,10 @@ final Map<String, Map<String, String>> translations = {
     'LastThreeMonthExpenses': 'د تیرو دریو میاشتو لګښتونه',
     'LastSixMonthPatients': 'په تیرو شپږو میاشتو کې د ناروغانو لیدنه',
     'OpenDrawerMsg': 'سم مینو خلاص کړی',
+    'Profit': 'ګټه',
+    'DDLDuration': 'دوره',
+    'Earnings': 'عایدات',
+    'Receivable': 'د ترلاسه کولو وړ (پور)',
     /*-----/. DASHBOARD -----*/
     /*----- SIDEBAR -----*/
     'Dashboard': 'ډشبورډ',
@@ -384,6 +456,34 @@ final Map<String, Map<String, String>> translations = {
     'PrevBtn': 'مخکینی',
     'AddBtn': 'راجستر',
     'BloodGroup': 'د وینې ګروپ',
+    'SelectAge': 'مهرباني وکړئ عمر وټاکئ.',
+    'NoAge': 'هیڅ عمر نه دی ټاکل شوی.',
+    'RegDate': 'د ثبت نیټه',
+    'Appointments': 'ګمارنې',
+    'Histories': 'د ناروغ روغتیا تاریخ',
+    'FeeInstallment': 'فیس / قسطونه',
+    'Retreatment': 'شاته تګ',
+    'PatRecords': 'د ناروغانو ریکارډونه',
+    'CreateRet4': 'شاته تګ جوړ کړئ لپاره ',
+    'SelectDentist': 'دندان ساز غوره کړئ',
+    'RetDateTime': 'شاته تګ نېټه او وخت',
+    'RetReason': 'د شاته تګ شبب',
+    'RetFee': 'د شاته تګ تادیه',
+    'Ret4Free': 'بیاړه',
+    'RetResult': 'د شاته تګ پایلې',
+    'RetDetails': 'تفصیل',
+    'RetReasonRequired': 'د شاته تګ سبب اړین دی.',
+    'RetReasonLength':
+        'د شاته تګ سبب باید لږ تر لږه 5 او زیاترلږه 40 حرفونه ولري.',
+    'RetFeeRequired': 'مهرباني وکړئ د شاته تګ تادیه دننه کړئ.',
+    'RetFeeLength': 'تادیه نشی کښی 50 افغانی لږ او 1000 افغانی ډیر نه وی',
+    'OtherDDLDetail': 'مهرباني وکړئ د دې پایلې په اړه وضاحت وکړئ.',
+    'OtherDDLLength': 'تشریحات باید لږترلږه 5 او زیاترلږه 40 حرفونه ولري.',
+    'RetSuccessMsg': 'د دې ملاقات شاته تګ ورکړ شو.',
+    'RetFailMsg': 'شاته تګ اضافه کول ناکام شو. بیا هڅه وکړئ.',
+     'DeleteAHeading': 'د ملاقات ړنګول',
+    'ConfirmDelAppt': 'ایا تاسو ډاډه یاست چې تاسو دا ملاقات حذف کول غواړئ؟',
+    'DeleteSuccessMsg': 'ړنګ شوی!',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'ټول کارکوونکي',
@@ -445,6 +545,7 @@ final Map<String, Map<String, String>> translations = {
     'NotAvable': 'نامعلوم',
     'Male': 'نارینه',
     'Female': 'ښځه',
+    'AddrLength': 'پته باید لږترلږه 5 او تر 40 حروفو پورې وي.',
     /*-----/. SHARED VALUES -----*/
     /*---- SETTINGS -----*/
     'PersonalInfo': 'شخصي معلمات',
@@ -489,6 +590,7 @@ final Map<String, Map<String, String>> translations = {
     'BackupNotSelected': 'تاسو هیڅ بیک اپ فایل نه دی غوره کړی.',
     'RestoreNotNeeded': 'بیا رغونه ته اړتیا نشته. دا ریکارډونه په سیسټم کې دي.',
     /*----------/. USER PROFILE -----------*/
+
     // Add other Pashto translations here
   },
   // Add other languages here

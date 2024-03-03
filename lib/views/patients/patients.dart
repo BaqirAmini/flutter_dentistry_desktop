@@ -1253,9 +1253,14 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
     builder: (ctx) => StatefulBuilder(
       builder: (context, setState) {
         return AlertDialog(
-          title: const Directionality(
-            textDirection: TextDirection.rtl,
-            child: Text('تغییر معلومات شخصی مریض'),
+          title: Directionality(
+            textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+            child: Text(
+                '${translations[selectedLanguage]?['ChgMyPInfo'] ?? ''} ${PatientInfo.firstName}',
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall!
+                    .copyWith(color: Colors.blue)),
           ),
           content: Directionality(
             textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
@@ -1274,29 +1279,36 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                             controller: _firstNameController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'نام مریض الزامی میباشد.';
+                                return translations[selectedLanguage]
+                                        ?['FNRequired'] ??
+                                    '';
                               } else if (value.length < 3 ||
                                   value.length > 10) {
-                                return 'نام مریض باید 4 تا 9 حرف باشد.';
+                                return translations[selectedLanguage]
+                                        ?['FNLength'] ??
+                                    '';
                               }
                             },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'نام',
-                              suffixIcon: Icon(Icons.person_add_alt_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['FName'] ??
+                                  '',
+                              suffixIcon:
+                                  const Icon(Icons.person_add_alt_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1312,7 +1324,9 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                             validator: (value) {
                               if (value!.isNotEmpty) {
                                 if (value.length < 3 || value.length > 10) {
-                                  return 'تخلص مریض باید 3 تا 9 حرف باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['LNLength'] ??
+                                      '';
                                 } else {
                                   return null;
                                 }
@@ -1320,23 +1334,25 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                                 return null;
                               }
                             },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تخلص',
-                              suffixIcon: Icon(Icons.person),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['LName'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.person),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1348,80 +1364,10 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 10.0),
-                              border: OutlineInputBorder(),
-                              labelText: 'جنسیت',
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(50.0),
-                                ),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(50.0),
-                                ),
-                                borderSide: BorderSide(color: Colors.blue),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                SizedBox(
-                                  width: 100,
-                                  child: Theme(
-                                    data: Theme.of(context).copyWith(
-                                      listTileTheme: const ListTileThemeData(
-                                          horizontalTitleGap: 0.5),
-                                    ),
-                                    child: RadioListTile(
-                                        title: const Text(
-                                          'مرد',
-                                          style: TextStyle(fontSize: 14),
-                                        ),
-                                        value: 'مرد',
-                                        groupValue: _sexGroupValue,
-                                        onChanged: (String? value) {
-                                          setState(() {
-                                            _sexGroupValue = value!;
-                                          });
-                                        }),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 100,
-                                  child: Theme(
-                                    data: Theme.of(context).copyWith(
-                                      listTileTheme: const ListTileThemeData(
-                                          horizontalTitleGap: 0.5),
-                                    ),
-                                    child: RadioListTile(
-                                        title: const Text(
-                                          'زن',
-                                          style: TextStyle(fontSize: 14),
-                                        ),
-                                        value: 'زن',
-                                        groupValue: _sexGroupValue,
-                                        onChanged: (String? value) {
-                                          setState(() {
-                                            _sexGroupValue = value!;
-                                          });
-                                        }),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(
-                              left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
-                          child: InputDecorator(
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
-                              labelText: 'سن',
+                              labelText:
+                                  translations[selectedLanguage]?['Age'] ?? '',
                               enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
@@ -1432,7 +1378,7 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                                   borderSide: BorderSide(color: Colors.blue)),
                               errorText: PatientInfo.ageDropDown == 0 &&
                                       !PatientInfo.ageSelected
-                                  ? 'Please select an age'
+                                  ? '${translations[selectedLanguage]?['SelectAge'].toString() ?? ''}'
                                   : null,
                               errorBorder: OutlineInputBorder(
                                 borderRadius: const BorderRadius.all(
@@ -1452,9 +1398,11 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                                   icon: const Icon(Icons.arrow_drop_down),
                                   value: PatientInfo.ageDropDown,
                                   items: <DropdownMenuItem<int>>[
-                                    const DropdownMenuItem(
+                                    DropdownMenuItem(
                                       value: 0,
-                                      child: Text('No age selected'),
+                                      child: Text(translations[selectedLanguage]
+                                              ?['NoAge'] ??
+                                          ''),
                                     ),
                                     ...PatientInfo.getAges()
                                         .map((int ageItems) {
@@ -1465,7 +1413,8 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                                           textDirection: isEnglish
                                               ? TextDirection.ltr
                                               : TextDirection.rtl,
-                                          child: Text('$ageItems سال'),
+                                          child: Text(
+                                              '$ageItems ${translations[selectedLanguage]?['Year'] ?? ''}'),
                                         ),
                                       );
                                     }).toList(),
@@ -1518,23 +1467,25 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                                     '';
                               }
                             },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'نمبر تماس',
-                              suffixIcon: Icon(Icons.phone),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['Phone'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.phone),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1550,7 +1501,9 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                             validator: (value) {
                               if (value!.isNotEmpty) {
                                 if (value.length > 40 || value.length < 5) {
-                                  return 'آدرس باید حداقل 5 و حداکثر 40 حرف باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['َAddrLength'] ??
+                                      '';
                                 }
                                 return null;
                               }
@@ -1609,15 +1562,17 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 SizedBox(
-                                  width: 100,
+                                  width: 120,
                                   child: Theme(
                                     data: Theme.of(context).copyWith(
                                       listTileTheme: const ListTileThemeData(
                                           horizontalTitleGap: 0.5),
                                     ),
                                     child: RadioListTile(
-                                        title: const Text(
-                                          'مرد',
+                                        title: Text(
+                                          translations[selectedLanguage]
+                                                  ?['Male'] ??
+                                              '',
                                           style: TextStyle(fontSize: 14),
                                         ),
                                         value: 'مرد',
@@ -1630,15 +1585,17 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                                   ),
                                 ),
                                 SizedBox(
-                                  width: 100,
+                                  width: 120,
                                   child: Theme(
                                     data: Theme.of(context).copyWith(
                                       listTileTheme: const ListTileThemeData(
                                           horizontalTitleGap: 0.5),
                                     ),
                                     child: RadioListTile(
-                                        title: const Text(
-                                          'زن',
+                                        title: Text(
+                                          translations[selectedLanguage]
+                                                  ?['Female'] ??
+                                              '',
                                           style: TextStyle(fontSize: 14),
                                         ),
                                         value: 'زن',
@@ -1756,57 +1713,77 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
             ),
           ),
           actions: [
-            TextButton(
-                onPressed: () =>
-                    Navigator.of(context, rootNavigator: true).pop(),
-                child: const Text('لغو')),
-            ElevatedButton(
-                onPressed: () async {
-                  try {
-                    if (_editPatFormKey.currentState!.validate()) {
-                      final conn = await onConnToDb();
-                      String firstName = _firstNameController.text;
-                      String? lastName = _lastNameController.text.isEmpty
-                          ? null
-                          : _lastNameController.text;
-                      int selectedAge = PatientInfo.ageDropDown;
-                      String selectedSex = _sexGroupValue;
-                      String marital = PatientInfo.maritalStatusDD;
-                      String phone = _phoneController.text;
-                      String bloodGroup = PatientInfo.bloodDropDown!;
-                      String? address = _addrController.text.isEmpty
-                          ? null
-                          : _addrController.text;
-                      final results = await conn.query(
-                          'UPDATE patients SET firstname = ?, lastname = ?, age = ?, sex = ?, marital_status = ?, phone = ?, blood_group = ?, address = ? WHERE pat_ID = ?',
-                          [
-                            firstName,
-                            lastName,
-                            selectedAge,
-                            selectedSex,
-                            marital,
-                            phone,
-                            bloodGroup,
-                            address,
-                            PatientInfo.patID
-                          ]);
-                      if (results.affectedRows! > 0) {
-                        Navigator.of(context, rootNavigator: true).pop();
-                        _onShowSnack(Colors.green,
-                            'معلومات مریض موفقانه تغییر کرد.', context);
-                        onRefresh();
-                      } else {
-                        Navigator.of(context, rootNavigator: true).pop();
-                        _onShowSnack(
-                            Colors.red, 'شما هیچ تغییراتی نیاوردید.', context);
-                      }
-                      await conn.close();
-                    }
-                  } catch (e) {
-                    print('Editing patient\' info failed: $e');
-                  }
-                },
-                child: const Text('تغییر')),
+            Directionality(
+              textDirection: isEnglish ? TextDirection.rtl : TextDirection.ltr,
+              child: Row(
+                children: [
+                  TextButton(
+                      onPressed: () =>
+                          Navigator.of(context, rootNavigator: true).pop(),
+                      child: Text(
+                          translations[selectedLanguage]?['CancelBtn'] ?? '')),
+                  ElevatedButton(
+                      onPressed: () async {
+                        try {
+                          if (_editPatFormKey.currentState!.validate()) {
+                            final conn = await onConnToDb();
+                            String firstName = _firstNameController.text;
+                            String? lastName = _lastNameController.text.isEmpty
+                                ? null
+                                : _lastNameController.text;
+                            int selectedAge = PatientInfo.ageDropDown;
+                            String selectedSex = _sexGroupValue;
+                            String marital = PatientInfo.maritalStatusDD;
+                            String phone = _phoneController.text;
+                            String bloodGroup = PatientInfo.bloodDropDown!;
+                            String? address = _addrController.text.isEmpty
+                                ? null
+                                : _addrController.text;
+                            final results = await conn.query(
+                                'UPDATE patients SET firstname = ?, lastname = ?, age = ?, sex = ?, marital_status = ?, phone = ?, blood_group = ?, address = ? WHERE pat_ID = ?',
+                                [
+                                  firstName,
+                                  lastName,
+                                  selectedAge,
+                                  selectedSex,
+                                  marital,
+                                  phone,
+                                  bloodGroup,
+                                  address,
+                                  PatientInfo.patID
+                                ]);
+                            if (results.affectedRows! > 0) {
+                              // ignore: use_build_context_synchronously
+                              Navigator.of(context, rootNavigator: true).pop();
+                              // ignore: use_build_context_synchronously
+                              _onShowSnack(
+                                  Colors.green,
+                                  translations[selectedLanguage]
+                                          ?['StaffEditMsg'] ??
+                                      '',
+                                  context);
+                              onRefresh();
+                            } else {
+                              Navigator.of(context, rootNavigator: true).pop();
+                              // ignore: use_build_context_synchronously
+                              _onShowSnack(
+                                  Colors.red,
+                                  translations[selectedLanguage]
+                                          ?['StaffEditErrMsg'] ??
+                                      '',
+                                  context);
+                            }
+                            await conn.close();
+                          }
+                        } catch (e) {
+                          print('Editing patient\' info failed: $e');
+                        }
+                      },
+                      child:
+                          Text(translations[selectedLanguage]?['Edit'] ?? '')),
+                ],
+              ),
+            ),
           ],
         );
       },

@@ -200,34 +200,50 @@ class _AppointmentContentState extends State<_AppointmentContent> {
           return AlertDialog(
             title: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text('Delete an appointment'),
+              child:
+                  Text(translations[selectedLanguage]?['DeleteAHeading'] ?? ''),
             ),
             content: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text(
-                  'Are you sure you want to delete this appointment'),
+              child:
+                  Text(translations[selectedLanguage]?['ConfirmDelAppt'] ?? ''),
             ),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
-              ),
-              TextButton(
-                onPressed: () async {
-                  final conn = await onConnToDb();
-                  final deleteResult = await conn
-                      .query('DELETE FROM appointments WHERE apt_ID = ?', [id]);
-                  if (deleteResult.affectedRows! > 0) {
-                    // ignore: use_build_context_synchronously
-                    Navigator.of(context).pop();
-                    // ignore: use_build_context_synchronously
-                    _onShowSnack(Colors.green, 'جلسه مریض حذف گردید.', context);
-                    refresh();
-                  }
-                  await conn.close();
-                },
-                child: Text(translations[selectedLanguage]?['Delete'] ?? ''),
-              ),
+              Directionality(
+                textDirection:
+                    isEnglish ? TextDirection.rtl : TextDirection.ltr,
+                child: Row(
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(
+                          translations[selectedLanguage]?['CancelBtn'] ?? ''),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        final conn = await onConnToDb();
+                        final deleteResult = await conn.query(
+                            'DELETE FROM appointments WHERE apt_ID = ?', [id]);
+                        if (deleteResult.affectedRows! > 0) {
+                          // ignore: use_build_context_synchronously
+                          Navigator.of(context).pop();
+                          // ignore: use_build_context_synchronously
+                          _onShowSnack(
+                              Colors.green,
+                              translations[selectedLanguage]
+                                      ?['DeleteSuccessMsg'] ??
+                                  '',
+                              context);
+                          refresh();
+                        }
+                        await conn.close();
+                      },
+                      child:
+                          Text(translations[selectedLanguage]?['Delete'] ?? ''),
+                    ),
+                  ],
+                ),
+              )
             ],
           );
         },
@@ -257,7 +273,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
             title: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: Text(
-                'Create Retreament for $serviceName',
+                '${translations[selectedLanguage]?['CreateRet4'] ?? ''} $serviceName',
                 style: const TextStyle(color: Colors.blue),
               ),
             ),
@@ -277,24 +293,27 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                             margin: const EdgeInsets.symmetric(
                                 horizontal: 10.0, vertical: 10.0),
                             child: InputDecorator(
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'انتخاب داکتر',
-                                labelStyle: TextStyle(color: Colors.blueAccent),
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['SelectDentist'] ??
+                                    '',
+                                labelStyle:
+                                    const TextStyle(color: Colors.blueAccent),
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide:
                                         BorderSide(color: Colors.blueAccent)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
+                                errorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15.0)),
                                     borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
+                                focusedErrorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(15.0)),
                                     borderSide: BorderSide(
@@ -332,14 +351,16 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                             margin: const EdgeInsets.symmetric(
                                 horizontal: 10.0, vertical: 10.0),
                             child: InputDecorator(
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'خدمات مورد نیاز',
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['َDentalService'] ??
+                                    '',
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
@@ -383,23 +404,26 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                 return null;
                               },
                               readOnly: true,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'تاریخ و زمان عودی',
-                                suffixIcon: Icon(Icons.access_time),
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['RetDateTime'] ??
+                                    '',
+                                suffixIcon: const Icon(Icons.access_time),
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
+                                focusedErrorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(
@@ -447,11 +471,15 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                               controller: retreatReasonController,
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'علت عودی را باید درج کنید.';
+                                  return translations[selectedLanguage]
+                                          ?['RetReasonRequired'] ??
+                                      '';
                                 } else if (value.length < 5 ||
                                     value.length > 40 ||
                                     value.length < 5) {
-                                  return 'علت عودی باید حداقل 5 و حداکثر 40 حرف باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['RetReasonLength'] ??
+                                      '';
                                 }
                                 return null;
                               },
@@ -459,23 +487,25 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                 FilteringTextInputFormatter.allow(
                                     RegExp(GlobalUsage.allowedEPChar))
                               ],
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'علت عودی',
-                                suffixIcon: Icon(Icons.note_alt_outlined),
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['RetReason'] ??
+                                    '',
+                                suffixIcon: const Icon(Icons.note_alt_outlined),
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
+                                errorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
+                                focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide:
@@ -492,11 +522,15 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                 controller: retreatFeeController,
                                 validator: (value) {
                                   if (value!.isEmpty) {
-                                    return 'لطفاً مقدار فیس را وارد کنید.';
+                                    return translations[selectedLanguage]
+                                            ?['RetFeeRequired'] ??
+                                        '';
                                   } else if (value.isNotEmpty) {
                                     if (double.parse(value) < 50 ||
                                         double.parse(value) > 10000) {
-                                      return 'فیس نمی تواند کمتر از 50 افغانی و بیشتر از 10000 افغانی باشد.';
+                                      return translations[selectedLanguage]
+                                              ?['RetFeeLength'] ??
+                                          '';
                                     }
                                   }
                                   return null;
@@ -505,26 +539,29 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                   FilteringTextInputFormatter.allow(
                                       RegExp(GlobalUsage.allowedDigPeriod))
                                 ],
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'فیس عودی',
-                                  suffixIcon: Icon(Icons.attach_money_rounded),
-                                  enabledBorder: OutlineInputBorder(
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: translations[selectedLanguage]
+                                          ?['RetFee'] ??
+                                      '',
+                                  suffixIcon:
+                                      const Icon(Icons.attach_money_rounded),
+                                  enabledBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
+                                  focusedBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.blue)),
-                                  errorBorder: OutlineInputBorder(
+                                  errorBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: OutlineInputBorder(
+                                  focusedErrorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(
@@ -546,8 +583,12 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                       _feeNotRequired = value!;
                                     });
                                   },
-                                  title: const Text('بطور رایگان',
-                                      style: TextStyle(color: Colors.blue)),
+                                  title: Text(
+                                      translations[selectedLanguage]
+                                              ?['Ret4Free'] ??
+                                          '',
+                                      style:
+                                          const TextStyle(color: Colors.blue)),
                                   contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 10.0, vertical: 0),
                                 ),
@@ -559,21 +600,23 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                             margin: const EdgeInsets.symmetric(
                                 horizontal: 10.0, vertical: 10.0),
                             child: InputDecorator(
-                              decoration: const InputDecoration(
-                                labelText: 'نتایج عودی',
-                                suffixIcon: Icon(Icons.repeat_rounded),
-                                border: OutlineInputBorder(),
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                labelText: translations[selectedLanguage]
+                                        ?['RetResult'] ??
+                                    '',
+                                suffixIcon: const Icon(Icons.repeat_rounded),
+                                border: const OutlineInputBorder(),
+                                enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey),
                                 ),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue),
                                 ),
-                                errorBorder: OutlineInputBorder(
+                                errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red),
@@ -618,11 +661,15 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                 controller: retreatOutcomeController,
                                 validator: (value) {
                                   if (value!.isEmpty) {
-                                    return 'لطفاً راجع به این مورد شرح دهید.';
+                                    return translations[selectedLanguage]
+                                            ?['OtherDDLDetail'] ??
+                                        '';
                                   } else if (value.length < 5 ||
                                       value.length > 40 ||
                                       value.length < 5) {
-                                    return 'توضیحات باید حداقل 5 و حداکثر 40 حرف باشد.';
+                                    return translations[selectedLanguage]
+                                            ?['OtherDDLLength'] ??
+                                        '';
                                   }
                                   return null;
                                 },
@@ -630,26 +677,29 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                   FilteringTextInputFormatter.allow(
                                       RegExp(GlobalUsage.allowedEPChar))
                                 ],
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'توضیحات',
-                                  suffixIcon: Icon(Icons.description_outlined),
-                                  enabledBorder: OutlineInputBorder(
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: translations[selectedLanguage]
+                                          ?['َDentalService'] ??
+                                      '',
+                                  suffixIcon:
+                                      const Icon(Icons.description_outlined),
+                                  enabledBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
+                                  focusedBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.blue)),
-                                  errorBorder: OutlineInputBorder(
+                                  errorBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: OutlineInputBorder(
+                                  focusedErrorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(
@@ -666,59 +716,74 @@ class _AppointmentContentState extends State<_AppointmentContent> {
               ),
             ),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_retreatFormKey.currentState!.validate()) {
-                    try {
-                      double retreatCost = _feeNotRequired
-                          ? 0
-                          : double.parse(retreatFeeController.text);
-                      final conn = await onConnToDb();
-                      var results = await conn.query(
-                          '''INSERT INTO retreatments (apt_ID, pat_ID, help_service_ID, damage_service_ID, staff_ID, retreat_date, retreat_cost, retreat_reason, retreat_outcome, outcome_details)
+              Directionality(
+                textDirection:
+                    isEnglish ? TextDirection.rtl : TextDirection.ltr,
+                child: Row(
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(
+                          translations[selectedLanguage]?['CancelBtn'] ?? ''),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_retreatFormKey.currentState!.validate()) {
+                          try {
+                            double retreatCost = _feeNotRequired
+                                ? 0
+                                : double.parse(retreatFeeController.text);
+                            final conn = await onConnToDb();
+                            var results = await conn.query(
+                                '''INSERT INTO retreatments (apt_ID, pat_ID, help_service_ID, damage_service_ID, staff_ID, retreat_date, retreat_cost, retreat_reason, retreat_outcome, outcome_details)
                       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                       ''',
-                          [
-                            apptId,
-                            PatientInfo.patID,
-                            serviceId,
-                            damageSerId,
-                            staffId,
-                            dateTimeNotFormatted,
-                            retreatCost,
-                            retreatReasonController.text,
-                            retreateOutCome,
-                            retreatOutcomeController.text.isEmpty
-                                ? null
-                                : retreatOutcomeController.text
-                          ]);
-                      if (results.affectedRows! > 0) {
-                        // ignore: use_build_context_synchronously
-                        Navigator.of(context, rootNavigator: true).pop();
-                        // ignore: use_build_context_synchronously
-                        _onShowSnack(Colors.green,
-                            'عودی مربوط این جلسه ثبت گردید.', context);
-                      } else {
-                        // ignore: use_build_context_synchronously
-                        Navigator.of(context, rootNavigator: true).pop();
-                        // ignore: use_build_context_synchronously
-                        _onShowSnack(
-                            Colors.red,
-                            'ثبت عودی مربوط این جلسه ناکام شد. دوباره سعی کنید.',
-                            context);
-                      }
+                                [
+                                  apptId,
+                                  PatientInfo.patID,
+                                  serviceId,
+                                  damageSerId,
+                                  staffId,
+                                  dateTimeNotFormatted,
+                                  retreatCost,
+                                  retreatReasonController.text,
+                                  retreateOutCome,
+                                  retreatOutcomeController.text.isEmpty
+                                      ? null
+                                      : retreatOutcomeController.text
+                                ]);
+                            if (results.affectedRows! > 0) {
+                              // ignore: use_build_context_synchronously
+                              Navigator.of(context, rootNavigator: true).pop();
+                              // ignore: use_build_context_synchronously
+                              _onShowSnack(
+                                  Colors.green,
+                                  translations[selectedLanguage]
+                                          ?['RetSuccessMsg'] ??
+                                      '',
+                                  context);
+                            } else {
+                              // ignore: use_build_context_synchronously
+                              Navigator.of(context, rootNavigator: true).pop();
+                              // ignore: use_build_context_synchronously
+                              _onShowSnack(
+                                  Colors.red,
+                                  translations[selectedLanguage]
+                                          ?['RetFailMsg'] ??
+                                      '',
+                                  context);
+                            }
 
-                      await conn.close();
-                    } catch (e) {
-                      print('Creating retreatment failed: $e');
-                    }
-                  }
-                },
-                child: const Text('Save'),
+                            await conn.close();
+                          } catch (e) {
+                            print('Creating retreatment failed: $e');
+                          }
+                        }
+                      },
+                      child: const Text('Save'),
+                    ),
+                  ],
+                ),
               ),
             ],
           );

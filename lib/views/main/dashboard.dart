@@ -26,8 +26,11 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   int _allPatients = 0;
   int _todaysPatients = 0;
+  var _transExpenses;
+  var _transEarnings;
+  var _transReceivable;
   // This variable is to set the first filter value of doughnut chart dropdown
-  String incomeFreq = '1 Month';
+  String incomeDuration = '1 Month';
 // This function fetch patients' records
   Future<void> _fetchAllPatient() async {
     try {
@@ -143,7 +146,7 @@ class _DashboardState extends State<Dashboard> {
 // Fetch the expenses of last three months into pie char
   Future<List<_PieDataIncome>> _getPieData() async {
     try {
-      int numberOnly = int.parse(incomeFreq.split(' ')[0]);
+      int numberOnly = int.parse(incomeDuration.split(' ')[0]);
       final conn = await onConnToDb();
       // Fetch total paid amount
       var result = await conn.query(
@@ -183,9 +186,9 @@ class _DashboardState extends State<Dashboard> {
       netIncome = totalEarnings - totalExpenses - totalDueAmount;
       await conn.close();
       return [
-        _PieDataIncome('Expenses', totalExpenses, Colors.red),
-        _PieDataIncome('Earnings', totalEarnings, Colors.green),
-        _PieDataIncome('Receivable', totalDueAmount, Colors.indigo),
+        _PieDataIncome(_transExpenses, totalExpenses, Colors.red),
+        _PieDataIncome(_transEarnings, totalEarnings, Colors.green),
+        _PieDataIncome(_transReceivable, totalDueAmount, Colors.indigo),
       ];
     } on SocketException catch (e) {
       print('Error in dashboard: $e');
@@ -249,8 +252,8 @@ class _DashboardState extends State<Dashboard> {
                 currentTime.isBefore(appointmentTime))) {
           // Create an instance of this class to access its method to alert for upcoming notification
           GlobalUsage gu = GlobalUsage();
-          gu.alertUpcomingAppointment(
-              patientIdCopy, patientFNameCopy, patientLNameCopy, notificationFrequency);
+          gu.alertUpcomingAppointment(patientIdCopy, patientFNameCopy,
+              patientLNameCopy, notificationFrequency);
         }
       }
       await conn.close();
@@ -292,6 +295,19 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   leading: Builder(
                     builder: (BuildContext context) {
+                      // Assign translated values to be accessed by doughnut chart since directly translations cause the chart to get missing
+                      _transExpenses =
+                          translations[languageProvider.selectedLanguage]
+                                  ?["Expenses"] ??
+                              'Expenses';
+                      _transEarnings =
+                          translations[languageProvider.selectedLanguage]
+                                  ?["Earnings"] ??
+                              'Earnings';
+                      _transReceivable =
+                          translations[languageProvider.selectedLanguage]
+                                  ?["Receivable"] ??
+                              'Receivable';
                       return IconButton(
                         onPressed: () {
                           Scaffold.of(context).openDrawer();
@@ -598,15 +614,20 @@ class _DashboardState extends State<Dashboard> {
                                                       .height *
                                                   0.06,
                                               child: InputDecorator(
-                                                decoration:
-                                                    const InputDecoration(
+                                                decoration: InputDecoration(
                                                   contentPadding:
-                                                      EdgeInsets.symmetric(
+                                                      const EdgeInsets
+                                                          .symmetric(
                                                           horizontal: 8.0),
-                                                  border: OutlineInputBorder(),
-                                                  labelText: 'Frequency',
+                                                  border:
+                                                      const OutlineInputBorder(),
+                                                  labelText: translations[
+                                                              languageProvider
+                                                                  .selectedLanguage]
+                                                          ?["DDLDuration"] ??
+                                                      '',
                                                   enabledBorder:
-                                                      OutlineInputBorder(
+                                                      const OutlineInputBorder(
                                                           borderRadius:
                                                               BorderRadius.all(
                                                                   Radius
@@ -617,7 +638,7 @@ class _DashboardState extends State<Dashboard> {
                                                                   color: Colors
                                                                       .grey)),
                                                   focusedBorder:
-                                                      OutlineInputBorder(
+                                                      const OutlineInputBorder(
                                                           borderRadius:
                                                               BorderRadius.all(
                                                                   Radius
@@ -644,7 +665,7 @@ class _DashboardState extends State<Dashboard> {
                                                         // isExpanded: true,
                                                         icon: const Icon(Icons
                                                             .arrow_drop_down),
-                                                        value: incomeFreq,
+                                                        value: incomeDuration,
 
                                                         items: <String>[
                                                           '1 Month',
@@ -669,7 +690,7 @@ class _DashboardState extends State<Dashboard> {
                                                         onChanged:
                                                             (String? newValue) {
                                                           setState(() {
-                                                            incomeFreq =
+                                                            incomeDuration =
                                                                 newValue!;
                                                             _getPieData();
                                                           });
@@ -703,14 +724,16 @@ class _DashboardState extends State<Dashboard> {
                                                       .height *
                                                   0.4,
                                               child: SfCircularChart(
-                                                legend: Legend(isVisible: true),
+                                                legend: Legend(
+                                                  isVisible: true,
+                                                ),
                                                 tooltipBehavior:
                                                     TooltipBehavior(
                                                   color: const Color.fromARGB(
                                                       255, 106, 105, 105),
                                                   enable: true,
                                                   format:
-                                                      'point.x : point.y افغانی',
+                                                      'point.y ${(translations[languageProvider.selectedLanguage]?['Afn'] ?? '').toString()} : point.x',
                                                 ),
                                                 annotations: [
                                                   CircularChartAnnotation(
@@ -724,7 +747,11 @@ class _DashboardState extends State<Dashboard> {
                                                               const EdgeInsets
                                                                   .all(3.0),
                                                           child: Text(
-                                                              'Net Income',
+                                                              translations[languageProvider
+                                                                          .selectedLanguage]
+                                                                      ?[
+                                                                      "Profit"] ??
+                                                                  '',
                                                               style: Theme.of(
                                                                       context)
                                                                   .textTheme
@@ -732,18 +759,30 @@ class _DashboardState extends State<Dashboard> {
                                                                   .copyWith(
                                                                       fontWeight:
                                                                           FontWeight
-                                                                              .bold)),
+                                                                              .bold,
+                                                                      fontSize: MediaQuery.of(context)
+                                                                              .size
+                                                                              .width *
+                                                                          0.009)),
                                                         ),
                                                         Padding(
                                                           padding:
                                                               const EdgeInsets
                                                                   .all(3.0),
                                                           child: Text(
-                                                            '${netIncome.toString()} افغانی',
+                                                            '${netIncome.toString()} ${translations[languageProvider.selectedLanguage]?["Afn"] ?? ''}',
                                                             style: Theme.of(
                                                                     context)
                                                                 .textTheme
-                                                                .labelSmall,
+                                                                .labelSmall!
+                                                                .copyWith(
+                                                                    fontSize: MediaQuery.of(context)
+                                                                            .size
+                                                                            .width *
+                                                                        0.009,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
                                                           ),
                                                         ),
                                                       ],

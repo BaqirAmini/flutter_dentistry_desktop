@@ -67,7 +67,7 @@ class _PatientDetailState extends State<PatientDetail> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
         child: Scaffold(
           floatingActionButton: FloatingActionButton(
             backgroundColor: Colors.green,
@@ -87,7 +87,7 @@ class _PatientDetailState extends State<PatientDetail> {
           ),
           appBar: AppBar(
             title: Text(
-                'سوابق مریض: ${PatientInfo.firstName} ${PatientInfo.lastName}'),
+                '${translations[selectedLanguage]?['PatRecords'] ?? ''}: ${PatientInfo.firstName} ${PatientInfo.lastName}'),
             leading: IconButton(
               onPressed: () => Navigator.pop(context),
               icon: const BackButtonIcon(),
@@ -417,14 +417,18 @@ class _NavigationArea extends StatelessWidget {
           children: [
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.3,
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: HoverCard(
                   title: Row(
                     children: [
-                      Icon(FontAwesomeIcons.userDoctor, color: Colors.blue),
-                      SizedBox(width: 10.0),
-                      Text('جلسات', style: TextStyle(color: Colors.blue)),
+                      const Icon(FontAwesomeIcons.userDoctor,
+                          color: Colors.blue),
+                      const SizedBox(width: 10.0),
+                      Text(
+                          translations[selectedLanguage]?['Appointments'] ?? '',
+                          style: const TextStyle(color: Colors.blue)),
                     ],
                   ),
                   indexNum: 100,
@@ -433,15 +437,20 @@ class _NavigationArea extends StatelessWidget {
             ),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.3,
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: HoverCard(
                   title: Row(
                     children: [
-                      Icon(FontAwesomeIcons.moneyBill1, color: Colors.blue),
-                      SizedBox(width: 10.0),
-                      Text('فیس / اقساط',
-                          style: TextStyle(color: Colors.blue, fontSize: 18.0)),
+                      const Icon(FontAwesomeIcons.moneyBill1,
+                          color: Colors.blue),
+                      const SizedBox(width: 10.0),
+                      Text(
+                          translations[selectedLanguage]?['FeeInstallment'] ??
+                              '',
+                          style: const TextStyle(
+                              color: Colors.blue, fontSize: 18.0)),
                     ],
                   ),
                   indexNum: 101,
@@ -455,15 +464,18 @@ class _NavigationArea extends StatelessWidget {
           children: [
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.3,
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                 child: HoverCard(
                   title: Row(
                     children: [
-                      Icon(FontAwesomeIcons.heartPulse, color: Colors.blue),
-                      SizedBox(width: 10.0),
-                      Text('تاریخچه صحی مریض',
-                          style: TextStyle(color: Colors.blue, fontSize: 18.0)),
+                      const Icon(FontAwesomeIcons.heartPulse,
+                          color: Colors.blue),
+                      const SizedBox(width: 10.0),
+                      Text(translations[selectedLanguage]?['Histories'] ?? '',
+                          style: const TextStyle(
+                              color: Colors.blue, fontSize: 18.0)),
                     ],
                   ),
                   indexNum: 102,
@@ -491,15 +503,16 @@ class _NavigationArea extends StatelessWidget {
         ),
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.3,
-          child: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
             child: HoverCard(
               title: Row(
                 children: [
-                  Icon(Icons.repeat, color: Colors.blue),
-                  SizedBox(width: 10.0),
-                  Text('درمان مجدد / عودی',
-                      style: TextStyle(color: Colors.blue, fontSize: 18.0)),
+                  const Icon(Icons.repeat, color: Colors.blue),
+                  const SizedBox(width: 10.0),
+                  Text(translations[selectedLanguage]?['Retreatment'] ?? '',
+                      style:
+                          const TextStyle(color: Colors.blue, fontSize: 18.0)),
                 ],
               ),
               indexNum: 104,
@@ -609,9 +622,10 @@ class _PatientMoreDetail extends StatelessWidget {
                   margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                   child: Column(
                     children: [
-                      const Text(
-                        'جنسیت',
-                        style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                      Text(
+                        translations[selectedLanguage]?['Sex'] ?? '',
+                        style:
+                            const TextStyle(color: Colors.grey, fontSize: 12.0),
                       ),
                       Text('${PatientInfo.sex}'),
                     ],
@@ -621,8 +635,9 @@ class _PatientMoreDetail extends StatelessWidget {
                   margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                   child: Column(
                     children: [
-                      const Text('حالت مدنی',
-                          style: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                      Text(translations[selectedLanguage]?['Marital'] ?? '',
+                          style: const TextStyle(
+                              color: Colors.grey, fontSize: 12.0)),
                       Text('${PatientInfo.maritalStatus}'),
                     ],
                   ),
@@ -636,9 +651,11 @@ class _PatientMoreDetail extends StatelessWidget {
                   margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                   child: Column(
                     children: [
-                      const Text('سن',
-                          style: TextStyle(color: Colors.grey, fontSize: 12.0)),
-                      Text('${PatientInfo.age} سال'),
+                      Text(translations[selectedLanguage]?['Age'] ?? '',
+                          style: const TextStyle(
+                              color: Colors.grey, fontSize: 12.0)),
+                      Text(
+                          '${PatientInfo.age} ${translations[selectedLanguage]?['Year'] ?? ''}'),
                     ],
                   ),
                 ),
@@ -646,8 +663,9 @@ class _PatientMoreDetail extends StatelessWidget {
                   margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                   child: Column(
                     children: [
-                      const Text('گروپ خون',
-                          style: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                      Text(translations[selectedLanguage]?['BloodGroup'] ?? '',
+                          style: const TextStyle(
+                              color: Colors.grey, fontSize: 12.0)),
                       Text('${PatientInfo.bloodGroup}'),
                     ],
                   ),
@@ -663,9 +681,9 @@ class _PatientMoreDetail extends StatelessWidget {
                     width: 220,
                     child: Column(
                       children: [
-                        const Text('آدرس',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0)),
+                        Text(translations[selectedLanguage]?['Address'] ?? '',
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 12.0)),
                         Text('${PatientInfo.address}'),
                       ],
                     ),
@@ -675,8 +693,9 @@ class _PatientMoreDetail extends StatelessWidget {
                   margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                   child: Column(
                     children: [
-                      const Text('تاریخ ثبت',
-                          style: TextStyle(color: Colors.grey, fontSize: 12.0)),
+                      Text(translations[selectedLanguage]?['RegDate'] ?? '',
+                          style: const TextStyle(
+                              color: Colors.grey, fontSize: 12.0)),
                       Text('${PatientInfo.regDate}'),
                     ],
                   ),
