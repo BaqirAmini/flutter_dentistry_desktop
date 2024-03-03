@@ -1132,6 +1132,22 @@ class _PatientState extends State<Patient> {
       child: Scaffold(
           appBar: AppBar(
             title: Text(translations[selectedLanguage]?['AllPatients'] ?? ''),
+            actions: [
+              Visibility(
+                  visible: GlobalUsage.widgetVisible,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: IconButton(
+                      tooltip: 'Dashboard',
+                        splashRadius: 26.0,
+                        onPressed: () => Navigator.of(context)
+                            .pushAndRemoveUntil(
+                                MaterialPageRoute(
+                                    builder: (context) => const Dashboard()),
+                                (route) => route.settings.name == 'Dashboard'),
+                        icon: const Icon(Icons.home_outlined)),
+                  ))
+            ],
           ),
           body: const PatientDataTable()),
     );
@@ -1573,7 +1589,7 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                                           translations[selectedLanguage]
                                                   ?['Male'] ??
                                               '',
-                                          style: TextStyle(fontSize: 14),
+                                          style: const TextStyle(fontSize: 14),
                                         ),
                                         value: 'مرد',
                                         groupValue: _sexGroupValue,
@@ -1596,7 +1612,7 @@ onEditPatientInfo(BuildContext context, Function onRefresh) {
                                           translations[selectedLanguage]
                                                   ?['Female'] ??
                                               '',
-                                          style: TextStyle(fontSize: 14),
+                                          style: const TextStyle(fontSize: 14),
                                         ),
                                         value: 'زن',
                                         groupValue: _sexGroupValue,

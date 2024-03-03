@@ -25,6 +25,7 @@ class GlobalUsage {
   static const allowedDigPeriod = "[0-9.]";
   /* -------------------/. CHARACTERS/DIGITS ALLOWED ---------------- */
 
+  static bool widgetVisible = false;
 //  This static variable specifies whether the appointment
 //is created with creating a new patient or an existing patient (true = new patient created, false = patient already existing)
   static bool newPatientCreated = true;
@@ -78,7 +79,8 @@ class GlobalUsage {
   }
 
   // This function is to give notifiction for users
-  void alertUpcomingAppointment(int patId, String firstName, String? lastName, String notif) {
+  void alertUpcomingAppointment(
+      int patId, String firstName, String? lastName, String notif) {
     final winNotifyPlugin = WindowsNotification(
         applicationId:
             r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinic System\flutter_dentistry.exe");

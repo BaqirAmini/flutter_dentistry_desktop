@@ -83,9 +83,14 @@ class _AppointmentState extends State<Appointment> {
                 icon: const BackButtonIcon()),
             actions: [
               IconButton(
-                onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const Patient()),
-                    (route) => route.settings.name == 'Patient'),
+                onPressed: () {
+                  setState(() {
+                    GlobalUsage.widgetVisible = true;
+                  });
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => const Patient()),
+                      (route) => route.settings.name == 'Patient');
+                },
                 icon: const Icon(Icons.people_outline),
                 tooltip: 'Patients',
                 padding: const EdgeInsets.all(3.0),

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/views/finance/expenses/expenses.dart';
 import 'package:flutter_dentistry/views/patients/xrays.dart';
 import 'package:flutter_dentistry/views/reports/financial_report.dart';
@@ -139,13 +140,17 @@ class _SidebarState extends State<Sidebar> {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.people_outline),
-            title: Text(
-              (translations[selectedLanguage]?['Patients'] ?? '').toString(),
-            ),
-            onTap: () =>  Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const Patient())),
-          ),
+              leading: const Icon(Icons.people_outline),
+              title: Text(
+                (translations[selectedLanguage]?['Patients'] ?? '').toString(),
+              ),
+              onTap: () {
+                setState(() {
+                  GlobalUsage.widgetVisible = false;
+                });
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const Patient()));
+              }),
           /* ListTile(
             leading: const Icon(FontAwesomeIcons.xRay),
             title: const Text('X-Ray'),
@@ -161,7 +166,6 @@ class _SidebarState extends State<Sidebar> {
               (translations[selectedLanguage]?['Staff'] ?? '').toString(),
             ),
             onTap: () {
-              
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const Staff()));
             },
@@ -172,7 +176,6 @@ class _SidebarState extends State<Sidebar> {
               (translations[selectedLanguage]?['Services'] ?? '').toString(),
             ),
             onTap: () {
-              
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -186,7 +189,6 @@ class _SidebarState extends State<Sidebar> {
             title: Text((translations[selectedLanguage]?['UpcomingAppt'] ?? '')
                 .toString()),
             onTap: () {
-              
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -201,7 +203,6 @@ class _SidebarState extends State<Sidebar> {
               (translations[selectedLanguage]?['Expenses'] ?? '').toString(),
             ),
             onTap: () {
-              
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -216,7 +217,6 @@ class _SidebarState extends State<Sidebar> {
               (translations[selectedLanguage]?['Taxes'] ?? '').toString(),
             ),
             onTap: () {
-              
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -272,13 +272,13 @@ class _SidebarState extends State<Sidebar> {
               ),
             ],
           ),
- */          ListTile(
+ */
+          ListTile(
             leading: const Icon(Icons.settings),
             title: Text(
               (translations[selectedLanguage]?['Settings'] ?? '').toString(),
             ),
             onTap: () {
-              
               Navigator.push(
                 context,
                 MaterialPageRoute(
