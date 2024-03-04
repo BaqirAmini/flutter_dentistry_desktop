@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_string_interpolations
+
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -77,7 +79,7 @@ class _AppointmentState extends State<Appointment> {
           ),
           appBar: AppBar(
             title: Text(
-                '${PatientInfo.firstName} ${PatientInfo.lastName} ${translations[selectedLanguage]?['Appointments'] ?? ''}'),
+                '${translations[selectedLanguage]?['Appt4'] ?? 'Appointments Belong to: '}${PatientInfo.firstName} ${PatientInfo.lastName} '),
             leading: IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const BackButtonIcon()),
@@ -996,7 +998,8 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                               elevation: 0.5,
                               child: Padding(
                                 padding: const EdgeInsets.all(5.0),
-                                child: Text('Round: $round',
+                                child: Text(
+                                    '${translations[selectedLanguage]?['Round'] ?? 'Round'}: $round',
                                     style:
                                         Theme.of(context).textTheme.labelSmall),
                               ),
@@ -1058,7 +1061,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                       18.0),
                                                         ),
                                                         Text(
-                                                          'داکتر معالج: ${e['staffFName']} ${e['staffLName']}',
+                                                          '${translations[selectedLanguage]?['Dentist'] ?? 'داکتر معالج'}: ${e['staffFName']} ${e['staffLName']}',
                                                           style:
                                                               const TextStyle(
                                                                   color: Colors
@@ -1109,9 +1112,13 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                 MainAxisAlignment
                                                                     .spaceBetween,
                                                             children: [
-                                                              const Text(
-                                                                'Service Name',
-                                                                style: TextStyle(
+                                                              Text(
+                                                                translations[
+                                                                            selectedLanguage]
+                                                                        ?[
+                                                                        'ServiceDone'] ??
+                                                                    'Service Done',
+                                                                style: const TextStyle(
                                                                     fontSize:
                                                                         12.0,
                                                                     fontWeight:
@@ -1147,9 +1154,17 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                   Text(
                                                                     req.reqName ==
                                                                             'Teeth Selection'
-                                                                        ? 'Teeth Selected'
-                                                                        : req
-                                                                            .reqName,
+                                                                        ? '${translations[selectedLanguage]?['Teeth'] ?? 'Teeth Selected'}'
+                                                                        : req.reqName ==
+                                                                                'Description'
+                                                                            ? '${translations[selectedLanguage]?['RetDetails'] ?? 'Description'}'
+                                                                            : req.reqName == 'Procedure Type'
+                                                                                ? '${translations[selectedLanguage]?['Procedure'] ?? 'Procedure Type'}'
+                                                                                : req.reqName == 'Materials'
+                                                                                    ? '${translations[selectedLanguage]?['Materials'] ?? 'Materials Used'}'
+                                                                                    : req.reqName == 'Bleaching Steps'
+                                                                                        ? '${translations[selectedLanguage]?['Gum Selection'] ?? 'Gum Selected'}'
+                                                                                        : '${translations[selectedLanguage]?['AffectArea'] ?? 'Affected Area'}',
                                                                     style: const TextStyle(
                                                                         fontSize:
                                                                             12.0,
@@ -1195,8 +1210,11 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                     .spaceEvenly,
                                                             children: [
                                                               IconButton(
-                                                                tooltip:
-                                                                    'Retreatment',
+                                                                tooltip: translations[
+                                                                            selectedLanguage]
+                                                                        ?[
+                                                                        'RetreatBtn'] ??
+                                                                    '',
                                                                 splashRadius:
                                                                     23,
                                                                 onPressed: () {
@@ -1214,8 +1232,11 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                         .red),
                                                               ),
                                                               IconButton(
-                                                                tooltip:
-                                                                    'Delete',
+                                                                tooltip: translations[
+                                                                            selectedLanguage]
+                                                                        ?[
+                                                                        'Delete'] ??
+                                                                    '',
                                                                 splashRadius:
                                                                     23,
                                                                 onPressed: () =>

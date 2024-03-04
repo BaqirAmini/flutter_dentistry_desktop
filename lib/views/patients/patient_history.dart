@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/new_health_history.dart';
@@ -8,10 +10,15 @@ import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart' as intl2;
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const PatientHistory());
 }
+
+// Set global variables which are needed later.
+var selectedLanguage;
+var isEnglish;
 
 class PatientHistory extends StatefulWidget {
   const PatientHistory({Key? key}) : super(key: key);
@@ -23,14 +30,18 @@ class PatientHistory extends StatefulWidget {
 class _PatientHistoryState extends State<PatientHistory> {
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
             title: Text(
-                '${PatientInfo.firstName} ${PatientInfo.lastName} Health History'),
+                '${translations[selectedLanguage]?['HealthHistory4'] ?? ''}${PatientInfo.firstName} ${PatientInfo.lastName}'),
             leading: IconButton(
                 onPressed: () => Navigator.pop(context),
                 icon: const BackButtonIcon()),
@@ -131,7 +142,7 @@ class _HistoryContentState extends State<_HistoryContent> {
                     textDirection:
                         isEnglish ? TextDirection.ltr : TextDirection.rtl,
                     child: Text(
-                      'تغییر تاریخچه صحی ${PatientInfo.firstName} ${PatientInfo.lastName}',
+                      '${translations[selectedLanguage]?['HealthHHeading'] ?? ''}${PatientInfo.firstName} ${PatientInfo.lastName}',
                       style: Theme.of(context)
                           .textTheme
                           .headlineSmall!
@@ -159,19 +170,22 @@ class _HistoryContentState extends State<_HistoryContent> {
                                       top: 10.0,
                                       bottom: 10.0),
                                   child: InputDecorator(
-                                    decoration: const InputDecoration(
-                                      contentPadding: EdgeInsets.symmetric(
-                                          vertical: 10.0, horizontal: 10.0),
-                                      border: OutlineInputBorder(),
-                                      labelText: 'نتیجه معاینه',
-                                      enabledBorder: OutlineInputBorder(
+                                    decoration: InputDecoration(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              vertical: 10.0, horizontal: 10.0),
+                                      border: const OutlineInputBorder(),
+                                      labelText: translations[selectedLanguage]
+                                              ?['DiagResult'] ??
+                                          '',
+                                      enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(50.0),
                                         ),
                                         borderSide:
                                             BorderSide(color: Colors.grey),
                                       ),
-                                      focusedBorder: OutlineInputBorder(
+                                      focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(50.0),
                                         ),
@@ -180,7 +194,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                       ),
                                     ),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Expanded(
                                           flex: 1,
@@ -196,14 +211,16 @@ class _HistoryContentState extends State<_HistoryContent> {
                                               child: RadioListTile(
                                                 title: const Text(
                                                   'مثبت',
-                                                  style: TextStyle(fontSize: 14),
+                                                  style:
+                                                      TextStyle(fontSize: 14),
                                                 ),
                                                 value: 1,
                                                 groupValue: _editHCondResultGV,
                                                 onChanged: (int? value) {
                                                   setState(
                                                     () {
-                                                      _editHCondResultGV = value!;
+                                                      _editHCondResultGV =
+                                                          value!;
                                                     },
                                                   );
                                                 },
@@ -264,38 +281,43 @@ class _HistoryContentState extends State<_HistoryContent> {
                                             intl2.DateFormat('yyyy-MM-dd');
                                         final String formattedDate =
                                             formatter.format(dateTime);
-                                        _editHDateController.text = formattedDate;
+                                        _editHDateController.text =
+                                            formattedDate;
                                       }
                                     },
                                     inputFormatters: [
                                       FilteringTextInputFormatter.allow(
                                           RegExp(r'[0-9.]'))
                                     ],
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'تاریخ تشخیص / معاینه',
-                                      suffixIcon:
-                                          Icon(Icons.calendar_month_outlined),
-                                      enabledBorder: OutlineInputBorder(
+                                    decoration: InputDecoration(
+                                      border: const OutlineInputBorder(),
+                                      labelText: translations[selectedLanguage]
+                                              ?['DiagDate'] ??
+                                          '',
+                                      suffixIcon: const Icon(
+                                          Icons.calendar_month_outlined),
+                                      enabledBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.grey)),
-                                      focusedBorder: OutlineInputBorder(
+                                      focusedBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.blue)),
-                                      errorBorder: OutlineInputBorder(
+                                      errorBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.red)),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide: BorderSide(
-                                              color: Colors.red, width: 1.5)),
+                                      focusedErrorBorder:
+                                          const OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(50.0)),
+                                              borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 1.5)),
                                     ),
                                   ),
                                 ),
@@ -306,19 +328,22 @@ class _HistoryContentState extends State<_HistoryContent> {
                                       top: 10.0,
                                       bottom: 10.0),
                                   child: InputDecorator(
-                                    decoration: const InputDecoration(
-                                      contentPadding: EdgeInsets.symmetric(
-                                          vertical: 10.0, horizontal: 10.0),
-                                      border: OutlineInputBorder(),
-                                      labelText: 'شدت / سطح',
-                                      enabledBorder: OutlineInputBorder(
+                                    decoration: InputDecoration(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              vertical: 10.0, horizontal: 10.0),
+                                      border: const OutlineInputBorder(),
+                                      labelText: translations[selectedLanguage]
+                                              ?['HistoryLevel'] ??
+                                          '',
+                                      enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(50.0),
                                         ),
                                         borderSide:
                                             BorderSide(color: Colors.grey),
                                       ),
-                                      focusedBorder: OutlineInputBorder(
+                                      focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(50.0),
                                         ),
@@ -327,7 +352,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                       ),
                                     ),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Expanded(
                                           child: Theme(
@@ -339,7 +365,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                             child: RadioListTile(
                                                 title: const Text(
                                                   'خفیف',
-                                                  style: TextStyle(fontSize: 14),
+                                                  style:
+                                                      TextStyle(fontSize: 14),
                                                 ),
                                                 value: 'خفیف',
                                                 groupValue: _editHCondGV,
@@ -360,7 +387,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                             child: RadioListTile(
                                                 title: const Text(
                                                   'متوسط',
-                                                  style: TextStyle(fontSize: 14),
+                                                  style:
+                                                      TextStyle(fontSize: 14),
                                                 ),
                                                 value: 'متوسط',
                                                 groupValue: _editHCondGV,
@@ -381,7 +409,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                             child: RadioListTile(
                                                 title: const Text(
                                                   'شدید',
-                                                  style: TextStyle(fontSize: 14),
+                                                  style:
+                                                      TextStyle(fontSize: 14),
                                                 ),
                                                 value: 'شدید',
                                                 groupValue: _editHCondGV,
@@ -402,7 +431,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                             child: RadioListTile(
                                                 title: const Text(
                                                   'نامعلوم',
-                                                  style: TextStyle(fontSize: 14),
+                                                  style:
+                                                      TextStyle(fontSize: 14),
                                                 ),
                                                 value: 'نامعلوم',
                                                 groupValue: _editHCondGV,
@@ -424,19 +454,22 @@ class _HistoryContentState extends State<_HistoryContent> {
                                       top: 10.0,
                                       bottom: 10.0),
                                   child: InputDecorator(
-                                    decoration: const InputDecoration(
-                                      contentPadding: EdgeInsets.symmetric(
-                                          vertical: 10.0, horizontal: 10.0),
-                                      border: OutlineInputBorder(),
-                                      labelText: 'سابقه / مدت',
-                                      enabledBorder: OutlineInputBorder(
+                                    decoration: InputDecoration(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              vertical: 10.0, horizontal: 10.0),
+                                      border: const OutlineInputBorder(),
+                                      labelText: translations[selectedLanguage]
+                                              ?['HistoryDuration'] ??
+                                          '',
+                                      enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(50.0),
                                         ),
                                         borderSide:
                                             BorderSide(color: Colors.grey),
                                       ),
-                                      focusedBorder: OutlineInputBorder(
+                                      focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                           Radius.circular(50.0),
                                         ),
@@ -445,7 +478,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                       ),
                                     ),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Expanded(
                                           child: Theme(
@@ -457,7 +491,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                             child: RadioListTile(
                                                 title: const Text(
                                                   '1 هفته',
-                                                  style: TextStyle(fontSize: 10),
+                                                  style:
+                                                      TextStyle(fontSize: 10),
                                                 ),
                                                 value: '1 هفته',
                                                 groupValue: _editHDurationGV,
@@ -478,7 +513,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                             child: RadioListTile(
                                                 title: const Text(
                                                   '1 ماه',
-                                                  style: TextStyle(fontSize: 10),
+                                                  style:
+                                                      TextStyle(fontSize: 10),
                                                 ),
                                                 value: '1 ماه',
                                                 groupValue: _editHDurationGV,
@@ -499,7 +535,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                             child: RadioListTile(
                                                 title: const Text(
                                                   '6 ماه',
-                                                  style: TextStyle(fontSize: 10),
+                                                  style:
+                                                      TextStyle(fontSize: 10),
                                                 ),
                                                 value: '6 ماه',
                                                 groupValue: _editHDurationGV,
@@ -520,7 +557,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                             child: RadioListTile(
                                                 title: const Text(
                                                   'بیشتر',
-                                                  style: TextStyle(fontSize: 10),
+                                                  style:
+                                                      TextStyle(fontSize: 10),
                                                 ),
                                                 value: 'بیشتر از یک سال',
                                                 groupValue: _editHDurationGV,
@@ -541,7 +579,8 @@ class _HistoryContentState extends State<_HistoryContent> {
                                             child: RadioListTile(
                                                 title: const Text(
                                                   'نامعلوم',
-                                                  style: TextStyle(fontSize: 10),
+                                                  style:
+                                                      TextStyle(fontSize: 10),
                                                 ),
                                                 value: 'نامعلوم',
                                                 groupValue: _editHDurationGV,
@@ -568,7 +607,9 @@ class _HistoryContentState extends State<_HistoryContent> {
                                       if (value!.isNotEmpty) {
                                         if (value.length > 40 ||
                                             value.length < 10) {
-                                          return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                          return translations[selectedLanguage]
+                                                  ?['OtherDDLLength'] ??
+                                              '';
                                         }
                                       }
                                       return null;
@@ -580,30 +621,35 @@ class _HistoryContentState extends State<_HistoryContent> {
                                     ],
                                     minLines: 1,
                                     maxLines: 2,
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'توضیحات',
-                                      suffixIcon: Icon(Icons.note_alt_outlined),
-                                      enabledBorder: OutlineInputBorder(
+                                    decoration: InputDecoration(
+                                      border: const OutlineInputBorder(),
+                                      labelText: translations[selectedLanguage]
+                                              ?['RetDetails'] ??
+                                          '',
+                                      suffixIcon:
+                                          const Icon(Icons.note_alt_outlined),
+                                      enabledBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.grey)),
-                                      focusedBorder: OutlineInputBorder(
+                                      focusedBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.blue)),
-                                      errorBorder: OutlineInputBorder(
+                                      errorBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.red)),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide: BorderSide(
-                                              color: Colors.red, width: 1.5)),
+                                      focusedErrorBorder:
+                                          const OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(50.0)),
+                                              borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 1.5)),
                                     ),
                                   ),
                                 ),
@@ -615,52 +661,72 @@ class _HistoryContentState extends State<_HistoryContent> {
                     ),
                   ),
                   actions: [
-                    TextButton(
-                      onPressed: () =>
-                          Navigator.of(context, rootNavigator: true).pop(),
-                      child: const Text('لغو'),
-                    ),
-                    ElevatedButton(
-                        onPressed: () async {
-                          // print('Editing $condID');
-                          if (_patientHistEditFK.currentState!.validate()) {
-                            try {
-                              final conn = await onConnToDb();
-                              var editResults = await conn.query(
-                                  'UPDATE condition_details SET result = ?, severty = ?, duration = ?, diagnosis_date = ?, notes = ? WHERE pat_ID = ? AND cond_detail_ID = ?',
-                                  [
-                                    _editHCondResultGV,
-                                    _editHCondGV.isEmpty ? null : _editHCondGV,
-                                    _editHDurationGV.isEmpty
-                                        ? null
-                                        : _editHDurationGV,
-                                    _editHDateController.text.isEmpty
-                                        ? null
-                                        : _editHDateController.text.toString(),
-                                    _editHDetailsController.text.isEmpty
-                                        ? null
-                                        : _editHDetailsController.text,
-                                    PatientInfo.patID,
-                                    histCondID
-                                  ]);
-                              if (editResults.affectedRows! > 0) {
-                                _onShowSnack(Colors.green,
-                                    'این مورد تاریخچه صحی مریض موفقانه تغییر کرد.');
-                                refresh();
-                              } else {
-                                _onShowSnack(
-                                    Colors.red, 'هیچ تغییراتی نیاورده اید.');
+                    Row(
+                      mainAxisAlignment: isEnglish
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.start,
+                      children: [
+                        TextButton(
+                          onPressed: () =>
+                              Navigator.of(context, rootNavigator: true).pop(),
+                          child: Text(translations[selectedLanguage]
+                                  ?['CancelBtn'] ??
+                              ''),
+                        ),
+                        ElevatedButton(
+                            onPressed: () async {
+                              // print('Editing $condID');
+                              if (_patientHistEditFK.currentState!.validate()) {
+                                try {
+                                  final conn = await onConnToDb();
+                                  var editResults = await conn.query(
+                                      'UPDATE condition_details SET result = ?, severty = ?, duration = ?, diagnosis_date = ?, notes = ? WHERE pat_ID = ? AND cond_detail_ID = ?',
+                                      [
+                                        _editHCondResultGV,
+                                        _editHCondGV.isEmpty
+                                            ? null
+                                            : _editHCondGV,
+                                        _editHDurationGV.isEmpty
+                                            ? null
+                                            : _editHDurationGV,
+                                        _editHDateController.text.isEmpty
+                                            ? null
+                                            : _editHDateController.text
+                                                .toString(),
+                                        _editHDetailsController.text.isEmpty
+                                            ? null
+                                            : _editHDetailsController.text,
+                                        PatientInfo.patID,
+                                        histCondID
+                                      ]);
+                                  if (editResults.affectedRows! > 0) {
+                                    _onShowSnack(
+                                        Colors.green,
+                                        translations[selectedLanguage]
+                                                ?['StaffEditMsg'] ??
+                                            '');
+                                    refresh();
+                                  } else {
+                                    _onShowSnack(
+                                        Colors.red,
+                                        translations[selectedLanguage]
+                                                ?['StaffEditErrMsg'] ??
+                                            '');
+                                  }
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop();
+                                  await conn.close();
+                                } catch (e) {
+                                  print(
+                                      'Error occured with updating a patient health history: $e');
+                                }
                               }
-                              // ignore: use_build_context_synchronously
-                              Navigator.of(context, rootNavigator: true).pop();
-                              await conn.close();
-                            } catch (e) {
-                              print(
-                                  'Error occured with updating a patient health history: $e');
-                            }
-                          }
-                        },
-                        child: const Text('تغییر دادن')),
+                            },
+                            child: Text(
+                                translations[selectedLanguage]?['Edit'] ?? '')),
+                      ],
+                    )
                   ],
                 );
               },
@@ -671,114 +737,117 @@ class _HistoryContentState extends State<_HistoryContent> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(
       key: _globalkey4HistEdit,
-      child: Scaffold(
-        body: FutureBuilder(
-            future: _getHistory(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasData) {
-                if (snapshot.data!.isEmpty) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text('No health histories found for this patient.'),
-                      const SizedBox(height: 15.0),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.050,
-                        width: MediaQuery.of(context).size.width * 0.060,
-                        child: Tooltip(
-                          message: 'Add health histories',
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                side: const BorderSide(color: Colors.blue)),
-                            onPressed: () {
-                              PatientInfo.showElevatedBtn = true;
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const NewHealthHistory(),
-                                ),
-                              ).then((_) {
-                                setState(() {});
-                              });
-                            },
-                            child: const Icon(Icons.add_outlined),
+      child: Directionality(
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+        child: Scaffold(
+          body: FutureBuilder(
+              future: _getHistory(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasData) {
+                  if (snapshot.data!.isEmpty) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                            'No health histories found for this patient.'),
+                        const SizedBox(height: 15.0),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.050,
+                          width: MediaQuery.of(context).size.width * 0.060,
+                          child: Tooltip(
+                            message: 'Add health histories',
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  side: const BorderSide(color: Colors.blue)),
+                              onPressed: () {
+                                PatientInfo.showElevatedBtn = true;
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const NewHealthHistory(),
+                                  ),
+                                ).then((_) {
+                                  setState(() {});
+                                });
+                              },
+                              child: const Icon(Icons.add_outlined),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  );
-                } else {
-                  final histories = snapshot.data;
-                  int positiveRecord = 0;
-                  List<Widget> hcChildren = [];
-                  for (var h in histories!) {
-                    if (h.result == 1) {
-                      positiveRecord++;
-                    }
-                    hcChildren.add(
-                      HoverCard(
-                        title: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    decoration: const BoxDecoration(
-                                      color: Color.fromARGB(255, 34, 145, 38),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Icon(
-                                        FontAwesomeIcons.heartPulse,
-                                        color: Colors.white,
+                      ],
+                    );
+                  } else {
+                    final histories = snapshot.data;
+                    int positiveRecord = 0;
+                    List<Widget> hcChildren = [];
+                    for (var h in histories!) {
+                      if (h.result == 1) {
+                        positiveRecord++;
+                      }
+                      hcChildren.add(
+                        HoverCard(
+                          title: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      decoration: const BoxDecoration(
+                                        color: Color.fromARGB(255, 34, 145, 38),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Icon(
+                                          FontAwesomeIcons.heartPulse,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 10.0),
-                                  Text(
-                                    h.condName.toString(),
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
-                                    textAlign: TextAlign.start,
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: h.result == 1
-                                          ? Colors.red
-                                          : Colors.blue,
-                                      shape: BoxShape.circle,
+                                    const SizedBox(width: 10.0),
+                                    Text(
+                                      h.condName.toString(),
+                                      style:
+                                          Theme.of(context).textTheme.bodyLarge,
+                                      textAlign: TextAlign.start,
                                     ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(5.0),
-                                      child: h.result == 1
-                                          ? const Icon(
-                                              FontAwesomeIcons.plus,
-                                              color: Colors.white,
-                                              size: 14,
-                                            )
-                                          : const Icon(
-                                              FontAwesomeIcons.minus,
-                                              color: Colors.white,
-                                              size: 14,
-                                            ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: h.result == 1
+                                            ? Colors.red
+                                            : Colors.blue,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: h.result == 1
+                                            ? const Icon(
+                                                FontAwesomeIcons.plus,
+                                                color: Colors.white,
+                                                size: 14,
+                                              )
+                                            : const Icon(
+                                                FontAwesomeIcons.minus,
+                                                color: Colors.white,
+                                                size: 14,
+                                              ),
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              /* SizedBox(
+                                  ],
+                                ),
+                                /* SizedBox(
                   width: 100,
                   child: PopupMenuButton(
                     padding: EdgeInsets.zero,
@@ -808,168 +877,189 @@ class _HistoryContentState extends State<_HistoryContent> {
                   ),
                 ),
  */
-                            ],
+                              ],
+                            ),
+                          ),
+                          child: ListTile(
+                            title: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          translations[selectedLanguage]
+                                                  ?['DiagDate'] ??
+                                              '',
+                                          style: const TextStyle(
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.bold)),
+                                      const SizedBox(width: 15.0),
+                                      Expanded(
+                                        child: Text(
+                                          h.dianosisDate!,
+                                          textAlign: TextAlign.end,
+                                          style: const TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 112, 112, 112),
+                                              fontSize: 12.0),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                          translations[selectedLanguage]
+                                                  ?['HistoryLevel'] ??
+                                              '',
+                                          style: const TextStyle(
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.bold)),
+                                      const SizedBox(width: 15.0),
+                                      Expanded(
+                                        child: Text(
+                                          h.severty!,
+                                          textAlign: TextAlign.end,
+                                          style: const TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 112, 112, 112),
+                                              fontSize: 12.0),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                          translations[selectedLanguage]
+                                                  ?['HistoryDuration'] ??
+                                              '',
+                                          style: const TextStyle(
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.bold)),
+                                      const SizedBox(width: 15.0),
+                                      Expanded(
+                                        child: Text(
+                                          h.duration!,
+                                          textAlign: TextAlign.end,
+                                          style: const TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 112, 112, 112),
+                                              fontSize: 12.0),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                          translations[selectedLanguage]
+                                                  ?['RetDetails'] ??
+                                              '',
+                                          style: const TextStyle(
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.bold)),
+                                      const SizedBox(width: 15.0),
+                                      Expanded(
+                                        child: Text(
+                                          h.notes!.isEmpty || h.notes == null
+                                              ? '--'
+                                              : h.notes.toString(),
+                                          textAlign: TextAlign.end,
+                                          style: const TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 112, 112, 112),
+                                              fontSize: 12.0),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  child: IconButton(
+                                    tooltip: translations[selectedLanguage]
+                                            ?['Edit'] ??
+                                        '',
+                                    splashRadius: 23,
+                                    onPressed: () =>
+                                        _onEditPatientHealthHistoryResult(
+                                            h.condDetailID,
+                                            h.result,
+                                            h.dianosisDate.toString(),
+                                            h.severty,
+                                            h.duration,
+                                            h.notes, () {
+                                      setState(
+                                        () {},
+                                      );
+                                    }),
+                                    icon: const Icon(Icons.edit, size: 16.0),
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                        child: ListTile(
-                          title: Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    const Text('Diagnosis Date',
-                                        style: TextStyle(
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.bold)),
-                                    const SizedBox(width: 15.0),
-                                    Expanded(
-                                      child: Text(
-                                        h.dianosisDate!,
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 112, 112, 112),
-                                            fontSize: 12.0),
-                                      ),
-                                    ),
-                                  ],
+                      );
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Visibility(
+                          visible: positiveRecord > 0 ? true : false,
+                          child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Directionality(
+                                textDirection: isEnglish
+                                    ? TextDirection.ltr
+                                    : TextDirection.rtl,
+                                child: Text(
+                                  '$positiveRecord ${translations[selectedLanguage]?['Positive'] ?? ''}',
+                                  style:
+                                      Theme.of(context).textTheme.labelMedium,
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    const Text('Severty',
-                                        style: TextStyle(
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.bold)),
-                                    const SizedBox(width: 15.0),
-                                    Expanded(
-                                      child: Text(
-                                        h.severty!,
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 112, 112, 112),
-                                            fontSize: 12.0),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    const Text('Duration',
-                                        style: TextStyle(
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.bold)),
-                                    const SizedBox(width: 15.0),
-                                    Expanded(
-                                      child: Text(
-                                        h.duration!,
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 112, 112, 112),
-                                            fontSize: 12.0),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  children: [
-                                    const Text('Description',
-                                        style: TextStyle(
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.bold)),
-                                    const SizedBox(width: 15.0),
-                                    Expanded(
-                                      child: Text(
-                                        h.notes!.isEmpty || h.notes == null
-                                            ? '--'
-                                            : h.notes.toString(),
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 112, 112, 112),
-                                            fontSize: 12.0),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.3,
-                                child: IconButton(
-                                  tooltip: 'Edit',
-                                  splashRadius: 23,
-                                  onPressed: () =>
-                                      _onEditPatientHealthHistoryResult(
-                                          h.condDetailID,
-                                          h.result,
-                                          h.dianosisDate.toString(),
-                                          h.severty,
-                                          h.duration,
-                                          h.notes, () {
-                                    setState(
-                                      () {},
-                                    );
-                                  }),
-                                  icon: const Icon(Icons.edit, size: 16.0),
-                                ),
-                              )
-                            ],
-                          ),
+                              )),
                         ),
-                      ),
+                        Expanded(
+                          child: ListView(
+                            children: <Widget>[...hcChildren],
+                          ),
+                        )
+                      ],
                     );
                   }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                } else if (snapshot.hasError) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Visibility(
-                        visible: positiveRecord > 0 ? true : false,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            '$positiveRecord نتیجه مثبت',
-                            style: Theme.of(context).textTheme.labelMedium,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: ListView(
-                          children: <Widget>[...hcChildren],
-                        ),
-                      )
+                      Text('No patient history found.',
+                          style: Theme.of(context).textTheme.labelLarge),
+                    ],
+                  );
+                } else {
+                  return const Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
                     ],
                   );
                 }
-              } else if (snapshot.hasError) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('No patient history found.',
-                        style: Theme.of(context).textTheme.labelLarge),
-                  ],
-                );
-              } else {
-                return const Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                  ],
-                );
-              }
-            }),
+              }),
+        ),
       ),
     );
   }

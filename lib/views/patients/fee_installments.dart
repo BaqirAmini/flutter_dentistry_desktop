@@ -46,9 +46,12 @@ class FeeRecord extends StatelessWidget {
             ),
             actions: [
               IconButton(
-                onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const Patient()),
-                    (route) => route.settings.name == 'Patient'),
+                onPressed: () {
+                  GlobalUsage.widgetVisible = true;
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => const Patient()),
+                      (route) => route.settings.name == 'Patient');
+                },
                 icon: const Icon(Icons.people_outline),
                 tooltip: 'Patients',
                 padding: const EdgeInsets.all(3.0),
@@ -162,20 +165,28 @@ class _FeeContentState extends State<FeeContent> {
               }
 
               return AlertDialog(
-                title: const Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Text('دریافت فیس مریض'),
+                title: Directionality(
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
+                  child: Text(
+                    translations[selectedLanguage]?['FeeDialogHeading'] ?? '',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall!
+                        .copyWith(color: Colors.blue),
+                  ),
                 ),
                 content: Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
                   child: SizedBox(
                     height: 450.0,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Text(
-                            'لطفاً قیمت های مربوطه را در خانه های ذیل با دقت پر کنید.'),
+                        Text(translations[selectedLanguage]?['FormHintMsg'] ??
+                            ''),
                         Form(
                           key: _formKey4Payment,
                           child: SizedBox(
@@ -202,7 +213,10 @@ class _FeeContentState extends State<FeeContent> {
                                           validator: (value) {
                                             if (value == null ||
                                                 value.isEmpty) {
-                                              return 'تاریخ دریافت فیس نمی تواند خالی باشد.';
+                                              return translations[
+                                                          selectedLanguage]
+                                                      ?['FeeDateRequired'] ??
+                                                  '';
                                             }
                                             return errorMessage;
                                           },
@@ -241,28 +255,40 @@ class _FeeContentState extends State<FeeContent> {
                                             FilteringTextInputFormatter.allow(
                                                 RegExp(r'[0-9.]'))
                                           ],
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'تاریخ دریافت فیس',
-                                            suffixIcon: Icon(
+                                          decoration: InputDecoration(
+                                            border: const OutlineInputBorder(),
+                                            labelText:
+                                                translations[selectedLanguage]
+                                                        ?['PayDate'] ??
+                                                    '',
+                                            suffixIcon: const Icon(
                                                 Icons.calendar_month_outlined),
-                                            enabledBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(50.0)),
-                                                borderSide: BorderSide(
-                                                    color: Colors.grey)),
-                                            focusedBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(50.0)),
-                                                borderSide: BorderSide(
-                                                    color: Colors.blue)),
-                                            errorBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(50.0)),
-                                                borderSide: BorderSide(
-                                                    color: Colors.red)),
+                                            enabledBorder:
+                                                const OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.grey)),
+                                            focusedBorder:
+                                                const OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.blue)),
+                                            errorBorder:
+                                                const OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.red)),
                                             focusedErrorBorder:
-                                                OutlineInputBorder(
+                                                const OutlineInputBorder(
                                                     borderRadius:
                                                         BorderRadius.all(
                                                             Radius.circular(
@@ -280,15 +306,18 @@ class _FeeContentState extends State<FeeContent> {
                                     margin: const EdgeInsets.symmetric(
                                         horizontal: 20.0, vertical: 10.0),
                                     child: InputDecorator(
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'داکتر مربوطه',
-                                        enabledBorder: OutlineInputBorder(
+                                      decoration: InputDecoration(
+                                        border: const OutlineInputBorder(),
+                                        labelText:
+                                            translations[selectedLanguage]
+                                                    ?['FeeReceivedBy'] ??
+                                                '',
+                                        enabledBorder: const OutlineInputBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(50.0)),
                                             borderSide:
                                                 BorderSide(color: Colors.grey)),
-                                        focusedBorder: OutlineInputBorder(
+                                        focusedBorder: const OutlineInputBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(50.0)),
                                             borderSide:
@@ -339,30 +368,36 @@ class _FeeContentState extends State<FeeContent> {
                                           RegExp(GlobalUsage.allowedDigPeriod),
                                         ),
                                       ],
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'قسط دریافت',
-                                        suffixIcon: Icon(Icons.money_rounded),
-                                        enabledBorder: OutlineInputBorder(
+                                      decoration: InputDecoration(
+                                        border: const OutlineInputBorder(),
+                                        labelText:
+                                            translations[selectedLanguage]
+                                                    ?['PayInstallment'] ??
+                                                '',
+                                        suffixIcon:
+                                            const Icon(Icons.money_rounded),
+                                        enabledBorder: const OutlineInputBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(50.0)),
                                             borderSide:
                                                 BorderSide(color: Colors.grey)),
-                                        focusedBorder: OutlineInputBorder(
+                                        focusedBorder: const OutlineInputBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(50.0)),
                                             borderSide:
                                                 BorderSide(color: Colors.blue)),
-                                        errorBorder: OutlineInputBorder(
+                                        errorBorder: const OutlineInputBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(50.0)),
                                             borderSide:
                                                 BorderSide(color: Colors.red)),
-                                        focusedErrorBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(50.0)),
-                                            borderSide: BorderSide(
-                                                color: Colors.red, width: 1.5)),
+                                        focusedErrorBorder:
+                                            const OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(50.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.red,
+                                                    width: 1.5)),
                                       ),
                                     ),
                                   ),
@@ -392,14 +427,23 @@ class _FeeContentState extends State<FeeContent> {
                                                     ? 0
                                                     : double.parse(value);
                                             if (value.isEmpty) {
-                                              return 'مبلغ رسید نمی تواند خالی باشد.';
+                                              return translations[
+                                                          selectedLanguage]
+                                                      ?['PayAmountRequired'] ??
+                                                  '';
                                             } else if (receivedAmount >
                                                 dueAmount) {
-                                              return 'مبلغ رسید باید کمتر از مبلغ قابل دریافت باشد.';
+                                              return translations[
+                                                          selectedLanguage]
+                                                      ?['PayAmountValid'] ??
+                                                  '';
                                             } else if (instCounter ==
                                                 totalInstallment) {
                                               if (receivedAmount < dueAmount) {
-                                                return 'آخرین قسط است باید همه فیس باقیمانده پرداخته شود.';
+                                                return translations[
+                                                            selectedLanguage]
+                                                        ?['LastInstallment'] ??
+                                                    '';
                                               } else {
                                                 return null;
                                               }
@@ -410,28 +454,40 @@ class _FeeContentState extends State<FeeContent> {
                                           onChanged: (text) {
                                             deductDueAmount(text);
                                           },
-                                          decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'مبلغ رسید',
+                                          decoration: InputDecoration(
+                                            border: const OutlineInputBorder(),
+                                            labelText:
+                                                translations[selectedLanguage]
+                                                        ?['PayAmount'] ??
+                                                    '',
                                             suffixIcon:
-                                                Icon(Icons.money_rounded),
-                                            enabledBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(50.0)),
-                                                borderSide: BorderSide(
-                                                    color: Colors.grey)),
-                                            focusedBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(50.0)),
-                                                borderSide: BorderSide(
-                                                    color: Colors.blue)),
-                                            errorBorder: OutlineInputBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(50.0)),
-                                                borderSide: BorderSide(
-                                                    color: Colors.red)),
+                                                const Icon(Icons.money_rounded),
+                                            enabledBorder:
+                                                const OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.grey)),
+                                            focusedBorder:
+                                                const OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.blue)),
+                                            errorBorder:
+                                                const OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.red)),
                                             focusedErrorBorder:
-                                                OutlineInputBorder(
+                                                const OutlineInputBorder(
                                                     borderRadius:
                                                         BorderRadius.all(
                                                             Radius.circular(
@@ -458,9 +514,12 @@ class _FeeContentState extends State<FeeContent> {
                                               width: 1, color: Colors.grey),
                                         )),
                                         child: InputDecorator(
-                                          decoration: const InputDecoration(
+                                          decoration: InputDecoration(
                                               border: InputBorder.none,
-                                              labelText: 'مجموع فیس',
+                                              labelText:
+                                                  translations[selectedLanguage]
+                                                          ?['TotalFee'] ??
+                                                      '',
                                               floatingLabelAlignment:
                                                   FloatingLabelAlignment
                                                       .center),
@@ -469,7 +528,7 @@ class _FeeContentState extends State<FeeContent> {
                                                 const EdgeInsets.only(top: 8.0),
                                             child: Center(
                                               child: Text(
-                                                '$totalFee افغانی',
+                                                '$totalFee ${translations[selectedLanguage]?['Afn'] ?? ''}',
                                                 style: const TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.blue),
@@ -489,9 +548,12 @@ class _FeeContentState extends State<FeeContent> {
                                               width: 1, color: Colors.grey),
                                         )),
                                         child: InputDecorator(
-                                          decoration: const InputDecoration(
+                                          decoration: InputDecoration(
                                               border: InputBorder.none,
-                                              labelText: 'باقی مبلغ',
+                                              labelText:
+                                                  translations[selectedLanguage]
+                                                          ?['ReceivableFee'] ??
+                                                      '',
                                               floatingLabelAlignment:
                                                   FloatingLabelAlignment
                                                       .center),
@@ -500,7 +562,7 @@ class _FeeContentState extends State<FeeContent> {
                                                 const EdgeInsets.only(top: 8.0),
                                             child: Center(
                                               child: Text(
-                                                '$displayedDueAmount افغانی',
+                                                '$displayedDueAmount ${translations[selectedLanguage]?['Afn'] ?? ''}',
                                                 style: const TextStyle(
                                                     fontWeight: FontWeight.bold,
                                                     color: Colors.blue),
@@ -522,12 +584,16 @@ class _FeeContentState extends State<FeeContent> {
                 ),
                 actions: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: isEnglish
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
                     children: [
                       TextButton(
                           onPressed: () =>
                               Navigator.of(context, rootNavigator: true).pop(),
-                          child: const Text('لغو')),
+                          child: Text(translations[selectedLanguage]
+                                  ?['CancelBtn'] ??
+                              '')),
                       ElevatedButton(
                           onPressed: () async {
                             final conn = await onConnToDb();
@@ -560,13 +626,15 @@ class _FeeContentState extends State<FeeContent> {
                                 }
                                 await conn.close();
                               } else {
-                                errorMessage =
-                                    'تاریخ باید بزرگتر یا مساوی به تاریخ پرداخت قبلی باشد.';
+                                errorMessage = translations[selectedLanguage]
+                                        ?['ValidPayDateMsg'] ??
+                                    '';
                               }
                             }
                             _formKey4Payment.currentState!.validate();
                           },
-                          child: const Text('ثبت')),
+                          child: Text(
+                              translations[selectedLanguage]?['AddBtn'] ?? '')),
                     ],
                   ),
                 ],
@@ -781,7 +849,7 @@ class _FeeContentState extends State<FeeContent> {
                                                       fontSize: 18.0),
                                                 ),
                                                 Text(
-                                                  'تحت نظر: ${payment.staffFirstName} ${payment.staffLastName}',
+                                                  '${translations[selectedLanguage]?['EarnedBy'] ?? 'Earned by: '}${payment.staffFirstName} ${payment.staffLastName}',
                                                   style: const TextStyle(
                                                       color: Colors.grey,
                                                       fontSize: 12.0),
@@ -803,9 +871,12 @@ class _FeeContentState extends State<FeeContent> {
                                                 ),
                                               ),
                                               child: InputDecorator(
-                                                decoration:  InputDecoration(
+                                                decoration: InputDecoration(
                                                     border: InputBorder.none,
-                                                    labelText: translations[selectedLanguage]?['Installment'] ?? '',
+                                                    labelText: translations[
+                                                                selectedLanguage]
+                                                            ?['Installment'] ??
+                                                        '',
                                                     labelStyle: const TextStyle(
                                                         color: Colors.grey),
                                                     floatingLabelAlignment:
