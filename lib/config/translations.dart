@@ -251,6 +251,23 @@ final Map<String, Map<String, String>> translations = {
     'RestoreNotNeeded':
         'Restoration not needed. These records are already existing in the system.',
     /*----------/. USER PROFILE -----------*/
+    /*----------- EXPENSES -----------*/
+    'InterExpense' : 'Clinic Internal Expenses',
+    'AllExpenses' : 'All Expenses |',
+    'ExpenseType' : 'Expense Type',
+    'Item' : 'Item',
+    'QtyAmount' : 'Qty / Amount',
+    'UnitPrice' : 'Unit Price',
+    'totalPrice' : 'Total Price',
+    'PurDate' : 'Purchase Date',
+    'ExpDetail' : 'Expense Details',
+    'Okay' : 'Okay',
+    'FilterByType' : 'Filter by Type',
+    'EditExpType' : 'Edit Expense Type',
+    'EditExpItem' : 'Edit Expense Item',
+    'DeleteExp' : 'Delete This Expense',
+    'DeleteExpConfirm' : 'Are you sure you want to delete ',
+    /*-----------/. EXPENSES -----------*/
   },
   'دری': {
     'chooseLanguage': 'انتخاب زبان',
@@ -504,6 +521,23 @@ final Map<String, Map<String, String>> translations = {
     'RestoreNotNeeded':
         'نیازی به بازیابی نیست. این ریکاردها در سیستم وجود دارند.',
     /*----------/. USER PROFILE -----------*/
+     /*----------- EXPENSES -----------*/
+    'InterExpense' : 'مصارف داخلی کلینیک',
+    'AllExpenses' : 'همه مصارف |',
+    'ExpenseType' : 'نوعیت مصرف',
+    'Item' : 'جنس',
+    'QtyAmount' : 'تعداد / مقدار',
+    'UnitPrice' : 'نرخ فی واحد',
+    'totalPrice' : 'مجموع مبلغ',
+    'PurDate' : 'تاریخ خریداری',
+    'ExpDetail' : 'جزییات مصرف',
+    'Okay' : 'تایید',
+    'FilterByType' : 'فلتر کردن به اساس نوعیت',
+    'EditExpType' : 'تغییر نوعیت مصرف',
+    'EditExpItem' : 'تغییر اجناس مصرفی',
+    'DeleteExp' : 'حذف این مصرف',
+    'DeleteExpConfirm' : 'آیا در قسمت حذف این مصرف اطمینان دارید ',
+    /*-----------/. EXPENSES -----------*/
     // Add other Dari translations here
   },
   'پښتو': {
@@ -755,6 +789,23 @@ final Map<String, Map<String, String>> translations = {
     'WaitMsg': 'انتظار وکړئ...',
     'BackupNotSelected': 'تاسو هیڅ بیک اپ فایل نه دی غوره کړی.',
     'RestoreNotNeeded': 'بیا رغونه ته اړتیا نشته. دا ریکارډونه په سیسټم کې دي.',
+     /*----------- EXPENSES -----------*/
+    'InterExpense' : 'د کلینیک داخلي لګښتونه',
+    'AllExpenses' : 'ټول لګښتونه |',
+    'ExpenseType' : 'د لګښت ډول',
+    'Item' : 'توکي',
+    'QtyAmount' : 'شمیره / مقدار',
+    'UnitPrice' : 'د واحد قیمت',
+    'totalPrice' : 'ټول قیمت',
+    'PurDate' : 'د پیرود نېټه',
+    'ExpDetail' : 'د مصرف توضیحات',
+    'Okay' : 'تایید',
+    'FilterByType' : 'د ډول له مخې فلټر کول',
+    'EditExpType' : 'د لګښت ډول سم کول',
+    'EditExpItem' : 'د لګښت توکي سم کول',
+    'DeleteExp' : 'دا لګښت حذف کول',
+    'DeleteExpConfirm' : 'ایا تاسو ډاډه یاست چې تاسو غواړئ حذف کړئ ',
+    /*-----------/. EXPENSES -----------*/
     /*----------/. USER PROFILE -----------*/
 
     // Add other Pashto translations here
