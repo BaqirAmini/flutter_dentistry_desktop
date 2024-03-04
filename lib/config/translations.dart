@@ -88,6 +88,11 @@ final Map<String, Map<String, String>> translations = {
     'DeleteAHeading': 'Delete appointment',
     'ConfirmDelAppt': 'Are you sure you want to delete this appointment?',
     'DeleteSuccessMsg': 'Deleted!',
+    'FeeInst4': 'Fee and Installments Belongs to: ',
+    'Installments': 'Installments',
+    'Installment': 'Installment',
+    'WholeFP': 'Whole Fee Earned',
+    'Earn': 'Earn Payment',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'All Staff',
@@ -284,6 +289,11 @@ final Map<String, Map<String, String>> translations = {
      'DeleteAHeading': 'حذف جلسه',
     'ConfirmDelAppt': 'آیا از حذف این جلسه اطمینان دارید؟',
     'DeleteSuccessMsg': 'حذف گردید!',
+    'FeeInst4': 'فیس و اقساط مربوط: ',
+    'Installments': 'اقساط',
+    'Installment': 'قسط',
+    'WholeFP': 'همه فیس دریافت شد',
+    'Earn': 'دریافت فیس',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'همه کارمندان',
@@ -467,7 +477,7 @@ final Map<String, Map<String, String>> translations = {
     'CreateRet4': 'شاته تګ جوړ کړئ لپاره ',
     'SelectDentist': 'دندان ساز غوره کړئ',
     'RetDateTime': 'شاته تګ نېټه او وخت',
-    'RetReason': 'د شاته تګ شبب',
+    'RetReason': 'د شاته تګ سبب',
     'RetFee': 'د شاته تګ تادیه',
     'Ret4Free': 'بیاړه',
     'RetResult': 'د شاته تګ پایلې',
@@ -484,6 +494,11 @@ final Map<String, Map<String, String>> translations = {
      'DeleteAHeading': 'د ملاقات ړنګول',
     'ConfirmDelAppt': 'ایا تاسو ډاډه یاست چې تاسو دا ملاقات حذف کول غواړئ؟',
     'DeleteSuccessMsg': 'ړنګ شوی!',
+    'FeeInst4': 'فیس او قسطونه پورې اړه لري: ',
+    'Installments': 'قسطونه',
+    'Installment': 'قسط',
+    'WholeFP': 'ټول فیس ترلاسه شوی',
+    'Earn': 'فیس ترلاسه کړئ',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'ټول کارکوونکي',

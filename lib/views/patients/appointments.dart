@@ -56,7 +56,7 @@ class _AppointmentState extends State<Appointment> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Directionality(
-        textDirection: TextDirection.ltr,
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
         child: Scaffold(
           floatingActionButton: FloatingActionButton(
             onPressed: () {
@@ -77,7 +77,7 @@ class _AppointmentState extends State<Appointment> {
           ),
           appBar: AppBar(
             title: Text(
-                '${PatientInfo.firstName} ${PatientInfo.lastName} Appointments'),
+                '${PatientInfo.firstName} ${PatientInfo.lastName} ${translations[selectedLanguage]?['Appointments'] ?? ''}'),
             leading: IconButton(
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const BackButtonIcon()),
@@ -574,11 +574,12 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                               ),
                             ),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
                                 margin: const EdgeInsets.only(
                                     bottom: 10.0, right: 15, left: 15),
-                                width: 140.0,
+                                width: 100.0,
                                 child: CheckboxListTile(
                                   value: _feeNotRequired,
                                   onChanged: (bool? value) {
@@ -683,7 +684,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                 decoration: InputDecoration(
                                   border: const OutlineInputBorder(),
                                   labelText: translations[selectedLanguage]
-                                          ?['َDentalService'] ??
+                                          ?['RetDetails'] ??
                                       '',
                                   suffixIcon:
                                       const Icon(Icons.description_outlined),
@@ -783,7 +784,8 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                           }
                         }
                       },
-                      child: const Text('Save'),
+                      child:
+                          Text(translations[selectedLanguage]?['AddBtn'] ?? ''),
                     ),
                   ],
                 ),

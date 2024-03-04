@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart' as intl2;
 
 void main() => runApp(const FeeRecord());
+
+// Set global variables which are needed later.
+var selectedLanguage;
+var isEnglish;
 
 // Declare these two display total fee paid & total fee due.
 double totalFeeToBePaid = 0;
@@ -21,65 +28,73 @@ class FeeRecord extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Fee Management'),
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const BackButtonIcon(),
-          ),
-          actions: [
-            IconButton(
-              onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const Patient()),
-                  (route) => route.settings.name == 'Patient'),
-              icon: const Icon(Icons.people_outline),
-              tooltip: 'Patients',
-              padding: const EdgeInsets.all(3.0),
-              splashRadius: 30.0,
+      home: Directionality(
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+                '${translations[selectedLanguage]?['FeeInst4'] ?? ''} ${PatientInfo.firstName}'),
+            leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const BackButtonIcon(),
             ),
-            const SizedBox(width: 15.0),
-            IconButton(
-                splashRadius: 27.0,
-                tooltip: 'Dashboard',
+            actions: [
+              IconButton(
+                onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const Patient()),
+                    (route) => route.settings.name == 'Patient'),
+                icon: const Icon(Icons.people_outline),
+                tooltip: 'Patients',
                 padding: const EdgeInsets.all(3.0),
-                onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const Dashboard(),
-                    )),
-                icon: const Icon(Icons.home_outlined)),
-            const SizedBox(width: 15.0)
-          ],
-        ),
-        body: Center(
-          child: Container(
-            margin: const EdgeInsets.only(top: 15),
-            width: MediaQuery.of(context).size.width * 0.9,
-            child: Column(
-              children: [
-                Visibility(
-                  visible: displayTotalFeeRow ? true : false,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0, vertical: 0.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Total Fee: $totalFeeToBePaid AFN',
-                            style: const TextStyle(
-                                color: Colors.green, fontSize: 15.0)),
-                        Text('Total Due: ${-totalFeeDue} AFN',
-                            style: const TextStyle(
-                                color: Colors.red, fontSize: 15.0)),
-                      ],
+                splashRadius: 30.0,
+              ),
+              const SizedBox(width: 15.0),
+              IconButton(
+                  splashRadius: 27.0,
+                  tooltip: 'Dashboard',
+                  padding: const EdgeInsets.all(3.0),
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const Dashboard(),
+                      )),
+                  icon: const Icon(Icons.home_outlined)),
+              const SizedBox(width: 15.0)
+            ],
+          ),
+          body: Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 15),
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: Column(
+                children: [
+                  Visibility(
+                    visible: displayTotalFeeRow ? true : false,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 0.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Total Fee: $totalFeeToBePaid AFN',
+                              style: const TextStyle(
+                                  color: Colors.green, fontSize: 15.0)),
+                          Text('Total Due: ${-totalFeeDue} AFN',
+                              style: const TextStyle(
+                                  color: Colors.red, fontSize: 15.0)),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const Expanded(
-                  child: FeeContent(),
-                )
-              ],
+                  const Expanded(
+                    child: FeeContent(),
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -698,7 +713,9 @@ class _FeeContentState extends State<FeeContent> {
                                   style: const TextStyle(fontSize: 18.0),
                                 ),
                                 Container(
-                                  margin: const EdgeInsets.only(right: 90.0),
+                                  margin: isEnglish
+                                      ? const EdgeInsets.only(right: 90.0)
+                                      : const EdgeInsets.only(left: 90.0),
                                   child: Card(
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
@@ -707,7 +724,7 @@ class _FeeContentState extends State<FeeContent> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(5.0),
                                       child: Text(
-                                          'Installments: ${payments.last.totalInstallment}',
+                                          '${translations[selectedLanguage]?['Installments'] ?? ''}: ${payments.last.totalInstallment}',
                                           style: Theme.of(context)
                                               .textTheme
                                               .labelSmall),
@@ -754,7 +771,12 @@ class _FeeContentState extends State<FeeContent> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  intl2.DateFormat('MMM d, y hh:mm a').format(DateTime.parse(payment.paymentDateTime.toString())) ,
+                                                  intl2.DateFormat(
+                                                          'MMM d, y hh:mm a')
+                                                      .format(DateTime.parse(
+                                                          payment
+                                                              .paymentDateTime
+                                                              .toString())),
                                                   style: const TextStyle(
                                                       fontSize: 18.0),
                                                 ),
@@ -781,10 +803,10 @@ class _FeeContentState extends State<FeeContent> {
                                                 ),
                                               ),
                                               child: InputDecorator(
-                                                decoration: const InputDecoration(
+                                                decoration:  InputDecoration(
                                                     border: InputBorder.none,
-                                                    labelText: 'Installment',
-                                                    labelStyle: TextStyle(
+                                                    labelText: translations[selectedLanguage]?['Installment'] ?? '',
+                                                    labelStyle: const TextStyle(
                                                         color: Colors.grey),
                                                     floatingLabelAlignment:
                                                         FloatingLabelAlignment
@@ -906,56 +928,62 @@ class _FeeContentState extends State<FeeContent> {
                         ],
                       ),
                     ),
-                    Positioned(
-                      top: 5.0,
-                      right: 3.0,
-                      child: Material(
-                        color: Colors.transparent,
-                        shape: const CircleBorder(),
-                        child: PopupMenuButton<String>(
-                          onSelected: (String result) {
-                            print('You selected: $result');
-                          },
-                          itemBuilder: (BuildContext context) =>
-                              <PopupMenuEntry<String>>[
-                            PopupMenuItem<String>(
-                              value: 'Option 1',
-                              onTap: payments.first.dueAmount <= 0
-                                  ? null
-                                  : () => _onMakePayment(
-                                          context,
-                                          payments.first.instCounter,
-                                          payments.first.totalInstallment,
-                                          payments.first.totalFee,
-                                          payments.first.dueAmount,
-                                          payments.first.apptID, () {
-                                        setState(() {});
-                                      }),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                      payments.first.dueAmount <= 0
-                                          ? Icons.check_circle_outline
-                                          : Icons.payments_outlined,
-                                      color: payments.first.dueAmount <= 0
-                                          ? Colors.green
-                                          : Colors.grey),
-                                  const SizedBox(width: 10.0),
-                                  Text(
-                                    payments.first.dueAmount <= 0
-                                        ? 'Whole Fee Paid'
-                                        : 'Earn Payment',
-                                    style: TextStyle(
-                                        color: payments.first.dueAmount <= 0
-                                            ? Colors.green
-                                            : const Color.fromRGBO(
-                                                86, 85, 85, 0.765)),
+                    isEnglish
+                        ? Positioned(
+                            top: 5.0,
+                            right: 3.0,
+                            child: Material(
+                              color: Colors.transparent,
+                              shape: const CircleBorder(),
+                              child: PopupMenuButton<String>(
+                                onSelected: (String result) {
+                                  print('You selected: $result');
+                                },
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry<String>>[
+                                  PopupMenuItem<String>(
+                                    value: 'Option 1',
+                                    onTap: payments.first.dueAmount <= 0
+                                        ? null
+                                        : () => _onMakePayment(
+                                                context,
+                                                payments.first.instCounter,
+                                                payments.first.totalInstallment,
+                                                payments.first.totalFee,
+                                                payments.first.dueAmount,
+                                                payments.first.apptID, () {
+                                              setState(() {});
+                                            }),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Icon(
+                                            payments.first.dueAmount <= 0
+                                                ? Icons.check_circle_outline
+                                                : Icons.payments_outlined,
+                                            color: payments.first.dueAmount <= 0
+                                                ? Colors.green
+                                                : Colors.grey),
+                                        const SizedBox(width: 10.0),
+                                        Text(
+                                          payments.first.dueAmount <= 0
+                                              // ignore: unnecessary_string_interpolations
+                                              ? '${translations[selectedLanguage]?['WholeFP'] ?? ''}'
+                                              : translations[selectedLanguage]
+                                                      ?['Earn'] ??
+                                                  '',
+                                          style: TextStyle(
+                                              color:
+                                                  payments.first.dueAmount <= 0
+                                                      ? Colors.green
+                                                      : const Color.fromRGBO(
+                                                          86, 85, 85, 0.765)),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ],
-                              ),
-                            ),
-                            const PopupMenuItem<String>(
+                                  /*   const PopupMenuItem<String>(
                               value: 'Option 2',
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -971,15 +999,94 @@ class _FeeContentState extends State<FeeContent> {
                                   ),
                                 ],
                               ),
+                            ), */
+                                ],
+                                icon: const Icon(Icons.more_vert,
+                                    color: Color.fromARGB(255, 148, 147, 147)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0)),
+                              ),
                             ),
-                          ],
-                          icon: const Icon(Icons.more_vert,
-                              color: Color.fromARGB(255, 148, 147, 147)),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15.0)),
-                        ),
-                      ),
-                    ),
+                          )
+                        : Positioned(
+                            top: 5.0,
+                            left: 3.0,
+                            child: Material(
+                              color: Colors.transparent,
+                              shape: const CircleBorder(),
+                              child: PopupMenuButton<String>(
+                                onSelected: (String result) {
+                                  print('You selected: $result');
+                                },
+                                itemBuilder: (BuildContext context) =>
+                                    <PopupMenuEntry<String>>[
+                                  PopupMenuItem<String>(
+                                    value: 'Option 1',
+                                    onTap: payments.first.dueAmount <= 0
+                                        ? null
+                                        : () => _onMakePayment(
+                                                context,
+                                                payments.first.instCounter,
+                                                payments.first.totalInstallment,
+                                                payments.first.totalFee,
+                                                payments.first.dueAmount,
+                                                payments.first.apptID, () {
+                                              setState(() {});
+                                            }),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Icon(
+                                            payments.first.dueAmount <= 0
+                                                ? Icons.check_circle_outline
+                                                : Icons.payments_outlined,
+                                            color: payments.first.dueAmount <= 0
+                                                ? Colors.green
+                                                : Colors.grey),
+                                        const SizedBox(width: 10.0),
+                                        Text(
+                                          payments.first.dueAmount <= 0
+                                              // ignore: unnecessary_string_interpolations
+                                              ? '${translations[selectedLanguage]?['WholeFP'] ?? ''}'
+                                              : translations[selectedLanguage]
+                                                      ?['Earn'] ??
+                                                  '',
+                                          style: TextStyle(
+                                              color:
+                                                  payments.first.dueAmount <= 0
+                                                      ? Colors.green
+                                                      : const Color.fromRGBO(
+                                                          86, 85, 85, 0.765)),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  /*   const PopupMenuItem<String>(
+                              value: 'Option 2',
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.mode_edit_outline_outlined,
+                                      color: Colors.grey),
+                                  SizedBox(width: 10.0),
+                                  Text(
+                                    'Edit',
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(86, 85, 85, 0.765),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ), */
+                                ],
+                                icon: const Icon(Icons.more_vert,
+                                    color: Color.fromARGB(255, 148, 147, 147)),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0)),
+                              ),
+                            ),
+                          ),
                   ],
                 );
               }).toList(),
