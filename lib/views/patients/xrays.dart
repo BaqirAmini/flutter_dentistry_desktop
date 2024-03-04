@@ -454,11 +454,7 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                   Container(
                                     width: MediaQuery.of(context).size.width *
                                         0.338,
-                                    margin: const EdgeInsets.only(
-                                        left: 20.0,
-                                        right: 10.0,
-                                        top: 10.0,
-                                        bottom: 10.0),
+                                    margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                                     child: TextFormField(
                                       controller: dateContoller,
                                       validator: (value) {
@@ -706,169 +702,241 @@ class _ImageViewerState extends State<ImageViewer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(translations[selectedLanguage]?['XrayDetails'] ?? ''),
-      ),
-      body: Stack(
-        children: <Widget>[
-          PageView.builder(
-            controller: controller,
-            itemCount: widget.images.length,
-            onPageChanged: (index) {
-              setState(() {
-                counter = index;
-              });
-            },
-            itemBuilder: (context, index) {
-              try {
-                // This widget contains date, description and the image itself.
-                return Directionality(
-                  textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        width: MediaQuery.of(context).size.width * 0.43,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              translations[selectedLanguage]?['UploadedAt'] ??
-                                  '',
-                              style: Theme.of(context).textTheme.labelLarge,
-                            ),
-                            Text(
-                              widget.images[index].xrayDate,
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ],
+    return Directionality(
+      textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(translations[selectedLanguage]?['XrayDetails'] ?? ''),
+        ),
+        body: Stack(
+          children: <Widget>[
+            PageView.builder(
+              controller: controller,
+              itemCount: widget.images.length,
+              onPageChanged: (index) {
+                setState(() {
+                  counter = index;
+                });
+              },
+              itemBuilder: (context, index) {
+                try {
+                  // This widget contains date, description and the image itself.
+                  return Directionality(
+                    textDirection:
+                        isEnglish ? TextDirection.ltr : TextDirection.rtl,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          width: MediaQuery.of(context).size.width * 0.43,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                translations[selectedLanguage]?['UploadedAt'] ??
+                                    '',
+                                style: Theme.of(context).textTheme.labelLarge,
+                              ),
+                              Text(
+                                widget.images[index].xrayDate,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        width: MediaQuery.of(context).size.width * 0.43,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                                '${translations[selectedLanguage]?['RetDetails'] ?? ''}:',
-                                style: Theme.of(context).textTheme.labelLarge),
-                            Text(widget.images[index].xrayDescription,
-                                style: Theme.of(context).textTheme.bodyLarge),
-                          ],
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          width: MediaQuery.of(context).size.width * 0.43,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                  '${translations[selectedLanguage]?['RetDetails'] ?? ''}:',
+                                  style:
+                                      Theme.of(context).textTheme.labelLarge),
+                              Text(widget.images[index].xrayDescription,
+                                  style: Theme.of(context).textTheme.bodyLarge),
+                            ],
+                          ),
                         ),
-                      ),
-                      MouseRegion(
-                        cursor: SystemMouseCursors.click,
-                        child: GestureDetector(
-                          // When tapped, it opens the image using windows default image viewer.
-                          onTap: () =>
-                              OpenFile.open(widget.images[index].xrayImage),
-                          child: Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black)),
-                              width: MediaQuery.of(context).size.width * 0.5,
-                              height: MediaQuery.of(context).size.height * 0.5,
-                              child: FutureBuilder(
-                                future: File(widget.images[index].xrayImage)
-                                    .exists()
-                                    .then((exists) {
-                                  if (exists) {
-                                    return File(widget.images[index].xrayImage);
-                                  } else {
-                                    throw Exception('Image file not found');
-                                  }
-                                }),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<File> snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    if (snapshot.hasError) {
-                                      // If there's an error, return a message
-                                      return Center(
-                                          child: Text(
-                                              translations[selectedLanguage]
-                                                      ?['XrayNotFound'] ??
-                                                  ''));
+                        MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            // When tapped, it opens the image using windows default image viewer.
+                            onTap: () =>
+                                OpenFile.open(widget.images[index].xrayImage),
+                            child: Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black)),
+                                width: MediaQuery.of(context).size.width * 0.5,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.5,
+                                child: FutureBuilder(
+                                  future: File(widget.images[index].xrayImage)
+                                      .exists()
+                                      .then((exists) {
+                                    if (exists) {
+                                      return File(
+                                          widget.images[index].xrayImage);
                                     } else {
-                                      // If the file exists, display it
-                                      return Image.file(snapshot.data!,
-                                          fit: BoxFit.fill);
+                                      throw Exception('Image file not found');
                                     }
-                                  } else {
-                                    // While the file is being checked, display a loading spinner
-                                    return const CircularProgressIndicator();
-                                  }
-                                },
-                              )),
+                                  }),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<File> snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
+                                      if (snapshot.hasError) {
+                                        // If there's an error, return a message
+                                        return Center(
+                                            child: Text(
+                                                translations[selectedLanguage]
+                                                        ?['XrayNotFound'] ??
+                                                    ''));
+                                      } else {
+                                        // If the file exists, display it
+                                        return Image.file(snapshot.data!,
+                                            fit: BoxFit.fill);
+                                      }
+                                    } else {
+                                      // While the file is being checked, display a loading spinner
+                                      return const CircularProgressIndicator();
+                                    }
+                                  },
+                                )),
+                          ),
                         ),
+                      ],
+                    ),
+                  );
+                } catch (e) {
+                  print('The last image: $e');
+                }
+              },
+            ),
+            // Due to applying localization this Positioned() is duplicated
+            isEnglish
+                ? Positioned(
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 30.0),
+                      child: Visibility(
+                        visible: counter > 0,
+                        child: IconButton(
+                            tooltip: translations[selectedLanguage]
+                                    ?['PrevXray'] ??
+                                '',
+                            splashRadius: 30.0,
+                            icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                                color: Colors.grey),
+                            onPressed: () {
+                              if (counter > 0) {
+                                controller.previousPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                                setState(() {
+                                  counter--;
+                                });
+                              }
+                            }),
                       ),
-                    ],
+                    ),
+                  )
+                : Positioned(
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 30.0),
+                      child: Visibility(
+                        visible: counter > 0,
+                        child: IconButton(
+                            tooltip: translations[selectedLanguage]
+                                    ?['PrevXray'] ??
+                                '',
+                            splashRadius: 30.0,
+                            icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                                color: Colors.grey),
+                            onPressed: () {
+                              if (counter > 0) {
+                                controller.previousPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                                setState(() {
+                                  counter--;
+                                });
+                              }
+                            }),
+                      ),
+                    ),
                   ),
-                );
-              } catch (e) {
-                print('The last image: $e');
-              }
-            },
-          ),
-          Positioned(
-            top: 0,
-            bottom: 0,
-            left: 0,
-            child: Container(
-              margin: const EdgeInsets.only(left: 30.0),
-              child: Visibility(
-                visible: counter > 0,
-                child: IconButton(
-                    tooltip: translations[selectedLanguage]?['PrevXray'] ?? '',
-                    splashRadius: 30.0,
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                        color: Colors.grey),
-                    onPressed: () {
-                      if (counter > 0) {
-                        controller.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                        setState(() {
-                          counter--;
-                        });
-                      }
-                    }),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 0,
-            bottom: 0,
-            right: 0,
-            child: Container(
-              margin: const EdgeInsets.only(right: 30.0),
-              child: Visibility(
-                visible: counter < widget.images.length - 1,
-                child: IconButton(
-                    tooltip: translations[selectedLanguage]?['NextXray'] ?? '',
-                    splashRadius: 30.0,
-                    icon: const Icon(Icons.arrow_forward_ios_rounded,
-                        color: Colors.grey),
-                    onPressed: () {
-                      if (counter < widget.images.length - 1) {
-                        controller.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                        setState(() {
-                          counter++;
-                        });
-                      }
-                    }),
-              ),
-            ),
-          ),
-        ],
+            isEnglish
+                ? Positioned(
+                    top: 0,
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 30.0),
+                      child: Visibility(
+                        visible: counter < widget.images.length - 1,
+                        child: IconButton(
+                            tooltip: translations[selectedLanguage]
+                                    ?['NextXray'] ??
+                                '',
+                            splashRadius: 30.0,
+                            icon: const Icon(Icons.arrow_forward_ios_rounded,
+                                color: Colors.grey),
+                            onPressed: () {
+                              if (counter < widget.images.length - 1) {
+                                controller.nextPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                                setState(() {
+                                  counter++;
+                                });
+                              }
+                            }),
+                      ),
+                    ),
+                  )
+                : Positioned(
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 30.0),
+                      child: Visibility(
+                        visible: counter < widget.images.length - 1,
+                        child: IconButton(
+                            tooltip: translations[selectedLanguage]
+                                    ?['NextXray'] ??
+                                '',
+                            splashRadius: 30.0,
+                            icon: const Icon(Icons.arrow_forward_ios_rounded,
+                                color: Colors.grey),
+                            onPressed: () {
+                              if (counter < widget.images.length - 1) {
+                                controller.nextPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                                setState(() {
+                                  counter++;
+                                });
+                              }
+                            }),
+                      ),
+                    ),
+                  ),
+          ],
+        ),
       ),
     );
   }
