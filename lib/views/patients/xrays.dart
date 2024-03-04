@@ -28,69 +28,77 @@ class XRayUploadScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-            title:
-                Text('${PatientInfo.firstName} ${PatientInfo.lastName} X-Rays'),
-            leading: IconButton(
-                splashRadius: 27.0,
-                onPressed: () => Navigator.pop(context),
-                icon: const BackButtonIcon()),
-            actions: [
-              IconButton(
-                onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const Patient()),
-                    (route) => route.settings.name == 'Patient'),
-                icon: const Icon(Icons.people_outline),
-                tooltip: 'Patients',
-                padding: const EdgeInsets.all(3.0),
-                splashRadius: 30.0,
-              ),
-              const SizedBox(width: 15.0),
-              IconButton(
+        child: Directionality(
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(
+                  '${translations[selectedLanguage]?['Xray4'] ?? ''}${PatientInfo.firstName} ${PatientInfo.lastName}'),
+              leading: IconButton(
                   splashRadius: 27.0,
-                  tooltip: 'Dashboard',
+                  onPressed: () => Navigator.pop(context),
+                  icon: const BackButtonIcon()),
+              actions: [
+                IconButton(
+                  onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => const Patient()),
+                      (route) => route.settings.name == 'Patient'),
+                  icon: const Icon(Icons.people_outline),
+                  tooltip: 'Patients',
                   padding: const EdgeInsets.all(3.0),
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const Dashboard(),
-                      )),
-                  icon: const Icon(Icons.home_outlined)),
-              const SizedBox(width: 15.0)
-            ],
-            backgroundColor: Colors.blue,
-            bottom: const PreferredSize(
-              preferredSize: Size.fromHeight(kToolbarHeight),
-              child: Material(
-                color: Colors.white70,
-                child: TabBar(
-                  unselectedLabelColor: Colors.blue,
-                  labelColor: Colors.green,
-                  indicatorColor: Colors.green,
-                  tabs: [
-                    Tab(
-                      text: 'Periapical ',
-                    ),
-                    Tab(
-                      text: 'Orthopantomagram (OPG)',
-                    ),
-                    Tab(
-                      text: '3D',
-                    ),
-                  ],
+                  splashRadius: 30.0,
+                ),
+                const SizedBox(width: 15.0),
+                IconButton(
+                    splashRadius: 27.0,
+                    tooltip: 'Dashboard',
+                    padding: const EdgeInsets.all(3.0),
+                    onPressed: () =>
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const Dashboard(),
+                        )),
+                    icon: const Icon(Icons.home_outlined)),
+                const SizedBox(width: 15.0)
+              ],
+              backgroundColor: Colors.blue,
+              bottom: const PreferredSize(
+                preferredSize: Size.fromHeight(kToolbarHeight),
+                child: Material(
+                  color: Colors.white70,
+                  child: TabBar(
+                    unselectedLabelColor: Colors.blue,
+                    labelColor: Colors.green,
+                    indicatorColor: Colors.green,
+                    tabs: [
+                      Tab(
+                        text: 'Periapical ',
+                      ),
+                      Tab(
+                        text: 'Orthopantomagram (OPG)',
+                      ),
+                      Tab(
+                        text: '3D',
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          body: const TabBarView(
-            children: [
-              _ImageThumbNail(xrayCategory: 'Periapical'),
-              _ImageThumbNail(xrayCategory: 'OPG'),
-              _ImageThumbNail(xrayCategory: '3D')
-            ],
+            body: const TabBarView(
+              children: [
+                _ImageThumbNail(xrayCategory: 'Periapical'),
+                _ImageThumbNail(xrayCategory: 'OPG'),
+                _ImageThumbNail(xrayCategory: '3D')
+              ],
+            ),
           ),
         ),
       ),
@@ -700,8 +708,7 @@ class _ImageViewerState extends State<ImageViewer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            '${translations[selectedLanguage]?['Xray4'] ?? ''}${PatientInfo.firstName} ${PatientInfo.lastName}'),
+        title: Text(translations[selectedLanguage]?['XrayDetails'] ?? ''),
       ),
       body: Stack(
         children: <Widget>[
@@ -716,87 +723,91 @@ class _ImageViewerState extends State<ImageViewer> {
             itemBuilder: (context, index) {
               try {
                 // This widget contains date, description and the image itself.
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      width: MediaQuery.of(context).size.width * 0.43,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            translations[selectedLanguage]?['UploadedAt'] ?? '',
-                            style: Theme.of(context).textTheme.labelLarge,
-                          ),
-                          Text(
-                            widget.images[index].xrayDate,
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ],
+                return Directionality(
+                  textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        width: MediaQuery.of(context).size.width * 0.43,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              translations[selectedLanguage]?['UploadedAt'] ??
+                                  '',
+                              style: Theme.of(context).textTheme.labelLarge,
+                            ),
+                            Text(
+                              widget.images[index].xrayDate,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      width: MediaQuery.of(context).size.width * 0.43,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                              '${translations[selectedLanguage]?['RetDetails'] ?? ''}:',
-                              style: Theme.of(context).textTheme.labelLarge),
-                          Text(widget.images[index].xrayDescription,
-                              style: Theme.of(context).textTheme.bodyLarge),
-                        ],
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10.0),
+                        width: MediaQuery.of(context).size.width * 0.43,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                                '${translations[selectedLanguage]?['RetDetails'] ?? ''}:',
+                                style: Theme.of(context).textTheme.labelLarge),
+                            Text(widget.images[index].xrayDescription,
+                                style: Theme.of(context).textTheme.bodyLarge),
+                          ],
+                        ),
                       ),
-                    ),
-                    MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        // When tapped, it opens the image using windows default image viewer.
-                        onTap: () =>
-                            OpenFile.open(widget.images[index].xrayImage),
-                        child: Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.black)),
-                            width: MediaQuery.of(context).size.width * 0.5,
-                            height: MediaQuery.of(context).size.height * 0.5,
-                            child: FutureBuilder(
-                              future: File(widget.images[index].xrayImage)
-                                  .exists()
-                                  .then((exists) {
-                                if (exists) {
-                                  return File(widget.images[index].xrayImage);
-                                } else {
-                                  throw Exception('Image file not found');
-                                }
-                              }),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<File> snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.done) {
-                                  if (snapshot.hasError) {
-                                    // If there's an error, return a message
-                                    return Center(
-                                        child: Text(
-                                            translations[selectedLanguage]
-                                                    ?['XrayNotFound'] ??
-                                                ''));
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          // When tapped, it opens the image using windows default image viewer.
+                          onTap: () =>
+                              OpenFile.open(widget.images[index].xrayImage),
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black)),
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              height: MediaQuery.of(context).size.height * 0.5,
+                              child: FutureBuilder(
+                                future: File(widget.images[index].xrayImage)
+                                    .exists()
+                                    .then((exists) {
+                                  if (exists) {
+                                    return File(widget.images[index].xrayImage);
                                   } else {
-                                    // If the file exists, display it
-                                    return Image.file(snapshot.data!,
-                                        fit: BoxFit.fill);
+                                    throw Exception('Image file not found');
                                   }
-                                } else {
-                                  // While the file is being checked, display a loading spinner
-                                  return const CircularProgressIndicator();
-                                }
-                              },
-                            )),
+                                }),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<File> snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    if (snapshot.hasError) {
+                                      // If there's an error, return a message
+                                      return Center(
+                                          child: Text(
+                                              translations[selectedLanguage]
+                                                      ?['XrayNotFound'] ??
+                                                  ''));
+                                    } else {
+                                      // If the file exists, display it
+                                      return Image.file(snapshot.data!,
+                                          fit: BoxFit.fill);
+                                    }
+                                  } else {
+                                    // While the file is being checked, display a loading spinner
+                                    return const CircularProgressIndicator();
+                                  }
+                                },
+                              )),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 );
               } catch (e) {
                 print('The last image: $e');

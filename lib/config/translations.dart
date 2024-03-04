@@ -144,6 +144,7 @@ final Map<String, Map<String, String>> translations = {
     'UploadedAt': 'Uploaded At:',
     'PrevXray': 'Previous Image',
     'NextXray': 'Next Image',
+    'XrayDetails': 'X-Ray Details',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'All Staff',
@@ -394,6 +395,7 @@ final Map<String, Map<String, String>> translations = {
     'UploadedAt': 'تاریخ آپلود:',
     'PrevXray': 'عکس قبلی',
     'NextXray': 'عکس بعدی',
+    'XrayDetails': 'توضیحات اکسری',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'همه کارمندان',
@@ -647,6 +649,7 @@ final Map<String, Map<String, String>> translations = {
     'UploadedAt': 'د پورته کولو نیټه:',
     'PrevXray': 'مخکینی انځور',
     'NextXray': 'بل انځور',
+    'XrayDetails': 'د اکسری توضیحات',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'ټول کارکوونکي',
