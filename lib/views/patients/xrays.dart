@@ -3,6 +3,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
@@ -11,10 +13,15 @@ import 'package:intl/intl.dart' as intl2;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:provider/provider.dart';
 
 void main() => runApp(const XRayUploadScreen());
 
 int counter = 0;
+// ignore: prefer_typing_uninitialized_variables
+var selectedLanguage;
+// ignore: prefer_typing_uninitialized_variables
+var isEnglish;
 
 class XRayUploadScreen extends StatelessWidget {
   const XRayUploadScreen({Key? key}) : super(key: key);
@@ -131,6 +138,10 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
   bool _isLoadingXray = false;
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
     return FutureBuilder<List<XRayDataModel>>(
       future: _fetchXRayImages(widget.xrayCategory),
       builder: (context, snapshot) {
@@ -147,7 +158,7 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'No X-Ray Image Found.',
+                    translations[selectedLanguage]?['XrayNotFound'] ?? '',
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                   const SizedBox(height: 15.0),
@@ -178,13 +189,14 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  const Directionality(
-                    textDirection: TextDirection.rtl,
+                  Directionality(
+                    textDirection:
+                        isEnglish ? TextDirection.ltr : TextDirection.rtl,
                     child: Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
-                            'آدرس همه فایل های اکسری که تا حالا آپلود گریده اند: Users/account-name/Documents/DCMIS',
-                            style: TextStyle(
+                            '${translations[selectedLanguage]?['XrayPath'] ?? ''}Users/account-name/Documents/DCMIS',
+                            style: const TextStyle(
                                 color: Colors.green,
                                 fontSize: 12.0,
                                 fontWeight: FontWeight.bold))),
@@ -285,16 +297,19 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
               builder: (context, setState) {
                 final xrayMessage = ValueNotifier<String>('');
                 return AlertDialog(
-                  title: const Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: Text('آپلود اکسری',
-                        style: TextStyle(color: Colors.blue)),
+                  title: Directionality(
+                    textDirection:
+                        isEnglish ? TextDirection.ltr : TextDirection.rtl,
+                    child: Text(
+                        translations[selectedLanguage]?['UploadXray'] ?? '',
+                        style: const TextStyle(color: Colors.blue)),
                   ),
                   content: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.39,
                     height: MediaQuery.of(context).size.height * 0.55,
                     child: Directionality(
-                      textDirection: TextDirection.rtl,
+                      textDirection:
+                          isEnglish ? TextDirection.ltr : TextDirection.rtl,
                       child: SingleChildScrollView(
                         child: Form(
                           key: xrayFormKey,
@@ -313,7 +328,9 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Text('نوعیت اکسری:'),
+                                        Text(translations[selectedLanguage]
+                                                ?['XrayType'] ??
+                                            ''),
                                         Text(xrayType),
                                       ],
                                     ),
@@ -374,11 +391,14 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                     ),
                                   ),
                                   if (_selectedImage == null)
-                                    const Padding(
-                                      padding: EdgeInsets.only(right: 8.0),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 8.0),
                                       child: Text(
-                                        'لطفاً فایل اکسری را انتخاب کنید.',
-                                        style: TextStyle(
+                                        translations[selectedLanguage]
+                                                ?['XrayFileRequired'] ??
+                                            '',
+                                        style: const TextStyle(
                                             fontSize: 12.0,
                                             color: Colors.redAccent),
                                       ),
@@ -435,7 +455,9 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                       controller: dateContoller,
                                       validator: (value) {
                                         if (value!.isEmpty) {
-                                          return 'تاریخ نمی تواند خالی باشد.';
+                                          return translations[selectedLanguage]
+                                                  ?['XrayDateRequired'] ??
+                                              '';
                                         }
                                         return null;
                                       },
@@ -461,31 +483,36 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                         FilteringTextInputFormatter.allow(
                                             RegExp(r'[0-9.]'))
                                       ],
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'تاریخ',
-                                        suffixIcon:
-                                            Icon(Icons.calendar_month_outlined),
-                                        enabledBorder: OutlineInputBorder(
+                                      decoration: InputDecoration(
+                                        border: const OutlineInputBorder(),
+                                        labelText:
+                                            translations[selectedLanguage]
+                                                    ?['XrayDate'] ??
+                                                '',
+                                        suffixIcon: const Icon(
+                                            Icons.calendar_month_outlined),
+                                        enabledBorder: const OutlineInputBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(50.0)),
                                             borderSide:
                                                 BorderSide(color: Colors.grey)),
-                                        focusedBorder: OutlineInputBorder(
+                                        focusedBorder: const OutlineInputBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(50.0)),
                                             borderSide:
                                                 BorderSide(color: Colors.blue)),
-                                        errorBorder: OutlineInputBorder(
+                                        errorBorder: const OutlineInputBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(50.0)),
                                             borderSide:
                                                 BorderSide(color: Colors.red)),
-                                        focusedErrorBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(50.0)),
-                                            borderSide: BorderSide(
-                                                color: Colors.red, width: 1.5)),
+                                        focusedErrorBorder:
+                                            const OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(50.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.red,
+                                                    width: 1.5)),
                                       ),
                                     ),
                                   ),
@@ -501,7 +528,9 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                     if (value!.isNotEmpty) {
                                       if (value.length > 40 ||
                                           value.length < 10) {
-                                        return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                        return translations[selectedLanguage]
+                                                ?['OtherDDLLength'] ??
+                                            '';
                                       }
                                     }
                                     return null;
@@ -513,30 +542,34 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                   ],
                                   minLines: 1,
                                   maxLines: 2,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'توضیحات',
-                                    suffixIcon: Icon(Icons.note_alt_outlined),
-                                    enabledBorder: OutlineInputBorder(
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                            ?['RetDetails'] ??
+                                        '',
+                                    suffixIcon:
+                                        const Icon(Icons.note_alt_outlined),
+                                    enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
-                                    errorBorder: OutlineInputBorder(
+                                    errorBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5)),
+                                    focusedErrorBorder:
+                                        const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
                                   ),
                                 ),
                               ),
@@ -548,13 +581,17 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                   ),
                   actions: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: isEnglish
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.start,
                       children: [
                         TextButton(
                             onPressed: () =>
                                 Navigator.of(context, rootNavigator: true)
                                     .pop(),
-                            child: const Text('لغو')),
+                            child: Text(translations[selectedLanguage]
+                                    ?['CancelBtn'] ??
+                                '')),
                         ElevatedButton(
                             onPressed: () async {
                               try {
@@ -592,14 +629,18 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                   // Check to not allow duplicates.
                                   if (duplicateResult.isNotEmpty) {
                                     xrayMessage.value =
-                                        'اکسری با این نام قبلاً در سیستم وجود دارد. پس یا این فایل را تغییر نام داده و یا فایل دیگری را انتخاب نموده و دوباره آپلود کنید.';
+                                        translations[selectedLanguage]
+                                                ?['DupXrayMsg'] ??
+                                            '';
                                   } else {
                                     // It should not allow x-ray images with size more than 10MB.
                                     var xraySize =
                                         await _selectedImage!.readAsBytes();
                                     if (xraySize.length > 10 * 1024 * 1024) {
                                       xrayMessage.value =
-                                          'اندازه فایل اکسری باید کمتر از 10 میگابایت باشد.';
+                                          translations[selectedLanguage]
+                                                  ?['XraySizeMsg'] ??
+                                              '';
                                     } else {
                                       await _selectedImage!.copy(xrayImagePath);
                                       await conn.query(
@@ -622,7 +663,9 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                 print('Uploading X-Ray failed. $e');
                               }
                             },
-                            child: const Text('آپلود اکسری')),
+                            child: Text(translations[selectedLanguage]
+                                    ?['XrayUploadBtn'] ??
+                                '')),
                       ],
                     ),
                   ],
@@ -658,7 +701,7 @@ class _ImageViewerState extends State<ImageViewer> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            'Details of ${PatientInfo.firstName} ${PatientInfo.lastName} X-Ray'),
+            '${translations[selectedLanguage]?['Xray4'] ?? ''}${PatientInfo.firstName} ${PatientInfo.lastName}'),
       ),
       body: Stack(
         children: <Widget>[
@@ -684,7 +727,7 @@ class _ImageViewerState extends State<ImageViewer> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Date Added:',
+                            translations[selectedLanguage]?['UploadedAt'] ?? '',
                             style: Theme.of(context).textTheme.labelLarge,
                           ),
                           Text(
@@ -700,7 +743,8 @@ class _ImageViewerState extends State<ImageViewer> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Description:',
+                          Text(
+                              '${translations[selectedLanguage]?['RetDetails'] ?? ''}:',
                               style: Theme.of(context).textTheme.labelLarge),
                           Text(widget.images[index].xrayDescription,
                               style: Theme.of(context).textTheme.bodyLarge),
@@ -734,8 +778,11 @@ class _ImageViewerState extends State<ImageViewer> {
                                     ConnectionState.done) {
                                   if (snapshot.hasError) {
                                     // If there's an error, return a message
-                                    return const Center(
-                                        child: Text('Image not found.'));
+                                    return Center(
+                                        child: Text(
+                                            translations[selectedLanguage]
+                                                    ?['XrayNotFound'] ??
+                                                ''));
                                   } else {
                                     // If the file exists, display it
                                     return Image.file(snapshot.data!,
@@ -765,7 +812,7 @@ class _ImageViewerState extends State<ImageViewer> {
               child: Visibility(
                 visible: counter > 0,
                 child: IconButton(
-                    tooltip: 'Previous Image',
+                    tooltip: translations[selectedLanguage]?['PrevXray'] ?? '',
                     splashRadius: 30.0,
                     icon: const Icon(Icons.arrow_back_ios_new_rounded,
                         color: Colors.grey),
@@ -792,7 +839,7 @@ class _ImageViewerState extends State<ImageViewer> {
               child: Visibility(
                 visible: counter < widget.images.length - 1,
                 child: IconButton(
-                    tooltip: 'Next Image',
+                    tooltip: translations[selectedLanguage]?['NextXray'] ?? '',
                     splashRadius: 30.0,
                     icon: const Icon(Icons.arrow_forward_ios_rounded,
                         color: Colors.grey),

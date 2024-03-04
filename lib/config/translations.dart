@@ -128,6 +128,22 @@ final Map<String, Map<String, String>> translations = {
     'HistoryLevel': 'Severty',
     'HistoryDuration': 'Duration',
     'Positive': 'Positive',
+    'Xray4': 'X-Rays Belong to: ',
+    'UploadXray': 'Upload X-Ray / Teeth related Images',
+    'XrayFileRequired': 'Please choose an X-Ray file or image.',
+    'XrayDate': 'X-Ray Date',
+    'XrayType': 'X-Ray Type:',
+    'XrayDateRequired': 'Date is required.',
+    'DupXrayMsg':
+        'X-Ray with this name already exists in the system. So either rename this file or choose another file and upload it again.',
+    'XraySizeMsg': 'The size of the X-Ray file must be less than 10 MB.',
+    'XrayUploadBtn': 'Upload',
+    'XrayPath':
+        'The address of all X-Ray files that have been uploaded so far: ',
+    'XrayNotFound': 'No X-Ray Image Found.',
+    'UploadedAt': 'Uploaded At:',
+    'PrevXray': 'Previous Image',
+    'NextXray': 'Next Image',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'All Staff',
@@ -363,6 +379,21 @@ final Map<String, Map<String, String>> translations = {
     'HistoryLevel': 'شدت / سطح',
     'HistoryDuration': 'سابقه / مدت',
     'Positive': 'نتیجه مثبت',
+    'Xray4': 'اکسری مربوط به: ',
+    'UploadXray': 'آپلود فایل اکسری / تصویر مرتبط به دندان',
+    'XrayFileRequired': 'لطفاً فایل اکسری یا تصویر را انتخاب کنید.',
+    'XrayDate': 'تاریخ اکسری',
+    'XrayType': 'نوعیت اکسری:',
+    'XrayDateRequired': 'تاریخ الزامی میباشد.',
+    'DupXrayMsg':
+        'اکسری با این نام قبلاً در سیستم وجود دارد. پس یا این فایل را تغییر نام داده و یا فایل دیگری را انتخاب نموده و دوباره آپلود کنید.',
+    'XraySizeMsg': 'اندازه فایل اکسری باید کمتر از 10 میگابایت باشد.',
+    'XrayUploadBtn': 'آپلود',
+    'XrayPath': 'آدرس همه فایل های اکسری که تا حالا آپلود گریده اند: ',
+    'XrayNotFound': 'هیچ عکس اکسری یافت نشد.',
+    'UploadedAt': 'تاریخ آپلود:',
+    'PrevXray': 'عکس قبلی',
+    'NextXray': 'عکس بعدی',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'همه کارمندان',
@@ -601,6 +632,21 @@ final Map<String, Map<String, String>> translations = {
     'HistoryLevel': 'شدت/ کچه',
     'HistoryDuration': 'موده',
     'Positive': 'مثبته پایله',
+    'Xray4': 'اړونده اکسری: ',
+    'UploadXray': 'د اکسری / غاښونو اړوند انځورونه پورته کول',
+    'XrayFileRequired': 'مهرباني وکړئ د اکسری فایل یا عکس غوره کړئ.',
+    'XrayDate': 'د اکسری نیټه',
+    'XrayType': 'د اکسری ډول:',
+    'XrayDateRequired': 'نیټه اړینه ده.',
+    'DupXrayMsg':
+        'د دې نوم سره اکسری لا دمخه په سیسټم کې شتون لري. نو یا د دې فایل نوم بدل کړئ یا بل فایل غوره کړئ او بیا یې اپلوډ کړئ.',
+    'XraySizeMsg': 'د اکسری فایل اندازه باید د 10 MB څخه کم وي.',
+    'XrayUploadBtn': 'پورته کول',
+    'XrayPath': 'د ټولو اکسری فایلونو پته چې تر دې دمه اپلوډ شوي دي: ',
+    'XrayNotFound': 'هیڅ اکسری ونه موندل شو.',
+    'UploadedAt': 'د پورته کولو نیټه:',
+    'PrevXray': 'مخکینی انځور',
+    'NextXray': 'بل انځور',
     /*-----/. PATIENTS -----*/
     /*-------- STAFF ------- */
     'AllStaff': 'ټول کارکوونکي',
