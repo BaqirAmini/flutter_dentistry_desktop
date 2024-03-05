@@ -289,6 +289,16 @@ final Map<String, Map<String, String>> translations = {
     'ETError': 'Sorry, adding expense type failed.',
     'ETDupError': 'Sorry, this expense type is already existing in the system.',
     /*-----------/. EXPENSES -----------*/
+    /*------------------ Taxes --------------- */
+    'AllTaxes' : 'All Taxes',
+    'FinYear' : 'Financial Year',
+    'AnnualIncome' : 'Annual Income',
+    'TaxRate' : 'Tax Rate',
+    'AnnTotTax' : 'Total Annual Taxes',
+    'PaidTax' : 'Paid Taxes',
+    'TaxPaidDate' : 'Payment Date',
+    'TaxDetails' : 'Taxes Details',
+    /*------------------/. Taxes --------------- */
   },
   'دری': {
     'chooseLanguage': 'انتخاب زبان',
