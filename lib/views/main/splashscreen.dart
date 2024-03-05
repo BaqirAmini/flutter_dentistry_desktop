@@ -48,9 +48,23 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: Text('Loading...'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.1,
+              height: MediaQuery.of(context).size.height * 0.1,
+              child: Image.asset('assets/graphics/crown_logo.png'),
+            ), // Replace with your logo
+            const SizedBox(height: 30),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.1,
+              child: const LinearProgressIndicator(),
+            ),
+          ],
+        ),
       ),
     );
   }
