@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/models/expense_data_model.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart' as intl;
+import 'package:provider/provider.dart';
 // import 'package:shamsi_date/shamsi_date.dart';
 import '/views/finance/expenses/expense_info.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
@@ -30,6 +33,11 @@ void _onShowSnack(Color backColor, String msg) {
 
 void main() => runApp(const ExpenseList());
 
+// ignore: prefer_typing_uninitialized_variables
+var selectedLanguage;
+// ignore: prefer_typing_uninitialized_variables
+var isEnglish;
+
 class ExpenseList extends StatefulWidget {
   const ExpenseList({Key? key}) : super(key: key);
 
@@ -40,16 +48,20 @@ class ExpenseList extends StatefulWidget {
 class _ExpenseListState extends State<ExpenseList> {
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
     return ScaffoldMessenger(
       key: _globalKey1,
       child: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
             actions: [
               Builder(builder: (context) {
                 return Tooltip(
-                  message: 'افزودن اقلام مصارف',
+                  message: translations[selectedLanguage]?['AddExpItem'] ?? '',
                   child: IconButton(
                     onPressed: () async {
                       await fetchExpenseTypes();
@@ -66,7 +78,7 @@ class _ExpenseListState extends State<ExpenseList> {
               ),
               Builder(builder: (context) {
                 return Tooltip(
-                  message: 'افزودن نوعیت مصارف',
+                  message: translations[selectedLanguage]?['AddExpType'] ?? '',
                   child: IconButton(
                     onPressed: () {
                       onCreateExpenseType(context);
@@ -76,7 +88,7 @@ class _ExpenseListState extends State<ExpenseList> {
                 );
               }),
             ],
-            title: const Text('مصارف داخلی کلینک'),
+            title: Text(translations[selectedLanguage]?['InterExpense'] ?? ''),
           ),
           body: const ExpenseData(),
         ),
@@ -138,7 +150,8 @@ class _ExpenseListState extends State<ExpenseList> {
         ? 0
         : double.parse(unitPriceController.text);
     totalPrice = qty * unitPrice;
-    totalPriceController.text = '$totalPrice افغانی';
+    totalPriceController.text =
+        '$totalPrice ${translations[selectedLanguage]?['Afn'] ?? ''}';
   }
 
 // This dialog creates a new Expense
@@ -166,11 +179,11 @@ class _ExpenseListState extends State<ExpenseList> {
         return StatefulBuilder(
           builder: ((context, setState) {
             return AlertDialog(
-              title: const Directionality(
+              title: Directionality(
                 textDirection: TextDirection.rtl,
                 child: Text(
-                  'افزودن اقلام مصارف  ',
-                  style: TextStyle(color: Colors.blue),
+                  translations[selectedLanguage]?['AddExpItem'] ?? '',
+                  style: const TextStyle(color: Colors.blue),
                 ),
               ),
               content: Directionality(
@@ -178,32 +191,32 @@ class _ExpenseListState extends State<ExpenseList> {
                 child: Form(
                   key: formKey2,
                   child: SizedBox(
-                    width: 500.0,
+                    width: MediaQuery.of(context).size.width * 0.4,
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
                           Container(
-                            margin: const EdgeInsets.only(top: 20.0),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.all(20.0),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 5.0),
                             child: InputDecorator(
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'نوعیت جنس خریداری شده',
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['ExpenseType'] ??
+                                    '',
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
+                                errorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
+                                focusedErrorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(
@@ -234,34 +247,42 @@ class _ExpenseListState extends State<ExpenseList> {
                             ),
                           ),
                           Container(
-                            margin: const EdgeInsets.all(20.0),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 10.0),
                             child: TextFormField(
                               controller: itemNameController,
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'نام جنس نمی تواند خالی باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['ItemRequired'] ??
+                                      '';
                                 } else if (value.length < 3 ||
                                     value.length > 10) {
-                                  return 'نام جنس باید بین 3 و 10 حرف باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['ItemLength'] ??
+                                      '';
                                 }
                               },
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'نام جنس',
-                                suffixIcon: Icon(Icons.bakery_dining_outlined),
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['Item'] ??
+                                    '',
+                                suffixIcon:
+                                    const Icon(Icons.bakery_dining_outlined),
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
+                                errorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
+                                focusedErrorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(
@@ -274,7 +295,8 @@ class _ExpenseListState extends State<ExpenseList> {
                               Expanded(
                                 flex: 2,
                                 child: Container(
-                                  margin: const EdgeInsets.all(20.0),
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 20.0, vertical: 10.0),
                                   child: TextFormField(
                                     controller: quantityController,
                                     inputFormatters: [
@@ -285,38 +307,46 @@ class _ExpenseListState extends State<ExpenseList> {
                                       if (value!.isNotEmpty) {
                                         final qty = double.tryParse(value!);
                                         if (qty! < 1 || qty > 100) {
-                                          return 'تعداد/مقدار باید بین 1 و 100 واحد باشد.';
+                                          return translations[selectedLanguage]
+                                                  ?['ItemQtyMsg'] ??
+                                              '';
                                         }
                                       } else if (value.isEmpty) {
-                                        return 'تعداد/مقدار نمی تواند خالی باشد.';
+                                        return translations[selectedLanguage]
+                                                ?['ItemQtyRequired'] ??
+                                            '';
                                       }
                                     },
                                     onChanged: _onSetTotalPrice,
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'تعداد/مقدار واحد',
-                                      suffixIcon: Icon(Icons
+                                    decoration: InputDecoration(
+                                      border: const OutlineInputBorder(),
+                                      labelText: translations[selectedLanguage]
+                                              ?['QtyAmount'] ??
+                                          '',
+                                      suffixIcon: const Icon(Icons
                                           .production_quantity_limits_outlined),
-                                      enabledBorder: OutlineInputBorder(
+                                      enabledBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.grey)),
-                                      focusedBorder: OutlineInputBorder(
+                                      focusedBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.blue)),
-                                      errorBorder: OutlineInputBorder(
+                                      errorBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.red)),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide: BorderSide(
-                                              color: Colors.red, width: 1.5)),
+                                      focusedErrorBorder:
+                                          const OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(50.0)),
+                                              borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 1.5)),
                                     ),
                                   ),
                                 ),
@@ -326,29 +356,33 @@ class _ExpenseListState extends State<ExpenseList> {
                                 child: Container(
                                   margin: const EdgeInsets.all(20.0),
                                   child: InputDecorator(
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'واحد',
-                                      enabledBorder: OutlineInputBorder(
+                                    decoration: InputDecoration(
+                                      border: const OutlineInputBorder(),
+                                      labelText: translations[selectedLanguage]
+                                              ?['Units'] ??
+                                          '',
+                                      enabledBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.grey)),
-                                      focusedBorder: OutlineInputBorder(
+                                      focusedBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.blue)),
-                                      errorBorder: OutlineInputBorder(
+                                      errorBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.red)),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide: BorderSide(
-                                              color: Colors.red, width: 1.5)),
+                                      focusedErrorBorder:
+                                          const OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(50.0)),
+                                              borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 1.5)),
                                     ),
                                     child: DropdownButtonHideUnderline(
                                       child: Container(
@@ -380,35 +414,41 @@ class _ExpenseListState extends State<ExpenseList> {
                             ],
                           ),
                           Container(
-                            margin: const EdgeInsets.all(20.0),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 10.0),
                             child: TextFormField(
                               controller: unitPriceController,
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'قیمت نمی تواند خالی باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['UPRequired'] ??
+                                      '';
                                 }
                               },
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly
                               ],
                               onChanged: _onSetTotalPrice,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'قیمت فی واحد جنس',
-                                suffixIcon: Icon(Icons.price_change_outlined),
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['UnitPrice'] ??
+                                    '',
+                                suffixIcon:
+                                    const Icon(Icons.price_change_outlined),
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
+                                errorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
+                                focusedErrorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(
@@ -417,7 +457,8 @@ class _ExpenseListState extends State<ExpenseList> {
                             ),
                           ),
                           Container(
-                            margin: const EdgeInsets.all(20.0),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 10.0),
                             child: TextFormField(
                               readOnly: true,
                               controller: totalPriceController,
@@ -429,23 +470,25 @@ class _ExpenseListState extends State<ExpenseList> {
                                 FilteringTextInputFormatter.allow(
                                     RegExp(r'[0-9.]'))
                               ],
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'جمله / مجموعه پول پرداخت شده',
-                                suffixIcon: Icon(Icons.money),
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['TotalPrice'] ??
+                                    '',
+                                suffixIcon: const Icon(Icons.money),
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
+                                errorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
+                                focusedErrorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(
@@ -454,34 +497,40 @@ class _ExpenseListState extends State<ExpenseList> {
                             ),
                           ),
                           Container(
-                            margin: const EdgeInsets.all(20.0),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 10.0),
                             child: TextFormField(
                               controller: descriptionController,
                               validator: (value) {
                                 if (value!.isNotEmpty) {
-                                  if (value.length < 5 || value.length > 30) {
-                                    return 'توضیحات باید بین 5 و 30 حرف باشد.';
+                                  if (value.length < 5 || value.length > 40) {
+                                    return translations[selectedLanguage]
+                                            ?['OtherDDLDetail'] ??
+                                        '';
                                   }
                                 }
                               },
                               maxLines: 3,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'توضیحات',
-                                suffixIcon: Icon(Icons.description_outlined),
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['RetDetails'] ??
+                                    '',
+                                suffixIcon:
+                                    const Icon(Icons.description_outlined),
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(30.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(30.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
+                                errorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
+                                focusedErrorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(
@@ -490,12 +539,15 @@ class _ExpenseListState extends State<ExpenseList> {
                             ),
                           ),
                           Container(
-                            margin: const EdgeInsets.all(20.0),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 10.0),
                             child: TextFormField(
                               controller: purchaseDateController,
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'تاریخ خرید نمی تواند خالی باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['PurDateRequired'] ??
+                                      '';
                                 }
                               },
                               onTap: () async {
@@ -530,23 +582,26 @@ class _ExpenseListState extends State<ExpenseList> {
                                 FilteringTextInputFormatter.allow(
                                     RegExp(r'[0-9.]'))
                               ],
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'تاریخ خرید جنس',
-                                suffixIcon: Icon(Icons.calendar_month_outlined),
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['PurDate'] ??
+                                    '',
+                                suffixIcon:
+                                    const Icon(Icons.calendar_month_outlined),
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
+                                errorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
+                                focusedErrorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(
@@ -555,24 +610,27 @@ class _ExpenseListState extends State<ExpenseList> {
                             ),
                           ),
                           Container(
-                            margin: const EdgeInsets.all(20.0),
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 10.0),
                             child: InputDecorator(
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'خریداری شده توسط',
-                                enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['PurchasedBy'] ??
+                                    '',
+                                enabledBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
+                                errorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
+                                focusedErrorBorder: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(50.0)),
                                     borderSide: BorderSide(
@@ -618,7 +676,9 @@ class _ExpenseListState extends State<ExpenseList> {
                       children: [
                         TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text('لغو')),
+                            child: Text(translations[selectedLanguage]
+                                    ?['CancelBtn'] ??
+                                '')),
                         ElevatedButton(
                           onPressed: () async {
                             if (formKey2.currentState!.validate()) {
@@ -649,8 +709,11 @@ class _ExpenseListState extends State<ExpenseList> {
                                     notes
                                   ]);
                               if (result.affectedRows! > 0) {
-                                _onShowSnack(Colors.green,
-                                    'این جنس مورد مصرف موفقانه افزوده شد.');
+                                _onShowSnack(
+                                    Colors.green,
+                                    translations[selectedLanguage]
+                                            ?['ExpAddSuccess'] ??
+                                        '');
                                 ExpenseInfo.onAddExpense!();
 
                                 itemNameController.clear();
@@ -661,14 +724,18 @@ class _ExpenseListState extends State<ExpenseList> {
                                 descriptionController.clear();
                               } else {
                                 _onShowSnack(
-                                    Colors.red, 'متاسفم، جنس مصرفی اضافه نشد.');
+                                    Colors.red,
+                                    translations[selectedLanguage]
+                                            ?['ExpAddError'] ??
+                                        '');
                               }
                               await conn.close();
                               // ignore: use_build_context_synchronously
                               Navigator.pop(context);
                             }
                           },
-                          child: const Text('افزودن'),
+                          child: Text(
+                              translations[selectedLanguage]?['AddBtn'] ?? ''),
                         ),
                       ],
                     ))
@@ -694,11 +761,11 @@ onCreateExpenseType(BuildContext context) {
       return StatefulBuilder(
         builder: ((context, setState) {
           return AlertDialog(
-            title: const Directionality(
+            title: Directionality(
               textDirection: TextDirection.rtl,
               child: Text(
-                'افزودن نوعیت (کتگوری) مصارف',
-                style: TextStyle(color: Colors.blue),
+                translations[selectedLanguage]?['AddExpType'] ?? '',
+                style: const TextStyle(color: Colors.blue),
               ),
             ),
             content: Directionality(
@@ -716,29 +783,35 @@ onCreateExpenseType(BuildContext context) {
                             controller: itemNameController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'نام کتگوری مصرف نمی تواند خالی باشد.';
+                                return translations[selectedLanguage]
+                                        ?['ETRequired'] ??
+                                    '';
                               } else if (value.length < 3 ||
                                   value.length > 20) {
-                                return 'نام کتگوری مصرف باید بین 3 و 20 حرف باشد.';
+                                return translations[selectedLanguage]
+                                        ?['ETError'] ??
+                                    '';
                               }
                             },
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'نام نوعیت (کتگوری)',
-                              suffixIcon: Icon(Icons.category),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['ExpenseType'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.category),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -760,7 +833,9 @@ onCreateExpenseType(BuildContext context) {
                     children: [
                       TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('لغو')),
+                          child: Text(translations[selectedLanguage]
+                                  ?['CancelBtn'] ??
+                              '')),
                       ElevatedButton(
                         onPressed: () async {
                           if (formKey1.currentState!.validate()) {
@@ -771,8 +846,12 @@ onCreateExpenseType(BuildContext context) {
                                 'SELECT * FROM expenses WHERE exp_name = ?',
                                 [expName]);
                             if (results1.isNotEmpty) {
-                              _onShowSnack(Colors.red,
-                                  'متاسفم، این کتگوری مصارف قبلاً موجود است.');
+                              _onShowSnack(
+                                  Colors.red,
+                                  translations[selectedLanguage]
+                                          ?['ETDupError'] ??
+                                      '');
+                              // ignore: use_build_context_synchronously
                               Navigator.pop(context);
                             } else {
                               // Insert into expenses
@@ -780,19 +859,28 @@ onCreateExpenseType(BuildContext context) {
                                   'INSERT INTO expenses (exp_name) VALUES (?)',
                                   [expName]);
                               if (result2.affectedRows! > 0) {
-                                _onShowSnack(Colors.green,
-                                    'نوعیت مصرف موفقانه افزوده شد.');
+                                _onShowSnack(
+                                    Colors.green,
+                                    translations[selectedLanguage]
+                                            ?['ETSuccess'] ??
+                                        '');
+                                // ignore: use_build_context_synchronously
                                 Navigator.pop(context);
                               } else {
                                 _onShowSnack(
-                                    Colors.red, 'متاسفم، عملیه انجام نشد.');
+                                    Colors.red,
+                                    translations[selectedLanguage]
+                                            ?['ETError'] ??
+                                        '');
+                                // ignore: use_build_context_synchronously
                                 Navigator.pop(context);
                               }
                               await conn.close();
                             }
                           }
                         },
-                        child: const Text('افزودن'),
+                        child: Text(
+                            translations[selectedLanguage]?['AddBtn'] ?? ''),
                       ),
                     ],
                   ))

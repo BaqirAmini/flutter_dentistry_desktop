@@ -1,11 +1,25 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
+import 'package:provider/provider.dart';
 import '/views/finance/expenses/expense_info.dart';
 
 class ExpenseDetails extends StatelessWidget {
-  const ExpenseDetails({Key? key}) : super(key: key);
+  ExpenseDetails({Key? key}) : super(key: key);
+
+// ignore: prefer_typing_uninitialized_variables
+  var selectedLanguage;
+// ignore: prefer_typing_uninitialized_variables
+  var isEnglish;
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
     // Get expenses info to later use
     String? expCtg = ExpenseInfo.expenseCategory;
     String? itemName = ExpenseInfo.itemName;
@@ -16,7 +30,8 @@ class ExpenseDetails extends StatelessWidget {
     double? uPrice = ExpenseInfo.unitPrice;
 
     return SizedBox(
-      width: 600.0,
+      width: MediaQuery.of(context).size.width * 0.4,
+      height: MediaQuery.of(context).size.height * 0.5,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -26,9 +41,9 @@ class ExpenseDetails extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'نوعیت مصرف',
-                  style: TextStyle(
+                Text(
+                  translations[selectedLanguage]?['ExpenseType'] ?? '',
+                  style: const TextStyle(
                     fontSize: 14.0,
                     color: Color.fromARGB(255, 118, 116, 116),
                   ),
@@ -50,9 +65,9 @@ class ExpenseDetails extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'نام جنس',
-                      style: TextStyle(
+                    Text(
+                      translations[selectedLanguage]?['Item'] ?? '',
+                      style: const TextStyle(
                         fontSize: 14.0,
                         color: Color.fromARGB(255, 118, 116, 116),
                       ),
@@ -68,9 +83,9 @@ class ExpenseDetails extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'تعداد / مقدار',
-                      style: TextStyle(
+                    Text(
+                      translations[selectedLanguage]?['QtyAmount'] ?? '',
+                      style: const TextStyle(
                         fontSize: 14.0,
                         color: Color.fromARGB(255, 118, 116, 116),
                       ),
@@ -94,9 +109,9 @@ class ExpenseDetails extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'خرید توسط',
-                      style: TextStyle(
+                    Text(
+                      translations[selectedLanguage]?['PurchasedBy'] ?? '',
+                      style: const TextStyle(
                         fontSize: 14.0,
                         color: Color.fromARGB(255, 118, 116, 116),
                       ),
@@ -112,14 +127,15 @@ class ExpenseDetails extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'قیمت فی واحد',
-                      style: TextStyle(
+                    Text(
+                      translations[selectedLanguage]?['UnitPrice'] ?? '',
+                      style: const TextStyle(
                         fontSize: 14.0,
                         color: Color.fromARGB(255, 118, 116, 116),
                       ),
                     ),
-                    Text('$uPrice افغانی'),
+                    Text(
+                        '$uPrice ${translations[selectedLanguage]?['Afn'] ?? ''}'),
                   ],
                 ),
               ),
@@ -134,9 +150,9 @@ class ExpenseDetails extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'توضیحات',
-                  style: TextStyle(
+                Text(
+                  translations[selectedLanguage]?['RetDetails'] ?? '',
+                  style: const TextStyle(
                     fontSize: 14.0,
                     color: Color.fromARGB(255, 118, 116, 116),
                   ),
@@ -154,6 +170,7 @@ class ExpenseDetails extends StatelessWidget {
               child: Image.asset(
                 'assets/graphics/login_img1.png',
                 width: 400.0,
+                height: 400.0,
               ),
             ),
           )

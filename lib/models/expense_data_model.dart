@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
+import 'package:provider/provider.dart';
 import '/views/finance/expenses/expense_details.dart';
 import 'package:intl/intl.dart' as intl2;
 import '/views/finance/expenses/expense_info.dart';
@@ -17,6 +20,11 @@ import 'package:pdf/widgets.dart' as pw;
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKeyExpDM =
     GlobalKey<ScaffoldMessengerState>();
+// ignore: prefer_typing_uninitialized_variables
+var selectedLanguage;
+// ignore: prefer_typing_uninitialized_variables
+var isEnglish;
+
 // It increments by 1 by any occurance of outputs (excel or pdf)
 int outputCounter = 1;
 // This function create excel output when called.
@@ -278,6 +286,10 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
     final dataSource =
         MyDataSource(_filteredData, _fetchData, _fetchData, _fetchData);
     // This is to refresh the data table after an expense added.
@@ -299,7 +311,8 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                       controller: _searchController,
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: 'جستجو...',
+                        labelText:
+                            translations[selectedLanguage]?['Search'] ?? '',
                         suffixIcon: IconButton(
                           icon: const Icon(Icons.clear),
                           onPressed: () {
@@ -349,14 +362,16 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                     height: 60.0,
                     margin: const EdgeInsets.only(top: 6.0, left: 6.0),
                     child: InputDecorator(
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'فلتر کردن',
-                        enabledBorder: OutlineInputBorder(
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: translations[selectedLanguage]
+                                ?['FilterByType'] ??
+                            '',
+                        enabledBorder: const OutlineInputBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10.0)),
                             borderSide: BorderSide(color: Colors.grey)),
-                        focusedBorder: OutlineInputBorder(
+                        focusedBorder: const OutlineInputBorder(
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10.0)),
                             borderSide: BorderSide(color: Colors.blue)),
@@ -402,7 +417,7 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("همه مصارف |",
+                  Text(translations[selectedLanguage]?['AllExpenses'] ?? '',
                       style: Theme.of(context).textTheme.headlineSmall),
                   SizedBox(
                     width: 80.0,
@@ -472,9 +487,9 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                 // header: const Text("همه مصارف |"),
                 columns: [
                   DataColumn(
-                    label: const Text(
-                      "نوعیت مصرف",
-                      style: TextStyle(
+                    label: Text(
+                      translations[selectedLanguage]?['ExpenseType'] ?? '',
+                      style: const TextStyle(
                           color: Colors.blue, fontWeight: FontWeight.bold),
                     ),
                     onSort: (columnIndex, ascending) {
@@ -490,9 +505,9 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                     },
                   ),
                   DataColumn(
-                    label: const Text(
-                      "نام جنس",
-                      style: TextStyle(
+                    label: Text(
+                      translations[selectedLanguage]?['Item'] ?? '',
+                      style: const TextStyle(
                           color: Colors.blue, fontWeight: FontWeight.bold),
                     ),
                     onSort: (columnIndex, ascending) {
@@ -508,9 +523,9 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                     },
                   ),
                   DataColumn(
-                    label: const Text(
-                      "تعداد / مقدار",
-                      style: TextStyle(
+                    label: Text(
+                      translations[selectedLanguage]?['QtyAmount'] ?? '',
+                      style: const TextStyle(
                           color: Colors.blue, fontWeight: FontWeight.bold),
                     ),
                     onSort: (columnIndex, ascending) {
@@ -526,9 +541,9 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                     },
                   ),
                   DataColumn(
-                    label: const Text(
-                      "فی واحد",
-                      style: TextStyle(
+                    label: Text(
+                      translations[selectedLanguage]?['UnitPrice'] ?? '',
+                      style: const TextStyle(
                           color: Colors.blue, fontWeight: FontWeight.bold),
                     ),
                     onSort: (columnIndex, ascending) {
@@ -544,9 +559,9 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                     },
                   ),
                   DataColumn(
-                    label: const Text(
-                      "مجموع مبلغ",
-                      style: TextStyle(
+                    label: Text(
+                      translations[selectedLanguage]?['TotalPrice'] ?? '',
+                      style: const TextStyle(
                           color: Colors.blue, fontWeight: FontWeight.bold),
                     ),
                     onSort: (columnIndex, ascending) {
@@ -580,9 +595,9 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
               },
             ), */
                   DataColumn(
-                    label: const Text(
-                      "تاریخ خرید",
-                      style: TextStyle(
+                    label: Text(
+                      translations[selectedLanguage]?['PurDate'] ?? '',
+                      style: const TextStyle(
                           color: Colors.blue, fontWeight: FontWeight.bold),
                     ),
                     onSort: (columnIndex, ascending) {
@@ -615,21 +630,22 @@ class ExpenseDataTableState extends State<ExpenseDataTable> {
                 });
               },
             ), */
-                  const DataColumn(
+                  DataColumn(
                     label: Text(
-                      "شرح",
-                      style: TextStyle(
+                      translations[selectedLanguage]?['Details'] ?? '',
+                      style: const TextStyle(
                           color: Colors.blue, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  const DataColumn(
-                      label: Text("تغییر",
-                          style: TextStyle(
+                  DataColumn(
+                      label: Text(translations[selectedLanguage]?['Edit'] ?? '',
+                          style: const TextStyle(
                               color: Colors.blue,
                               fontWeight: FontWeight.bold))),
-                  const DataColumn(
-                      label: Text("حذف",
-                          style: TextStyle(
+                  DataColumn(
+                      label: Text(
+                          translations[selectedLanguage]?['Delete'] ?? '',
+                          style: const TextStyle(
                               color: Colors.blue,
                               fontWeight: FontWeight.bold))),
                 ],
@@ -668,8 +684,10 @@ class MyDataSource extends DataTableSource {
       DataCell(Text(data[index].expenseType)),
       DataCell(Text(data[index].expenseItem)),
       DataCell(Text('${data[index].quantity} ${data[index].qtyUnit}')),
-      DataCell(Text('${data[index].unitPrice} افغانی')),
-      DataCell(Text('${data[index].totalPrice} افغانی')),
+      DataCell(Text(
+          '${data[index].unitPrice} ${translations[selectedLanguage]?['Afn'] ?? ''}')),
+      DataCell(Text(
+          '${data[index].totalPrice} ${translations[selectedLanguage]?['Afn'] ?? ''}')),
       // DataCell(Text(data[index].purchasedBy)),
       DataCell(Text(data[index].purchasedDate)),
       // DataCell(Text(data[index].description)),
@@ -760,35 +778,51 @@ onDeleteExpense(BuildContext context, Function onDelete) {
   return showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-            title: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text('حذف مصارف'),
+            title: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child:
+                  Text(translations[selectedLanguage]?['DeleteHeading'] ?? ''),
             ),
             content: Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text('آیا میخواهید ${ExpenseInfo.itemName} را حذف کنید؟'),
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: Text(
+                  '${translations[selectedLanguage]?['DeleteExpConfirm'] ?? ''}${ExpenseInfo.itemName}?'),
             ),
             actions: [
-              TextButton(
-                  onPressed: () =>
-                      Navigator.of(context, rootNavigator: true).pop(),
-                  child: const Text('لغو')),
-              TextButton(
-                onPressed: () async {
-                  final conn = await onConnToDb();
-                  var results = await conn.query(
-                      'DELETE FROM expense_detail WHERE exp_detail_ID = ?',
-                      [ExpenseInfo.exp_detail_ID]);
-                  if (results.affectedRows! > 0) {
-                    _onShowSnack(Colors.green, 'جنس مورد مصرف موفقانه حذف شد.');
-                    onDelete();
-                    await conn.close();
-                  } else {
-                    _onShowSnack(Colors.red, 'متاسفم، حذف انجام نشد.');
-                  }
-                  Navigator.of(context, rootNavigator: true).pop();
-                },
-                child: const Text('حذف'),
+              Row(
+                mainAxisAlignment:
+                    isEnglish ? MainAxisAlignment.end : MainAxisAlignment.start,
+                children: [
+                  TextButton(
+                      onPressed: () =>
+                          Navigator.of(context, rootNavigator: true).pop(),
+                      child: const Text('لغو')),
+                  TextButton(
+                    onPressed: () async {
+                      final conn = await onConnToDb();
+                      var results = await conn.query(
+                          'DELETE FROM expense_detail WHERE exp_detail_ID = ?',
+                          [ExpenseInfo.exp_detail_ID]);
+                      if (results.affectedRows! > 0) {
+                        _onShowSnack(
+                            Colors.green,
+                            translations[selectedLanguage]
+                                    ?['DeleteExpSuccess'] ??
+                                '');
+                        onDelete();
+                        await conn.close();
+                      } else {
+                        _onShowSnack(
+                            Colors.red,
+                            translations[selectedLanguage]?['DeleteExpError'] ??
+                                '');
+                      }
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context, rootNavigator: true).pop();
+                    },
+                    child: const Text('حذف'),
+                  ),
+                ],
               ),
             ],
           ));
@@ -828,7 +862,8 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate,
         ? 0
         : double.parse(unitPriceController.text);
     totalPrice = qty * unitPrice;
-    totalPriceController.text = '$totalPrice افغانی';
+    totalPriceController.text =
+        '$totalPrice ${translations[selectedLanguage]?['Afn'] ?? ''}';
   }
 
   // Set a dropdown for units
@@ -852,171 +887,44 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate,
           builder: (BuildContext context, setState) {
             return Dialog(
               child: Directionality(
-                textDirection: TextDirection.rtl,
+                textDirection:
+                    isEnglish ? TextDirection.ltr : TextDirection.rtl,
                 child: DefaultTabController(
                   length: 2,
                   child: SizedBox(
-                    width: 500.0,
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    height: MediaQuery.of(context).size.height * 0.8,
                     child: Column(
                       children: [
                         Expanded(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                const TabBar(
-                                  labelColor: Colors.blue,
-                                  unselectedLabelColor: Colors.grey,
-                                  tabs: [
-                                    Tab(
-                                      text: 'تغییر نوعیت مصارف',
-                                      icon: Icon(Icons.edit_outlined),
-                                    ),
-                                    Tab(
-                                      text: 'تغییر اجناس مصارف',
-                                      icon: Icon(Icons.edit_outlined),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 500.0,
-                                  child: TabBarView(
-                                    children: [
-                                      Form(
-                                        key: formKey2,
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              margin: const EdgeInsets.only(
-                                                  top: 30.0,
-                                                  left: 20,
-                                                  right: 20),
-                                              child: TextFormField(
-                                                controller:
-                                                    expenseTypeController,
-                                                validator: (value) {
-                                                  if (value!.isEmpty) {
-                                                    return 'نوعیت (کتگوری جنس نمی تواند خالی باشد.)';
-                                                  } else if (value.length < 3 ||
-                                                      value.length > 20) {
-                                                    return 'نام کتگوری یا نوعیت مصرف باید بین 3 و 20 حرف باشد.';
-                                                  }
-                                                },
-                                                decoration:
-                                                    const InputDecoration(
-                                                  border: OutlineInputBorder(),
-                                                  labelText: 'نوعیت مصارف',
-                                                  suffixIcon: Icon(
-                                                      Icons.category_outlined),
-                                                  enabledBorder:
-                                                      OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          50.0)),
-                                                          borderSide:
-                                                              BorderSide(
-                                                                  color: Colors
-                                                                      .grey)),
-                                                  focusedBorder:
-                                                      OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          50.0)),
-                                                          borderSide:
-                                                              BorderSide(
-                                                                  color: Colors
-                                                                      .blue)),
-                                                  errorBorder:
-                                                      OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          50.0)),
-                                                          borderSide:
-                                                              BorderSide(
-                                                                  color: Colors
-                                                                      .red)),
-                                                  focusedErrorBorder:
-                                                      OutlineInputBorder(
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          50.0)),
-                                                          borderSide:
-                                                              BorderSide(
-                                                                  color: Colors
-                                                                      .red,
-                                                                  width: 1.5)),
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              margin:
-                                                  const EdgeInsets.all(20.0),
-                                              width: 430.0,
-                                              height: 35.0,
-                                              child: Builder(
-                                                builder: (context) {
-                                                  return OutlinedButton(
-                                                    style: OutlinedButton
-                                                        .styleFrom(
-                                                      shape:
-                                                          RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(20.0),
-                                                      ),
-                                                      side: const BorderSide(
-                                                        color: Colors.blue,
-                                                      ),
-                                                    ),
-                                                    onPressed: () async {
-                                                      if (formKey2.currentState!
-                                                          .validate()) {
-                                                        String expCatName =
-                                                            expenseTypeController
-                                                                .text;
-                                                        final conn =
-                                                            await onConnToDb();
-                                                        var results = await conn
-                                                            .query(
-                                                                'UPDATE expenses SET exp_name = ? WHERE exp_ID = ?',
-                                                                [
-                                                              expCatName,
-                                                              expTypeId
-                                                            ]);
-                                                        if (results
-                                                                .affectedRows! >
-                                                            0) {
-                                                          _onShowSnack(
-                                                              Colors.green,
-                                                              'نوعیت (کتگوری) مصارف موفقانه تغییر کرد.');
-                                                          onUpdate();
-                                                        } else {
-                                                          _onShowSnack(
-                                                              Colors.red,
-                                                              'متاسفم، شما هیچ تغییرانی نیاوردید.');
-                                                        }
-                                                        Navigator.pop(context);
-                                                      }
-                                                    },
-                                                    child: const Text(
-                                                        'تغییر دادن'),
-                                                  );
-                                                },
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                          child: Center(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  TabBar(
+                                    labelColor: Colors.blue,
+                                    unselectedLabelColor: Colors.grey,
+                                    tabs: [
+                                      Tab(
+                                        text: translations[selectedLanguage]
+                                                ?['EditExpType'] ??
+                                            '',
+                                        icon: const Icon(Icons.edit_outlined),
                                       ),
-                                      Form(
-                                        key: formKey,
-                                        child: SingleChildScrollView(
+                                      Tab(
+                                        text: translations[selectedLanguage]
+                                                ?['EditExpItem'] ??
+                                            '',
+                                        icon: const Icon(Icons.edit_outlined),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 500.0,
+                                    child: TabBarView(
+                                      children: [
+                                        Form(
+                                          key: formKey2,
                                           child: Column(
                                             children: [
                                               Container(
@@ -1026,44 +934,33 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate,
                                                     right: 20),
                                                 child: TextFormField(
                                                   controller:
-                                                      itemNameController,
+                                                      expenseTypeController,
                                                   validator: (value) {
                                                     if (value!.isEmpty) {
-                                                      return 'نام جنس مصرفی نمی تواند خالی باشد.';
+                                                      return translations[
+                                                                  selectedLanguage]
+                                                              ?['ETRequired'] ??
+                                                          '';
+                                                    } else if (value.length <
+                                                            3 ||
+                                                        value.length > 20) {
+                                                      return translations[
+                                                                  selectedLanguage]
+                                                              ?['ETLength'] ??
+                                                          '';
                                                     }
                                                   },
-                                                  decoration:
-                                                      const InputDecoration(
+                                                  decoration: InputDecoration(
                                                     border:
-                                                        OutlineInputBorder(),
-                                                    labelText: 'نام جنس',
-                                                    suffixIcon: Icon(Icons
-                                                        .bakery_dining_outlined),
-                                                    enabledBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.grey)),
-                                                    focusedBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.blue)),
-                                                    errorBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color: Colors.red)),
-                                                    focusedErrorBorder:
-                                                        OutlineInputBorder(
+                                                        const OutlineInputBorder(),
+                                                    labelText: translations[
+                                                                selectedLanguage]
+                                                            ?['EpxenseType'] ??
+                                                        '',
+                                                    suffixIcon: const Icon(Icons
+                                                        .category_outlined),
+                                                    enabledBorder:
+                                                        const OutlineInputBorder(
                                                             borderRadius:
                                                                 BorderRadius.all(
                                                                     Radius.circular(
@@ -1071,230 +968,29 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate,
                                                             borderSide:
                                                                 BorderSide(
                                                                     color: Colors
-                                                                        .red,
-                                                                    width:
-                                                                        1.5)),
-                                                  ),
-                                                ),
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    flex: 2,
-                                                    child: Container(
-                                                      margin:
-                                                          const EdgeInsets.only(
-                                                              top: 30.0,
-                                                              left: 20,
-                                                              right: 20),
-                                                      child: TextFormField(
-                                                        controller:
-                                                            qtyController,
-                                                        inputFormatters: [
-                                                          FilteringTextInputFormatter
-                                                              .allow(RegExp(
-                                                                  r'[0-9.]'))
-                                                        ],
-                                                        validator: (value) {
-                                                          if (value!
-                                                              .isNotEmpty) {
-                                                            final qty =
-                                                                double.tryParse(
-                                                                    value!);
-                                                            if (qty! < 1 ||
-                                                                qty > 100) {
-                                                              return 'تعداد/مقدار باید بین 1 و 100 واحد باشد.';
-                                                            }
-                                                          } else if (value
-                                                              .isEmpty) {
-                                                            return 'تعداد/مقدار نمی تواند خالی باشد.';
-                                                          }
-                                                        },
-                                                        onChanged:
-                                                            onSetTotalPrice,
-                                                        decoration:
-                                                            const InputDecoration(
-                                                          border:
-                                                              OutlineInputBorder(),
-                                                          labelText:
-                                                              'تعداد/مقدار واحد',
-                                                          suffixIcon: Icon(Icons
-                                                              .production_quantity_limits_outlined),
-                                                          enabledBorder: OutlineInputBorder(
-                                                              borderRadius: BorderRadius
-                                                                  .all(Radius
-                                                                      .circular(
-                                                                          50.0)),
-                                                              borderSide: BorderSide(
-                                                                  color: Colors
-                                                                      .grey)),
-                                                          focusedBorder: OutlineInputBorder(
-                                                              borderRadius: BorderRadius
-                                                                  .all(Radius
-                                                                      .circular(
-                                                                          50.0)),
-                                                              borderSide: BorderSide(
-                                                                  color: Colors
-                                                                      .blue)),
-                                                          errorBorder: OutlineInputBorder(
-                                                              borderRadius: BorderRadius
-                                                                  .all(Radius
-                                                                      .circular(
-                                                                          50.0)),
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                      color: Colors
-                                                                          .red)),
-                                                          focusedErrorBorder: OutlineInputBorder(
-                                                              borderRadius:
-                                                                  BorderRadius.all(
-                                                                      Radius.circular(
-                                                                          50.0)),
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                      color: Colors
-                                                                          .red,
-                                                                      width:
-                                                                          1.5)),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    flex: 1,
-                                                    child: Container(
-                                                      margin:
-                                                          const EdgeInsets.only(
-                                                              top: 30.0,
-                                                              left: 20,
-                                                              right: 20),
-                                                      child: InputDecorator(
-                                                        decoration:
-                                                            const InputDecoration(
-                                                          border:
-                                                              OutlineInputBorder(),
-                                                          labelText: 'واحد',
-                                                          enabledBorder: OutlineInputBorder(
-                                                              borderRadius: BorderRadius
-                                                                  .all(Radius
-                                                                      .circular(
-                                                                          50.0)),
-                                                              borderSide: BorderSide(
-                                                                  color: Colors
-                                                                      .grey)),
-                                                          focusedBorder: OutlineInputBorder(
-                                                              borderRadius: BorderRadius
-                                                                  .all(Radius
-                                                                      .circular(
-                                                                          50.0)),
-                                                              borderSide: BorderSide(
-                                                                  color: Colors
-                                                                      .blue)),
-                                                          errorBorder: OutlineInputBorder(
-                                                              borderRadius: BorderRadius
-                                                                  .all(Radius
-                                                                      .circular(
-                                                                          50.0)),
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                      color: Colors
-                                                                          .red)),
-                                                          focusedErrorBorder: OutlineInputBorder(
-                                                              borderRadius:
-                                                                  BorderRadius.all(
-                                                                      Radius.circular(
-                                                                          50.0)),
-                                                              borderSide:
-                                                                  BorderSide(
-                                                                      color: Colors
-                                                                          .red,
-                                                                      width:
-                                                                          1.5)),
-                                                        ),
-                                                        child:
-                                                            DropdownButtonHideUnderline(
-                                                          child: Container(
-                                                            height: 26.0,
-                                                            child:
-                                                                DropdownButton(
-                                                              isExpanded: true,
-                                                              icon: const Icon(Icons
-                                                                  .arrow_drop_down),
-                                                              value:
-                                                                  selectedUnit,
-                                                              items: unitsItems
-                                                                  .map((String
-                                                                      positionItems) {
-                                                                return DropdownMenuItem(
-                                                                  value:
-                                                                      positionItems,
-                                                                  alignment:
-                                                                      Alignment
-                                                                          .centerRight,
-                                                                  child: Text(
-                                                                      positionItems),
-                                                                );
-                                                              }).toList(),
-                                                              onChanged: (String?
-                                                                  newValue) {
-                                                                setState(() {
-                                                                  selectedUnit =
-                                                                      newValue!;
-                                                                });
-                                                              },
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Container(
-                                                margin: const EdgeInsets.only(
-                                                    top: 30.0,
-                                                    left: 20,
-                                                    right: 20),
-                                                child: TextFormField(
-                                                  controller: qtyController,
-                                                  validator: (value) {
-                                                    if (value!.isEmpty) {
-                                                      return 'تعداد / مقدار نمی تواند خالی باشد.';
-                                                    }
-                                                  },
-                                                  onChanged: onSetTotalPrice,
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    labelText: 'تعداد / مقدار',
-                                                    suffixIcon: Icon(Icons
-                                                        .production_quantity_limits_outlined),
-                                                    enabledBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.grey)),
-                                                    focusedBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.blue)),
-                                                    errorBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color: Colors.red)),
+                                                                        .grey)),
+                                                    focusedBorder:
+                                                        const OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius.all(
+                                                                    Radius.circular(
+                                                                        50.0)),
+                                                            borderSide:
+                                                                BorderSide(
+                                                                    color: Colors
+                                                                        .blue)),
+                                                    errorBorder:
+                                                        const OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius.all(
+                                                                    Radius.circular(
+                                                                        50.0)),
+                                                            borderSide:
+                                                                BorderSide(
+                                                                    color: Colors
+                                                                        .red)),
                                                     focusedErrorBorder:
-                                                        OutlineInputBorder(
+                                                        const OutlineInputBorder(
                                                             borderRadius:
                                                                 BorderRadius.all(
                                                                     Radius.circular(
@@ -1309,286 +1005,8 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate,
                                                 ),
                                               ),
                                               Container(
-                                                margin: const EdgeInsets.only(
-                                                    top: 30.0,
-                                                    left: 20,
-                                                    right: 20),
-                                                child: TextFormField(
-                                                  controller:
-                                                      unitPriceController,
-                                                  validator: (value) {
-                                                    if (value!.isEmpty) {
-                                                      return 'قیمت نمی تواند خالی باشد.';
-                                                    }
-                                                  },
-                                                  onChanged: onSetTotalPrice,
-                                                  inputFormatters: [
-                                                    FilteringTextInputFormatter
-                                                        .digitsOnly
-                                                  ],
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    labelText: 'قیمت فی واحد',
-                                                    suffixIcon: Icon(Icons
-                                                        .price_change_outlined),
-                                                    enabledBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.grey)),
-                                                    focusedBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.blue)),
-                                                    errorBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color: Colors.red)),
-                                                    focusedErrorBorder:
-                                                        OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius.all(
-                                                                    Radius.circular(
-                                                                        50.0)),
-                                                            borderSide:
-                                                                BorderSide(
-                                                                    color: Colors
-                                                                        .red,
-                                                                    width:
-                                                                        1.5)),
-                                                  ),
-                                                ),
-                                              ),
-                                              Container(
-                                                margin: const EdgeInsets.only(
-                                                    top: 30.0,
-                                                    left: 20,
-                                                    right: 20),
-                                                child: TextFormField(
-                                                  readOnly: true,
-                                                  controller:
-                                                      totalPriceController,
-                                                  style: const TextStyle(
-                                                    color: Colors.blue,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                  inputFormatters: [
-                                                    FilteringTextInputFormatter
-                                                        .allow(
-                                                            RegExp(r'[0-9.]'))
-                                                  ],
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    labelText:
-                                                        'جمله / مجموعه پول پرداخت شده',
-                                                    suffixIcon:
-                                                        Icon(Icons.money),
-                                                    enabledBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.grey)),
-                                                    focusedBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.blue)),
-                                                    errorBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color: Colors.red)),
-                                                    focusedErrorBorder:
-                                                        OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius.all(
-                                                                    Radius.circular(
-                                                                        50.0)),
-                                                            borderSide:
-                                                                BorderSide(
-                                                                    color: Colors
-                                                                        .red,
-                                                                    width:
-                                                                        1.5)),
-                                                  ),
-                                                ),
-                                              ),
-                                              Container(
-                                                margin: const EdgeInsets.only(
-                                                    top: 30.0,
-                                                    left: 20,
-                                                    right: 20),
-                                                child: TextFormField(
-                                                  controller: purDateController,
-                                                  validator: (value) {
-                                                    if (value!.isEmpty) {
-                                                      return 'تاریخ خرید نمی تواند خالی باشد.';
-                                                    }
-                                                  },
-                                                  onTap: () async {
-                                                    FocusScope.of(context)
-                                                        .requestFocus(
-                                                            FocusNode());
-                                                    final DateTime? dateTime =
-                                                        await showDatePicker(
-                                                            context: context,
-                                                            initialDate:
-                                                                DateTime.now(),
-                                                            firstDate:
-                                                                DateTime(1900),
-                                                            lastDate:
-                                                                DateTime(2100));
-                                                    if (dateTime != null) {
-                                                      final intl2.DateFormat
-                                                          formatter =
-                                                          intl2.DateFormat(
-                                                              'yyyy-MM-dd');
-                                                      final String
-                                                          formattedDate =
-                                                          formatter
-                                                              .format(dateTime);
-                                                      purDateController.text =
-                                                          formattedDate;
-                                                    }
-                                                  },
-                                                  inputFormatters: [
-                                                    FilteringTextInputFormatter
-                                                        .allow(
-                                                            RegExp(r'[0-9.]'))
-                                                  ],
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    labelText: 'تاریخ خرید جنس',
-                                                    suffixIcon: Icon(Icons
-                                                        .calendar_month_outlined),
-                                                    enabledBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.grey)),
-                                                    focusedBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.blue)),
-                                                    errorBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color: Colors.red)),
-                                                    focusedErrorBorder:
-                                                        OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius.all(
-                                                                    Radius.circular(
-                                                                        50.0)),
-                                                            borderSide:
-                                                                BorderSide(
-                                                                    color: Colors
-                                                                        .red,
-                                                                    width:
-                                                                        1.5)),
-                                                  ),
-                                                ),
-                                              ),
-                                              Container(
-                                                margin: const EdgeInsets.only(
-                                                    top: 30.0,
-                                                    left: 20,
-                                                    right: 20),
-                                                child: TextFormField(
-                                                  controller: descController,
-                                                  validator: (value) {
-                                                    if (value!.isNotEmpty) {
-                                                      if (value.length < 5 ||
-                                                          value.length > 30) {
-                                                        return 'توضیحات باید بین 5 و 30 حرف باشد.';
-                                                      }
-                                                    }
-                                                  },
-                                                  maxLines: 3,
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    labelText: 'توضیحات',
-                                                    suffixIcon: Icon(Icons
-                                                        .description_outlined),
-                                                    enabledBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    30.0)),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.grey)),
-                                                    focusedBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    30.0)),
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.blue)),
-                                                    errorBorder: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0)),
-                                                        borderSide: BorderSide(
-                                                            color: Colors.red)),
-                                                    focusedErrorBorder:
-                                                        OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius.all(
-                                                                    Radius.circular(
-                                                                        50.0)),
-                                                            borderSide:
-                                                                BorderSide(
-                                                                    color: Colors
-                                                                        .red,
-                                                                    width:
-                                                                        1.5)),
-                                                  ),
-                                                ),
-                                              ),
-                                              Container(
-                                                margin: const EdgeInsets.only(
-                                                    top: 30.0,
-                                                    left: 20,
-                                                    right: 20),
+                                                margin:
+                                                    const EdgeInsets.all(20.0),
                                                 width: 430.0,
                                                 height: 35.0,
                                                 child: Builder(
@@ -1608,63 +1026,49 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate,
                                                         ),
                                                       ),
                                                       onPressed: () async {
-                                                        if (formKey
+                                                        if (formKey2
                                                             .currentState!
                                                             .validate()) {
-                                                          String expItem =
-                                                              itemNameController
+                                                          String expCatName =
+                                                              expenseTypeController
                                                                   .text;
-                                                          double itemQty =
-                                                              double.parse(
-                                                                  qtyController
-                                                                      .text);
-                                                          double unitPrice =
-                                                              double.parse(
-                                                                  unitPriceController
-                                                                      .text);
-                                                          String purDate =
-                                                              purDateController
-                                                                  .text;
-                                                          String desc =
-                                                              descController
-                                                                  .text;
-
                                                           final conn =
                                                               await onConnToDb();
                                                           var results =
                                                               await conn.query(
-                                                                  'UPDATE expense_detail SET item_name = ?, quantity = ?, qty_unit = ?, unit_price = ?, total = ?, purchase_date = ?, note = ? WHERE exp_detail_ID = ?',
+                                                                  'UPDATE expenses SET exp_name = ? WHERE exp_ID = ?',
                                                                   [
-                                                                expItem,
-                                                                itemQty,
-                                                                selectedUnit,
-                                                                unitPrice,
-                                                                totalPrice,
-                                                                purDate,
-                                                                desc,
-                                                                ExpenseInfo
-                                                                    .exp_detail_ID
+                                                                expCatName,
+                                                                expTypeId
                                                               ]);
-
                                                           if (results
                                                                   .affectedRows! >
                                                               0) {
                                                             _onShowSnack(
                                                                 Colors.green,
-                                                                'جنس مورد مصرف موفقانه تغییر کرد.');
-                                                            onUpdateItem();
-                                                            await conn.close();
+                                                                translations[
+                                                                            selectedLanguage]
+                                                                        ?[
+                                                                        'StaffEditMsg'] ??
+                                                                    '');
+                                                            onUpdate();
                                                           } else {
                                                             _onShowSnack(
                                                                 Colors.red,
-                                                                'متاسفم، شما هیچ تغییراتی نیاوردید.');
+                                                                translations[
+                                                                            selectedLanguage]
+                                                                        ?[
+                                                                        'StaffEditErrMsg'] ??
+                                                                    '');
                                                           }
                                                           Navigator.pop(
                                                               context);
                                                         }
                                                       },
-                                                      child: const Text(
-                                                          'تغییر دادن'),
+                                                      child: Text(translations[
+                                                                  selectedLanguage]
+                                                              ?['Edit'] ??
+                                                          ''),
                                                     );
                                                   },
                                                 ),
@@ -1672,11 +1076,706 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate,
                                             ],
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                        Form(
+                                          key: formKey,
+                                          child: SingleChildScrollView(
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      top: 30.0,
+                                                      left: 20,
+                                                      right: 20),
+                                                  child: TextFormField(
+                                                    controller:
+                                                        itemNameController,
+                                                    validator: (value) {
+                                                      if (value!.isEmpty) {
+                                                        return translations[
+                                                                    selectedLanguage]
+                                                                ?[
+                                                                'ItemRequired'] ??
+                                                            '';
+                                                      }
+                                                    },
+                                                    decoration: InputDecoration(
+                                                      border:
+                                                          const OutlineInputBorder(),
+                                                      labelText: translations[
+                                                                  selectedLanguage]
+                                                              ?['Item'] ??
+                                                          '',
+                                                      suffixIcon: const Icon(Icons
+                                                          .bakery_dining_outlined),
+                                                      enabledBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .grey)),
+                                                      focusedBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .blue)),
+                                                      errorBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .red)),
+                                                      focusedErrorBorder:
+                                                          const OutlineInputBorder(
+                                                              borderRadius:
+                                                                  BorderRadius.all(
+                                                                      Radius.circular(
+                                                                          50.0)),
+                                                              borderSide:
+                                                                  BorderSide(
+                                                                      color: Colors
+                                                                          .red,
+                                                                      width:
+                                                                          1.5)),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 2,
+                                                      child: Container(
+                                                        margin: const EdgeInsets
+                                                            .only(
+                                                            top: 30.0,
+                                                            left: 20,
+                                                            right: 20),
+                                                        child: TextFormField(
+                                                          controller:
+                                                              qtyController,
+                                                          inputFormatters: [
+                                                            FilteringTextInputFormatter
+                                                                .allow(RegExp(
+                                                                    r'[0-9.]'))
+                                                          ],
+                                                          validator: (value) {
+                                                            if (value!
+                                                                .isNotEmpty) {
+                                                              final qty = double
+                                                                  .tryParse(
+                                                                      value!);
+                                                              if (qty! < 1 ||
+                                                                  qty > 100) {
+                                                                return translations[
+                                                                            selectedLanguage]
+                                                                        ?[
+                                                                        'itemQtyMsg'] ??
+                                                                    '';
+                                                              }
+                                                            } else if (value
+                                                                .isEmpty) {
+                                                              return translations[
+                                                                          selectedLanguage]
+                                                                      ?[
+                                                                      'ItemQtyRequired'] ??
+                                                                  '';
+                                                            }
+                                                          },
+                                                          onChanged:
+                                                              onSetTotalPrice,
+                                                          decoration:
+                                                              InputDecoration(
+                                                            border:
+                                                                const OutlineInputBorder(),
+                                                            labelText: translations[
+                                                                        selectedLanguage]
+                                                                    ?[
+                                                                    'QtyAmount'] ??
+                                                                '',
+                                                            suffixIcon:
+                                                                const Icon(Icons
+                                                                    .production_quantity_limits_outlined),
+                                                            enabledBorder: const OutlineInputBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            50.0)),
+                                                                borderSide: BorderSide(
+                                                                    color: Colors
+                                                                        .grey)),
+                                                            focusedBorder: const OutlineInputBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            50.0)),
+                                                                borderSide: BorderSide(
+                                                                    color: Colors
+                                                                        .blue)),
+                                                            errorBorder: const OutlineInputBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            50.0)),
+                                                                borderSide: BorderSide(
+                                                                    color: Colors
+                                                                        .red)),
+                                                            focusedErrorBorder: const OutlineInputBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            50.0)),
+                                                                borderSide:
+                                                                    BorderSide(
+                                                                        color: Colors
+                                                                            .red,
+                                                                        width:
+                                                                            1.5)),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: Container(
+                                                        margin: const EdgeInsets
+                                                            .only(
+                                                            top: 30.0,
+                                                            left: 20,
+                                                            right: 20),
+                                                        child: InputDecorator(
+                                                          decoration:
+                                                              InputDecoration(
+                                                            border:
+                                                                const OutlineInputBorder(),
+                                                            labelText: translations[
+                                                                        selectedLanguage]
+                                                                    ?[
+                                                                    'Units'] ??
+                                                                '',
+                                                            enabledBorder: const OutlineInputBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            50.0)),
+                                                                borderSide: BorderSide(
+                                                                    color: Colors
+                                                                        .grey)),
+                                                            focusedBorder: const OutlineInputBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            50.0)),
+                                                                borderSide: BorderSide(
+                                                                    color: Colors
+                                                                        .blue)),
+                                                            errorBorder: const OutlineInputBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            50.0)),
+                                                                borderSide: BorderSide(
+                                                                    color: Colors
+                                                                        .red)),
+                                                            focusedErrorBorder: const OutlineInputBorder(
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            50.0)),
+                                                                borderSide:
+                                                                    BorderSide(
+                                                                        color: Colors
+                                                                            .red,
+                                                                        width:
+                                                                            1.5)),
+                                                          ),
+                                                          child:
+                                                              DropdownButtonHideUnderline(
+                                                            child: Container(
+                                                              height: 26.0,
+                                                              child:
+                                                                  DropdownButton(
+                                                                isExpanded:
+                                                                    true,
+                                                                icon: const Icon(
+                                                                    Icons
+                                                                        .arrow_drop_down),
+                                                                value:
+                                                                    selectedUnit,
+                                                                items: unitsItems
+                                                                    .map((String
+                                                                        positionItems) {
+                                                                  return DropdownMenuItem(
+                                                                    value:
+                                                                        positionItems,
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .centerRight,
+                                                                    child: Text(
+                                                                        positionItems),
+                                                                  );
+                                                                }).toList(),
+                                                                onChanged: (String?
+                                                                    newValue) {
+                                                                  setState(() {
+                                                                    selectedUnit =
+                                                                        newValue!;
+                                                                  });
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      top: 30.0,
+                                                      left: 20,
+                                                      right: 20),
+                                                  child: TextFormField(
+                                                    controller:
+                                                        unitPriceController,
+                                                    validator: (value) {
+                                                      if (value!.isEmpty) {
+                                                        return translations[
+                                                                    selectedLanguage]
+                                                                ?[
+                                                                'UPRequired'] ??
+                                                            '';
+                                                      }
+                                                    },
+                                                    onChanged: onSetTotalPrice,
+                                                    inputFormatters: [
+                                                      FilteringTextInputFormatter
+                                                          .digitsOnly
+                                                    ],
+                                                    decoration: InputDecoration(
+                                                      border:
+                                                          const OutlineInputBorder(),
+                                                      labelText: translations[
+                                                                  selectedLanguage]
+                                                              ?['UnitPrice'] ??
+                                                          '',
+                                                      suffixIcon: const Icon(Icons
+                                                          .price_change_outlined),
+                                                      enabledBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .grey)),
+                                                      focusedBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .blue)),
+                                                      errorBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .red)),
+                                                      focusedErrorBorder:
+                                                          const OutlineInputBorder(
+                                                              borderRadius:
+                                                                  BorderRadius.all(
+                                                                      Radius.circular(
+                                                                          50.0)),
+                                                              borderSide:
+                                                                  BorderSide(
+                                                                      color: Colors
+                                                                          .red,
+                                                                      width:
+                                                                          1.5)),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      top: 30.0,
+                                                      left: 20,
+                                                      right: 20),
+                                                  child: TextFormField(
+                                                    readOnly: true,
+                                                    controller:
+                                                        totalPriceController,
+                                                    style: const TextStyle(
+                                                      color: Colors.blue,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                    inputFormatters: [
+                                                      FilteringTextInputFormatter
+                                                          .allow(
+                                                              RegExp(r'[0-9.]'))
+                                                    ],
+                                                    decoration: InputDecoration(
+                                                      border:
+                                                          const OutlineInputBorder(),
+                                                      labelText: translations[
+                                                                  selectedLanguage]
+                                                              ?['TotalPrice'] ??
+                                                          '',
+                                                      suffixIcon: const Icon(
+                                                          Icons.money),
+                                                      enabledBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .grey)),
+                                                      focusedBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .blue)),
+                                                      errorBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .red)),
+                                                      focusedErrorBorder:
+                                                          const OutlineInputBorder(
+                                                              borderRadius:
+                                                                  BorderRadius.all(
+                                                                      Radius.circular(
+                                                                          50.0)),
+                                                              borderSide:
+                                                                  BorderSide(
+                                                                      color: Colors
+                                                                          .red,
+                                                                      width:
+                                                                          1.5)),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      top: 30.0,
+                                                      left: 20,
+                                                      right: 20),
+                                                  child: TextFormField(
+                                                    controller:
+                                                        purDateController,
+                                                    validator: (value) {
+                                                      if (value!.isEmpty) {
+                                                        return translations[
+                                                                    selectedLanguage]
+                                                                ?[
+                                                                'PurDateRequired'] ??
+                                                            '';
+                                                      }
+                                                    },
+                                                    onTap: () async {
+                                                      FocusScope.of(context)
+                                                          .requestFocus(
+                                                              FocusNode());
+                                                      final DateTime? dateTime =
+                                                          await showDatePicker(
+                                                              context: context,
+                                                              initialDate:
+                                                                  DateTime
+                                                                      .now(),
+                                                              firstDate:
+                                                                  DateTime(
+                                                                      1900),
+                                                              lastDate:
+                                                                  DateTime(
+                                                                      2100));
+                                                      if (dateTime != null) {
+                                                        final intl2.DateFormat
+                                                            formatter =
+                                                            intl2.DateFormat(
+                                                                'yyyy-MM-dd');
+                                                        final String
+                                                            formattedDate =
+                                                            formatter.format(
+                                                                dateTime);
+                                                        purDateController.text =
+                                                            formattedDate;
+                                                      }
+                                                    },
+                                                    inputFormatters: [
+                                                      FilteringTextInputFormatter
+                                                          .allow(
+                                                              RegExp(r'[0-9.]'))
+                                                    ],
+                                                    decoration: InputDecoration(
+                                                      border:
+                                                          const OutlineInputBorder(),
+                                                      labelText: translations[
+                                                                  selectedLanguage]
+                                                              ?['PurDate'] ??
+                                                          '',
+                                                      suffixIcon: const Icon(Icons
+                                                          .calendar_month_outlined),
+                                                      enabledBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .grey)),
+                                                      focusedBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .blue)),
+                                                      errorBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .red)),
+                                                      focusedErrorBorder:
+                                                          const OutlineInputBorder(
+                                                              borderRadius:
+                                                                  BorderRadius.all(
+                                                                      Radius.circular(
+                                                                          50.0)),
+                                                              borderSide:
+                                                                  BorderSide(
+                                                                      color: Colors
+                                                                          .red,
+                                                                      width:
+                                                                          1.5)),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      top: 30.0,
+                                                      left: 20,
+                                                      right: 20),
+                                                  child: TextFormField(
+                                                    controller: descController,
+                                                    validator: (value) {
+                                                      if (value!.isNotEmpty) {
+                                                        if (value.length < 5 ||
+                                                            value.length > 40) {
+                                                          return translations[
+                                                                      selectedLanguage]
+                                                                  ?[
+                                                                  'OtherDDLDetail'] ??
+                                                              '';
+                                                        }
+                                                      }
+                                                    },
+                                                    maxLines: 3,
+                                                    decoration: InputDecoration(
+                                                      border:
+                                                          const OutlineInputBorder(),
+                                                      labelText: translations[
+                                                                  selectedLanguage]
+                                                              ?['RetDetails'] ??
+                                                          '',
+                                                      suffixIcon: const Icon(Icons
+                                                          .description_outlined),
+                                                      enabledBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          30.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .grey)),
+                                                      focusedBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          30.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .blue)),
+                                                      errorBorder: const OutlineInputBorder(
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          50.0)),
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .red)),
+                                                      focusedErrorBorder:
+                                                          const OutlineInputBorder(
+                                                              borderRadius:
+                                                                  BorderRadius.all(
+                                                                      Radius.circular(
+                                                                          50.0)),
+                                                              borderSide:
+                                                                  BorderSide(
+                                                                      color: Colors
+                                                                          .red,
+                                                                      width:
+                                                                          1.5)),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  margin: const EdgeInsets.only(
+                                                      top: 30.0,
+                                                      left: 20,
+                                                      right: 20),
+                                                  width: 430.0,
+                                                  height: 35.0,
+                                                  child: Builder(
+                                                    builder: (context) {
+                                                      return OutlinedButton(
+                                                        style: OutlinedButton
+                                                            .styleFrom(
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20.0),
+                                                          ),
+                                                          side:
+                                                              const BorderSide(
+                                                            color: Colors.blue,
+                                                          ),
+                                                        ),
+                                                        onPressed: () async {
+                                                          if (formKey
+                                                              .currentState!
+                                                              .validate()) {
+                                                            String expItem =
+                                                                itemNameController
+                                                                    .text;
+                                                            double itemQty =
+                                                                double.parse(
+                                                                    qtyController
+                                                                        .text);
+                                                            double unitPrice =
+                                                                double.parse(
+                                                                    unitPriceController
+                                                                        .text);
+                                                            String purDate =
+                                                                purDateController
+                                                                    .text;
+                                                            String desc =
+                                                                descController
+                                                                    .text;
+
+                                                            final conn =
+                                                                await onConnToDb();
+                                                            var results =
+                                                                await conn.query(
+                                                                    'UPDATE expense_detail SET item_name = ?, quantity = ?, qty_unit = ?, unit_price = ?, total = ?, purchase_date = ?, note = ? WHERE exp_detail_ID = ?',
+                                                                    [
+                                                                  expItem,
+                                                                  itemQty,
+                                                                  selectedUnit,
+                                                                  unitPrice,
+                                                                  totalPrice,
+                                                                  purDate,
+                                                                  desc,
+                                                                  ExpenseInfo
+                                                                      .exp_detail_ID
+                                                                ]);
+
+                                                            if (results
+                                                                    .affectedRows! >
+                                                                0) {
+                                                              _onShowSnack(
+                                                                  Colors.green,
+                                                                  translations[
+                                                                              selectedLanguage]
+                                                                          ?[
+                                                                          'StaffEditMsg'] ??
+                                                                      '');
+                                                              onUpdateItem();
+                                                              await conn
+                                                                  .close();
+                                                            } else {
+                                                              _onShowSnack(
+                                                                  Colors.red,
+                                                                  translations[
+                                                                              selectedLanguage]
+                                                                          ?[
+                                                                          'StaffEditErrMsg'] ??
+                                                                      '');
+                                                            }
+                                                            // ignore: use_build_context_synchronously
+                                                            Navigator.pop(
+                                                                context);
+                                                          }
+                                                        },
+                                                        child: Text(translations[
+                                                                    selectedLanguage]
+                                                                ?['Edit'] ??
+                                                            ''),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ), // Footer of the dialog
@@ -1685,7 +1784,9 @@ onEditExpense(BuildContext context, int expTypeId, Function onUpdate,
                           alignment: Alignment.centerLeft,
                           child: TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text('لغو'),
+                            child: Text(translations[selectedLanguage]
+                                    ?['CancelBtn'] ??
+                                ''),
                           ),
                         )
                       ],
@@ -1705,22 +1806,31 @@ onShowExpenseDetails(BuildContext context) {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Directionality(
-            textDirection: TextDirection.rtl,
+          title: Directionality(
+            textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
             child: Text(
-              'جزییات مصارف',
-              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              translations[selectedLanguage]?['ExpDetail'] ?? '',
+              style: const TextStyle(
+                  color: Colors.blue, fontWeight: FontWeight.bold),
             ),
           ),
-          content: const Directionality(
-            textDirection: TextDirection.rtl,
+          content: Directionality(
+            textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
             child: Directionality(
-                textDirection: TextDirection.rtl, child: ExpenseDetails()),
+                textDirection:
+                    isEnglish ? TextDirection.ltr : TextDirection.rtl,
+                child: ExpenseDetails()),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('تایید'),
+            Row(
+              mainAxisAlignment:
+                  isEnglish ? MainAxisAlignment.end : MainAxisAlignment.start,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(translations[selectedLanguage]?['Okay'] ?? ''),
+                ),
+              ],
             ),
           ],
           actionsAlignment: MainAxisAlignment.start,
