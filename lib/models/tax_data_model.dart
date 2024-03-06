@@ -3,10 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
+import 'package:provider/provider.dart';
 import '../views/finance/taxes/tax_details.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:flutter_dentistry/models/db_conn.dart';
@@ -17,7 +20,10 @@ import 'package:pdf/widgets.dart' as pw;
 // Create the global key at the top level of your Dart file
 final GlobalKey<ScaffoldMessengerState> _globalKeyForTaxes =
     GlobalKey<ScaffoldMessengerState>();
-
+// ignore: prefer_typing_uninitialized_variables
+var selectedLanguage;
+// ignore: prefer_typing_uninitialized_variables
+var isEnglish;
 const regExOnlydigits = "[0-9]";
 const regExpDecimal = r'^\d+\.?\d{0,2}';
 const regExOnlyAbc = "[a-zA-Z,، \u0600-\u06FFF]";
@@ -265,11 +271,11 @@ class TaxDataTableState extends State<TaxDataTable> {
         return StatefulBuilder(
           builder: ((context, setState) {
             return AlertDialog(
-              title: const Directionality(
+              title: Directionality(
                 textDirection: TextDirection.rtl,
                 child: Text(
-                  'ایجاد مالیات جدید',
-                  style: TextStyle(color: Colors.blue),
+                  translations[selectedLanguage]?['CreateTaxHeading'] ?? '',
+                  style: const TextStyle(color: Colors.blue),
                 ),
               ),
               content: Directionality(
@@ -940,6 +946,10 @@ class TaxDataTableState extends State<TaxDataTable> {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
     TaxInfo.onAddTax = _fetchData;
     TaxInfo.onUpdateDueTax = _fetchData;
     // Assign fetchStaff to static function and immediatly call it here since when onEditTax() is called the staff dropdown is initially blank.
@@ -962,7 +972,8 @@ class TaxDataTableState extends State<TaxDataTable> {
                       controller: _searchController,
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText: 'جستجو...',
+                        labelText:
+                            translations[selectedLanguage]?['Search'] ?? '',
                         suffixIcon: IconButton(
                           icon: const Icon(Icons.clear),
                           onPressed: () {
@@ -1008,15 +1019,13 @@ class TaxDataTableState extends State<TaxDataTable> {
                       },
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.print),
-                  ),
                   ElevatedButton(
                     onPressed: () {
                       onCreateNewTax(context);
                     },
-                    child: const Text('افزودن مالیات جدید'),
+                    child: Text(translations[selectedLanguage]
+                            ?['CreateTaxHeading'] ??
+                        ''),
                   ),
                 ],
               ),
@@ -1029,7 +1038,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "همه مالیات |",
+                    translations[selectedLanguage]?['AllTaxes'] ?? '',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   SizedBox(
@@ -1089,11 +1098,13 @@ class TaxDataTableState extends State<TaxDataTable> {
               child: ListView(
                 children: [
                   if (_filteredData.isEmpty)
-                    const SizedBox(
+                    SizedBox(
                       width: 200,
                       height: 200,
                       child: Center(
-                          child: Text('هیچ ریکاردی مربوط مالیات یافت نشد.')),
+                          child: Text(translations[selectedLanguage]
+                                  ?['NoTaxesRecords'] ??
+                              '')),
                     )
                   else
                     PaginatedDataTable(
@@ -1103,9 +1114,9 @@ class TaxDataTableState extends State<TaxDataTable> {
                       // header: const Text("همه مالیات |"),
                       columns: [
                         DataColumn(
-                          label: const Text(
-                            "سالهای مالی",
-                            style: TextStyle(
+                          label: Text(
+                            translations[selectedLanguage]?['FinYear'] ?? '',
+                            style: const TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -1122,9 +1133,10 @@ class TaxDataTableState extends State<TaxDataTable> {
                           },
                         ),
                         DataColumn(
-                          label: const Text(
-                            "عواید سالانه",
-                            style: TextStyle(
+                          label: Text(
+                            translations[selectedLanguage]?['AnnualIncome'] ??
+                                '',
+                            style: const TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -1141,9 +1153,9 @@ class TaxDataTableState extends State<TaxDataTable> {
                           },
                         ),
                         DataColumn(
-                          label: const Text(
-                            "فیصدی مالیات",
-                            style: TextStyle(
+                          label: Text(
+                            translations[selectedLanguage]?['TaxRate'] ?? '',
+                            style: const TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -1160,9 +1172,9 @@ class TaxDataTableState extends State<TaxDataTable> {
                           },
                         ),
                         DataColumn(
-                          label: const Text(
-                            "مجموع مالیات سالانه",
-                            style: TextStyle(
+                          label: Text(
+                            translations[selectedLanguage]?['AnnTotTax'] ?? '',
+                            style: const TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -1179,9 +1191,9 @@ class TaxDataTableState extends State<TaxDataTable> {
                           },
                         ),
                         DataColumn(
-                          label: const Text(
-                            "مالیات پرداخت شده",
-                            style: TextStyle(
+                          label: Text(
+                            translations[selectedLanguage]?['PaidTax'] ?? '',
+                            style: const TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -1198,9 +1210,10 @@ class TaxDataTableState extends State<TaxDataTable> {
                           },
                         ),
                         DataColumn(
-                          label: const Text(
-                            "تاریخ پرداخت",
-                            style: TextStyle(
+                          label: Text(
+                            translations[selectedLanguage]?['TaxPaidDate'] ??
+                                '',
+                            style: const TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -1216,22 +1229,24 @@ class TaxDataTableState extends State<TaxDataTable> {
                             });
                           },
                         ),
-                        const DataColumn(
+                        DataColumn(
                           label: Text(
-                            "شرح",
-                            style: TextStyle(
+                            translations[selectedLanguage]?['RetDetails'] ?? '',
+                            style: const TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold),
                           ),
                         ),
-                        const DataColumn(
-                            label: Text("تغییر",
-                                style: TextStyle(
+                        DataColumn(
+                            label: Text(
+                                translations[selectedLanguage]?['Edit'] ?? '',
+                                style: const TextStyle(
                                     color: Colors.blue,
                                     fontWeight: FontWeight.bold))),
-                        const DataColumn(
-                            label: Text("حذف",
-                                style: TextStyle(
+                        DataColumn(
+                            label: Text(
+                                translations[selectedLanguage]?['Delete'] ?? '',
+                                style: const TextStyle(
                                     color: Colors.blue,
                                     fontWeight: FontWeight.bold))),
                       ],
