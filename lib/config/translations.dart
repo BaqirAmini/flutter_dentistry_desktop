@@ -313,6 +313,7 @@ final Map<String, Map<String, String>> translations = {
     'TINLength': 'TIN must be 10 digits.',
     'TaxRateRequired': 'Tax Rate required.',
     'TRinvalid': 'Tax Rate is not valid.',
+    'TotalAnnTax': 'Total Annual Taxes',
     'TATRequired': 'Total Annual Taxes required.',
     'PaidTaxRequired': 'Paid Taxes Amount required.',
     'PTALength': 'Paid Taxes Amount cannot be more than total annual taxes.',
@@ -321,6 +322,10 @@ final Map<String, Map<String, String>> translations = {
         'Sorry, taxes of the year is already existing in the system.',
     'TYSuccessMsg': 'Taxes added.',
     'TYErrMsg': 'Sorry, adding taxes failed.',
+    'DelTaxHeading': 'Delete Tax',
+    'DelTaxConfirm': 'Are you sure you want to delete this tax?',
+    'DelTaxSuccess': 'The tax deleted.',
+    'EditTaxHeading': 'Edit Tax',
     /*------------------/. Taxes --------------- */
   },
   'دری': {
@@ -624,7 +629,7 @@ final Map<String, Map<String, String>> translations = {
     'TaxPaidDate': 'تاریخ تحویلی',
     'TaxDetails': 'جزییات مالیات',
     'TIN': 'نمبر تشخیصیه مالیاتی (TIN)',
-    'TaxOfYear': 'مالیا سال',
+    'TaxOfYear': 'مالیات سال',
     'TaxDue': 'مالیات باقی',
     'TaxPaidBy': 'Tax Paid By',
     'PayWhole': 'پرداخت همه',
@@ -637,14 +642,18 @@ final Map<String, Map<String, String>> translations = {
     'TINLength': 'TIN باید 10 رقم باشد.',
     'TaxRateRequired': 'فیصدی مالیات الزامی میباشد.',
     'TRinvalid': 'فیصدی مالیات نا معتبر است.',
+    'TotalAnnTax': 'مجموع عایدات سال',
     'TATRequired': 'مجموع مالیات سالانه الزامی میباشد.',
     'PaidTaxRequired': 'مقدار مالیات تحویلی الزامی میباشد.',
     'PTALength': 'مبلغ تحویلی مالیات نمی تواند از کل مالیات بیشتر باشد.',
     'TPDateRequired': 'تاریخ تحویلی مالیات الزامی میباشد.',
-    'TYDuplicated':
-        'متاسفم، مالیات سال در سیستم وجود دارد.',
+    'TYDuplicated': 'متاسفم، مالیات سال در سیستم وجود دارد.',
     'TYSuccessMsg': 'مالیات در سیستم ثبت شد.',
     'TYErrMsg': 'متاسفم، ثبت مالیات ناکام شد.',
+    'DelTaxHeading': 'حذف مالیات',
+    'DelTaxConfirm': 'آیا از حذف این مالیات اطمینان دارید؟',
+    'DelTaxSuccess': 'مالیه حذف شد.',
+    'EditTaxHeading': 'تغییر مالیات',
     /*------------------/. Taxes --------------- */
     // Add other Dari translations here
   },
@@ -947,7 +956,7 @@ final Map<String, Map<String, String>> translations = {
     'TaxPaidDate': 'د سپارنې نېټه',
     'TaxDetails': 'د مالیاتو توضیحات',
     'TIN': 'د مالیې د پیژندنې شمیره (TIN)',
-    'TaxOfYear': 'مالیا سال',
+    'TaxOfYear': 'د کال مالیات',
     'TaxDue': 'پاتې مالیه',
     'TaxPaidBy': 'لخوا تادیه شوی مالیه',
     'PayWhole': 'ټول تادیه کړئ',
@@ -960,15 +969,19 @@ final Map<String, Map<String, String>> translations = {
     'TINLength': 'TIN باید 10 عدده وي.',
     'TaxRateRequired': 'د مالیې سلنه اړینه ده.',
     'TRinvalid': 'د مالیې سلنه د اعتبار وړ نه ده.',
+    'TotalAnnTax': 'د کال ټول عاید',
     'TATRequired': 'ټول کلنی مالیاتو ته اړتیا ده.',
     'PaidTaxRequired': 'د تادیه شوي مالیاتو مقدار اړین دی.',
     'PTALength':
         'د تادیه شوي مالیاتو اندازه نشي کولی د کلنۍ مالیاتو څخه ډیر وي.',
     'TPDateRequired': 'د مالیاتو تادیه نیټه اړینه ده.',
-     'TYDuplicated':
-        'بخښنه غواړم، د مالیې کال په سیسټم کې دی.',
+    'TYDuplicated': 'بخښنه غواړم، د مالیې کال په سیسټم کې دی.',
     'TYSuccessMsg': 'مالیه په سیسټم کې ثبت شوې.',
     'TYErrMsg': 'بخښنه غواړم، د مالیې ثبت کول ناکام شول.',
+    'DelTaxHeading': 'د مالیات حذف کول',
+    'DelTaxConfirm': 'ایا تاسو ډاډه یاست چې تاسو غواړئ دا مالیه حذف کړئ؟',
+    'DelTaxSuccess': 'مالیه حذف شوه.',
+    'EditTaxHeading': 'د مالیات سم کول',
     /*------------------/. Taxes --------------- */
 
     // Add other Pashto translations here

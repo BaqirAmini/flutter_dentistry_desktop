@@ -272,528 +272,609 @@ class TaxDataTableState extends State<TaxDataTable> {
           builder: ((context, setState) {
             return AlertDialog(
               title: Directionality(
-                textDirection: TextDirection.rtl,
+                textDirection:
+                    isEnglish ? TextDirection.ltr : TextDirection.rtl,
                 child: Text(
                   translations[selectedLanguage]?['CreateTaxHeading'] ?? '',
                   style: const TextStyle(color: Colors.blue),
                 ),
               ),
-              content: Directionality(
-                textDirection: TextDirection.rtl,
-                child: Form(
-                  key: formKeyNewTax,
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.35,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(top: 20.0),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: TINController,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'TIN الزامی میباشد.';
-                                } else if (value.length < 10 ||
-                                    value.length > 10) {
-                                  return 'TIN باید 10 عدد باشد.';
-                                }
-                              },
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(regExOnlydigits),
-                                ),
-                              ],
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'نمبر تشخیصیه مالیه دهنده (TIN)',
-                                suffixIcon: Icon(Icons.numbers_outlined),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
-                              ),
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.4,
+                child: Directionality(
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
+                  child: Form(
+                    key: formKeyNewTax,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.35,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(top: 20.0),
                             ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: InputDecorator(
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'مالیه سال',
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: SizedBox(
-                                  height: 26.0,
-                                  child: DropdownButton(
-                                    isExpanded: true,
-                                    icon: const Icon(Icons.arrow_drop_down),
-                                    value: selectedYear,
-                                    items: years.map((int year) {
-                                      return DropdownMenuItem(
-                                        alignment: Alignment.centerRight,
-                                        value: year,
-                                        child: Text(year.toString()),
-                                      );
-                                    }).toList(),
-                                    onChanged: (int? newValue) {
-                                      setState(() {
-                                        selectedYear = newValue!;
-                                      });
-                                    },
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: TextFormField(
+                                controller: TINController,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return translations[selectedLanguage]
+                                            ?['TINRequired'] ??
+                                        '';
+                                  } else if (value.length < 10 ||
+                                      value.length > 10) {
+                                    return translations[selectedLanguage]
+                                            ?['TINLength'] ??
+                                        '';
+                                  }
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(regExOnlydigits),
                                   ),
+                                ],
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: translations[selectedLanguage]
+                                          ?['TIN'] ??
+                                      '',
+                                  suffixIcon:
+                                      const Icon(Icons.numbers_outlined),
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
                                 ),
                               ),
                             ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: taxRateController,
-                              validator: (value) {
-                                double taxPercentage =
-                                    taxRateController.text.isNotEmpty
-                                        ? double.parse(taxRateController.text)
-                                        : 0;
-                                if (value!.isEmpty) {
-                                  return 'فیصدی مالیات الزامی میباشد.';
-                                } else if (taxPercentage < 0 ||
-                                    taxPercentage > 50) {
-                                  return 'فیصدی مالیات نا معتبر است.';
-                                }
-                              },
-                              onChanged: _onSetTotalTax,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(regExpDecimal)),
-                                LengthLimitingTextInputFormatter(4)
-                              ],
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'فیصدی مالیات',
-                                suffixIcon: Icon(Icons.percent_outlined),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: annualIncomeController,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'مجموع عاید سال الزامی میباشد.';
-                                }
-                              },
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(regExpDecimal))
-                              ],
-                              onChanged: _onSetTotalTax,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText:
-                                    'مجموع عاید سال ${selectedYear.toString()}',
-                                suffixIcon:
-                                    const Icon(Icons.money_off_csred_outlined),
-                                enabledBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: taxTotalController,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(regExpDecimal))
-                              ],
-                              readOnly: true,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'مجموع مالیات',
-                                suffixIcon: Icon(Icons.money),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
-                              ),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: Container(
-                                  margin: const EdgeInsets.only(
-                                      left: 20.0,
-                                      right: 20.0,
-                                      top: 10.0,
-                                      bottom: 10.0),
-                                  child: TextFormField(
-                                    controller: taxPaidController,
-                                    validator: (value) {
-                                      double taxPaid = taxPaidController
-                                              .text.isNotEmpty
-                                          ? double.parse(taxPaidController.text)
-                                          : 0;
-                                      if (value!.isEmpty) {
-                                        return 'مالیات تحویل شده الزامی میباشد.';
-                                      } else if (taxPaid > totalTaxesofYear!) {
-                                        return 'مالیات تحویل شده نمی تواند بیشتر از کل مالیات باشد.';
-                                      }
-                                    },
-                                    readOnly: checked ? true : false,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.allow(
-                                          RegExp(regExpDecimal))
-                                    ],
-                                    onChanged:
-                                        checked ? _onPaidTaxes : _onPaidTaxes,
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'مالیات تحویل شده',
-                                      suffixIcon:
-                                          Icon(Icons.money_off_csred_outlined),
-                                      enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.grey)),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.blue)),
-                                      errorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.red)),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide: BorderSide(
-                                              color: Colors.red, width: 1.5)),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: InputDecorator(
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: translations[selectedLanguage]
+                                          ?['TaxOfYear'] ??
+                                      '',
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: SizedBox(
+                                    height: 26.0,
+                                    child: DropdownButton(
+                                      isExpanded: true,
+                                      icon: const Icon(Icons.arrow_drop_down),
+                                      value: selectedYear,
+                                      items: years.map((int year) {
+                                        return DropdownMenuItem(
+                                          alignment: Alignment.centerRight,
+                                          value: year,
+                                          child: Text(year.toString()),
+                                        );
+                                      }).toList(),
+                                      onChanged: (int? newValue) {
+                                        setState(() {
+                                          selectedYear = newValue!;
+                                        });
+                                      },
                                     ),
                                   ),
                                 ),
                               ),
-                              Expanded(
-                                flex: 1,
-                                child: CheckboxListTile(
-                                  value: checked,
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      checked = value!;
-                                      if (checked) {
-                                        dueTaxes = 0;
-                                        paidTaxes = totalTaxesofYear;
-                                        taxPaidController.text =
-                                            paidTaxes.toString();
-                                        taxDueController.text =
-                                            dueTaxes.toString();
-                                      }
-                                    });
-                                  },
-                                  title: const Text('پرداخت همه'),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: taxDueController,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(regExpDecimal))
-                              ],
-                              readOnly: true,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'مالیات باقی',
-                                suffixIcon: Icon(Icons.attach_money_outlined),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
-                              ),
                             ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: delDateCotnroller,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'تاریخ تحویلی الزامی میباشد.';
-                                }
-                              },
-                              onTap: () async {
-                                FocusScope.of(context)
-                                    .requestFocus(FocusNode());
-                                final DateTime? dateTime = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime(1900),
-                                    lastDate: DateTime(2100));
-                                if (dateTime != null) {
-                                  final intl.DateFormat formatter =
-                                      intl.DateFormat('yyyy-MM-dd');
-                                  final String formattedDate =
-                                      formatter.format(dateTime);
-                                  delDateCotnroller.text = formattedDate;
-                                }
-                              },
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(regExpDecimal))
-                              ],
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'تاریخ تحویل دهی',
-                                suffixIcon: Icon(Icons.calendar_month_outlined),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
-                              ),
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: TextFormField(
-                              controller: noteController,
-                              validator: (value) {
-                                if (value!.isNotEmpty) {
-                                  if (value.length > 40 || value.length < 10) {
-                                    return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: TextFormField(
+                                controller: taxRateController,
+                                validator: (value) {
+                                  double taxPercentage =
+                                      taxRateController.text.isNotEmpty
+                                          ? double.parse(taxRateController.text)
+                                          : 0;
+                                  if (value!.isEmpty) {
+                                    return translations[selectedLanguage]
+                                            ?['TaxRateRequired'] ??
+                                        '';
+                                  } else if (taxPercentage < 0 ||
+                                      taxPercentage > 50) {
+                                    return translations[selectedLanguage]
+                                            ?['TRinvalid'] ??
+                                        '';
                                   }
-                                }
-                                return null;
-                              },
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                  RegExp(regExOnlyAbc),
+                                },
+                                onChanged: _onSetTotalTax,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(regExpDecimal)),
+                                  LengthLimitingTextInputFormatter(4)
+                                ],
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'فیصدی مالیات',
+                                  suffixIcon: Icon(Icons.percent_outlined),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
                                 ),
-                              ],
-                              maxLines: 3,
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'توضیحات',
-                                suffixIcon: Icon(Icons.note_alt_outlined),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(30.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(30.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(30.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(30.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
                               ),
                             ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(
-                                left: 20.0,
-                                right: 20.0,
-                                top: 10.0,
-                                bottom: 10.0),
-                            child: InputDecorator(
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'تحویل کننده',
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
-                                    borderSide: BorderSide(
-                                        color: Colors.red, width: 1.5)),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: TextFormField(
+                                controller: annualIncomeController,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return translations[selectedLanguage]
+                                            ?['TATRequired'] ??
+                                        '';
+                                  }
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(regExpDecimal))
+                                ],
+                                onChanged: _onSetTotalTax,
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText:
+                                      '${translations[selectedLanguage]?['TATRequired'] ?? ''} ${selectedYear.toString()}',
+                                  suffixIcon: const Icon(
+                                      Icons.money_off_csred_outlined),
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
                               ),
-                              child: DropdownButtonHideUnderline(
-                                child: Container(
-                                  height: 26.0,
-                                  child: DropdownButton(
-                                    isExpanded: true,
-                                    icon: const Icon(Icons.arrow_drop_down),
-                                    value: selectedStaffId,
-                                    items: staffList.map((staff) {
-                                      return DropdownMenuItem<String>(
-                                        value: staff['staff_ID'],
-                                        alignment: Alignment.centerRight,
-                                        child: Text(staff['firstname'] +
-                                            ' ' +
-                                            staff['lastname']),
-                                      );
-                                    }).toList(),
-                                    onChanged: (String? newValue) {
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: TextFormField(
+                                controller: taxTotalController,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(regExpDecimal))
+                                ],
+                                readOnly: true,
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: translations[selectedLanguage]
+                                          ?['AnnTotTax'] ??
+                                      '',
+                                  suffixIcon: const Icon(Icons.money),
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: Container(
+                                    margin: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 20.0,
+                                        top: 10.0,
+                                        bottom: 10.0),
+                                    child: TextFormField(
+                                      controller: taxPaidController,
+                                      validator: (value) {
+                                        double taxPaid =
+                                            taxPaidController.text.isNotEmpty
+                                                ? double.parse(
+                                                    taxPaidController.text)
+                                                : 0;
+                                        if (value!.isEmpty) {
+                                          return translations[selectedLanguage]
+                                                  ?['PaidTaxRequired'] ??
+                                              '';
+                                        } else if (taxPaid >
+                                            totalTaxesofYear!) {
+                                          return translations[selectedLanguage]
+                                                  ?['PTALength'] ??
+                                              '';
+                                        }
+                                      },
+                                      readOnly: checked ? true : false,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.allow(
+                                            RegExp(regExpDecimal))
+                                      ],
+                                      onChanged:
+                                          checked ? _onPaidTaxes : _onPaidTaxes,
+                                      decoration: InputDecoration(
+                                        border: const OutlineInputBorder(),
+                                        labelText:
+                                            translations[selectedLanguage]
+                                                    ?['PaidTax'] ??
+                                                '',
+                                        suffixIcon: const Icon(
+                                            Icons.money_off_csred_outlined),
+                                        enabledBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                        errorBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.red)),
+                                        focusedErrorBorder:
+                                            const OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(50.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.red,
+                                                    width: 1.5)),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: CheckboxListTile(
+                                    value: checked,
+                                    onChanged: (bool? value) {
                                       setState(() {
-                                        selectedStaffId = newValue;
+                                        checked = value!;
+                                        if (checked) {
+                                          dueTaxes = 0;
+                                          paidTaxes = totalTaxesofYear;
+                                          taxPaidController.text =
+                                              paidTaxes.toString();
+                                          taxDueController.text =
+                                              dueTaxes.toString();
+                                        }
                                       });
                                     },
+                                    title: Text(
+                                      translations[selectedLanguage]
+                                              ?['PayWhole'] ??
+                                          '',
+                                      style: const TextStyle(
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: TextFormField(
+                                controller: taxDueController,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(regExpDecimal))
+                                ],
+                                readOnly: true,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'مالیات باقی',
+                                  suffixIcon: Icon(Icons.attach_money_outlined),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: TextFormField(
+                                controller: delDateCotnroller,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return translations[selectedLanguage]
+                                            ?['TPDateRequired'] ??
+                                        '';
+                                  }
+                                },
+                                onTap: () async {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  final DateTime? dateTime =
+                                      await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime(1900),
+                                          lastDate: DateTime(2100));
+                                  if (dateTime != null) {
+                                    final intl.DateFormat formatter =
+                                        intl.DateFormat('yyyy-MM-dd');
+                                    final String formattedDate =
+                                        formatter.format(dateTime);
+                                    delDateCotnroller.text = formattedDate;
+                                  }
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(regExpDecimal))
+                                ],
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: translations[selectedLanguage]
+                                          ?['TaxPaidDate'] ??
+                                      '',
+                                  suffixIcon:
+                                      const Icon(Icons.calendar_month_outlined),
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: TextFormField(
+                                controller: noteController,
+                                validator: (value) {
+                                  if (value!.isNotEmpty) {
+                                    if (value.length > 40 ||
+                                        value.length < 10) {
+                                      return translations[selectedLanguage]
+                                              ?['OtherDDLLength'] ??
+                                          '';
+                                    }
+                                  }
+                                  return null;
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(regExOnlyAbc),
+                                  ),
+                                ],
+                                maxLines: 3,
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: translations[selectedLanguage]
+                                          ?['RetDetails'] ??
+                                      '',
+                                  suffixIcon:
+                                      const Icon(Icons.note_alt_outlined),
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(30.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(30.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(30.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(30.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: InputDecorator(
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: translations[selectedLanguage]
+                                          ?['TaxPaidBy'] ??
+                                      '',
+                                  enabledBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: Container(
+                                    height: 26.0,
+                                    child: DropdownButton(
+                                      isExpanded: true,
+                                      icon: const Icon(Icons.arrow_drop_down),
+                                      value: selectedStaffId,
+                                      items: staffList.map((staff) {
+                                        return DropdownMenuItem<String>(
+                                          value: staff['staff_ID'],
+                                          alignment: Alignment.centerRight,
+                                          child: Text(staff['firstname'] +
+                                              ' ' +
+                                              staff['lastname']),
+                                        );
+                                      }).toList(),
+                                      onChanged: (String? newValue) {
+                                        setState(() {
+                                          selectedStaffId = newValue;
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -801,13 +882,16 @@ class TaxDataTableState extends State<TaxDataTable> {
               ),
               actions: [
                 Directionality(
-                    textDirection: TextDirection.rtl,
+                    textDirection:
+                        isEnglish ? TextDirection.ltr : TextDirection.rtl,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text('لغو')),
+                            child: Text(translations[selectedLanguage]
+                                    ?['CancelBtn'] ??
+                                '')),
                         ElevatedButton(
                           onPressed: () async {
                             if (formKeyNewTax.currentState!.validate()) {
@@ -832,7 +916,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                                   [taxYear]);
                               if (results1.isNotEmpty) {
                                 _onShowSnack(Colors.red,
-                                    'متاسفم، مالیات سال $taxYear ه.ش قبلا در سیستم وجود دارد.');
+                                    '${translations[selectedLanguage]?['TATRequired'] ?? ''}: $taxYear');
                               } else {
                                 // Secondly add a record into taxes first
                                 var results2 = await conn.query(
@@ -863,19 +947,26 @@ class TaxDataTableState extends State<TaxDataTable> {
                                         note
                                       ]);
                                   if (results4.affectedRows! > 0) {
-                                    _onShowSnack(Colors.green,
-                                        'مالیات موفقانه افزوده شد.');
+                                    _onShowSnack(
+                                        Colors.green,
+                                        translations[selectedLanguage]
+                                                ?['TYSuccessMsg'] ??
+                                            '');
                                     TaxInfo.onAddTax!();
                                   } else {
-                                    _onShowSnack(Colors.red,
-                                        'متاسفم، افزودن مالیات ناکام شد.');
+                                    _onShowSnack(
+                                        Colors.red,
+                                        translations[selectedLanguage]
+                                                ?['TYErrMsg'] ??
+                                            '');
                                   }
                                 }
                               }
                               Navigator.pop(context);
                             }
                           },
-                          child: const Text('ثبت کردن'),
+                          child: Text(
+                              translations[selectedLanguage]?['AddBtn'] ?? ''),
                         ),
                       ],
                     ))
@@ -1282,10 +1373,13 @@ class MyDataSource extends DataTableSource {
   DataRow getRow(int index) {
     return DataRow(cells: [
       DataCell(Text('${data[index].taxOfYear} ه.ش')),
-      DataCell(Text('${data[index].annualIncom} افغانی')),
+      DataCell(Text(
+          '${data[index].annualIncom} ${translations[selectedLanguage]?['Afn'] ?? ''}')),
       DataCell(Text('${data[index].taxRate}%')),
-      DataCell(Text('${data[index].annualTaxes} افغانی')),
-      DataCell(Text('${data[index].deliveredTax} افغانی')),
+      DataCell(Text(
+          '${data[index].annualTaxes} ${translations[selectedLanguage]?['Afn'] ?? ''}')),
+      DataCell(Text(
+          '${data[index].deliveredTax} ${translations[selectedLanguage]?['Afn'] ?? ''}')),
       DataCell(Text(data[index].deliverDate.toString())),
       DataCell(
         Builder(builder: (BuildContext context) {
@@ -1384,39 +1478,47 @@ class MyDataSource extends DataTableSource {
 // This is to display an alert dialog to delete taxes
 onDeleteTax(BuildContext context, Function onDelete) {
   return showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-            title: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text('حذف مالیات'),
-            ),
-            content: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text('آیا میخواهید این مالیه را حذف کنید؟'),
-            ),
-            actions: [
-              TextButton(
-                  onPressed: () =>
-                      Navigator.of(context, rootNavigator: true).pop(),
-                  child: const Text('لغو')),
-              TextButton(
-                  onPressed: () async {
-                    final conn = await onConnToDb();
-                    final results = await conn.query(
-                        'DELETE FROM taxes WHERE tax_ID = ?', [TaxInfo.taxID]);
-                    if (results.affectedRows! > 0) {
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context, rootNavigator: true).pop();
-                      _onShowSnack(Colors.green,
-                          'مالیات سال ${TaxInfo.taxOfYear} ه.ش موفقانه حذف شد.');
-                      // Refresh the screen
-                      onDelete();
-                    }
-                    await conn.close();
-                  },
-                  child: const Text('حذف')),
-            ],
-          ));
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Directionality(
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+        child: Text(translations[selectedLanguage]?['DelTaxHeading'] ?? ''),
+      ),
+      content: Directionality(
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+        child: Text(translations[selectedLanguage]?['DelTaxConfirm'] ?? ''),
+      ),
+      actions: [
+        Row(
+          mainAxisAlignment:
+              isEnglish ? MainAxisAlignment.end : MainAxisAlignment.start,
+          children: [
+            TextButton(
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
+                child:
+                    Text(translations[selectedLanguage]?['CancelBtn'] ?? '')),
+            TextButton(
+                onPressed: () async {
+                  final conn = await onConnToDb();
+                  final results = await conn.query(
+                      'DELETE FROM taxes WHERE tax_ID = ?', [TaxInfo.taxID]);
+                  if (results.affectedRows! > 0) {
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context, rootNavigator: true).pop();
+                    _onShowSnack(Colors.green,
+                        translations[selectedLanguage]?['DelTaxSuccess'] ?? '');
+                    // Refresh the screen
+                    onDelete();
+                  }
+                  await conn.close();
+                },
+                child: Text(translations[selectedLanguage]?['Delete'] ?? '')),
+          ],
+        ),
+      ],
+    ),
+  );
 }
 
 // This dialog edits a tax
@@ -1454,7 +1556,8 @@ onEditTax(BuildContext context, Function onUpdate) {
         ? 0
         : double.parse(annualIncomeController.text);
     totalTaxesofYear = (taxRate * annualIncome) / 100;
-    taxTotalController.text = '$totalTaxesofYear افغانی';
+    taxTotalController.text =
+        '$totalTaxesofYear ${translations[selectedLanguage]?['Afn'] ?? ''}';
   }
 
   bool checked = false;
@@ -1468,7 +1571,8 @@ onEditTax(BuildContext context, Function onUpdate) {
         : 0;
     dueTaxes =
         paidTaxes! <= totalTaxesofYear! ? totalTaxesofYear! - paidTaxes! : 0;
-    taxDueController.text = '$dueTaxes افغانی';
+    taxDueController.text =
+        '$dueTaxes ${translations[selectedLanguage]?['Afn'] ?? ''}';
   }
 
 // Set values into textfields through static members of TaxInfo class.
@@ -1488,15 +1592,15 @@ onEditTax(BuildContext context, Function onUpdate) {
       return StatefulBuilder(
         builder: ((context, setState) {
           return AlertDialog(
-            title: const Directionality(
-              textDirection: TextDirection.rtl,
+            title: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: Text(
-                'تغییر مالیات  ',
-                style: TextStyle(color: Colors.blue),
+                translations[selectedLanguage]?['EditTaxHeading'] ?? '',
+                style: const TextStyle(color: Colors.blue),
               ),
             ),
             content: Directionality(
-              textDirection: TextDirection.rtl,
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: Form(
                 key: formKey,
                 child: SizedBox(
@@ -1514,10 +1618,14 @@ onEditTax(BuildContext context, Function onUpdate) {
                             controller: TINController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'TIN الزامی میباشد.';
+                                return translations[selectedLanguage]
+                                        ?['TINRequired'] ??
+                                    '';
                               } else if (value.length < 10 ||
                                   value.length > 10) {
-                                return 'TIN باید 10 عدد باشد.';
+                                return translations[selectedLanguage]
+                                        ?['TINLength'] ??
+                                    '';
                               }
                             },
                             inputFormatters: [
@@ -1525,23 +1633,24 @@ onEditTax(BuildContext context, Function onUpdate) {
                                 RegExp(regExOnlydigits),
                               ),
                             ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'نمبر تشخیصیه مالیه دهنده (TIN)',
-                              suffixIcon: Icon(Icons.numbers_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText:
+                                  translations[selectedLanguage]?['TIN'] ?? '',
+                              suffixIcon: const Icon(Icons.numbers_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(
@@ -1553,22 +1662,24 @@ onEditTax(BuildContext context, Function onUpdate) {
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'مالیه سال (هجری شمسی)',
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['TaxOfYear'] ??
+                                  '',
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1608,10 +1719,14 @@ onEditTax(BuildContext context, Function onUpdate) {
                                       ? double.parse(taxRateController.text)
                                       : 0;
                               if (value!.isEmpty) {
-                                return 'فیصدی مالیات الزامی میباشد.';
+                                return translations[selectedLanguage]
+                                        ?['TaxRateRequired'] ??
+                                    '';
                               } else if (taxPercentage < 0 ||
                                   taxPercentage > 50) {
-                                return 'فیصدی مالیات نا معتبر است.';
+                                return translations[selectedLanguage]
+                                        ?['TRinvalid'] ??
+                                    '';
                               }
                             },
                             onChanged: _onSetTotalTax,
@@ -1620,23 +1735,25 @@ onEditTax(BuildContext context, Function onUpdate) {
                                   RegExp(regExpDecimal)),
                               LengthLimitingTextInputFormatter(4)
                             ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'فیصدی مالیات',
-                              suffixIcon: Icon(Icons.percent_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['TaxRate'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.percent_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(
@@ -1651,7 +1768,8 @@ onEditTax(BuildContext context, Function onUpdate) {
                             controller: annualIncomeController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'مجموع عاید سال الزامی میباشد.';
+                                return translations[selectedLanguage]?['TAT'] ??
+                                    '';
                               }
                             },
                             inputFormatters: [
@@ -1662,7 +1780,7 @@ onEditTax(BuildContext context, Function onUpdate) {
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
                               labelText:
-                                  'مجموع عاید سال ${selectedYear.toString()}',
+                                  '${translations[selectedLanguage]?['TotalAnnTAx'] ?? ''} (${selectedYear.toString()})',
                               suffixIcon:
                                   const Icon(Icons.money_off_csred_outlined),
                               enabledBorder: const OutlineInputBorder(
@@ -1694,23 +1812,25 @@ onEditTax(BuildContext context, Function onUpdate) {
                                   RegExp(regExOnlydigits))
                             ],
                             readOnly: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'مجموع مالیات',
-                              suffixIcon: Icon(Icons.money_sharp),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['TotalAnnTax'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.money_sharp),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(
@@ -1736,9 +1856,13 @@ onEditTax(BuildContext context, Function onUpdate) {
                                         ? double.parse(taxPaidController.text)
                                         : 0;
                                     if (value!.isEmpty) {
-                                      return 'مالیات تحویل شده الزامی میباشد.';
+                                      return translations[selectedLanguage]
+                                              ?['PaidTaxRequired'] ??
+                                          '';
                                     } else if (taxPaid > totalTaxesofYear!) {
-                                      return 'مالیات تحویل شده نمی تواند بیشتر از کل مالیات باشد.';
+                                      return translations[selectedLanguage]
+                                              ?['PTALength'] ??
+                                          '';
                                     }
                                   },
                                   readOnly: checked ? true : false,
@@ -1748,31 +1872,34 @@ onEditTax(BuildContext context, Function onUpdate) {
                                   ],
                                   onChanged:
                                       checked ? _onPaidTaxes : _onPaidTaxes,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'مالیات تحویل شده',
-                                    suffixIcon:
-                                        Icon(Icons.money_off_csred_outlined),
-                                    enabledBorder: OutlineInputBorder(
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                            ?['PaidTax'] ??
+                                        '',
+                                    suffixIcon: const Icon(
+                                        Icons.money_off_csred_outlined),
+                                    enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
-                                    errorBorder: OutlineInputBorder(
+                                    errorBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5)),
+                                    focusedErrorBorder:
+                                        const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
                                   ),
                                 ),
                               ),
@@ -1796,7 +1923,13 @@ onEditTax(BuildContext context, Function onUpdate) {
                                           }
                                         });
                                       },
-                                title: const Text('پرداخت همه'),
+                                title: Text(
+                                  translations[selectedLanguage]?['PayWhole'] ??
+                                      '',
+                                  style: const TextStyle(
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
                             ),
                           ],
@@ -1810,23 +1943,26 @@ onEditTax(BuildContext context, Function onUpdate) {
                                   RegExp(regExpDecimal))
                             ],
                             readOnly: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'مالیات باقی',
-                              suffixIcon: Icon(Icons.attach_money_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['TaxDue'] ??
+                                  '',
+                              suffixIcon:
+                                  const Icon(Icons.attach_money_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(
@@ -1840,7 +1976,9 @@ onEditTax(BuildContext context, Function onUpdate) {
                             controller: delDateCotnroller,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'تاریخ تحویلی الزامی میباشد.';
+                                return translations[selectedLanguage]
+                                        ?['TPDateRequired'] ??
+                                    '';
                               }
                             },
                             onTap: () async {
@@ -1862,23 +2000,26 @@ onEditTax(BuildContext context, Function onUpdate) {
                               FilteringTextInputFormatter.allow(
                                   RegExp(r'[0-9.]'))
                             ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تاریخ تحویل دهی',
-                              suffixIcon: Icon(Icons.calendar_month_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['TaxPaiddate'] ??
+                                  '',
+                              suffixIcon:
+                                  const Icon(Icons.calendar_month_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(
@@ -1894,7 +2035,9 @@ onEditTax(BuildContext context, Function onUpdate) {
                             validator: (value) {
                               if (value!.isNotEmpty) {
                                 if (value.length > 40 || value.length < 10) {
-                                  return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['OtherDDLLength'] ??
+                                      '';
                                 }
                               }
                               return null;
@@ -1905,23 +2048,25 @@ onEditTax(BuildContext context, Function onUpdate) {
                               ),
                             ],
                             maxLines: 3,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'توضیحات',
-                              suffixIcon: Icon(Icons.note_alt_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['RetDetails'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.note_alt_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(
@@ -1933,22 +2078,24 @@ onEditTax(BuildContext context, Function onUpdate) {
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تحویل کننده',
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['TaxPaidBy'] ??
+                                  '',
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -1974,8 +2121,6 @@ onEditTax(BuildContext context, Function onUpdate) {
                                     setState(() {
                                       TaxInfo.selectedStaff = newValue;
                                       selectedStaff = int.parse(newValue!);
-                                      print(
-                                          'Selected Staff...> $selectedStaff');
                                     });
                                   },
                                 ),
@@ -1991,13 +2136,16 @@ onEditTax(BuildContext context, Function onUpdate) {
             ),
             actions: [
               Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection:
+                      isEnglish ? TextDirection.rtl : TextDirection.ltr,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('لغو')),
+                          child: Text(translations[selectedLanguage]
+                                  ?['CancelBtn'] ??
+                              '')),
                       ElevatedButton(
                         onPressed: () async {
                           if (formKey.currentState!.validate()) {
@@ -2040,17 +2188,24 @@ onEditTax(BuildContext context, Function onUpdate) {
                             if (editResult1.affectedRows! > 0 ||
                                 editResult2.affectedRows! > 0) {
                               _onShowSnack(
-                                  Colors.green, 'مالیات موفقانه تغییر کرد.');
+                                  Colors.green,
+                                  translations[selectedLanguage]
+                                          ?['StaffEditMsg'] ??
+                                      '');
                               onUpdate();
                             } else {
-                              _onShowSnack(Colors.red,
-                                  'متاسفم، شما هیچ تغییراتی نیاوردید.');
+                              _onShowSnack(
+                                  Colors.red,
+                                  translations[selectedLanguage]
+                                          ?['StaffEditErrMsg'] ??
+                                      '');
                             }
                             await conn.close();
                             Navigator.pop(context);
                           }
                         },
-                        child: const Text('تغییر'),
+                        child:
+                            Text(translations[selectedLanguage]?['Edit'] ?? ''),
                       ),
                     ],
                   ))
@@ -2087,15 +2242,15 @@ onPayDueTaxes(BuildContext context) {
       return StatefulBuilder(
         builder: ((context, setState) {
           return AlertDialog(
-            title: const Directionality(
-              textDirection: TextDirection.rtl,
-              child: Text(
+            title: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: const Text(
                 'پرداخت بقیه مالیات',
                 style: TextStyle(color: Colors.blue),
               ),
             ),
             content: Directionality(
-              textDirection: TextDirection.rtl,
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: Form(
                 key: formKeyDueTax,
                 child: SizedBox(
@@ -2329,7 +2484,8 @@ onPayDueTaxes(BuildContext context) {
             ),
             actions: [
               Directionality(
-                  textDirection: TextDirection.rtl,
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -2386,7 +2542,7 @@ onShowTaxDetails(BuildContext context) {
     context: context,
     builder: (ctx) => AlertDialog(
       title: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
         child: Row(
           children: [
             const Expanded(
@@ -2417,11 +2573,164 @@ onShowTaxDetails(BuildContext context) {
         ),
       ),
       content: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
         child: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.5,
-          child: const Directionality(
-              textDirection: TextDirection.rtl, child: TaxDetails()),
+          width: 500.0,
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: Directionality(
+            textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10.0),
+                  color: const Color.fromARGB(255, 240, 239, 239),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'نمبر تشخیصیه مالیه دهنده (TIN)',
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Color.fromARGB(255, 118, 116, 116),
+                        ),
+                      ),
+                      Text('${TaxInfo.TIN}'),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 15.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 240.0,
+                      padding: const EdgeInsets.all(10.0),
+                      color: const Color.fromARGB(255, 240, 239, 239),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text(
+                            'مالیات سال',
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Color.fromARGB(255, 118, 116, 116),
+                            ),
+                          ),
+                          Text('${TaxInfo.taxOfYear} ه.ش'),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: 240.0,
+                      padding: const EdgeInsets.all(10.0),
+                      color: const Color.fromARGB(255, 240, 239, 239),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text(
+                            'فیصدی مالیات (%)',
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Color.fromARGB(255, 118, 116, 116),
+                            ),
+                          ),
+                          Text('${TaxInfo.taxRate} %'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 15.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 240.0,
+                      padding: const EdgeInsets.all(10.0),
+                      color: const Color.fromARGB(255, 240, 239, 239),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text(
+                            'تاریخ تحویلی',
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Color.fromARGB(255, 118, 116, 116),
+                            ),
+                          ),
+                          Text('${TaxInfo.paidDate}'),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      width: 240.0,
+                      padding: const EdgeInsets.all(10.0),
+                      color: const Color.fromARGB(255, 240, 239, 239),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text(
+                            'مجموع مالیات',
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              color: Color.fromARGB(255, 118, 116, 116),
+                            ),
+                          ),
+                          Text('${TaxInfo.annTotTaxes.toString()} افغانی'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 15.0,
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10.0),
+                  color: const Color.fromARGB(255, 240, 239, 239),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      const Text(
+                        'مبلع باقی',
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Color.fromARGB(255, 118, 116, 116),
+                        ),
+                      ),
+                      Text('${TaxInfo.dueTaxes} افغانی'),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 15.0,
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10.0),
+                  color: const Color.fromARGB(255, 240, 239, 239),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'تحویل مالیات توسط',
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          color: Color.fromARGB(255, 118, 116, 116),
+                        ),
+                      ),
+                      Text('${TaxInfo.firstName} ${TaxInfo.lastName}'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
       actions: [
