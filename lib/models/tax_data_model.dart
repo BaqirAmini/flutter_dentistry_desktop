@@ -248,7 +248,7 @@ class TaxDataTableState extends State<TaxDataTable> {
           ? 0
           : double.parse(annualIncomeController.text);
       totalTaxesofYear = (taxRate * unitPrice) / 100;
-      taxTotalController.text = '$totalTaxesofYear افغانی';
+      taxTotalController.text = '$totalTaxesofYear ${translations[selectedLanguage]?['Afn'] ?? ''}';
     }
 
     bool checked = false;
@@ -262,7 +262,7 @@ class TaxDataTableState extends State<TaxDataTable> {
           : 0;
       dueTaxes =
           paidTaxes! <= totalTaxesofYear! ? totalTaxesofYear! - paidTaxes! : 0;
-      taxDueController.text = '$dueTaxes افغانی';
+      taxDueController.text = '$dueTaxes ${translations[selectedLanguage]?['Afn'] ?? ''}';
     }
 
     return showDialog(
@@ -1604,7 +1604,7 @@ onEditTax(BuildContext context, Function onUpdate) {
               child: Form(
                 key: formKey,
                 child: SizedBox(
-                  width: 500.0,
+                  width: MediaQuery.of(context).size.width * 0.35,
                   child: SingleChildScrollView(
                     reverse: false,
                     child: Column(
@@ -1780,7 +1780,7 @@ onEditTax(BuildContext context, Function onUpdate) {
                             decoration: InputDecoration(
                               border: const OutlineInputBorder(),
                               labelText:
-                                  '${translations[selectedLanguage]?['TotalAnnTAx'] ?? ''} (${selectedYear.toString()})',
+                                  '${translations[selectedLanguage]?['AnnTotTax'] ?? ''} (${selectedYear.toString()} ه.ش)',
                               suffixIcon:
                                   const Icon(Icons.money_off_csred_outlined),
                               enabledBorder: const OutlineInputBorder(
@@ -2233,8 +2233,8 @@ onPayDueTaxes(BuildContext context) {
   String selectedStaffForTax = TaxInfo.selectedStaff!;
 
   // Assign paid amount taxes and due amount taxes
-  taxPaidController.text = '${TaxInfo.paidTaxes} افغانی';
-  taxDueController.text = '${TaxInfo.dueTaxes} افغانی';
+  taxPaidController.text = '${TaxInfo.paidTaxes} ${translations[selectedLanguage]?['Afn'] ?? ''}';
+  taxDueController.text = '${TaxInfo.dueTaxes} ${translations[selectedLanguage]?['Afn'] ?? ''}';
 
   return showDialog(
     context: context,
@@ -2244,9 +2244,9 @@ onPayDueTaxes(BuildContext context) {
           return AlertDialog(
             title: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text(
-                'پرداخت بقیه مالیات',
-                style: TextStyle(color: Colors.blue),
+              child: Text(
+                translations[selectedLanguage]?['PayDTHeading'] ?? '',
+                style: const TextStyle(color: Colors.blue),
               ),
             ),
             content: Directionality(
@@ -2271,23 +2271,26 @@ onPayDueTaxes(BuildContext context) {
                                   RegExp(regExpDecimal))
                             ],
                             readOnly: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'مالیات تحویل شده',
-                              suffixIcon: Icon(Icons.money_off_csred_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['PaidTax'] ??
+                                  '',
+                              suffixIcon:
+                                  const Icon(Icons.money_off_csred_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -2305,23 +2308,26 @@ onPayDueTaxes(BuildContext context) {
                                   RegExp(regExpDecimal))
                             ],
                             readOnly: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'مالیات باقی',
-                              suffixIcon: Icon(Icons.attach_money_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['TaxDue'] ??
+                                  '',
+                              suffixIcon:
+                                  const Icon(Icons.attach_money_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -2336,7 +2342,9 @@ onPayDueTaxes(BuildContext context) {
                             controller: paidDateController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'تاریخ تحویلی الزامی میباشد.';
+                                return translations[selectedLanguage]
+                                        ?['TPDateRequired'] ??
+                                    '';
                               }
                             },
                             onTap: () async {
@@ -2358,23 +2366,26 @@ onPayDueTaxes(BuildContext context) {
                               FilteringTextInputFormatter.allow(
                                   RegExp(regExpDecimal))
                             ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تاریخ تحویل دهی',
-                              suffixIcon: Icon(Icons.calendar_month_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['TaxPaidDate'] ??
+                                  '',
+                              suffixIcon:
+                                  const Icon(Icons.calendar_month_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -2390,7 +2401,9 @@ onPayDueTaxes(BuildContext context) {
                             validator: (value) {
                               if (value!.isNotEmpty) {
                                 if (value.length > 40 || value.length < 10) {
-                                  return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                  return translations[selectedLanguage]
+                                          ?['OtherDDLLength'] ??
+                                      '';
                                 }
                               }
                               return null;
@@ -2401,23 +2414,25 @@ onPayDueTaxes(BuildContext context) {
                               ),
                             ],
                             maxLines: 3,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'توضیحات',
-                              suffixIcon: Icon(Icons.note_alt_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['RetDetails'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.note_alt_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(30.0)),
                                   borderSide: BorderSide(
@@ -2429,22 +2444,24 @@ onPayDueTaxes(BuildContext context) {
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                           child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تحویل کننده',
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['TaxPaidBy'] ??
+                                  '',
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -2491,7 +2508,9 @@ onPayDueTaxes(BuildContext context) {
                     children: [
                       TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('لغو')),
+                          child: Text(translations[selectedLanguage]
+                                  ?['CancelBtn'] ??
+                              '')),
                       ElevatedButton(
                         onPressed: () async {
                           if (formKeyDueTax.currentState!.validate()) {
@@ -2515,16 +2534,25 @@ onPayDueTaxes(BuildContext context) {
 
                             if (dueResults.affectedRows! > 0) {
                               _onShowSnack(
-                                  Colors.green, 'بقیه مالیات نیز تصفیه شد.');
+                                  Colors.green,
+                                  translations[selectedLanguage]
+                                          ?['WholeTaxSuccessMsg'] ??
+                                      '');
                               TaxInfo.onUpdateDueTax!();
                             } else {
-                              _onShowSnack(Colors.green,
-                                  'متاسفم، تصفیه مالیات ناکام شد.');
+                              _onShowSnack(
+                                  Colors.green,
+                                  translations[selectedLanguage]
+                                          ?['WholeTaxErrMsg'] ??
+                                      '');
                             }
+                            // ignore: use_build_context_synchronously
                             Navigator.pop(context);
                           }
                         },
-                        child: const Text('ثبت کردن'),
+                        child: Text(translations[selectedLanguage]
+                                ?['RegBtn'] ??
+                            ''),
                       ),
                     ],
                   ))
@@ -2545,12 +2573,12 @@ onShowTaxDetails(BuildContext context) {
         textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
         child: Row(
           children: [
-            const Expanded(
+            Expanded(
               flex: 2,
               child: Text(
-                'جزییات مالیات',
-                style:
-                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                translations[selectedLanguage]?['TaxDetails'] ?? '',
+                style: const TextStyle(
+                    color: Colors.blue, fontWeight: FontWeight.bold),
               ),
             ),
             if (TaxInfo.isDueTax!)
@@ -2567,7 +2595,8 @@ onShowTaxDetails(BuildContext context) {
                   Navigator.of(context, rootNavigator: true).pop();
                   onPayDueTaxes(context);
                 },
-                child: const Text('تصفیه مالیاتی'),
+                child:
+                    Text(translations[selectedLanguage]?['CleanUpTax'] ?? ''),
               ),
           ],
         ),
@@ -2575,169 +2604,182 @@ onShowTaxDetails(BuildContext context) {
       content: Directionality(
         textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
         child: SizedBox(
-          width: 500.0,
-          height: MediaQuery.of(context).size.height * 0.6,
+          width: MediaQuery.of(context).size.width * 0.3,
+          height: MediaQuery.of(context).size.height * 0.4,
           child: Directionality(
             textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10.0),
-                  color: const Color.fromARGB(255, 240, 239, 239),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10.0),
+                    color: const Color.fromARGB(255, 240, 239, 239),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          translations[selectedLanguage]?['TIN'] ?? '',
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            color: Color.fromARGB(255, 118, 116, 116),
+                          ),
+                        ),
+                        Text('${TaxInfo.TIN}'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 15.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'نمبر تشخیصیه مالیه دهنده (TIN)',
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          color: Color.fromARGB(255, 118, 116, 116),
+                      Container(
+                        width: 240.0,
+                        padding: const EdgeInsets.all(10.0),
+                        color: const Color.fromARGB(255, 240, 239, 239),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              translations[selectedLanguage]?['TaxOfYear'] ??
+                                  '',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Color.fromARGB(255, 118, 116, 116),
+                              ),
+                            ),
+                            Text('${TaxInfo.taxOfYear} ه.ش'),
+                          ],
                         ),
                       ),
-                      Text('${TaxInfo.TIN}'),
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 15.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: 240.0,
-                      padding: const EdgeInsets.all(10.0),
-                      color: const Color.fromARGB(255, 240, 239, 239),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const Text(
-                            'مالیات سال',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: Color.fromARGB(255, 118, 116, 116),
+                      Container(
+                        width: 240.0,
+                        padding: const EdgeInsets.all(10.0),
+                        color: const Color.fromARGB(255, 240, 239, 239),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              translations[selectedLanguage]?['TaxRate'] ?? '',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Color.fromARGB(255, 118, 116, 116),
+                              ),
                             ),
-                          ),
-                          Text('${TaxInfo.taxOfYear} ه.ش'),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 240.0,
-                      padding: const EdgeInsets.all(10.0),
-                      color: const Color.fromARGB(255, 240, 239, 239),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const Text(
-                            'فیصدی مالیات (%)',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: Color.fromARGB(255, 118, 116, 116),
-                            ),
-                          ),
-                          Text('${TaxInfo.taxRate} %'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 15.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: 240.0,
-                      padding: const EdgeInsets.all(10.0),
-                      color: const Color.fromARGB(255, 240, 239, 239),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const Text(
-                            'تاریخ تحویلی',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: Color.fromARGB(255, 118, 116, 116),
-                            ),
-                          ),
-                          Text('${TaxInfo.paidDate}'),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: 240.0,
-                      padding: const EdgeInsets.all(10.0),
-                      color: const Color.fromARGB(255, 240, 239, 239),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const Text(
-                            'مجموع مالیات',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: Color.fromARGB(255, 118, 116, 116),
-                            ),
-                          ),
-                          Text('${TaxInfo.annTotTaxes.toString()} افغانی'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 15.0,
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10.0),
-                  color: const Color.fromARGB(255, 240, 239, 239),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const Text(
-                        'مبلع باقی',
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          color: Color.fromARGB(255, 118, 116, 116),
+                            Text('${TaxInfo.taxRate} %'),
+                          ],
                         ),
                       ),
-                      Text('${TaxInfo.dueTaxes} افغانی'),
                     ],
                   ),
-                ),
-                const SizedBox(
-                  height: 15.0,
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10.0),
-                  color: const Color.fromARGB(255, 240, 239, 239),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(
+                    height: 15.0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'تحویل مالیات توسط',
-                        style: TextStyle(
-                          fontSize: 14.0,
-                          color: Color.fromARGB(255, 118, 116, 116),
+                      Container(
+                        width: 240.0,
+                        padding: const EdgeInsets.all(10.0),
+                        color: const Color.fromARGB(255, 240, 239, 239),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              translations[selectedLanguage]?['TaxPaidDate'] ??
+                                  '',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Color.fromARGB(255, 118, 116, 116),
+                              ),
+                            ),
+                            Text('${TaxInfo.paidDate}'),
+                          ],
                         ),
                       ),
-                      Text('${TaxInfo.firstName} ${TaxInfo.lastName}'),
+                      Container(
+                        width: 240.0,
+                        padding: const EdgeInsets.all(10.0),
+                        color: const Color.fromARGB(255, 240, 239, 239),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              translations[selectedLanguage]?['AnnTotTax'] ??
+                                  '',
+                              style: const TextStyle(
+                                fontSize: 14.0,
+                                color: Color.fromARGB(255, 118, 116, 116),
+                              ),
+                            ),
+                            Text(
+                                '${TaxInfo.annTotTaxes.toString()} ${translations[selectedLanguage]?['Afn'] ?? ''}'),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(
+                    height: 15.0,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(10.0),
+                    color: const Color.fromARGB(255, 240, 239, 239),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          translations[selectedLanguage]?['TaxDue'] ?? '',
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            color: Color.fromARGB(255, 118, 116, 116),
+                          ),
+                        ),
+                        Text(
+                            '${TaxInfo.dueTaxes} ${translations[selectedLanguage]?['Afn'] ?? ''}'),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 15.0,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(10.0),
+                    color: const Color.fromARGB(255, 240, 239, 239),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          translations[selectedLanguage]?['TaxPaidBy'] ?? '',
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            color: Color.fromARGB(255, 118, 116, 116),
+                          ),
+                        ),
+                        Text('${TaxInfo.firstName} ${TaxInfo.lastName}'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-          child: const Text('تایید'),
-        ),
+        Row(
+          mainAxisAlignment:
+              isEnglish ? MainAxisAlignment.end : MainAxisAlignment.start,
+          children: [
+            TextButton(
+              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+              child: Text(translations[selectedLanguage]?['Okay'] ?? ''),
+            ),
+          ],
+        )
       ],
       actionsAlignment: MainAxisAlignment.start,
     ),
