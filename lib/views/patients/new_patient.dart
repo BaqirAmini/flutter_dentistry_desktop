@@ -97,10 +97,10 @@ class _NewPatientState extends State<NewPatient> {
                   ),
                   Container(
                     margin: const EdgeInsets.only(top: 10, bottom: 10),
-                    child: const Text(
-                      '* نشان دهنده فیلد(خانه)های الزامی میباشد.',
+                    child: Text(
+                      translations[selectedLanguage]?['Asterisk'] ?? '',
                       textAlign: TextAlign.right,
-                      style: TextStyle(color: Colors.blue),
+                      style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Colors.red),
                     ),
                   ),
                   Column(
@@ -204,30 +204,32 @@ class _NewPatientState extends State<NewPatient> {
                                       return null;
                                     }
                                   },
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'تخلص',
-                                    suffixIcon: Icon(Icons.person),
-                                    enabledBorder: OutlineInputBorder(
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                        ?['LName'],
+                                    suffixIcon: const Icon(Icons.person),
+                                    enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
-                                    errorBorder: OutlineInputBorder(
+                                    errorBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5)),
+                                    focusedErrorBorder:
+                                        const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
                                   ),
                                 ),
                               ),
@@ -650,7 +652,7 @@ class _NewPatientState extends State<NewPatient> {
         Step(
           state: _currentStep <= 1 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 1,
-          title: const Text('تاریخچه صحی مریض'),
+          title: Text(translations[selectedLanguage]?['Histories'] ?? ''),
           content: Center(
             child: Form(
               child: Column(
@@ -659,13 +661,15 @@ class _NewPatientState extends State<NewPatient> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'تاریخچه صحی مریض که قبل از خدمات دندان باید جداً درنظر گرفته شود:',
-                        style: TextStyle(
+                      Text(
+                        translations[selectedLanguage]?['HealthHistWarning'] ??
+                            '',
+                        style: const TextStyle(
                             color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                       Tooltip(
-                        message: 'تاریخچه صحی جدید',
+                        message:
+                            translations[selectedLanguage]?['NewHistory'] ?? '',
                         child: InkWell(
                           onTap: () => _onCreateNewHealthHistory(),
                           child: Container(
@@ -728,9 +732,12 @@ class _NewPatientState extends State<NewPatient> {
                                               ),
                                             ),
                                             child: RadioListTile(
-                                              title: const Text(
-                                                'مثبت',
-                                                style: TextStyle(fontSize: 14),
+                                              title: Text(
+                                                translations[selectedLanguage]
+                                                        ?['Pos+'] ??
+                                                    '',
+                                                style: const TextStyle(
+                                                    fontSize: 14),
                                               ),
                                               value: 1,
                                               groupValue:
@@ -756,9 +763,12 @@ class _NewPatientState extends State<NewPatient> {
                                               ),
                                             ),
                                             child: RadioListTile(
-                                              title: const Text(
-                                                'منفی',
-                                                style: TextStyle(fontSize: 14),
+                                              title: Text(
+                                                translations[selectedLanguage]
+                                                        ?['Negative'] ??
+                                                    '',
+                                                style: const TextStyle(
+                                                    fontSize: 14),
                                               ),
                                               value: 0,
                                               groupValue:
@@ -781,19 +791,25 @@ class _NewPatientState extends State<NewPatient> {
                                               Icons.more_horiz,
                                               color: Colors.blue,
                                             ),
-                                            tooltip: 'بیشتر...',
+                                            tooltip:
+                                                translations[selectedLanguage]
+                                                        ?['More'] ??
+                                                    '',
                                             itemBuilder:
                                                 (BuildContext context) =>
                                                     <PopupMenuEntry>[
                                               PopupMenuItem(
                                                 child: Directionality(
-                                                  textDirection:
-                                                      TextDirection.rtl,
+                                                  textDirection: isEnglish
+                                                      ? TextDirection.ltr
+                                                      : TextDirection.rtl,
                                                   child: ListTile(
                                                     leading:
                                                         const Icon(Icons.list),
-                                                    title: const Text(
-                                                        'تکمیل تاریخچه'),
+                                                    title: Text(translations[
+                                                                selectedLanguage]
+                                                            ?['CompHistory'] ??
+                                                        ''),
                                                     onTap: () {
                                                       _onAddMoreDetailsforHistory(
                                                           cond.condID);
@@ -804,15 +820,18 @@ class _NewPatientState extends State<NewPatient> {
                                               ),
                                               PopupMenuItem(
                                                 child: Directionality(
-                                                  textDirection:
-                                                      TextDirection.rtl,
+                                                  textDirection: isEnglish
+                                                      ? TextDirection.ltr
+                                                      : TextDirection.rtl,
                                                   child: Builder(builder:
                                                       (BuildContext context) {
                                                     return ListTile(
                                                       leading: const Icon(
                                                           Icons.edit),
-                                                      title: const Text(
-                                                          'تغییر دادن'),
+                                                      title: Text(translations[
+                                                                  selectedLanguage]
+                                                              ?['Edit'] ??
+                                                          ''),
                                                       onTap: () {
                                                         _onEditHealthHistory(
                                                             cond.condID,
@@ -825,13 +844,16 @@ class _NewPatientState extends State<NewPatient> {
                                               ),
                                               PopupMenuItem(
                                                 child: Directionality(
-                                                  textDirection:
-                                                      TextDirection.rtl,
+                                                  textDirection: isEnglish
+                                                      ? TextDirection.ltr
+                                                      : TextDirection.rtl,
                                                   child: ListTile(
                                                       leading: const Icon(Icons
                                                           .delete_outline_rounded),
-                                                      title: const Text(
-                                                          'حذف کردن'),
+                                                      title: Text(translations[
+                                                                  selectedLanguage]
+                                                              ?['Delete'] ??
+                                                          ''),
                                                       onTap: () {
                                                         _onDeleteHealthHistory(
                                                             cond.condID);
@@ -889,7 +911,7 @@ class _NewPatientState extends State<NewPatient> {
         Step(
           state: _currentStep <= 2 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 2,
-          title: const Text('خدمات مورد نیاز'),
+          title: Text(translations[selectedLanguage]?['َDentalService'] ?? ''),
           content: ServiceForm(formKey: _formKey2),
         ),
         Step(
@@ -1054,7 +1076,11 @@ class _NewPatientState extends State<NewPatient> {
       builder: (ctx) => AlertDialog(
         title: Directionality(
           textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-          child: const Text('ایجاد تاریخچه صحی مریض'),
+          child: Text(translations[selectedLanguage]?['CompHistHeading'] ?? '',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall!
+                  .copyWith(color: Colors.blue)),
         ),
         content: Directionality(
           textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
@@ -1075,28 +1101,33 @@ class _NewPatientState extends State<NewPatient> {
                     ],
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'تاریخچه صحی مریض نمی تواند خالی باشد.';
+                        return translations[selectedLanguage]
+                                ?['CompHistRequired'] ??
+                            '';
                       } else if (value.length > 256) {
-                        return 'تاریخچه صحی خیلی طولانی است. لطفاً کمی مختصرش کنید.';
+                        return translations[selectedLanguage]
+                                ?['CompHistLength'] ??
+                            '';
                       }
                       return null;
                     },
                     minLines: 1,
                     maxLines: 2,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'تاریخچه صحی مریض',
-                      suffixIcon: Icon(Icons.note_alt_outlined),
-                      enabledBorder: OutlineInputBorder(
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText:
+                          translations[selectedLanguage]?['Histories'] ?? '',
+                      suffixIcon: const Icon(Icons.note_alt_outlined),
+                      enabledBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.grey)),
-                      focusedBorder: OutlineInputBorder(
+                      focusedBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.blue)),
-                      errorBorder: OutlineInputBorder(
+                      errorBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.red)),
-                      focusedErrorBorder: OutlineInputBorder(
+                      focusedErrorBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide:
                               BorderSide(color: Colors.red, width: 1.5)),
@@ -1108,28 +1139,44 @@ class _NewPatientState extends State<NewPatient> {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-            child: const Text('لغو'),
+          Row(
+            mainAxisAlignment:
+                isEnglish ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: [
+              TextButton(
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
+                child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
+              ),
+              ElevatedButton(
+                  onPressed: () async {
+                    if (_condFormKey.currentState!.validate()) {
+                      var condText = condNameController.text;
+                      final conn = await onConnToDb();
+                      final insertResults = await conn.query(
+                          'INSERT INTO conditions (name) VALUES (?)',
+                          [condText]);
+                      if (insertResults.affectedRows! > 0) {
+                        _onShowSnack(
+                            Colors.green,
+                            translations[selectedLanguage]
+                                    ?['HistCreateSuccessMsg'] ??
+                                '');
+                        setState(() {});
+                      } else {
+                        _onShowSnack(
+                            Colors.red,
+                            translations[selectedLanguage]
+                                    ?['HistCreateErrMsg'] ??
+                                '');
+                      }
+                      Navigator.of(context, rootNavigator: true).pop();
+                      await conn.close();
+                    }
+                  },
+                  child: Text(translations[selectedLanguage]?['AddBtn'] ?? '')),
+            ],
           ),
-          ElevatedButton(
-              onPressed: () async {
-                if (_condFormKey.currentState!.validate()) {
-                  var condText = condNameController.text;
-                  final conn = await onConnToDb();
-                  final insertResults = await conn.query(
-                      'INSERT INTO conditions (name) VALUES (?)', [condText]);
-                  if (insertResults.affectedRows! > 0) {
-                    _onShowSnack(Colors.green, 'سوال موفقانه ثبت گردید.');
-                    setState(() {});
-                  } else {
-                    _onShowSnack(Colors.red, 'ثبت سوال ناکام شد.');
-                  }
-                  Navigator.of(context, rootNavigator: true).pop();
-                  await conn.close();
-                }
-              },
-              child: const Text('ثبت')),
         ],
       ),
     );
@@ -1144,7 +1191,11 @@ class _NewPatientState extends State<NewPatient> {
       builder: (ctx) => AlertDialog(
         title: Directionality(
           textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-          child: const Text('تغییر تاریخچه صحی مریض'),
+          child: Text(translations[selectedLanguage]?['HistEditHeading'] ?? '',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall!
+                  .copyWith(color: Colors.blue)),
         ),
         content: Directionality(
           textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
@@ -1164,28 +1215,33 @@ class _NewPatientState extends State<NewPatient> {
                     ],
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'تاریخچه صحی مریض نمی تواند خالی باشد.';
+                        return translations[selectedLanguage]
+                                ?['HistFldRequired'] ??
+                            '';
                       } else if (value.length > 256) {
-                        return 'تاریخچه صحی خیلی طولانی است. لطفاً کمی مختصرش کنید.';
+                        return translations[selectedLanguage]
+                                ?['CompHistLength'] ??
+                            '';
                       }
                       return null;
                     },
                     minLines: 1,
                     maxLines: 2,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'تاریخچه صحی مریض',
-                      suffixIcon: Icon(Icons.note_alt_outlined),
-                      enabledBorder: OutlineInputBorder(
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText:
+                          translations[selectedLanguage]?['Histories'] ?? '',
+                      suffixIcon: const Icon(Icons.note_alt_outlined),
+                      enabledBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.grey)),
-                      focusedBorder: OutlineInputBorder(
+                      focusedBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.blue)),
-                      errorBorder: OutlineInputBorder(
+                      errorBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide: BorderSide(color: Colors.red)),
-                      focusedErrorBorder: OutlineInputBorder(
+                      focusedErrorBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           borderSide:
                               BorderSide(color: Colors.red, width: 1.5)),
@@ -1197,31 +1253,45 @@ class _NewPatientState extends State<NewPatient> {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-            child: const Text('لغو'),
-          ),
-          ElevatedButton(
-              onPressed: () async {
-                print('Editing $condID');
-                if (_condEditFormKey.currentState!.validate()) {
-                  var condText = condNameController.text;
-                  final conn = await onConnToDb();
-                  final editResults = await conn.query(
-                      'UPDATE conditions SET name = ? WHERE cond_ID = ?',
-                      [condText, condID]);
-                  if (editResults.affectedRows! > 0) {
-                    _onShowSnack(
-                        Colors.green, 'تاریخچه صحی مریض موفقانه تغییر کرد.');
-                    setState(() {});
-                  } else {
-                    _onShowSnack(Colors.red, 'هیچ تغییراتی نیاورده اید.');
-                  }
-                  Navigator.of(context, rootNavigator: true).pop();
-                  await conn.close();
-                }
-              },
-              child: const Text('تغییر دادن')),
+          Row(
+            mainAxisAlignment:
+                isEnglish ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: [
+              TextButton(
+                onPressed: () =>
+                    Navigator.of(context, rootNavigator: true).pop(),
+                child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
+              ),
+              ElevatedButton(
+                  onPressed: () async {
+                    print('Editing $condID');
+                    if (_condEditFormKey.currentState!.validate()) {
+                      var condText = condNameController.text;
+                      final conn = await onConnToDb();
+                      final editResults = await conn.query(
+                          'UPDATE conditions SET name = ? WHERE cond_ID = ?',
+                          [condText, condID]);
+                      if (editResults.affectedRows! > 0) {
+                        _onShowSnack(
+                            Colors.green,
+                            translations[selectedLanguage]?['StaffEditMsg'] ??
+                                '');
+                        setState(() {});
+                      } else {
+                        _onShowSnack(
+                            Colors.red,
+                            translations[selectedLanguage]
+                                    ?['StaffEditErrMsg'] ??
+                                '');
+                      }
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context, rootNavigator: true).pop();
+                      await conn.close();
+                    }
+                  },
+                  child: Text(translations[selectedLanguage]?['Edit'] ?? '')),
+            ],
+          )
         ],
       ),
     );
@@ -1247,33 +1317,50 @@ class _NewPatientState extends State<NewPatient> {
       builder: (ctx) => AlertDialog(
         title: Directionality(
           textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-          child: const Text('حذف تاریخچه صحی مریض'),
+          child: Text(
+              translations[selectedLanguage]?['HistDeleteHeading'] ?? '',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall!
+                  .copyWith(color: Colors.blue)),
         ),
         content: Directionality(
           textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-          child: const Text(
-              'آیا مطمیین هستید که میخواهید این تاریخچه صحی را حذف نمایید؟'),
+          child:
+              Text(translations[selectedLanguage]?['HistDeleteConfirm'] ?? ''),
         ),
         actions: [
-          TextButton(
-              onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
-              child: const Text('لغو')),
-          ElevatedButton(
-            onPressed: () async {
-              final conn = await onConnToDb();
-              final deleteResults = await conn
-                  .query('DELETE FROM conditions WHERE cond_ID = ?', [condID]);
-              if (deleteResults.affectedRows! > 0) {
-                _onShowSnack(Colors.green, 'تاریخچه صحی موفقانه حذف گردید.');
-                setState(() {});
-              } else {
-                _onShowSnack(Colors.red, 'حذف تاریخچه صحی ناکام شد.');
-              }
-              Navigator.of(context, rootNavigator: true).pop();
-              await conn.close();
-            },
-            child: const Text('حذف'),
-          ),
+          Row(
+            mainAxisAlignment:
+                isEnglish ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: [
+              TextButton(
+                  onPressed: () =>
+                      Navigator.of(context, rootNavigator: true).pop(),
+                  child:
+                      Text(translations[selectedLanguage]?['CancelBtn'] ?? '')),
+              ElevatedButton(
+                onPressed: () async {
+                  final conn = await onConnToDb();
+                  final deleteResults = await conn.query(
+                      'DELETE FROM conditions WHERE cond_ID = ?', [condID]);
+                  if (deleteResults.affectedRows! > 0) {
+                    _onShowSnack(
+                        Colors.green,
+                        translations[selectedLanguage]?['HistDelSuccess'] ??
+                            '');
+                    setState(() {});
+                  } else {
+                    _onShowSnack(Colors.red,
+                        translations[selectedLanguage]?['HistDelErr'] ?? '');
+                  }
+                  Navigator.of(context, rootNavigator: true).pop();
+                  await conn.close();
+                },
+                child: Text(translations[selectedLanguage]?['Delete'] ?? ''),
+              ),
+            ],
+          )
         ],
       ),
     );
@@ -1292,12 +1379,17 @@ class _NewPatientState extends State<NewPatient> {
           return AlertDialog(
             title: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text('جزییات بیشتر راجع به تاریخچه صحی'),
+              child: Text(
+                  translations[selectedLanguage]?['CompHistDetHeading'] ?? '',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall!
+                      .copyWith(color: Colors.blue)),
             ),
             content: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: SizedBox(
-                height: 380,
+                width: MediaQuery.of(context).size.width * 0.5,
                 child: Form(
                   key: _hisDetFormKey,
                   child: Column(
@@ -1305,7 +1397,6 @@ class _NewPatientState extends State<NewPatient> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
-                        width: 500.0,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: TextFormField(
@@ -1331,23 +1422,26 @@ class _NewPatientState extends State<NewPatient> {
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
                           ],
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'تاریخ تشخیص / معاینه',
-                            suffixIcon: Icon(Icons.calendar_month_outlined),
-                            enabledBorder: OutlineInputBorder(
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: translations[selectedLanguage]
+                                    ?['DiagDate'] ??
+                                '',
+                            suffixIcon:
+                                const Icon(Icons.calendar_month_outlined),
+                            enabledBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
-                            errorBorder: OutlineInputBorder(
+                            errorBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.red)),
-                            focusedErrorBorder: OutlineInputBorder(
+                            focusedErrorBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide:
@@ -1356,22 +1450,23 @@ class _NewPatientState extends State<NewPatient> {
                         ),
                       ),
                       Container(
-                        width: 500.0,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 10.0, horizontal: 10.0),
-                            border: OutlineInputBorder(),
-                            labelText: 'شدت / سطح',
-                            enabledBorder: OutlineInputBorder(
+                            border: const OutlineInputBorder(),
+                            labelText: translations[selectedLanguage]
+                                    ?['HistoryLevel'] ??
+                                '',
+                            enabledBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(50.0),
                               ),
                               borderSide: BorderSide(color: Colors.grey),
                             ),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(50.0),
                               ),
@@ -1388,9 +1483,11 @@ class _NewPatientState extends State<NewPatient> {
                                         horizontalTitleGap: 0.5),
                                   ),
                                   child: RadioListTile(
-                                      title: const Text(
-                                        'خفیف',
-                                        style: TextStyle(fontSize: 14),
+                                      title: Text(
+                                        translations[selectedLanguage]
+                                                ?['Mild'] ??
+                                            '',
+                                        style: const TextStyle(fontSize: 14),
                                       ),
                                       value: 'خفیف',
                                       groupValue: _histCondGroupValue[condID],
@@ -1408,9 +1505,11 @@ class _NewPatientState extends State<NewPatient> {
                                         horizontalTitleGap: 0.5),
                                   ),
                                   child: RadioListTile(
-                                      title: const Text(
-                                        'متوسط',
-                                        style: TextStyle(fontSize: 14),
+                                      title: Text(
+                                        translations[selectedLanguage]
+                                                ?['Moderate'] ??
+                                            '',
+                                        style: const TextStyle(fontSize: 14),
                                       ),
                                       value: 'متوسط',
                                       groupValue: _histCondGroupValue[condID],
@@ -1428,9 +1527,11 @@ class _NewPatientState extends State<NewPatient> {
                                         horizontalTitleGap: 0.5),
                                   ),
                                   child: RadioListTile(
-                                      title: const Text(
-                                        'شدید',
-                                        style: TextStyle(fontSize: 14),
+                                      title: Text(
+                                        translations[selectedLanguage]
+                                                ?['Severe'] ??
+                                            '',
+                                        style: const TextStyle(fontSize: 14),
                                       ),
                                       value: 'شدید',
                                       groupValue: _histCondGroupValue[condID],
@@ -1448,9 +1549,11 @@ class _NewPatientState extends State<NewPatient> {
                                         horizontalTitleGap: 0.5),
                                   ),
                                   child: RadioListTile(
-                                      title: const Text(
-                                        'نامعلوم',
-                                        style: TextStyle(fontSize: 14),
+                                      title: Text(
+                                        translations[selectedLanguage]
+                                                ?['Unclear'] ??
+                                            '',
+                                        style: const TextStyle(fontSize: 14),
                                       ),
                                       value: 'نامعلوم',
                                       groupValue: _histCondGroupValue[condID],
@@ -1466,22 +1569,23 @@ class _NewPatientState extends State<NewPatient> {
                         ),
                       ),
                       Container(
-                        width: 500.0,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 10.0, horizontal: 10.0),
-                            border: OutlineInputBorder(),
-                            labelText: 'سابقه / مدت',
-                            enabledBorder: OutlineInputBorder(
+                            border: const OutlineInputBorder(),
+                            labelText: translations[selectedLanguage]
+                                    ?['HistoryDuration'] ??
+                                '',
+                            enabledBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(50.0),
                               ),
                               borderSide: BorderSide(color: Colors.grey),
                             ),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(50.0),
                               ),
@@ -1498,49 +1602,11 @@ class _NewPatientState extends State<NewPatient> {
                                         horizontalTitleGap: 0.5),
                                   ),
                                   child: RadioListTile(
-                                      title: const Text(
-                                        '1 هفته',
-                                        style: TextStyle(fontSize: 10),
-                                      ),
-                                      value: '1 هفته',
-                                      groupValue: _durationGroupValue[condID],
-                                      onChanged: (String? value) {
-                                        setState(() {
-                                          _durationGroupValue[condID] = value!;
-                                        });
-                                      }),
-                                ),
-                              ),
-                              Expanded(
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(
-                                    listTileTheme: const ListTileThemeData(
-                                        horizontalTitleGap: 0.5),
-                                  ),
-                                  child: RadioListTile(
-                                      title: const Text(
-                                        '1 ماه',
-                                        style: TextStyle(fontSize: 10),
-                                      ),
-                                      value: '1 ماه',
-                                      groupValue: _durationGroupValue[condID],
-                                      onChanged: (String? value) {
-                                        setState(() {
-                                          _durationGroupValue[condID] = value!;
-                                        });
-                                      }),
-                                ),
-                              ),
-                              Expanded(
-                                child: Theme(
-                                  data: Theme.of(context).copyWith(
-                                    listTileTheme: const ListTileThemeData(
-                                        horizontalTitleGap: 0.5),
-                                  ),
-                                  child: RadioListTile(
-                                      title: const Text(
-                                        '6 ماه',
-                                        style: TextStyle(fontSize: 10),
+                                      title: Text(
+                                        translations[selectedLanguage]
+                                                ?['6Month'] ??
+                                            '',
+                                        style: const TextStyle(fontSize: 12),
                                       ),
                                       value: '6 ماه',
                                       groupValue: _durationGroupValue[condID],
@@ -1558,11 +1624,13 @@ class _NewPatientState extends State<NewPatient> {
                                         horizontalTitleGap: 0.5),
                                   ),
                                   child: RadioListTile(
-                                      title: const Text(
-                                        'بیشتر',
-                                        style: TextStyle(fontSize: 10),
+                                      title: Text(
+                                        translations[selectedLanguage]
+                                                ?['1Year'] ??
+                                            '',
+                                        style: const TextStyle(fontSize: 12),
                                       ),
-                                      value: 'بیشتر',
+                                      value: '1 سال',
                                       groupValue: _durationGroupValue[condID],
                                       onChanged: (String? value) {
                                         setState(() {
@@ -1578,9 +1646,55 @@ class _NewPatientState extends State<NewPatient> {
                                         horizontalTitleGap: 0.5),
                                   ),
                                   child: RadioListTile(
-                                      title: const Text(
-                                        'نامعلوم',
-                                        style: TextStyle(fontSize: 10),
+                                      title: Text(
+                                        translations[selectedLanguage]
+                                                ?['2Year'] ??
+                                            '',
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                      value: '2 سال',
+                                      groupValue: _durationGroupValue[condID],
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          _durationGroupValue[condID] = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: Text(
+                                        translations[selectedLanguage]
+                                                ?['More'] ??
+                                            '',
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                      value: 'بیشتر از 2 سال',
+                                      groupValue: _durationGroupValue[condID],
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          _durationGroupValue[condID] = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 0.5),
+                                  ),
+                                  child: RadioListTile(
+                                      title: Text(
+                                        translations[selectedLanguage]
+                                                ?['Unclear'] ??
+                                            '',
+                                        style: const TextStyle(fontSize: 12),
                                       ),
                                       value: 'نامعلوم',
                                       groupValue: _durationGroupValue[condID],
@@ -1596,7 +1710,6 @@ class _NewPatientState extends State<NewPatient> {
                         ),
                       ),
                       Container(
-                        width: 500.0,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: TextFormField(
@@ -1604,7 +1717,9 @@ class _NewPatientState extends State<NewPatient> {
                           validator: (value) {
                             if (value!.isNotEmpty) {
                               if (value.length > 40 || value.length < 10) {
-                                return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                return translations[selectedLanguage]
+                                        ?['OtherDDLLength'] ??
+                                    '';
                               }
                             }
                             return null;
@@ -1616,23 +1731,25 @@ class _NewPatientState extends State<NewPatient> {
                           ],
                           minLines: 1,
                           maxLines: 2,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'توضیحات',
-                            suffixIcon: Icon(Icons.note_alt_outlined),
-                            enabledBorder: OutlineInputBorder(
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: translations[selectedLanguage]
+                                    ?['RetDetails'] ??
+                                '',
+                            suffixIcon: const Icon(Icons.note_alt_outlined),
+                            enabledBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
-                            errorBorder: OutlineInputBorder(
+                            errorBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.red)),
-                            focusedErrorBorder: OutlineInputBorder(
+                            focusedErrorBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide:
@@ -1646,18 +1763,29 @@ class _NewPatientState extends State<NewPatient> {
               ),
             ),
             actions: [
-              TextButton(
-                  onPressed: () =>
-                      Navigator.of(context, rootNavigator: true).pop(),
-                  child: const Text('لغو')),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_hisDetFormKey.currentState!.validate()) {
-                    Navigator.of(context, rootNavigator: true).pop();
-                    _onShowSnack(Colors.green, 'این مورد تاریخچه تکمیل گردید.');
-                  }
-                },
-                child: const Text('انجام'),
+              Row(
+                mainAxisAlignment:
+                    isEnglish ? MainAxisAlignment.end : MainAxisAlignment.start,
+                children: [
+                  TextButton(
+                      onPressed: () =>
+                          Navigator.of(context, rootNavigator: true).pop(),
+                      child: Text(
+                          translations[selectedLanguage]?['CancelBtn'] ?? '')),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (_hisDetFormKey.currentState!.validate()) {
+                        Navigator.of(context, rootNavigator: true).pop();
+                        _onShowSnack(
+                            Colors.green,
+                            translations[selectedLanguage]?['HistCompMsg'] ??
+                                '');
+                      }
+                    },
+                    child:
+                        Text(translations[selectedLanguage]?['AddBtn'] ?? ''),
+                  ),
+                ],
               ),
             ],
           );

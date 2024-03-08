@@ -248,7 +248,8 @@ class TaxDataTableState extends State<TaxDataTable> {
           ? 0
           : double.parse(annualIncomeController.text);
       totalTaxesofYear = (taxRate * unitPrice) / 100;
-      taxTotalController.text = '$totalTaxesofYear ${translations[selectedLanguage]?['Afn'] ?? ''}';
+      taxTotalController.text =
+          '$totalTaxesofYear ${translations[selectedLanguage]?['Afn'] ?? ''}';
     }
 
     bool checked = false;
@@ -262,7 +263,8 @@ class TaxDataTableState extends State<TaxDataTable> {
           : 0;
       dueTaxes =
           paidTaxes! <= totalTaxesofYear! ? totalTaxesofYear! - paidTaxes! : 0;
-      taxDueController.text = '$dueTaxes ${translations[selectedLanguage]?['Afn'] ?? ''}';
+      taxDueController.text =
+          '$dueTaxes ${translations[selectedLanguage]?['Afn'] ?? ''}';
     }
 
     return showDialog(
@@ -1209,7 +1211,8 @@ class TaxDataTableState extends State<TaxDataTable> {
                             translations[selectedLanguage]?['FinYear'] ?? '',
                             style: const TextStyle(
                                 color: Colors.blue,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12.0),
                           ),
                           onSort: (columnIndex, ascending) {
                             setState(() {
@@ -1229,7 +1232,8 @@ class TaxDataTableState extends State<TaxDataTable> {
                                 '',
                             style: const TextStyle(
                                 color: Colors.blue,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12.0),
                           ),
                           onSort: (columnIndex, ascending) {
                             setState(() {
@@ -1248,7 +1252,8 @@ class TaxDataTableState extends State<TaxDataTable> {
                             translations[selectedLanguage]?['TaxRate'] ?? '',
                             style: const TextStyle(
                                 color: Colors.blue,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12.0),
                           ),
                           onSort: (columnIndex, ascending) {
                             setState(() {
@@ -1267,7 +1272,8 @@ class TaxDataTableState extends State<TaxDataTable> {
                             translations[selectedLanguage]?['AnnTotTax'] ?? '',
                             style: const TextStyle(
                                 color: Colors.blue,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12.0),
                           ),
                           onSort: (columnIndex, ascending) {
                             setState(() {
@@ -1286,7 +1292,8 @@ class TaxDataTableState extends State<TaxDataTable> {
                             translations[selectedLanguage]?['PaidTax'] ?? '',
                             style: const TextStyle(
                                 color: Colors.blue,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12.0),
                           ),
                           onSort: (columnIndex, ascending) {
                             setState(() {
@@ -1306,7 +1313,8 @@ class TaxDataTableState extends State<TaxDataTable> {
                                 '',
                             style: const TextStyle(
                                 color: Colors.blue,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12.0),
                           ),
                           onSort: (columnIndex, ascending) {
                             setState(() {
@@ -1325,7 +1333,8 @@ class TaxDataTableState extends State<TaxDataTable> {
                             translations[selectedLanguage]?['RetDetails'] ?? '',
                             style: const TextStyle(
                                 color: Colors.blue,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12.0),
                           ),
                         ),
                         DataColumn(
@@ -1333,13 +1342,15 @@ class TaxDataTableState extends State<TaxDataTable> {
                                 translations[selectedLanguage]?['Edit'] ?? '',
                                 style: const TextStyle(
                                     color: Colors.blue,
-                                    fontWeight: FontWeight.bold))),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.0))),
                         DataColumn(
                             label: Text(
                                 translations[selectedLanguage]?['Delete'] ?? '',
                                 style: const TextStyle(
                                     color: Colors.blue,
-                                    fontWeight: FontWeight.bold))),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.0))),
                       ],
                       source: dataSource,
                       rowsPerPage: _filteredData.length < 8
@@ -1384,6 +1395,7 @@ class MyDataSource extends DataTableSource {
       DataCell(
         Builder(builder: (BuildContext context) {
           return IconButton(
+            splashRadius: 25.0,
             icon: data[index].taxDetail,
             onPressed: (() async {
               // Assign values into static class members for later use
@@ -1421,6 +1433,7 @@ class MyDataSource extends DataTableSource {
       DataCell(
         Builder(builder: (BuildContext context) {
           return IconButton(
+            splashRadius: 25.0,
             icon: data[index].editTax,
             onPressed: (() {
               // Assign values into static class members for later use
@@ -1450,6 +1463,7 @@ class MyDataSource extends DataTableSource {
         Builder(
           builder: (BuildContext context) {
             return IconButton(
+              splashRadius: 25.0,
               icon: data[index].deleteTax,
               onPressed: (() {
                 TaxInfo.taxID = data[index].taxID;
@@ -2233,8 +2247,10 @@ onPayDueTaxes(BuildContext context) {
   String selectedStaffForTax = TaxInfo.selectedStaff!;
 
   // Assign paid amount taxes and due amount taxes
-  taxPaidController.text = '${TaxInfo.paidTaxes} ${translations[selectedLanguage]?['Afn'] ?? ''}';
-  taxDueController.text = '${TaxInfo.dueTaxes} ${translations[selectedLanguage]?['Afn'] ?? ''}';
+  taxPaidController.text =
+      '${TaxInfo.paidTaxes} ${translations[selectedLanguage]?['Afn'] ?? ''}';
+  taxDueController.text =
+      '${TaxInfo.dueTaxes} ${translations[selectedLanguage]?['Afn'] ?? ''}';
 
   return showDialog(
     context: context,
@@ -2550,9 +2566,8 @@ onPayDueTaxes(BuildContext context) {
                             Navigator.pop(context);
                           }
                         },
-                        child: Text(translations[selectedLanguage]
-                                ?['RegBtn'] ??
-                            ''),
+                        child: Text(
+                            translations[selectedLanguage]?['RegBtn'] ?? ''),
                       ),
                     ],
                   ))
@@ -2604,8 +2619,8 @@ onShowTaxDetails(BuildContext context) {
       content: Directionality(
         textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
         child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.3,
-          height: MediaQuery.of(context).size.height * 0.4,
+          width: MediaQuery.of(context).size.width * 0.4,
+          height: MediaQuery.of(context).size.height * 0.5,
           child: Directionality(
             textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
             child: SingleChildScrollView(
@@ -2711,7 +2726,7 @@ onShowTaxDetails(BuildContext context) {
                               translations[selectedLanguage]?['AnnTotTax'] ??
                                   '',
                               style: const TextStyle(
-                                fontSize: 14.0,
+                                fontSize: 1.0,
                                 color: Color.fromARGB(255, 118, 116, 116),
                               ),
                             ),

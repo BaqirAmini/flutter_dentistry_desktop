@@ -6,7 +6,6 @@ import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
-import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:provider/provider.dart';
@@ -53,51 +52,61 @@ class _CalendarAppState extends State<CalendarApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(translations[selectedLanguage]?['UpcomingAppt'] ?? ''),
-        actions: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 7.0, horizontal: 10.0),
-            width: MediaQuery.of(context).size.width * 0.3,
-            child: TextField(
-              style: const TextStyle(color: Colors.white),
-              cursorColor: Colors.white,
-              controller: _searchController,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'Search Appointment...',
-                hintText: 'Enter patients\' name or dentists\' name',
-                hintStyle: TextStyle(color: Colors.white54, fontSize: 14.0),
-                labelStyle: const TextStyle(color: Colors.white),
-                suffixIcon: IconButton(
-                  splashRadius: 25.0,
-                  icon: const Icon(Icons.clear, color: Colors.white),
-                  onPressed: () {
-                    setState(() {
-                      _searchController.clear();
-                      _searchTermNotifier.value = '';
-                    });
-                  },
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
+    return Directionality(
+      textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(translations[selectedLanguage]?['UpcomingAppt'] ?? ''),
+          actions: [
+            Container(
+              margin:
+                  const EdgeInsets.symmetric(vertical: 7.0, horizontal: 10.0),
+              width: MediaQuery.of(context).size.width * 0.3,
+              child: TextField(
+                style: const TextStyle(color: Colors.white),
+                cursorColor: Colors.white,
+                controller: _searchController,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText:
+                      translations[selectedLanguage]?['SearchAppt'] ?? '',
+                  hintText:
+                      translations[selectedLanguage]?['EnterDentist&Pat'] ?? '',
+                  hintStyle:
+                      const TextStyle(color: Colors.white54, fontSize: 14.0),
+                  labelStyle: const TextStyle(color: Colors.white),
+                  suffixIcon: IconButton(
+                    splashRadius: 25.0,
+                    icon: const Icon(Icons.clear, color: Colors.white),
+                    onPressed: () {
+                      setState(() {
+                        _searchController.clear();
+                        _searchTermNotifier.value = '';
+                      });
+                    },
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                      borderSide: BorderSide(color: Colors.white)),
+                  focusedBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                      borderSide: BorderSide(color: Colors.white)),
                 ),
-                enabledBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                    borderSide: BorderSide(color: Colors.white)),
-                focusedBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                    borderSide: BorderSide(color: Colors.white)),
+                onChanged: (value) {
+                  setState(() {
+                    _searchTermNotifier.value = value;
+                  });
+                },
               ),
-              onChanged: (value) {
-                setState(() {
-                  _searchTermNotifier.value = value;
-                });
-              },
             ),
-          ),
-          
-        ],
+          ],
+        ),
+        body: const CalendarPage(),
       ),
-      body: const CalendarPage(),
     );
   }
 }
@@ -264,7 +273,7 @@ class _CalendarPageState extends State<CalendarPage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Schedule an appointment'),
+              title: Text(translations[selectedLanguage]?['SearchAppt'] ?? ''),
               content: SizedBox(
                 height: MediaQuery.of(context).size.height * 0.7,
                 width: MediaQuery.of(context).size.width * 0.35,
@@ -275,7 +284,9 @@ class _CalendarPageState extends State<CalendarPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Tooltip(
-                          message: 'New Patient',
+                          message: translations[selectedLanguage]
+                                  ?['AddNewPatient'] ??
+                              '',
                           child: InkWell(
                             customBorder: const CircleBorder(),
                             onTap: () => _onCreateNewPatient(context, () {
@@ -337,34 +348,41 @@ class _CalendarPageState extends State<CalendarPage> {
                                     autofocus: true,
                                     validator: (value) {
                                       if (value!.isEmpty) {
-                                        return 'Patient not selected';
+                                        return translations[selectedLanguage]
+                                                ?['PatNotSelected'] ??
+                                            '';
                                       }
                                       return null;
                                     },
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'انتخاب مریض',
-                                      labelStyle: TextStyle(color: Colors.grey),
-                                      enabledBorder: OutlineInputBorder(
+                                    decoration: InputDecoration(
+                                      border: const OutlineInputBorder(),
+                                      labelText: translations[selectedLanguage]
+                                              ?['SelectPatient'] ??
+                                          '',
+                                      labelStyle:
+                                          const TextStyle(color: Colors.grey),
+                                      enabledBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.grey)),
-                                      focusedBorder: OutlineInputBorder(
+                                      focusedBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.blue)),
-                                      errorBorder: OutlineInputBorder(
+                                      errorBorder: const OutlineInputBorder(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(50.0)),
                                           borderSide:
                                               BorderSide(color: Colors.red)),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide: BorderSide(
-                                              color: Colors.red, width: 1.5)),
+                                      focusedErrorBorder:
+                                          const OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(50.0)),
+                                              borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 1.5)),
                                     ),
                                   );
                                 },
@@ -395,24 +413,27 @@ class _CalendarPageState extends State<CalendarPage> {
                           margin: const EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 10.0),
                           child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'انتخاب داکتر',
-                              labelStyle: TextStyle(color: Colors.blueAccent),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['SelectDentist'] ??
+                                  '',
+                              labelStyle:
+                                  const TextStyle(color: Colors.blueAccent),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide:
                                       BorderSide(color: Colors.blueAccent)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(15.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(15.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(15.0)),
                                   borderSide: BorderSide(
@@ -450,14 +471,16 @@ class _CalendarPageState extends State<CalendarPage> {
                           margin: const EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 10.0),
                           child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'خدمات مورد نیاز',
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['َDentalService'] ??
+                                  '',
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
@@ -500,23 +523,25 @@ class _CalendarPageState extends State<CalendarPage> {
                               return null;
                             },
                             readOnly: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تاریخ و زمان جلسه',
-                              suffixIcon: Icon(Icons.access_time),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['ApptDateTime'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.access_time),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -560,7 +585,9 @@ class _CalendarPageState extends State<CalendarPage> {
                             validator: (value) {
                               if (value!.isNotEmpty) {
                                 if (value.length < 5 || value.length > 40) {
-                                  return 'Details should at least 5 and at most 40 characters.';
+                                  return translations[selectedLanguage]
+                                          ?['OtherDDLLength'] ??
+                                      '';
                                 }
                                 return null;
                               }
@@ -570,23 +597,26 @@ class _CalendarPageState extends State<CalendarPage> {
                               FilteringTextInputFormatter.allow(
                                   RegExp(GlobalUsage.allowedEPChar))
                             ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'توضیحات',
-                              suffixIcon: Icon(Icons.description_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['RetDetails'] ??
+                                  '',
+                              suffixIcon:
+                                  const Icon(Icons.description_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide:
@@ -599,21 +629,24 @@ class _CalendarPageState extends State<CalendarPage> {
                           margin: const EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 10.0),
                           child: InputDecorator(
-                            decoration: const InputDecoration(
-                              suffixIcon:
-                                  Icon(Icons.notifications_active_outlined),
-                              border: OutlineInputBorder(),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              suffixIcon: const Icon(
+                                  Icons.notifications_active_outlined),
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['AlertNotif'] ??
+                                  '',
+                              enabledBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.grey),
                               ),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue),
                               ),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.red),
@@ -680,7 +713,11 @@ class _CalendarPageState extends State<CalendarPage> {
                           Navigator.of(context).pop();
                           // ignore: use_build_context_synchronously
                           _onShowSnack(
-                              Colors.green, 'Appointment scheduled!', context);
+                              Colors.green,
+                              translations[selectedLanguage]
+                                      ?['SchedSuccessMsg'] ??
+                                  '',
+                              context);
                           refresh();
                         }
                         await conn.close();
@@ -718,121 +755,126 @@ class _CalendarPageState extends State<CalendarPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Patient Full Name: $patientFName $patientLName',
-                  style: const TextStyle(color: Colors.blue, fontSize: 15.0)),
-              Row(
-                children: [
-                  IconButton(
-                      tooltip: 'Edit',
-                      splashRadius: 25.0,
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _editAppointmentDetails(
-                            context,
-                            staffID,
-                            serviceId,
-                            aptId,
-                            patientID,
-                            patientFName,
-                            patientLName,
-                            time,
-                            frequency,
-                            description, () {
-                          setState(() {});
-                        });
-                      },
-                      icon: const Icon(Icons.edit_outlined,
-                          size: 18.0, color: Colors.blue)),
-                  const SizedBox(width: 10.0),
-                  IconButton(
-                      tooltip: 'Delete',
-                      splashRadius: 25.0,
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _onDeleteAppointment(context, aptId, patientID, () {
-                          setState(() {});
-                        });
-                      },
-                      icon: const Icon(Icons.delete_outline,
-                          size: 18.0, color: Colors.blue)),
-                ],
-              )
-            ],
-          ),
-          content: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.3,
-            height: MediaQuery.of(context).size.height * 0.35,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+        return Directionality(
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+          child: AlertDialog(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.calendar_month_outlined,
-                          color: Colors.grey),
-                      const SizedBox(width: 15.0),
-                      Text(formattedTime)
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.title_outlined, color: Colors.grey),
-                      const SizedBox(width: 15.0),
-                      Text(service.toString()),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.person_3_outlined, color: Colors.grey),
-                      const SizedBox(width: 15.0),
-                      Text('$dentistFName $dentistLName'),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.notifications_active_outlined,
-                          color: Colors.grey),
-                      const SizedBox(width: 15.0),
-                      Text(frequency),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.info_outlined, color: Colors.grey),
-                      const SizedBox(width: 15.0),
-                      SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.2,
-                          child: Text(description))
-                    ],
-                  ),
-                ),
+                Text(
+                    '${translations[selectedLanguage]?['PatFullname'] ?? ''}$patientFName $patientLName',
+                    style: const TextStyle(color: Colors.blue, fontSize: 15.0)),
+                Row(
+                  children: [
+                    IconButton(
+                        tooltip: translations[selectedLanguage]?['Edit'] ?? '',
+                        splashRadius: 25.0,
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _editAppointmentDetails(
+                              context,
+                              staffID,
+                              serviceId,
+                              aptId,
+                              patientID,
+                              patientFName,
+                              patientLName,
+                              time,
+                              frequency,
+                              description, () {
+                            setState(() {});
+                          });
+                        },
+                        icon: const Icon(Icons.edit_outlined,
+                            size: 18.0, color: Colors.blue)),
+                    const SizedBox(width: 10.0),
+                    IconButton(
+                        tooltip:
+                            translations[selectedLanguage]?['Delete'] ?? '',
+                        splashRadius: 25.0,
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _onDeleteAppointment(context, aptId, patientID, () {
+                            setState(() {});
+                          });
+                        },
+                        icon: const Icon(Icons.delete_outline,
+                            size: 18.0, color: Colors.blue)),
+                  ],
+                )
               ],
             ),
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              child: const Text('OK'),
-              onPressed: () => Navigator.pop(context),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.3,
+              height: MediaQuery.of(context).size.height * 0.35,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.calendar_month_outlined,
+                            color: Colors.grey),
+                        const SizedBox(width: 15.0),
+                        Text(formattedTime)
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.title_outlined, color: Colors.grey),
+                        const SizedBox(width: 15.0),
+                        Text(service.toString()),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.person_3_outlined, color: Colors.grey),
+                        const SizedBox(width: 15.0),
+                        Text('$dentistFName $dentistLName'),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.notifications_active_outlined,
+                            color: Colors.grey),
+                        const SizedBox(width: 15.0),
+                        Text(frequency),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.info_outlined, color: Colors.grey),
+                        const SizedBox(width: 15.0),
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.2,
+                            child: Text(description))
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ],
+            actions: <Widget>[
+              ElevatedButton(
+                child: Text(translations[selectedLanguage]?['Okay'] ?? ''),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -868,411 +910,461 @@ class _CalendarPageState extends State<CalendarPage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Edit Appointment'),
-              content: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
-                width: MediaQuery.of(context).size.width * 0.3,
-                child: SingleChildScrollView(
-                  child: Form(
-                    key: _editApptCalFormKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: Column(
-                            children: [
-                              TypeAheadField(
-                                suggestionsCallback: (search) async {
-                                  try {
-                                    final conn = await onConnToDb();
-                                    var results = await conn.query(
-                                        'SELECT pat_ID, firstname, lastname, phone FROM patients WHERE firstname LIKE ? OR CONCAT(firstname, " ", lastname) LIKE ?',
-                                        ['%$search%', '%$search%']);
+              title: Directionality(
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
+                  child:
+                      Text(translations[selectedLanguage]?['EditAppt'] ?? '')),
+              content: Directionality(
+                textDirection:
+                    isEnglish ? TextDirection.ltr : TextDirection.rtl,
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: _editApptCalFormKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: Column(
+                              children: [
+                                TypeAheadField(
+                                  suggestionsCallback: (search) async {
+                                    try {
+                                      final conn = await onConnToDb();
+                                      var results = await conn.query(
+                                          'SELECT pat_ID, firstname, lastname, phone FROM patients WHERE firstname LIKE ? OR CONCAT(firstname, " ", lastname) LIKE ?',
+                                          ['%$search%', '%$search%']);
 
-                                    // Convert the results into a list of Patient objects
-                                    var suggestions = results
-                                        .map((row) => PatientDataModel(
-                                              patientId: row[0] as int,
-                                              patientFName: row[1],
-                                              patentLName: row[2] ?? '',
-                                              patientPhone: row[3],
-                                            ))
-                                        .toList();
-                                    await conn.close();
-                                    return suggestions;
-                                  } catch (e) {
-                                    print(
-                                        'Something wrong with patient searchable dropdown in edit dialog (General Calendar): $e');
-                                    return [];
-                                  }
-                                },
-                                builder: (context, controller, focusNode) {
-                                  editPSearchableCntr = controller;
-                                  return TextFormField(
-                                    controller: controller,
-                                    focusNode: focusNode,
-                                    autofocus: true,
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'انتخاب مریض',
-                                      labelStyle: TextStyle(color: Colors.grey),
-                                      enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.grey)),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.blue)),
-                                      errorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide:
-                                              BorderSide(color: Colors.red)),
-                                      focusedErrorBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(50.0)),
-                                          borderSide: BorderSide(
-                                              color: Colors.red, width: 1.5)),
-                                    ),
-                                  );
-                                },
-                                itemBuilder: (context, patient) {
-                                  return Directionality(
-                                    textDirection: TextDirection.rtl,
-                                    child: ListTile(
-                                      title: Text(
-                                          '${patient.patientFName} ${patient.patentLName}'),
-                                      subtitle: Text(patient.patientPhone),
-                                    ),
-                                  );
-                                },
-                                onSelected: (patient) {
-                                  setState(
-                                    () {
-                                      editPSearchableCntr.text =
-                                          '${patient.patientFName} ${patient.patentLName}';
-                                      currentPatID = patient.patientId;
-                                    },
-                                  );
-                                },
-                              ),
-                            ],
+                                      // Convert the results into a list of Patient objects
+                                      var suggestions = results
+                                          .map((row) => PatientDataModel(
+                                                patientId: row[0] as int,
+                                                patientFName: row[1],
+                                                patentLName: row[2] ?? '',
+                                                patientPhone: row[3],
+                                              ))
+                                          .toList();
+                                      await conn.close();
+                                      return suggestions;
+                                    } catch (e) {
+                                      print(
+                                          'Something wrong with patient searchable dropdown in edit dialog (General Calendar): $e');
+                                      return [];
+                                    }
+                                  },
+                                  builder: (context, controller, focusNode) {
+                                    editPSearchableCntr = controller;
+                                    return TextFormField(
+                                      controller: controller,
+                                      focusNode: focusNode,
+                                      autofocus: true,
+                                      decoration: InputDecoration(
+                                        border: const OutlineInputBorder(),
+                                        labelText:
+                                            translations[selectedLanguage]
+                                                    ?['SelectPatient'] ??
+                                                '',
+                                        labelStyle:
+                                            const TextStyle(color: Colors.grey),
+                                        enabledBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.grey)),
+                                        focusedBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.blue)),
+                                        errorBorder: const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide:
+                                                BorderSide(color: Colors.red)),
+                                        focusedErrorBorder:
+                                            const OutlineInputBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(50.0)),
+                                                borderSide: BorderSide(
+                                                    color: Colors.red,
+                                                    width: 1.5)),
+                                      ),
+                                    );
+                                  },
+                                  itemBuilder: (context, patient) {
+                                    return Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: ListTile(
+                                        title: Text(
+                                            '${patient.patientFName} ${patient.patentLName}'),
+                                        subtitle: Text(patient.patientPhone),
+                                      ),
+                                    );
+                                  },
+                                  onSelected: (patient) {
+                                    setState(
+                                      () {
+                                        editPSearchableCntr.text =
+                                            '${patient.patientFName} ${patient.patentLName}';
+                                        currentPatID = patient.patientId;
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'انتخاب داکتر',
-                              labelStyle: TextStyle(color: Colors.blueAccent),
-                              enabledBorder: OutlineInputBorder(
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['SelectDentist'] ??
+                                    '',
+                                labelStyle:
+                                    const TextStyle(color: Colors.blueAccent),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide:
+                                        BorderSide(color: Colors.blueAccent)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: Container(
+                                  height: 26.0,
+                                  padding: EdgeInsets.zero,
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: selectedStaffId.toString(),
+                                    style: const TextStyle(color: Colors.black),
+                                    items: staffList.map((staff) {
+                                      return DropdownMenuItem<String>(
+                                        value: staff['staff_ID'],
+                                        alignment: Alignment.centerRight,
+                                        child: Text(staff['firstname'] +
+                                            ' ' +
+                                            staff['lastname']),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        selectedStaffId = int.parse(newValue!);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['َDentalService'] ??
+                                    '',
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: SizedBox(
+                                  height: 26.0,
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: selectedServiceId.toString(),
+                                    items: services.map((service) {
+                                      return DropdownMenuItem<String>(
+                                        value: service['ser_ID'],
+                                        alignment: Alignment.centerRight,
+                                        child: Text(service['ser_name']),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        // Assign the selected service id into the static one.
+                                        selectedServiceId =
+                                            int.parse(newValue!);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: TextFormField(
+                              controller: editApptTimeController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return translations[selectedLanguage]
+                                          ?['ApptDTRequired'] ??
+                                      '';
+                                }
+                                return null;
+                              },
+                              readOnly: true,
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['ApptDateTime'] ??
+                                    '',
+                                suffixIcon: const Icon(Icons.access_time),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                              onTap: () async {
+                                final DateTime? pickedDate =
+                                    await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.parse(selectedDate),
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime(2100),
+                                );
+                                if (pickedDate != null) {
+                                  // ignore: use_build_context_synchronously
+                                  final TimeOfDay? pickedTime =
+                                      // ignore: use_build_context_synchronously
+                                      await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.now(),
+                                  );
+                                  if (pickedTime != null) {
+                                    selectedDateTime = DateTime(
+                                      pickedDate.year,
+                                      pickedDate.month,
+                                      pickedDate.day,
+                                      pickedTime.hour,
+                                      pickedTime.minute,
+                                    );
+                                    editApptTimeController.text =
+                                        selectedDateTime.toString();
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: TextFormField(
+                              controller: editCommentController,
+                              validator: (value) {
+                                if (value!.isNotEmpty) {
+                                  if (value.length < 5 || value.length > 40) {
+                                    return translations[selectedLanguage]
+                                            ?['OtherDDLLength'] ??
+                                        '';
+                                  }
+                                  return null;
+                                }
+                                return null;
+                              },
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(GlobalUsage.allowedEPChar))
+                              ],
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['RetDetails'] ??
+                                    '',
+                                suffixIcon:
+                                    const Icon(Icons.description_outlined),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide:
-                                      BorderSide(color: Colors.blueAccent)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: Container(
-                                height: 26.0,
-                                padding: EdgeInsets.zero,
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: selectedStaffId.toString(),
-                                  style: const TextStyle(color: Colors.black),
-                                  items: staffList.map((staff) {
-                                    return DropdownMenuItem<String>(
-                                      value: staff['staff_ID'],
-                                      alignment: Alignment.centerRight,
-                                      child: Text(staff['firstname'] +
-                                          ' ' +
-                                          staff['lastname']),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      selectedStaffId = int.parse(newValue!);
-                                    });
-                                  },
+                                      BorderSide(color: Colors.red, width: 1.5),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'خدمات مورد نیاز',
-                              enabledBorder: OutlineInputBorder(
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                suffixIcon:
+                                    Icon(Icons.notifications_active_outlined),
+                                border: OutlineInputBorder(),
+                                enabledBorder: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                focusedBorder: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: SizedBox(
-                                height: 26.0,
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: selectedServiceId.toString(),
-                                  items: services.map((service) {
-                                    return DropdownMenuItem<String>(
-                                      value: service['ser_ID'],
-                                      alignment: Alignment.centerRight,
-                                      child: Text(service['ser_name']),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      // Assign the selected service id into the static one.
-                                      selectedServiceId = int.parse(newValue!);
-                                    });
-                                  },
+                                  borderSide: BorderSide(color: Colors.blue),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red),
+                                ),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: SizedBox(
+                                  height: 26.0,
+                                  child: DropdownButton(
+                                    // isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: notifFreq,
+                                    items: <String>[
+                                      '30 Minutes',
+                                      '1 Hour',
+                                      '2 Hours',
+                                      '6 Hours',
+                                      '12 Hours',
+                                      '1 Day',
+                                    ].map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        notifFreq = newValue!;
+                                      });
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: TextFormField(
-                            controller: editApptTimeController,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Date and time should be set.';
-                              }
-                              return null;
-                            },
-                            readOnly: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تاریخ و زمان جلسه',
-                              suffixIcon: Icon(Icons.access_time),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
-                            ),
-                            onTap: () async {
-                              final DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.parse(selectedDate),
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2100),
-                              );
-                              if (pickedDate != null) {
-                                // ignore: use_build_context_synchronously
-                                final TimeOfDay? pickedTime =
-                                    // ignore: use_build_context_synchronously
-                                    await showTimePicker(
-                                  context: context,
-                                  initialTime: TimeOfDay.now(),
-                                );
-                                if (pickedTime != null) {
-                                  selectedDateTime = DateTime(
-                                    pickedDate.year,
-                                    pickedDate.month,
-                                    pickedDate.day,
-                                    pickedTime.hour,
-                                    pickedTime.minute,
-                                  );
-                                  editApptTimeController.text =
-                                      selectedDateTime.toString();
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: TextFormField(
-                            controller: editCommentController,
-                            validator: (value) {
-                              if (value!.isNotEmpty) {
-                                if (value.length < 5 || value.length > 40) {
-                                  return 'Details should at least 5 and at most 40 characters.';
-                                }
-                                return null;
-                              }
-                              return null;
-                            },
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(GlobalUsage.allowedEPChar))
-                            ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'توضیحات',
-                              suffixIcon: Icon(Icons.description_outlined),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide:
-                                    BorderSide(color: Colors.red, width: 1.5),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              suffixIcon:
-                                  Icon(Icons.notifications_active_outlined),
-                              border: OutlineInputBorder(),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.red),
-                              ),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: SizedBox(
-                                height: 26.0,
-                                child: DropdownButton(
-                                  // isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: notifFreq,
-                                  items: <String>[
-                                    '30 Minutes',
-                                    '1 Hour',
-                                    '2 Hours',
-                                    '6 Hours',
-                                    '12 Hours',
-                                    '1 Day',
-                                  ].map<DropdownMenuItem<String>>(
-                                      (String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      notifFreq = newValue!;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
               actions: <Widget>[
-                ElevatedButton(
-                  child: const Text('Save'),
-                  onPressed: () async {
-                    currentPatID = editPSearchableCntr.text.isEmpty
-                        ? patientId
-                        : currentPatID;
-                    if (_editApptCalFormKey.currentState!.validate()) {
-                      try {
-                        final conn = await onConnToDb();
-                        final results = await conn.query(
-                            'UPDATE appointments SET pat_ID = ?, service_ID = ?, staff_ID = ?, meet_date = ?, notification = ?, details = ? WHERE apt_ID = ?',
-                            [
-                              currentPatID,
-                              selectedServiceId,
-                              selectedStaffId,
-                              editApptTimeController.text.toString(),
-                              notifFreq,
-                              editCommentController.text.isEmpty
-                                  ? null
-                                  : editCommentController.text,
-                              apptId
-                            ]);
-                        if (results.affectedRows! > 0) {
-                          // ignore: use_build_context_synchronously
-                          Navigator.of(context).pop();
-                          // ignore: use_build_context_synchronously
-                          _onShowSnack(Colors.green,
-                              'The scheduled appointment updated.', context);
-                          refresh();
-                        } else {
-                          // ignore: use_build_context_synchronously
-                          Navigator.of(context).pop();
-                          // ignore: use_build_context_synchronously
-                          _onShowSnack(
-                              Colors.red, 'No changes applied.', context);
-                        }
+                Row(
+                  mainAxisAlignment: isEnglish
+                      ? MainAxisAlignment.end
+                      : MainAxisAlignment.start,
+                  children: [
+                    ElevatedButton(
+                      child:
+                          Text(translations[selectedLanguage]?['AddBtn'] ?? ''),
+                      onPressed: () async {
+                        currentPatID = editPSearchableCntr.text.isEmpty
+                            ? patientId
+                            : currentPatID;
+                        if (_editApptCalFormKey.currentState!.validate()) {
+                          try {
+                            final conn = await onConnToDb();
+                            final results = await conn.query(
+                                'UPDATE appointments SET pat_ID = ?, service_ID = ?, staff_ID = ?, meet_date = ?, notification = ?, details = ? WHERE apt_ID = ?',
+                                [
+                                  currentPatID,
+                                  selectedServiceId,
+                                  selectedStaffId,
+                                  editApptTimeController.text.toString(),
+                                  notifFreq,
+                                  editCommentController.text.isEmpty
+                                      ? null
+                                      : editCommentController.text,
+                                  apptId
+                                ]);
+                            if (results.affectedRows! > 0) {
+                              // ignore: use_build_context_synchronously
+                              Navigator.of(context).pop();
+                              // ignore: use_build_context_synchronously
+                              _onShowSnack(
+                                  Colors.green,
+                                  translations[selectedLanguage]
+                                          ?['StaffEditMsg'] ??
+                                      '',
+                                  context);
+                              refresh();
+                            } else {
+                              // ignore: use_build_context_synchronously
+                              Navigator.of(context).pop();
+                              // ignore: use_build_context_synchronously
+                              _onShowSnack(
+                                  Colors.red,
+                                  translations[selectedLanguage]
+                                          ?['StaffEditErrMsg'] ??
+                                      '',
+                                  context);
+                            }
 
-                        await conn.close();
-                      } catch (e) {
-                        print(
-                            'Appointment scheduling failed (General Calendar): $e');
-                      }
-                    }
-                  },
-                ),
+                            await conn.close();
+                          } catch (e) {
+                            print(
+                                'Appointment scheduling failed (General Calendar): $e');
+                          }
+                        }
+                      },
+                    ),
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                            translations[selectedLanguage]?['CancelBtn'] ?? ''))
+                  ],
+                )
               ],
             );
           },
@@ -1292,40 +1384,54 @@ class _CalendarPageState extends State<CalendarPage> {
           return AlertDialog(
             title: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text('Delete a scheduled appointment'),
+              child: Text(
+                  translations[selectedLanguage]?['DeleteSchHeading'] ?? ''),
             ),
             content: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text(
-                  'Are you sure you want to delete this scheduled appointment'),
+              child: Text(
+                  translations[selectedLanguage]?['CondirmSchedDelete'] ?? ''),
             ),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  try {
-                    final conn = await onConnToDb();
-                    final deleteResult = await conn.query(
-                        'DELETE FROM appointments WHERE apt_ID = ? AND pat_ID = ?',
-                        [apptId, patientId]);
-                    if (deleteResult.affectedRows! > 0) {
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context).pop();
-                      // ignore: use_build_context_synchronously
-                      _onShowSnack(
-                          Colors.green, 'جلسه موفقانه حذف شد.', context);
-                      refresh();
-                    }
-                    await conn.close();
-                  } catch (e) {
-                    print('Deleting appointment faield (General Calendar): $e');
-                  }
-                },
-                child: const Text('Delete'),
-              ),
+              Row(
+                mainAxisAlignment:
+                    isEnglish ? MainAxisAlignment.end : MainAxisAlignment.start,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(
+                        translations[selectedLanguage]?['CancelBtn'] ?? ''),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      try {
+                        final conn = await onConnToDb();
+                        final deleteResult = await conn.query(
+                            'DELETE FROM appointments WHERE apt_ID = ? AND pat_ID = ?',
+                            [apptId, patientId]);
+                        if (deleteResult.affectedRows! > 0) {
+                          // ignore: use_build_context_synchronously
+                          Navigator.of(context).pop();
+                          // ignore: use_build_context_synchronously
+                          _onShowSnack(
+                              Colors.green,
+                              translations[selectedLanguage]
+                                      ?['SchedApptDeleted'] ??
+                                  '',
+                              context);
+                          refresh();
+                        }
+                        await conn.close();
+                      } catch (e) {
+                        print(
+                            'Deleting appointment faield (General Calendar): $e');
+                      }
+                    },
+                    child:
+                        Text(translations[selectedLanguage]?['Delete'] ?? ''),
+                  ),
+                ],
+              )
             ],
           );
         },
@@ -1420,9 +1526,11 @@ class _CalendarPageState extends State<CalendarPage> {
           return StatefulBuilder(
             builder: (context, setState) {
               return AlertDialog(
-                title: const Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Text('افزودن مریض جدید'),
+                title: Directionality(
+                  textDirection:
+                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
+                  child: Text(
+                      translations[selectedLanguage]?['AddNewPatient'] ?? ''),
                 ),
                 content: Directionality(
                   textDirection:
@@ -1439,31 +1547,34 @@ class _CalendarPageState extends State<CalendarPage> {
                                 margin: const EdgeInsets.symmetric(
                                     horizontal: 10.0, vertical: 10.0),
                                 child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'انتخاب داکتر',
-                                    labelStyle:
-                                        TextStyle(color: Colors.blueAccent),
-                                    enabledBorder: OutlineInputBorder(
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                            ?['SelectDentist'] ??
+                                        '',
+                                    labelStyle: const TextStyle(
+                                        color: Colors.blueAccent),
+                                    enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide: BorderSide(
                                             color: Colors.blueAccent)),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(15.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
-                                    errorBorder: OutlineInputBorder(
+                                    errorBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(15.0)),
                                         borderSide:
                                             BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(15.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5)),
+                                    focusedErrorBorder:
+                                        const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(15.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
                                   ),
                                   child: DropdownButtonHideUnderline(
                                     child: Container(
@@ -1504,37 +1615,44 @@ class _CalendarPageState extends State<CalendarPage> {
                                   controller: _firstNameController,
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return 'نام مریض الزامی میباشد.';
+                                      return translations[selectedLanguage]
+                                              ?['FNRequired'] ??
+                                          '';
                                     } else if (value.length < 3 ||
                                         value.length > 10) {
-                                      return 'نام مریض باید 4 تا 9 حرف باشد.';
+                                      return translations[selectedLanguage]
+                                              ?['FNLength'] ??
+                                          '';
                                     }
                                   },
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'نام',
-                                    suffixIcon:
-                                        Icon(Icons.person_add_alt_outlined),
-                                    enabledBorder: OutlineInputBorder(
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                            ?['FName'] ??
+                                        '',
+                                    suffixIcon: const Icon(
+                                        Icons.person_add_alt_outlined),
+                                    enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
-                                    errorBorder: OutlineInputBorder(
+                                    errorBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5)),
+                                    focusedErrorBorder:
+                                        const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
                                   ),
                                 ),
                               ),
@@ -1550,7 +1668,9 @@ class _CalendarPageState extends State<CalendarPage> {
                                     if (value!.isNotEmpty) {
                                       if (value.length < 3 ||
                                           value.length > 10) {
-                                        return 'تخلص مریض باید 3 تا 9 حرف باشد.';
+                                        return translations[selectedLanguage]
+                                                ?['LNLength'] ??
+                                            '';
                                       } else {
                                         return null;
                                       }
@@ -1558,30 +1678,33 @@ class _CalendarPageState extends State<CalendarPage> {
                                       return null;
                                     }
                                   },
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'تخلص',
-                                    suffixIcon: Icon(Icons.person),
-                                    enabledBorder: OutlineInputBorder(
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                            ?['LName'] ??
+                                        '',
+                                    suffixIcon: const Icon(Icons.person),
+                                    enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
-                                    errorBorder: OutlineInputBorder(
+                                    errorBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5)),
+                                    focusedErrorBorder:
+                                        const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
                                   ),
                                 ),
                               ),
@@ -1592,19 +1715,21 @@ class _CalendarPageState extends State<CalendarPage> {
                                     top: 10.0,
                                     bottom: 10.0),
                                 child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
+                                  decoration: InputDecoration(
+                                    contentPadding: const EdgeInsets.symmetric(
                                         vertical: 10.0, horizontal: 10.0),
-                                    border: OutlineInputBorder(),
-                                    labelText: 'جنسیت',
-                                    enabledBorder: OutlineInputBorder(
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                            ?['Sex'] ??
+                                        '',
+                                    enabledBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(50.0),
                                       ),
                                       borderSide:
                                           BorderSide(color: Colors.grey),
                                     ),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                         Radius.circular(50.0),
                                       ),
@@ -1673,7 +1798,9 @@ class _CalendarPageState extends State<CalendarPage> {
                                 child: InputDecorator(
                                   decoration: InputDecoration(
                                     border: const OutlineInputBorder(),
-                                    labelText: 'سن',
+                                    labelText: translations[selectedLanguage]
+                                            ?['Age'] ??
+                                        '',
                                     enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
@@ -1686,7 +1813,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                             BorderSide(color: Colors.blue)),
                                     errorText: PatientInfo.ageDropDown == 0 &&
                                             !PatientInfo.ageSelected
-                                        ? 'Please select an age'
+                                        ? '${translations[selectedLanguage]?['SelectAge'] ?? ''}'
                                         : null,
                                     errorBorder: OutlineInputBorder(
                                       borderRadius: const BorderRadius.all(
@@ -1706,9 +1833,12 @@ class _CalendarPageState extends State<CalendarPage> {
                                         icon: const Icon(Icons.arrow_drop_down),
                                         value: PatientInfo.ageDropDown,
                                         items: <DropdownMenuItem<int>>[
-                                          const DropdownMenuItem(
+                                          DropdownMenuItem(
                                             value: 0,
-                                            child: Text('No age selected'),
+                                            child: Text(
+                                                translations[selectedLanguage]
+                                                        ?['NoAge'] ??
+                                                    ''),
                                           ),
                                           ...PatientInfo.getAges()
                                               .map((int ageItems) {
@@ -1719,7 +1849,8 @@ class _CalendarPageState extends State<CalendarPage> {
                                                 textDirection: isEnglish
                                                     ? TextDirection.ltr
                                                     : TextDirection.rtl,
-                                                child: Text('$ageItems سال'),
+                                                child: Text(
+                                                    '$ageItems ${translations[selectedLanguage]?['Year'] ?? ''}'),
                                               ),
                                             );
                                           }).toList(),
@@ -1778,30 +1909,33 @@ class _CalendarPageState extends State<CalendarPage> {
                                           '';
                                     }
                                   },
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'نمبر تماس',
-                                    suffixIcon: Icon(Icons.phone),
-                                    enabledBorder: OutlineInputBorder(
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                            ?['Phone'] ??
+                                        '',
+                                    suffixIcon: const Icon(Icons.phone),
+                                    enabledBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
+                                    focusedBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.blue)),
-                                    errorBorder: OutlineInputBorder(
+                                    errorBorder: const OutlineInputBorder(
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(50.0)),
                                         borderSide:
                                             BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5)),
+                                    focusedErrorBorder:
+                                        const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
                                   ),
                                 ),
                               ),
@@ -1817,7 +1951,9 @@ class _CalendarPageState extends State<CalendarPage> {
                                     if (value!.isNotEmpty) {
                                       if (value.length > 40 ||
                                           value.length < 5) {
-                                        return 'آدرس باید حداقل 5 و حداکثر 40 حرف باشد.';
+                                        return translations[selectedLanguage]
+                                                ?['AddrLength'] ??
+                                            '';
                                       }
                                       return null;
                                     }
@@ -1971,74 +2107,94 @@ class _CalendarPageState extends State<CalendarPage> {
                   ),
                 ),
                 actions: [
-                  TextButton(
-                      onPressed: () =>
-                          Navigator.of(context, rootNavigator: true).pop(),
-                      child: const Text('لغو')),
-                  ElevatedButton(
-                      onPressed: () async {
-                        try {
-                          if (_sfNewPatientFormKey.currentState!.validate() &&
-                              PatientInfo.ageSelected) {
-                            final conn = await onConnToDb();
-                            String firstName = _firstNameController.text;
-                            String? lastName = _lastNameController.text.isEmpty
-                                ? null
-                                : _lastNameController.text;
-                            int selectedAge = PatientInfo.ageDropDown;
-                            String selectedSex = _sexGroupValue;
-                            String marital = PatientInfo.maritalStatusDD;
-                            String phone = _phoneController.text;
-                            String bloodGroup = PatientInfo.bloodDropDown!;
-                            String? address = _addrController.text.isEmpty
-                                ? null
-                                : _addrController.text;
-                            final checkForDuplicate = await conn.query(
-                                'SELECT phone FROM patients WHERE phone = ?',
-                                [phone]);
-                            if (checkForDuplicate.isNotEmpty) {
-                              _onShowSnack(
-                                  Colors.red,
-                                  'مریض با این نمبر تماس در سیستم وجود دارد.',
-                                  context);
-                            } else {
-                              final results = await conn.query(
-                                  'INSERT INTO patients (staff_ID, firstname, lastname, age, sex, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                                  [
-                                    staffId,
-                                    firstName,
-                                    lastName,
-                                    selectedAge,
-                                    selectedSex,
-                                    marital,
-                                    phone,
-                                    bloodGroup,
-                                    address
-                                  ]);
-                              if (results.affectedRows! > 0) {
-                                Navigator.of(context, rootNavigator: true)
-                                    .pop();
+                  Row(
+                    mainAxisAlignment: isEnglish
+                        ? MainAxisAlignment.end
+                        : MainAxisAlignment.start,
+                    children: [
+                      TextButton(
+                          onPressed: () =>
+                              Navigator.of(context, rootNavigator: true).pop(),
+                          child: Text(translations[selectedLanguage]
+                                  ?['CancelBtn'] ??
+                              '')),
+                      ElevatedButton(
+                          onPressed: () async {
+                            try {
+                              if (_sfNewPatientFormKey.currentState!
+                                      .validate() &&
+                                  PatientInfo.ageSelected) {
+                                final conn = await onConnToDb();
+                                String firstName = _firstNameController.text;
+                                String? lastName =
+                                    _lastNameController.text.isEmpty
+                                        ? null
+                                        : _lastNameController.text;
+                                int selectedAge = PatientInfo.ageDropDown;
+                                String selectedSex = _sexGroupValue;
+                                String marital = PatientInfo.maritalStatusDD;
+                                String phone = _phoneController.text;
+                                String bloodGroup = PatientInfo.bloodDropDown!;
+                                String? address = _addrController.text.isEmpty
+                                    ? null
+                                    : _addrController.text;
+                                final checkForDuplicate = await conn.query(
+                                    'SELECT phone FROM patients WHERE phone = ?',
+                                    [phone]);
+                                if (checkForDuplicate.isNotEmpty) {
+                                  _onShowSnack(
+                                      Colors.red,
+                                      translations[selectedLanguage]
+                                              ?['DupPatient'] ??
+                                          '',
+                                      context);
+                                } else {
+                                  final results = await conn.query(
+                                      'INSERT INTO patients (staff_ID, firstname, lastname, age, sex, marital_status, phone, blood_group, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                      [
+                                        staffId,
+                                        firstName,
+                                        lastName,
+                                        selectedAge,
+                                        selectedSex,
+                                        marital,
+                                        phone,
+                                        bloodGroup,
+                                        address
+                                      ]);
+                                  if (results.affectedRows! > 0) {
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop();
 
-                                _onShowSnack(Colors.green,
-                                    'معلومات مریض موفقانه تغییر کرد.', context);
-                                onRefresh();
-                              } else {
-                                Navigator.of(context, rootNavigator: true)
-                                    .pop();
-                                _onShowSnack(
-                                    Colors.red,
-                                    'افزودن مریض ناکام شد. دوباره سعی کنید.',
-                                    context);
+                                    _onShowSnack(
+                                        Colors.green,
+                                        translations[selectedLanguage]
+                                                ?['NewPatAdded'] ??
+                                            '',
+                                        context);
+                                    onRefresh();
+                                  } else {
+                                    Navigator.of(context, rootNavigator: true)
+                                        .pop();
+                                    _onShowSnack(
+                                        Colors.red,
+                                        translations[selectedLanguage]
+                                                ?['NewPatNotAdded'] ??
+                                            '',
+                                        context);
+                                  }
+                                  await conn.close();
+                                }
                               }
-                              await conn.close();
+                            } catch (e) {
+                              print(
+                                  'Creating the new patient failed (General Calendar): $e');
                             }
-                          }
-                        } catch (e) {
-                          print(
-                              'Creating the new patient failed (General Calendar): $e');
-                        }
-                      },
-                      child: const Text('تغییر')),
+                          },
+                          child: Text(
+                              translations[selectedLanguage]?['AddBtn'] ?? '')),
+                    ],
+                  )
                 ],
               );
             },
