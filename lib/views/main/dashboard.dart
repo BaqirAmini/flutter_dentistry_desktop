@@ -545,7 +545,6 @@ class _DashboardState extends State<Dashboard> {
                                       else
                                         SfCartesianChart(
                                             primaryXAxis: CategoryAxis(),
-                                            // Chart title
                                             title: ChartTitle(
                                                 text: (translations[languageProvider
                                                                 .selectedLanguage]
@@ -724,9 +723,13 @@ class _DashboardState extends State<Dashboard> {
                                                       .height *
                                                   0.4,
                                               child: SfCircularChart(
+                                                margin: EdgeInsets.zero,
                                                 legend: Legend(
-                                                  isVisible: true,
-                                                ),
+                                                    isVisible: true,
+                                                    isResponsive: true,
+                                                    overflowMode:
+                                                        LegendItemOverflowMode
+                                                            .wrap),
                                                 tooltipBehavior:
                                                     TooltipBehavior(
                                                   color: const Color.fromARGB(
