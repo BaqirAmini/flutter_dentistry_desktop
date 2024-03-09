@@ -80,9 +80,9 @@ onCreatePrescription(BuildContext context) {
           return AlertDialog(
             title: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text(
-                'تجویز نسخه برای مریض',
-                style: TextStyle(color: Colors.blue),
+              child: Text(
+                translations[selectedLanguage]?['GenPrescHeading'] ?? '',
+                style: const TextStyle(color: Colors.blue),
               ),
             ),
             actions: [
@@ -95,7 +95,9 @@ onCreatePrescription(BuildContext context) {
                       TextButton(
                           onPressed: () =>
                               Navigator.of(context, rootNavigator: true).pop(),
-                          child: const Text('بستن')),
+                          child: Text(translations[selectedLanguage]
+                                  ?['CancelBtn'] ??
+                              '')),
                       ElevatedButton(
                         onPressed: () async {
                           if (formKeyPresc.currentState!.validate()) {
@@ -333,6 +335,7 @@ onCreatePrescription(BuildContext context) {
                                 : 'prescription.pdf';
                             await Printing.sharePdf(
                                 bytes: bytes, filename: fileName);
+                            // ignore: use_build_context_synchronously
                             Navigator.pop(context);
                             /*   // Print the PDF
                             await Printing.layoutPdf(
@@ -341,7 +344,9 @@ onCreatePrescription(BuildContext context) {
                             await conn.close();
                           }
                         },
-                        child: const Text('ایجاد نسخه'),
+                        child: Text(translations[selectedLanguage]
+                                ?['CreatePrescBtn'] ??
+                            ''),
                       ),
                     ],
                   ))
@@ -349,175 +354,202 @@ onCreatePrescription(BuildContext context) {
             content: Form(
               key: formKeyPresc,
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.35,
+                width: MediaQuery.of(context).size.width * 0.4,
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.30,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width * 0.14,
-                              margin: const EdgeInsets.symmetric(
-                                  horizontal: 5.0, vertical: 10.0),
-                              child: InputDecorator(
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'انتخاب داکتر',
-                                  labelStyle:
-                                      TextStyle(color: Colors.blueAccent),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blueAccent)),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue)),
-                                  errorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide: BorderSide(
-                                          color: Colors.red, width: 1.5)),
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: Container(
-                                    height: 18.0,
-                                    padding: EdgeInsets.zero,
-                                    child: DropdownButton(
-                                      isExpanded: true,
-                                      icon: const Icon(Icons.arrow_drop_down),
-                                      value: defaultSelectedStaff,
-                                      style: const TextStyle(
-                                          fontSize: 12, color: Colors.black),
-                                      items: staffList.map((staff) {
-                                        return DropdownMenuItem<String>(
-                                          value: staff['staff_ID'],
-                                          alignment: Alignment.centerRight,
-                                          child: Text(staff['firstname'] +
-                                              ' ' +
-                                              staff['lastname']),
-                                        );
-                                      }).toList(),
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          defaultSelectedStaff = newValue;
-                                          staffID = int.parse(newValue!);
-                                        });
-                                      },
+                            Directionality(
+                              textDirection: isEnglish
+                                  ? TextDirection.ltr
+                                  : TextDirection.rtl,
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.16,
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 5.0, vertical: 10.0),
+                                child: InputDecorator(
+                                  decoration: InputDecoration(
+                                    border: const OutlineInputBorder(),
+                                    labelText: translations[selectedLanguage]
+                                            ?['SelectDentist'] ??
+                                        '',
+                                    labelStyle: const TextStyle(
+                                        color: Colors.blueAccent),
+                                    enabledBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15.0)),
+                                        borderSide: BorderSide(
+                                            color: Colors.blueAccent)),
+                                    focusedBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue)),
+                                    errorBorder: const OutlineInputBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15.0)),
+                                        borderSide:
+                                            BorderSide(color: Colors.red)),
+                                    focusedErrorBorder:
+                                        const OutlineInputBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(15.0)),
+                                            borderSide: BorderSide(
+                                                color: Colors.red, width: 1.5)),
+                                  ),
+                                  child: DropdownButtonHideUnderline(
+                                    child: Container(
+                                      height: 18.0,
+                                      padding: EdgeInsets.zero,
+                                      child: DropdownButton(
+                                        isExpanded: true,
+                                        icon: const Icon(Icons.arrow_drop_down),
+                                        value: defaultSelectedStaff,
+                                        style: const TextStyle(
+                                            fontSize: 12, color: Colors.black),
+                                        items: staffList.map((staff) {
+                                          return DropdownMenuItem<String>(
+                                            value: staff['staff_ID'],
+                                            alignment: Alignment.centerRight,
+                                            child: Text(staff['firstname'] +
+                                                ' ' +
+                                                staff['lastname']),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {
+                                          setState(() {
+                                            defaultSelectedStaff = newValue;
+                                            staffID = int.parse(newValue!);
+                                          });
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
                             Container(
-                              width: MediaQuery.of(context).size.width * 0.14,
+                              width: MediaQuery.of(context).size.width * 0.17,
                               margin: const EdgeInsets.symmetric(
                                   horizontal: 5.0, vertical: 10.0),
                               child: Column(
                                 children: [
-                                  TypeAheadField(
-                                    suggestionsCallback: (search) async {
-                                      try {
-                                        final conn = await onConnToDb();
-                                        var results = await conn.query(
-                                            'SELECT pat_ID, firstname, lastname, phone, age, sex FROM patients WHERE firstname LIKE ?',
-                                            ['%$search%']);
+                                  Directionality(
+                                    textDirection: isEnglish
+                                        ? TextDirection.ltr
+                                        : TextDirection.rtl,
+                                    child: TypeAheadField(
+                                      suggestionsCallback: (search) async {
+                                        try {
+                                          final conn = await onConnToDb();
+                                          var results = await conn.query(
+                                              'SELECT pat_ID, firstname, lastname, phone, age, sex FROM patients WHERE firstname LIKE ?',
+                                              ['%$search%']);
 
-                                        // Convert the results into a list of Patient objects
-                                        var suggestions = results
-                                            .map((row) => PatientDataModel(
-                                                patientId: row[0] as int,
-                                                patientFName: row[1],
-                                                patientLName: row[2] ?? '',
-                                                patientPhone: row[3],
-                                                patientAge: row[4] as int,
-                                                patientGender: row[5]))
-                                            .toList();
-                                        await conn.close();
-                                        return suggestions;
-                                      } catch (e) {
-                                        print(
-                                            'Something wrong with patient searchable dropdown: $e');
-                                        return [];
-                                      }
-                                    },
-                                    builder: (context, controller, focusNode) {
-                                      patientSearchableController = controller;
-                                      return TextFormField(
-                                        controller: controller,
-                                        focusNode: focusNode,
-                                        autofocus: true,
-                                        validator: (value) {
-                                          if (value!.isEmpty) {
-                                            return 'Patient not selected';
-                                          }
-                                          return null;
-                                        },
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          labelText: 'انتخاب مریض',
-                                          labelStyle:
-                                              TextStyle(color: Colors.grey),
-                                          enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(15.0)),
-                                              borderSide: BorderSide(
-                                                  color: Colors.grey)),
-                                          focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(15.0)),
-                                              borderSide: BorderSide(
-                                                  color: Colors.blue)),
-                                          errorBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(15.0)),
-                                              borderSide: BorderSide(
-                                                  color: Colors.red)),
-                                          focusedErrorBorder:
-                                              OutlineInputBorder(
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(
-                                                              15.0)),
-                                                  borderSide: BorderSide(
-                                                      color: Colors.red,
-                                                      width: 1.5)),
-                                        ),
-                                      );
-                                    },
-                                    itemBuilder: (context, patient) {
-                                      return Directionality(
-                                        textDirection: TextDirection.rtl,
-                                        child: ListTile(
+                                          // Convert the results into a list of Patient objects
+                                          var suggestions = results
+                                              .map((row) => PatientDataModel(
+                                                  patientId: row[0] as int,
+                                                  patientFName: row[1],
+                                                  patientLName: row[2] ?? '',
+                                                  patientPhone: row[3],
+                                                  patientAge: row[4] as int,
+                                                  patientGender: row[5]))
+                                              .toList();
+                                          await conn.close();
+                                          return suggestions;
+                                        } catch (e) {
+                                          print(
+                                              'Something wrong with patient searchable dropdown: $e');
+                                          return [];
+                                        }
+                                      },
+                                      builder:
+                                          (context, controller, focusNode) {
+                                        patientSearchableController =
+                                            controller;
+                                        return TextFormField(
+                                          controller: controller,
+                                          focusNode: focusNode,
+                                          autofocus: true,
+                                          validator: (value) {
+                                            if (value!.isEmpty) {
+                                              return 'Patient not selected';
+                                            }
+                                            return null;
+                                          },
+                                          decoration: InputDecoration(
+                                            border: const OutlineInputBorder(),
+                                            labelText:
+                                                translations[selectedLanguage]
+                                                        ?['SelectPatient'] ??
+                                                    '',
+                                            labelStyle: const TextStyle(
+                                                color: Colors.blue),
+                                            enabledBorder:
+                                                const OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                15.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.blue)),
+                                            focusedBorder:
+                                                const OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                15.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.blue)),
+                                            errorBorder:
+                                                const OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                15.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.red)),
+                                            focusedErrorBorder:
+                                                const OutlineInputBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                15.0)),
+                                                    borderSide: BorderSide(
+                                                        color: Colors.red,
+                                                        width: 1.5)),
+                                          ),
+                                        );
+                                      },
+                                      itemBuilder: (context, patient) {
+                                        return ListTile(
                                           title: Text(
                                               '${patient.patientFName} ${patient.patientLName}'),
                                           subtitle: Text(patient.patientPhone),
-                                        ),
-                                      );
-                                    },
-                                    onSelected: (patient) {
-                                      setState(
-                                        () {
-                                          patientSearchableController.text =
-                                              '${patient.patientFName} ${patient.patientLName}';
-                                          selectedPatientID = patient.patientId;
-                                          selectedPFName = patient.patientFName;
-                                          selectedPLName = patient.patientLName;
-                                          selectedPAge = patient.patientAge;
-                                          selectedPSex = patient.patientGender;
-                                        },
-                                      );
-                                    },
+                                        );
+                                      },
+                                      onSelected: (patient) {
+                                        setState(
+                                          () {
+                                            patientSearchableController.text =
+                                                '${patient.patientFName} ${patient.patientLName}';
+                                            selectedPatientID =
+                                                patient.patientId;
+                                            selectedPFName =
+                                                patient.patientFName;
+                                            selectedPLName =
+                                                patient.patientLName;
+                                            selectedPAge = patient.patientAge;
+                                            selectedPSex =
+                                                patient.patientGender;
+                                          },
+                                        );
+                                      },
+                                    ),
                                   ),
                                 ],
                               ),
@@ -526,342 +558,331 @@ onCreatePrescription(BuildContext context) {
                         ),
                       ),
                       ...medicines.map((medicine) {
-                        return SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.31,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Medicine Type',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Medicine Type',
+                                  enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
-                                          BorderSide(color: Colors.blue),
-                                    ),
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue),
                                   ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        value: medicine['type'],
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            medicine['type'] = newValue;
-                                          });
-                                        },
-                                        items: <String>[
-                                          'Syrups',
-                                          'Capsules',
-                                          'Tablets',
-                                          'Mouthwashes',
-                                          'Ointments',
-                                          'Gels',
-                                          'Solutions',
-                                          'Ampoules',
-                                          'Flourides',
-                                          'Sprays',
-                                          'Lozenges',
-                                          'Drops',
-                                          'Toothpastes',
-                                        ].map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
-                                      ),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: SizedBox(
+                                    height: 26.0,
+                                    child: DropdownButton<String>(
+                                      isExpanded: true,
+                                      value: medicine['type'],
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          medicine['type'] = newValue;
+                                        });
+                                      },
+                                      items: <String>[
+                                        'Syrups',
+                                        'Capsules',
+                                        'Tablets',
+                                        'Mouthwashes',
+                                        'Ointments',
+                                        'Gels',
+                                        'Solutions',
+                                        'Ampoules',
+                                        'Flourides',
+                                        'Sprays',
+                                        'Lozenges',
+                                        'Drops',
+                                        'Toothpastes',
+                                      ].map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
                                     ),
                                   ),
                                 ),
                               ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: TextFormField(
-                                  controller: medicine['nameController'],
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'نام دارو الزامی میباشد.';
-                                    } else if (value.length > 20 ||
-                                        value.length < 5) {
-                                      return 'نام دارو باید حداقل 5 و حداکثر 20 حرف باشد.';
-                                    }
-                                    return null;
-                                  },
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                      RegExp(regExOnlyAbc),
-                                    ),
-                                  ],
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Medicine Name',
-                                    suffixIcon: Icon(Icons.note_alt_outlined),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                    errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5)),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Pieces',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
-                                    ),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        value: medicine['piece'],
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            medicine['piece'] = newValue;
-                                          });
-                                        },
-                                        items: <String>[
-                                          '15mg',
-                                          '30mg',
-                                          '50mg',
-                                          '60mg',
-                                          '75mg',
-                                          '100mg',
-                                          '120mg',
-                                          '150mg',
-                                          '200mg',
-                                          '250mg',
-                                          '300mg',
-                                          '325mg',
-                                          '400mg',
-                                          '450mg',
-                                          '500mg',
-                                          '650mg',
-                                          '800mg',
-                                          '1000mg'
-                                        ].map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Quantity',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
-                                    ),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        value: medicine['qty'],
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            medicine['qty'] = newValue;
-                                          });
-                                        },
-                                        items: medicineQty
-                                            .map<DropdownMenuItem<String>>(
-                                                (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: InputDecorator(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Doses',
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue),
-                                    ),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: SizedBox(
-                                      height: 26.0,
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        value: medicine['dose'],
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            medicine['dose'] = newValue;
-                                          });
-                                        },
-                                        items: <String>[
-                                          '1 x 1',
-                                          '1 x 2',
-                                          '1 x 3'
-                                        ].map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                    left: 20.0,
-                                    right: 20.0,
-                                    top: 10.0,
-                                    bottom: 10.0),
-                                child: TextFormField(
-                                  controller: medicine['descController'],
-                                  validator: (value) {
-                                    if (value!.isNotEmpty) {
-                                      if (value.length > 25 ||
-                                          value.length < 5) {
-                                        return 'توضیحات باید حداقل 5 و حداکثر 25 حرف باشد.';
-                                      }
-                                    }
-                                    return null;
-                                  },
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                      RegExp(regExOnlyAbc),
-                                    ),
-                                  ],
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText: 'Details',
-                                    suffixIcon: Icon(Icons.note_alt_outlined),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.grey)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.blue)),
-                                    errorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide:
-                                            BorderSide(color: Colors.red)),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(50.0)),
-                                        borderSide: BorderSide(
-                                            color: Colors.red, width: 1.5)),
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                tooltip: 'حذف دارو',
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.redAccent,
-                                  size: 18.0,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    medicines.remove(medicine);
-                                  });
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: TextFormField(
+                                controller: medicine['nameController'],
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'نام دارو الزامی میباشد.';
+                                  } else if (value.length > 20 ||
+                                      value.length < 5) {
+                                    return 'نام دارو باید حداقل 5 و حداکثر 20 حرف باشد.';
+                                  }
+                                  return null;
                                 },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(regExOnlyAbc),
+                                  ),
+                                ],
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Medicine Name',
+                                  suffixIcon: Icon(Icons.note_alt_outlined),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
                               ),
-                            ],
-                          ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Pieces',
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue),
+                                  ),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: SizedBox(
+                                    height: 26.0,
+                                    child: DropdownButton<String>(
+                                      isExpanded: true,
+                                      value: medicine['piece'],
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          medicine['piece'] = newValue;
+                                        });
+                                      },
+                                      items: <String>[
+                                        '15mg',
+                                        '30mg',
+                                        '50mg',
+                                        '60mg',
+                                        '75mg',
+                                        '100mg',
+                                        '120mg',
+                                        '150mg',
+                                        '200mg',
+                                        '250mg',
+                                        '300mg',
+                                        '325mg',
+                                        '400mg',
+                                        '450mg',
+                                        '500mg',
+                                        '650mg',
+                                        '800mg',
+                                        '1000mg'
+                                      ].map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Quantity',
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue),
+                                  ),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: SizedBox(
+                                    height: 26.0,
+                                    child: DropdownButton<String>(
+                                      isExpanded: true,
+                                      value: medicine['qty'],
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          medicine['qty'] = newValue;
+                                        });
+                                      },
+                                      items: medicineQty
+                                          .map<DropdownMenuItem<String>>(
+                                              (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: InputDecorator(
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Doses',
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue),
+                                  ),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: SizedBox(
+                                    height: 26.0,
+                                    child: DropdownButton<String>(
+                                      isExpanded: true,
+                                      value: medicine['dose'],
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          medicine['dose'] = newValue;
+                                        });
+                                      },
+                                      items: <String>['1 x 1', '1 x 2', '1 x 3']
+                                          .map<DropdownMenuItem<String>>(
+                                              (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                  left: 20.0,
+                                  right: 20.0,
+                                  top: 10.0,
+                                  bottom: 10.0),
+                              child: TextFormField(
+                                controller: medicine['descController'],
+                                validator: (value) {
+                                  if (value!.isNotEmpty) {
+                                    if (value.length > 25 || value.length < 5) {
+                                      return 'توضیحات باید حداقل 5 و حداکثر 25 حرف باشد.';
+                                    }
+                                  }
+                                  return null;
+                                },
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(regExOnlyAbc),
+                                  ),
+                                ],
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Details',
+                                  suffixIcon: Icon(Icons.note_alt_outlined),
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              tooltip: 'حذف دارو',
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.redAccent,
+                                size: 18.0,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  medicines.remove(medicine);
+                                });
+                              },
+                            ),
+                          ],
                         );
                       }),
                       const SizedBox(
@@ -1138,7 +1159,7 @@ class _PatientState extends State<Patient> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: IconButton(
-                      tooltip: 'Dashboard',
+                        tooltip: 'Dashboard',
                         splashRadius: 26.0,
                         onPressed: () => Navigator.of(context)
                             .pushAndRemoveUntil(

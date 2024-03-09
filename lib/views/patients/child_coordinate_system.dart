@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/tooth_selection_info.dart';
+import 'package:provider/provider.dart';
+
+// ignore: prefer_typing_uninitialized_variables
+var selectedLanguage;
+// ignore: prefer_typing_uninitialized_variables
+var isEnglish;
 
 void updateSelectedTeeth(List<String> selectedTeeth) async {
   final conn = await onConnToDb();
@@ -78,14 +86,20 @@ class _ChildQuadrantGrid extends State<ChildQuadrantGrid> {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
     Tooth.childToothSelected = _selectedTeethLetters.isEmpty ? false : true;
     return InputDecorator(
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(20),
         border: const OutlineInputBorder(),
         labelText: _selectedTeethLetters.isEmpty
-            ? 'Please select a tooth'
-            : 'Children\'s Teeth Selection Chart',
+            // ignore: unnecessary_string_interpolations
+            ? '${translations[selectedLanguage]?['SelectTeeth'] ?? ''}'
+            // ignore: unnecessary_string_interpolations
+            : '${translations[selectedLanguage]?['ChildTeethSelection'] ?? ''}',
         floatingLabelAlignment: FloatingLabelAlignment.center,
         labelStyle: TextStyle(
             color: _selectedTeethLetters.isEmpty ? Colors.red : Colors.blue,

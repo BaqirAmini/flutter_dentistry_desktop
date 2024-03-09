@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/adult_coordinate_system.dart';
 import 'package:flutter_dentistry/views/patients/child_coordinate_system.dart';
@@ -10,7 +11,7 @@ import 'package:provider/provider.dart';
 
 // Set global variables which are needed later.
 var selectedLanguage;
-bool isEnglish = false;
+var isEnglish;
 
 class CustomForm extends StatelessWidget {
   const CustomForm({Key? key}) : super(key: key);
@@ -113,9 +114,9 @@ class _ServiceFormState extends State<ServiceForm> {
   @override
   Widget build(BuildContext context) {
     // Fetch translations keys based on the selected language.
-    /*  var languageProvider = Provider.of<LanguageProvider>(context);
+    var languageProvider = Provider.of<LanguageProvider>(context);
     selectedLanguage = languageProvider.selectedLanguage;
-    isEnglish = selectedLanguage == 'English'; */
+    isEnglish = selectedLanguage == 'English';
     ServiceInfo.serviceNote = _noteController.text;
     ServiceInfo.meetingDate = _visitTimeController.text.toString();
     DateTime selectedDateTime = DateTime.now();
@@ -126,7 +127,7 @@ class _ServiceFormState extends State<ServiceForm> {
         child: Column(
           children: [
             Text(
-              'لطفاً با دقت سرویس ها (خدمات) زیر را انتخاب نموده و طبق آن معلومات مرتبط آنرا به خانه های زیر درج نمایید.',
+              translations[selectedLanguage]?['FeeMessage'] ?? '',
               style: Theme.of(context).textTheme.labelLarge,
             ),
             Row(
@@ -151,7 +152,9 @@ class _ServiceFormState extends State<ServiceForm> {
                             controller: _visitTimeController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'لطفا زمان مراجعه مریض را انتخاب کنید.';
+                                return translations[selectedLanguage]
+                                        ?['ApptDTRequired'] ??
+                                    '';
                               }
                               return null;
                             },
@@ -190,23 +193,26 @@ class _ServiceFormState extends State<ServiceForm> {
                               FilteringTextInputFormatter.allow(
                                   RegExp(r'[0-9.]'))
                             ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'زمان اولین مراجعه',
-                              suffixIcon: Icon(Icons.calendar_month_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['FirstApptDatetime'] ??
+                                  '',
+                              suffixIcon:
+                                  const Icon(Icons.calendar_month_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -221,14 +227,16 @@ class _ServiceFormState extends State<ServiceForm> {
                       margin: const EdgeInsets.only(
                           left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                       child: InputDecorator(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'نوعیت خدمات',
-                          enabledBorder: OutlineInputBorder(
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: translations[selectedLanguage]
+                                  ?['َDentalService'] ??
+                              '',
+                          enabledBorder: const OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(50.0)),
                               borderSide: BorderSide(color: Colors.grey)),
-                          focusedBorder: OutlineInputBorder(
+                          focusedBorder: const OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(50.0)),
                               borderSide: BorderSide(color: Colors.blue)),
@@ -267,18 +275,20 @@ class _ServiceFormState extends State<ServiceForm> {
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 10.0, horizontal: 10.0),
-                            border: OutlineInputBorder(),
-                            labelText: 'نوعیت دینچر',
-                            enabledBorder: OutlineInputBorder(
+                            border: const OutlineInputBorder(),
+                            labelText: translations[selectedLanguage]
+                                    ?['DentureType'] ??
+                                '',
+                            enabledBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(50.0),
                               ),
                               borderSide: BorderSide(color: Colors.grey),
                             ),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(50.0),
                               ),
@@ -364,16 +374,18 @@ class _ServiceFormState extends State<ServiceForm> {
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 10.0, horizontal: 10.0),
-                            border: OutlineInputBorder(),
-                            labelText: 'نوعیت',
-                            enabledBorder: OutlineInputBorder(
+                            border: const OutlineInputBorder(),
+                            labelText: translations[selectedLanguage]
+                                    ?['ScalingOper'] ??
+                                '',
+                            enabledBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
@@ -434,16 +446,18 @@ class _ServiceFormState extends State<ServiceForm> {
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         width: 400.0,
                         child: InputDecorator(
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 10.0, horizontal: 10.0),
-                            border: OutlineInputBorder(),
-                            labelText: 'نوعیت',
-                            enabledBorder: OutlineInputBorder(
+                            border: const OutlineInputBorder(),
+                            labelText: translations[selectedLanguage]
+                                    ?['ScalingOper'] ??
+                                '',
+                            enabledBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
@@ -512,7 +526,9 @@ class _ServiceFormState extends State<ServiceForm> {
                         child: InputDecorator(
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
-                            labelText: 'نوعیت مواد پوش',
+                            labelText: translations[selectedLanguage]
+                                    ?['CrownMaterial'] ??
+                                '',
                             enabledBorder: const OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(50.0)),
@@ -532,7 +548,7 @@ class _ServiceFormState extends State<ServiceForm> {
                             errorText: ServiceInfo.defaultCrown == null ||
                                     ServiceInfo.defaultCrown ==
                                         'Please select a material'
-                                ? 'Please select a material'
+                                ? '${translations[selectedLanguage]?['CrownMatMsg'] ?? ''}'
                                 : null,
                           ),
                           child: DropdownButtonHideUnderline(
@@ -581,7 +597,9 @@ class _ServiceFormState extends State<ServiceForm> {
                         child: InputDecorator(
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
-                            labelText: 'انتخاب فک',
+                            labelText: translations[selectedLanguage]
+                                    ?['SelectGum'] ??
+                                '',
                             enabledBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
@@ -591,7 +609,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
                             errorText: ServiceInfo.defaultDentureValue == null
-                                ? 'Please select a gum'
+                                ? '${translations[selectedLanguage]?['SelectGumMsg'] ?? ''}'
                                 : null,
                             errorBorder: OutlineInputBorder(
                               borderRadius: const BorderRadius.all(
@@ -652,7 +670,9 @@ class _ServiceFormState extends State<ServiceForm> {
                         child: InputDecorator(
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
-                            labelText: 'نوعیت مواد',
+                            labelText: translations[selectedLanguage]
+                                    ?['Materials'] ??
+                                '',
                             enabledBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
@@ -724,7 +744,9 @@ class _ServiceFormState extends State<ServiceForm> {
                         child: InputDecorator(
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
-                            labelText: 'نوعیت ارتودانسی',
+                            labelText: translations[selectedLanguage]
+                                    ?['OrthoFor'] ??
+                                '',
                             enabledBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
@@ -734,7 +756,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
                             errorText: ServiceInfo.defaultOrthoType == null
-                                ? 'Please select a gum'
+                                ? '${translations[selectedLanguage]?['SelectGumMsg'] ?? ''}'
                                 : null,
                             errorBorder: OutlineInputBorder(
                               borderRadius: const BorderRadius.all(
@@ -795,7 +817,9 @@ class _ServiceFormState extends State<ServiceForm> {
                         child: InputDecorator(
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
-                            labelText: 'نوعیت',
+                            labelText: translations[selectedLanguage]
+                                    ?['MaxilloType'] ??
+                                '',
                             enabledBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
@@ -865,18 +889,20 @@ class _ServiceFormState extends State<ServiceForm> {
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 10.0, horizontal: 10.0),
-                            border: OutlineInputBorder(),
-                            labelText: 'ناحیه',
-                            enabledBorder: OutlineInputBorder(
+                            border: const OutlineInputBorder(),
+                            labelText: translations[selectedLanguage]
+                                    ?['MaxilloArea'] ??
+                                '',
+                            enabledBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(50.0),
                               ),
                               borderSide: BorderSide(color: Colors.grey),
                             ),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(50.0),
                               ),
@@ -893,9 +919,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         horizontalTitleGap: 0.5),
                                   ),
                                   child: RadioListTile(
-                                      title: const Text(
-                                        'راست',
-                                        style: TextStyle(fontSize: 14),
+                                      title: Text(
+                                        translations[selectedLanguage]
+                                                ?['Right'] ??
+                                            '',
+                                        style: const TextStyle(fontSize: 14),
                                       ),
                                       value: 'راست',
                                       groupValue: ServiceInfo.tmgGroupValue,
@@ -913,9 +941,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         horizontalTitleGap: 0.5),
                                   ),
                                   child: RadioListTile(
-                                      title: const Text(
-                                        'چپ',
-                                        style: TextStyle(fontSize: 14),
+                                      title: Text(
+                                        translations[selectedLanguage]
+                                                ?['Left'] ??
+                                            '',
+                                        style: const TextStyle(fontSize: 14),
                                       ),
                                       value: 'چپ',
                                       groupValue: ServiceInfo.tmgGroupValue,
@@ -933,9 +963,11 @@ class _ServiceFormState extends State<ServiceForm> {
                                         horizontalTitleGap: 0.5),
                                   ),
                                   child: RadioListTile(
-                                      title: const Text(
-                                        'هردو',
-                                        style: TextStyle(fontSize: 14),
+                                      title: Text(
+                                        translations[selectedLanguage]
+                                                ?['BothArea'] ??
+                                            '',
+                                        style: const TextStyle(fontSize: 14),
                                       ),
                                       value: 'هردو',
                                       groupValue: ServiceInfo.tmgGroupValue,
@@ -959,18 +991,20 @@ class _ServiceFormState extends State<ServiceForm> {
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
+                          decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.symmetric(
                                 vertical: 10.0, horizontal: 10.0),
-                            border: OutlineInputBorder(),
-                            labelText: 'نوعیت اجرا',
-                            enabledBorder: OutlineInputBorder(
+                            border: const OutlineInputBorder(),
+                            labelText: translations[selectedLanguage]
+                                    ?['ScalingOper'] ??
+                                '',
+                            enabledBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(50.0),
                               ),
                               borderSide: BorderSide(color: Colors.grey),
                             ),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(50.0),
                               ),
@@ -1031,7 +1065,7 @@ class _ServiceFormState extends State<ServiceForm> {
                                         'Both',
                                         style: TextStyle(fontSize: 14),
                                       ),
-                                      value: 'Both',
+                                      value: 'Scaling & Polishing',
                                       groupValue: ServiceInfo.spGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
@@ -1055,7 +1089,9 @@ class _ServiceFormState extends State<ServiceForm> {
                         child: InputDecorator(
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
-                            labelText: 'مراحل سفید کردن',
+                            labelText: translations[selectedLanguage]
+                                    ?['BleachingSteps'] ??
+                                '',
                             enabledBorder: const OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(50.0)),
@@ -1118,23 +1154,25 @@ class _ServiceFormState extends State<ServiceForm> {
                       margin: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
                       child: InputDecorator(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'انتخاب داکتر',
-                          labelStyle: TextStyle(color: Colors.blueAccent),
-                          enabledBorder: OutlineInputBorder(
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          labelText: translations[selectedLanguage]
+                                  ?['SelectDentist'] ??
+                              '',
+                          labelStyle: const TextStyle(color: Colors.blueAccent),
+                          enabledBorder: const OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(50.0)),
                               borderSide: BorderSide(color: Colors.blueAccent)),
-                          focusedBorder: OutlineInputBorder(
+                          focusedBorder: const OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(15.0)),
                               borderSide: BorderSide(color: Colors.blue)),
-                          errorBorder: OutlineInputBorder(
+                          errorBorder: const OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(15.0)),
                               borderSide: BorderSide(color: Colors.red)),
-                          focusedErrorBorder: OutlineInputBorder(
+                          focusedErrorBorder: const OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(15.0)),
                               borderSide:
@@ -1180,7 +1218,9 @@ class _ServiceFormState extends State<ServiceForm> {
                           validator: (value) {
                             if (value!.isNotEmpty) {
                               if (value.length > 40 || value.length < 10) {
-                                return 'توضیحات باید حداقل 10 و حداکثر 40 حرف باشد.';
+                                return translations[selectedLanguage]
+                                        ?['OtherDDLLength'] ??
+                                    '';
                               }
                             }
                             return null;
@@ -1192,23 +1232,25 @@ class _ServiceFormState extends State<ServiceForm> {
                           ],
                           minLines: 1,
                           maxLines: 2,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'توضیحات',
-                            suffixIcon: Icon(Icons.note_alt_outlined),
-                            enabledBorder: OutlineInputBorder(
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: translations[selectedLanguage]
+                                    ?['RetDetails'] ??
+                                '',
+                            suffixIcon: const Icon(Icons.note_alt_outlined),
+                            enabledBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.grey)),
-                            focusedBorder: OutlineInputBorder(
+                            focusedBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.blue)),
-                            errorBorder: OutlineInputBorder(
+                            errorBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide: BorderSide(color: Colors.red)),
-                            focusedErrorBorder: OutlineInputBorder(
+                            focusedErrorBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide:

@@ -987,7 +987,7 @@ class _NewPatientState extends State<NewPatient> {
         .query('SELECT pat_ID, phone FROM patients WHERE phone = ?', [phone]);
     if (queryCheck.isNotEmpty) {
       _onShowSnack(
-          Colors.red, 'مریض با این نمبر تماس قبلا در سیستم وجود دارد.');
+          Colors.red, translations[selectedLanguage]?['DupPatient'] ?? '');
       setState(() {
         _currentStep = 0;
       });
