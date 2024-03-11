@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/developer_options.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
@@ -1887,6 +1888,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
 
 // Create instance of this class to its members
   final GlobalUsage _gu = GlobalUsage();
+  Features features = Features();
 
   @override
   Widget build(BuildContext context) {
@@ -1936,22 +1938,25 @@ class _PatientDataTableState extends State<PatientDataTable> {
                   },
                 ),
               ),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
+              if (features.genPrescription)
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    side: const BorderSide(
+                      color: Colors.blue,
+                    ),
                   ),
-                  side: const BorderSide(
-                    color: Colors.blue,
-                  ),
+                  onPressed: () async {
+                    onCreatePrescription(context);
+                  },
+                  child:
+                      Text(translations[selectedLanguage]?['GenPresc'] ?? ''),
                 ),
-                onPressed: () async {
-                  onCreatePrescription(context);
-                },
-                child: Text(translations[selectedLanguage]?['GenPresc'] ?? ''),
-              ),
               // Set access role to only allow 'system admin' to make such changes
-              if (StaffInfo.staffRole == 'مدیر سیستم')
+              if (StaffInfo.staffRole == 'مدیر سیستم' ||
+                  StaffInfo.staffRole == 'Software Engineer')
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
@@ -2162,7 +2167,8 @@ class _PatientDataTableState extends State<PatientDataTable> {
                       ),
                     ),
                     // Set access role to only allow 'system admin' to make such changes
-                    if (StaffInfo.staffRole == 'مدیر سیستم')
+                    if (StaffInfo.staffRole == 'مدیر سیستم' ||
+                        StaffInfo.staffRole == 'Software Engineer')
                       DataColumn(
                         label: Text(
                             translations[selectedLanguage]?['Edit'] ?? '',
@@ -2170,7 +2176,8 @@ class _PatientDataTableState extends State<PatientDataTable> {
                                 color: Colors.blue,
                                 fontWeight: FontWeight.bold)),
                       ),
-                    if (StaffInfo.staffRole == 'مدیر سیستم')
+                    if (StaffInfo.staffRole == 'مدیر سیستم' ||
+                        StaffInfo.staffRole == 'Software Engineer')
                       DataColumn(
                         label: Text(
                             translations[selectedLanguage]?['Delete'] ?? '',
@@ -2247,7 +2254,8 @@ class PatientDataSource extends DataTableSource {
         }),
       ),
       // Set access role to only allow 'system admin' to make such changes
-      if (StaffInfo.staffRole == 'مدیر سیستم')
+      if (StaffInfo.staffRole == 'مدیر سیستم' ||
+          StaffInfo.staffRole == 'Software Engineer')
         DataCell(
           Builder(
             builder: (BuildContext context) {
@@ -2275,7 +2283,8 @@ class PatientDataSource extends DataTableSource {
           ),
         ),
       // Set access role to only allow 'system admin' to make such changes
-      if (StaffInfo.staffRole == 'مدیر سیستم')
+      if (StaffInfo.staffRole == 'مدیر سیستم' ||
+          StaffInfo.staffRole == 'Software Engineer')
         DataCell(
           Builder(
             builder: (BuildContext context) {
