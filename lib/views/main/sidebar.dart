@@ -23,6 +23,7 @@ class Sidebar extends StatefulWidget {
 }
 
 class _SidebarState extends State<Sidebar> {
+  final Features features = Features();
   // ignore: prefer_typing_uninitialized_variables
   var selectedLanguage;
   // ignore: prefer_typing_uninitialized_variables
@@ -179,6 +180,7 @@ class _SidebarState extends State<Sidebar> {
               );
             },
           ),
+          if (features.upcomingAppointment)
           ListTile(
             leading: const Icon(Icons.more_time_rounded),
             title: Text((translations[selectedLanguage]?['UpcomingAppt'] ?? '')
