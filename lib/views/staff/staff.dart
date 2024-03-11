@@ -324,7 +324,8 @@ class _MyDataTableState extends State<MyDataTable> {
                   },
                 ),
               ),
-              if (StaffInfo.staffRole == 'مدیر سیستم')
+              if (StaffInfo.staffRole == 'مدیر سیستم' ||
+                  StaffInfo.staffRole == 'Software Engineer')
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
@@ -549,7 +550,8 @@ class _MyDataTableState extends State<MyDataTable> {
                       },
                     ),
                     // This condition only allows 'system admin' to edit/delete... the staff
-                    if (StaffInfo.staffRole == 'مدیر سیستم')
+                    if (StaffInfo.staffRole == 'مدیر سیستم' ||
+                        StaffInfo.staffRole == 'Software Engineer')
                       DataColumn(
                         label: Text(
                           translations[selectedLanguage]?['Actions'] ?? '',
@@ -616,7 +618,8 @@ class MyData extends DataTableSource {
       DataCell(Text(data[index].address,
           style: isEnglish ? const TextStyle(fontSize: 12) : null)),
       // This condition only allows 'system admin' to edit/delete... the staff
-      if (StaffInfo.staffRole == 'مدیر سیستم')
+      if (StaffInfo.staffRole == 'مدیر سیستم' ||
+          StaffInfo.staffRole == 'Software Engineer')
         DataCell(
           PopupMenuButton(
             splashRadius: 25.0,
@@ -1852,7 +1855,13 @@ onEditStaff(
 onCreateUserAccount(BuildContext context, int staff_id) {
   // position types dropdown variables
   String roleDropDown = 'کمک مدیر';
-  var roleItems = [
+  // All roles - this is only visible for 'software engineer'
+  var allRoles = [
+    'کمک مدیر',
+    'مدیر سیستم',
+    'Software Engineer',
+  ];
+  var visibleRoles = [
     'کمک مدیر',
     'مدیر سیستم',
   ];
@@ -2049,13 +2058,23 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
                                   value: roleDropDown,
-                                  items: roleItems.map((String positionItems) {
-                                    return DropdownMenuItem(
-                                      value: positionItems,
-                                      alignment: Alignment.centerRight,
-                                      child: Text(positionItems),
-                                    );
-                                  }).toList(),
+                                  items: (StaffInfo.staffRole ==
+                                          'Software Engineer')
+                                      ? allRoles.map((String positionItems) {
+                                          return DropdownMenuItem(
+                                            value: positionItems,
+                                            alignment: Alignment.centerRight,
+                                            child: Text(positionItems),
+                                          );
+                                        }).toList()
+                                      : visibleRoles
+                                          .map((String positionItems) {
+                                          return DropdownMenuItem(
+                                            value: positionItems,
+                                            alignment: Alignment.centerRight,
+                                            child: Text(positionItems),
+                                          );
+                                        }).toList(),
                                   onChanged: (String? newValue) {
                                     setState(() {
                                       roleDropDown = newValue!;
@@ -2130,7 +2149,10 @@ onUpdateUserAccount(
     BuildContext context, int staff_id, String user_name, String user_role) {
   // position types dropdown variables
   String roleDropDown = 'کمک مدیر';
-  var roleItems = [
+  // This is only visible for 'software engineer'
+  var allRoles = ['کمک مدیر', 'مدیر سیستم', 'Software Engineer'];
+
+  var visibleRoles = [
     'کمک مدیر',
     'مدیر سیستم',
   ];
@@ -2332,13 +2354,23 @@ onUpdateUserAccount(
                                   isExpanded: true,
                                   icon: const Icon(Icons.arrow_drop_down),
                                   value: roleDropDown,
-                                  items: roleItems.map((String positionItems) {
-                                    return DropdownMenuItem(
-                                      value: positionItems,
-                                      alignment: Alignment.centerRight,
-                                      child: Text(positionItems),
-                                    );
-                                  }).toList(),
+                                  items: (StaffInfo.staffRole ==
+                                          'Software Engineer')
+                                      ? allRoles.map((String positionItems) {
+                                          return DropdownMenuItem(
+                                            value: positionItems,
+                                            alignment: Alignment.centerRight,
+                                            child: Text(positionItems),
+                                          );
+                                        }).toList()
+                                      : visibleRoles
+                                          .map((String positionItems) {
+                                          return DropdownMenuItem(
+                                            value: positionItems,
+                                            alignment: Alignment.centerRight,
+                                            child: Text(positionItems),
+                                          );
+                                        }).toList(),
                                   onChanged: (String? newValue) {
                                     setState(() {
                                       roleDropDown = newValue!;
