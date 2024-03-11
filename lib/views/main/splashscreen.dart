@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/config/developer_options.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/views/main/login.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const DCMISApp());
+void main() async {
+  // These two lines are used to call singleton 'loadFeatures()' function to enable / disable premuim features.
+  WidgetsFlutterBinding.ensureInitialized();
+  await Features().loadFeatures();
+  runApp(const CrownApp());
 }
 
-class DCMISApp extends StatelessWidget {
-  const DCMISApp({Key? key}) : super(key: key);
+class CrownApp extends StatelessWidget {
+  const CrownApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
