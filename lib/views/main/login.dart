@@ -15,7 +15,7 @@ import 'package:window_manager/window_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await WindowManager.instance.ensureInitialized();
-  await WindowManager.instance.setTitle('Dental Clinic MIS');
+  await WindowManager.instance.setTitle('Crown');
   return runApp(
     ChangeNotifierProvider(
       create: (context) => LanguageProvider(),
