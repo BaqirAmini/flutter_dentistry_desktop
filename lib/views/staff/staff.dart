@@ -324,10 +324,6 @@ class _MyDataTableState extends State<MyDataTable> {
                   },
                 ),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.print),
-              ),
               if (StaffInfo.staffRole == 'مدیر سیستم')
                 ElevatedButton(
                   onPressed: () {
