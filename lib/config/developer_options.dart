@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(const DeveloperOptions());
@@ -20,6 +21,11 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
 
   // Instantiate 'Features' class
   Features features = Features();
+
+  // form controllers
+  final TextEditingController _machineCodeController = TextEditingController();
+  final TextEditingController _liscenseController = TextEditingController();
+  final _liscenseFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -56,7 +62,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            width: 400,
+            width: MediaQuery.of(context).size.width * 0.3,
             child: Padding(
               padding: const EdgeInsets.all(10.0),
               child: Column(
@@ -86,6 +92,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                   return Text('Error: ${snapshot.error}');
                                 } else {
                                   return Switch(
+                                    activeColor: Colors.green,
                                     value: snapshot.data!,
                                     onChanged: (bool value) {
                                       setState(() {
@@ -112,6 +119,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                   return Text('Error: ${snapshot.error}');
                                 } else {
                                   return Switch(
+                                    activeColor: Colors.green,
                                     value: snapshot.data!,
                                     onChanged: (bool value) {
                                       setState(() {
@@ -132,12 +140,13 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return CircularProgressIndicator();
+                                return const CircularProgressIndicator();
                               } else {
                                 if (snapshot.hasError) {
                                   return Text('Error: ${snapshot.error}');
                                 } else {
                                   return Switch(
+                                    activeColor: Colors.green,
                                     value: snapshot.data!,
                                     onChanged: (bool value) {
                                       setState(() {
@@ -158,12 +167,13 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return CircularProgressIndicator();
+                                return const CircularProgressIndicator();
                               } else {
                                 if (snapshot.hasError) {
                                   return Text('Error: ${snapshot.error}');
                                 } else {
                                   return Switch(
+                                    activeColor: Colors.green,
                                     value: snapshot.data!,
                                     onChanged: (bool value) {
                                       setState(() {
@@ -184,12 +194,13 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return CircularProgressIndicator();
+                                return const CircularProgressIndicator();
                               } else {
                                 if (snapshot.hasError) {
                                   return Text('Error: ${snapshot.error}');
                                 } else {
                                   return Switch(
+                                    activeColor: Colors.green,
                                     value: snapshot.data!,
                                     onChanged: (bool value) {
                                       setState(() {
@@ -210,54 +221,146 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
               ),
             ),
           ),
-          /* SizedBox(
-            width: 400,
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Standard Features',
-                    style: Theme.of(context)
-                        .textTheme
-                        .displaySmall!
-                        .copyWith(fontSize: 20),
-                  ),
-                  Expanded(
-                    child: ListView(
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.5,
+            child: Column(
+              children: [
+                Form(
+                  key: _liscenseFormKey,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        ListTile(
-                          title: const Text('Generate Prescription'),
-                          trailing: Switch(
-                            value: features.genPrescription,
-                            onChanged: (bool value) {
-                              setState(() {
-                                features.genPrescription = value;
-                              });
+                        Text(
+                          'Liscense Generation',
+                          style: Theme.of(context)
+                              .textTheme
+                              .displaySmall!
+                              .copyWith(fontSize: 20),
+                        ),
+                        Container(
+                          margin: EdgeInsets.all(10.0),
+                          width: MediaQuery.of(context).size.width * 0.45,
+                          child: Builder(builder: (context) {
+                            return TextFormField(
+                              textDirection: TextDirection.ltr,
+                              controller: _machineCodeController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Machine code required';
+                                }
+                                return null;
+                              },
+                              /*  inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(_regExUName),
+                                ),
+                              ], */
+                              decoration: const InputDecoration(
+                                contentPadding: EdgeInsets.all(15.0),
+                                border: OutlineInputBorder(),
+                                labelText: 'Machine Code',
+                                enabledBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                            );
+                          }),
+                        ),
+                        Container(
+                          margin: EdgeInsets.all(10.0),
+                          width: MediaQuery.of(context).size.width * 0.45,
+                          child: Builder(
+                            builder: (context) {
+                              return TextFormField(
+                                textDirection: TextDirection.ltr,
+                                controller: _liscenseController,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Liscense required';
+                                  }
+                                  return null;
+                                },
+                                /*  inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(_regExUName)),
+                                ], */
+                                decoration: const InputDecoration(
+                                  contentPadding: EdgeInsets.all(15.0),
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Liscense required',
+                                  enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.grey)),
+                                  focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.blue)),
+                                  errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide:
+                                          BorderSide(color: Colors.red)),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(50.0)),
+                                      borderSide: BorderSide(
+                                          color: Colors.red, width: 1.5)),
+                                ),
+                              );
                             },
                           ),
                         ),
-                        ListTile(
-                          title: const Text('Upcoming Appointments'),
-                          trailing: Switch(
-                            value: features.upcomingAppointment,
-                            onChanged: (bool value) {
-                              setState(() {
-                                features.upcomingAppointment = value;
-                              });
+                        Container(
+                          margin: EdgeInsets.all(10.0),
+                          width: MediaQuery.of(context).size.width * 0.4,
+                          height: 35.0,
+                          child: Builder(
+                            builder: (context) {
+                              return OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  side: const BorderSide(
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  if (_liscenseFormKey.currentState!
+                                      .validate()) {}
+                                },
+                                child: const Text('Generate Liscense'),
+                              );
                             },
                           ),
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ),
- */
+          )
         ],
       ),
     );
