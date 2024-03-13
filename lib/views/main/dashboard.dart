@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
@@ -9,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter_dentistry/views/main/sidebar.dart';
 import 'package:shamsi_date/shamsi_date.dart';
+import 'package:intl/intl.dart' as intl;
 
 void main() {
   return runApp(
@@ -108,6 +110,10 @@ class _DashboardState extends State<Dashboard> {
 
     // Alert notifications
     _alertNotification();
+    // Call to display date and time
+    _timeString = _formatDateTime(DateTime.now());
+    Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
+    super.initState();
   }
 
   PageController page = PageController();
@@ -320,6 +326,21 @@ class _DashboardState extends State<Dashboard> {
                       );
                     },
                   ),
+                  actions: [
+                    Center(
+                        child: Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: Text(_timeString,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displaySmall!
+                                    .copyWith(
+                                        fontSize: 25.0,
+                                        color: Colors.white,
+                                        fontFamily: 'digital-7',
+                                        fontWeight: FontWeight.bold)))),
+                    const SizedBox(width: 15.0),
+                  ],
                 ),
                 drawer: Sidebar(),
                 body: Row(
@@ -849,6 +870,20 @@ class _DashboardState extends State<Dashboard> {
             theme: ThemeData(useMaterial3: false),
           );
         });
+  }
+
+// Display timing in the dasboard appbar
+  late String _timeString;
+  void _getTime() {
+    final DateTime now = DateTime.now();
+    final String formattedDateTime = _formatDateTime(now);
+    setState(() {
+      _timeString = formattedDateTime;
+    });
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    return intl.DateFormat('MM-dd-yyyy hh:mm:ss a').format(dateTime);
   }
 }
 
