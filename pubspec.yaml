@@ -67,6 +67,7 @@ dependencies:
   flutter_typeahead: ^5.1.0
   syncfusion_flutter_xlsio: ^21.2.10
   syncfusion_flutter_pdf: ^21.2.10
+  crypto: ^3.0.3
 
 
 dev_dependencies:
@@ -110,11 +111,11 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
+  fonts:
+     - family: digital-7
+       fonts:
+         - asset: assets/fonts/digital-7.ttf
+         - asset: assets/fonts/loop_it.ttf
   #         style: italic
   #   - family: Trajan Pro
   #     fonts:
