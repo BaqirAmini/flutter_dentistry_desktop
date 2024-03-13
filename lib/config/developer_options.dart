@@ -1,6 +1,9 @@
+import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:crypto/crypto.dart';
+import 'package:intl/intl.dart' as intl;
 
 void main() => runApp(const DeveloperOptions());
 
@@ -13,11 +16,12 @@ class DeveloperOptions extends StatefulWidget {
 
 class _DeveloperOptionsState extends State<DeveloperOptions> {
   // Keys for shared preferences
-  final genPresc = 'genPresc';
-  final upcomingAppt = 'upcomingAppt';
-  final manageXray = 'manageXray';
-  final createBackup = 'createBackup';
-  final restoreBackup = 'restoreBackup';
+  final _genPresc = 'genPresc';
+  final _upcomingAppt = 'upcomingAppt';
+  final _manageXray = 'manageXray';
+  final _createBackup = 'createBackup';
+  final _restoreBackup = 'restoreBackup';
+  String _liscenseKey = '';
 
   // Instantiate 'Features' class
   Features features = Features();
@@ -30,22 +34,22 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
   @override
   void initState() {
     super.initState();
-    loadSwitchState(genPresc, (bool value) {
+    loadSwitchState(_genPresc, (bool value) {
       setState(() {
         features.genPrescription = value;
       });
     });
-    loadSwitchState(upcomingAppt, (bool value) {
+    loadSwitchState(_upcomingAppt, (bool value) {
       setState(() {
         features.genPrescription = value;
       });
     });
-    loadSwitchState(manageXray, (bool value) {
+    loadSwitchState(_manageXray, (bool value) {
       setState(() {
         features.genPrescription = value;
       });
     });
-    loadSwitchState(createBackup, (bool value) {
+    loadSwitchState(_createBackup, (bool value) {
       setState(() {
         features.genPrescription = value;
       });
@@ -57,6 +61,14 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('System Features Managment'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              _machineCodeController.text = generateGuid();
+            },
+            icon: const Icon(Icons.code),
+          ),
+        ],
       ),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -82,7 +94,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                         ListTile(
                           title: const Text('Generate Prescription'),
                           trailing: FutureBuilder(
-                            future: getSwitchState(genPresc),
+                            future: getSwitchState(_genPresc),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
@@ -97,7 +109,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                     onChanged: (bool value) {
                                       setState(() {
                                         features.genPrescription = value;
-                                        saveSwitchState(genPresc, value);
+                                        saveSwitchState(_genPresc, value);
                                       });
                                     },
                                   );
@@ -109,7 +121,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                         ListTile(
                           title: const Text('Upcoming Appointments'),
                           trailing: FutureBuilder(
-                            future: getSwitchState(upcomingAppt),
+                            future: getSwitchState(_upcomingAppt),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
@@ -124,7 +136,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                     onChanged: (bool value) {
                                       setState(() {
                                         features.upcomingAppointment = value;
-                                        saveSwitchState(upcomingAppt, value);
+                                        saveSwitchState(_upcomingAppt, value);
                                       });
                                     },
                                   );
@@ -136,7 +148,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                         ListTile(
                           title: const Text('X-Ray Management'),
                           trailing: FutureBuilder(
-                            future: getSwitchState(manageXray),
+                            future: getSwitchState(_manageXray),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
@@ -151,7 +163,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                     onChanged: (bool value) {
                                       setState(() {
                                         features.XRayManage = value;
-                                        saveSwitchState(manageXray, value);
+                                        saveSwitchState(_manageXray, value);
                                       });
                                     },
                                   );
@@ -163,7 +175,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                         ListTile(
                           title: const Text('Create Backup'),
                           trailing: FutureBuilder(
-                            future: getSwitchState(createBackup),
+                            future: getSwitchState(_createBackup),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
@@ -178,7 +190,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                     onChanged: (bool value) {
                                       setState(() {
                                         features.createBackup = value;
-                                        saveSwitchState(createBackup, value);
+                                        saveSwitchState(_createBackup, value);
                                       });
                                     },
                                   );
@@ -190,7 +202,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                         ListTile(
                           title: const Text('Restore Backup'),
                           trailing: FutureBuilder(
-                            future: getSwitchState(restoreBackup),
+                            future: getSwitchState(_restoreBackup),
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
@@ -205,7 +217,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                     onChanged: (bool value) {
                                       setState(() {
                                         features.restoreBackup = value;
-                                        saveSwitchState(restoreBackup, value);
+                                        saveSwitchState(_restoreBackup, value);
                                       });
                                     },
                                   );
@@ -241,7 +253,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                               .copyWith(fontSize: 20),
                         ),
                         Container(
-                          margin: EdgeInsets.all(10.0),
+                          margin: const EdgeInsets.all(10.0),
                           width: MediaQuery.of(context).size.width * 0.45,
                           child: Builder(builder: (context) {
                             return TextFormField(
@@ -284,19 +296,14 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                           }),
                         ),
                         Container(
-                          margin: EdgeInsets.all(10.0),
+                          margin: const EdgeInsets.all(10.0),
                           width: MediaQuery.of(context).size.width * 0.45,
                           child: Builder(
                             builder: (context) {
                               return TextFormField(
+                                readOnly: true,
                                 textDirection: TextDirection.ltr,
                                 controller: _liscenseController,
-                                validator: (value) {
-                                  if (value!.isEmpty) {
-                                    return 'Liscense required';
-                                  }
-                                  return null;
-                                },
                                 /*  inputFormatters: [
                                   FilteringTextInputFormatter.allow(
                                       RegExp(_regExUName)),
@@ -331,7 +338,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                           ),
                         ),
                         Container(
-                          margin: EdgeInsets.all(10.0),
+                          margin: const EdgeInsets.all(10.0),
                           width: MediaQuery.of(context).size.width * 0.4,
                           height: 35.0,
                           child: Builder(
@@ -347,7 +354,13 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                 ),
                                 onPressed: () {
                                   if (_liscenseFormKey.currentState!
-                                      .validate()) {}
+                                      .validate()) {
+                                    final expireAt = DateTime.now()
+                                        .add(const Duration(days: 365));
+                                    _liscenseKey = generateLicenseKey(expireAt);
+                                    _liscenseController.text =
+                                        'The liscense key generated: $_liscenseKey';
+                                  }
                                 },
                                 child: const Text('Generate Liscense'),
                               );
@@ -383,6 +396,31 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
     final prefs = await SharedPreferences.getInstance();
     bool value = prefs.getBool(key) ?? false;
     return value;
+  }
+
+// Generate a 128-bit integer (16 bytes)
+  String generateGuid() {
+    // Create a new random number generator
+    var rng = Random();
+
+    // Generate a random 128-bit number
+    var randomBytes = List<int>.generate(16, (i) => rng.nextInt(256));
+
+    // Convert the random bytes to a hex string
+    var guid = sha1.convert(randomBytes).toString();
+
+    return guid;
+  }
+
+// This function create a liscense based on the random code
+  String generateLicenseKey(DateTime expiryDate) {
+    var formatter = intl.DateFormat('yyyy-MM-dd');
+    var formattedExpiryDate = formatter.format(expiryDate);
+    var guid = generateGuid();
+    var dataToHash = guid + formattedExpiryDate;
+    var bytes = utf8.encode(dataToHash); // data being hashed
+    var digest = sha256.convert(bytes);
+    return digest.toString();
   }
 }
 
