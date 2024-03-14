@@ -115,7 +115,7 @@ flutter:
      - family: digital-7
        fonts:
          - asset: assets/fonts/digital-7.ttf
-         - asset: assets/fonts/loop_it.ttf
+         - asset: assets/fonts/LOOPY_IT.ttf
   #         style: italic
   #   - family: Trajan Pro
   #     fonts:
