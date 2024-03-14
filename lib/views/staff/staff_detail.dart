@@ -5,14 +5,16 @@ import 'dart:typed_data';
 import 'dart:ui';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/settings/settings_menu.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:galileo_mysql/galileo_mysql.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:provider/provider.dart';
 
 int gStaffID = 0;
 String gStaffFName = '';
@@ -28,6 +30,11 @@ Uint8List? gStaffContract;
 String gstaffFType = '';
 String gStaffAddr = '';
 String gStaffHDate = '';
+
+// ignore: prefer_typing_uninitialized_variables
+var selectedLanguage;
+// ignore: prefer_typing_uninitialized_variables
+var isEnglish;
 
 class StaffDetail extends StatelessWidget {
   final int staffID;
@@ -64,6 +71,10 @@ class StaffDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
     gStaffID = staffID;
     gStaffFName = staffFName;
     gStaffLName = staffLName ?? '';
@@ -82,10 +93,11 @@ class StaffDetail extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Directionality(
-        textDirection: TextDirection.rtl,
+        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('سوابق کارمند'),
+            title:
+                Text('${translations[selectedLanguage]?['StaffBackground'] ?? ''}$gStaffFName'),
             leading: IconButton(
               splashRadius: 27.0,
               onPressed: () => Navigator.pop(context),
@@ -225,6 +237,9 @@ class _StaffProfileState extends State<_StaffProfile> {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
     return Card(
       elevation: 0.5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -431,6 +446,9 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.5,
       width: MediaQuery.of(context).size.width * 0.52,
@@ -452,10 +470,10 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
                       margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                       child: Column(
                         children: [
-                          const Text(
-                            'تاریخ استخدام',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          Text(
+                            translations[selectedLanguage]?['HireDate'] ?? '',
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 12.0),
                           ),
                           Text(gStaffHDate),
                         ],
@@ -465,8 +483,9 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
                       margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                       child: Column(
                         children: [
-                          const Text('بست',
-                              style: TextStyle(
+                          Text(
+                              translations[selectedLanguage]?['Position'] ?? '',
+                              style: const TextStyle(
                                   color: Colors.grey, fontSize: 12.0)),
                           Text(gStaffPos),
                         ],
@@ -482,10 +501,12 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
                         margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                         child: Column(
                           children: [
-                            const Text('معاش',
-                                style: TextStyle(
+                            Text(
+                                translations[selectedLanguage]?['Salary'] ?? '',
+                                style: const TextStyle(
                                     color: Colors.grey, fontSize: 12.0)),
-                            Text('$gStaffSalary افغانی'),
+                            Text(
+                                '$gStaffSalary ${translations[selectedLanguage]?['Afn'] ?? ''}'),
                           ],
                         ),
                       ),
@@ -494,10 +515,14 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
                         margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                         child: Column(
                           children: [
-                            const Text('مقدار پول ضمانت',
-                                style: TextStyle(
+                            Text(
+                                translations[selectedLanguage]
+                                        ?['PrePayAmount'] ??
+                                    '',
+                                style: const TextStyle(
                                     color: Colors.grey, fontSize: 12.0)),
-                            Text('$gStaffPrePay افغانی'),
+                            Text(
+                                '$gStaffPrePay ${translations[selectedLanguage]?['Afn'] ?? ''}'),
                           ],
                         ),
                       ),
@@ -512,8 +537,10 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
                         width: 220,
                         child: Column(
                           children: [
-                            const Text('نمبر تماس عضو فامیل 1',
-                                style: TextStyle(
+                            Text(
+                                translations[selectedLanguage]?['FPhone1'] ??
+                                    '',
+                                style: const TextStyle(
                                     color: Colors.grey, fontSize: 12.0)),
                             Text(gStaffFPhone1),
                           ],
@@ -524,8 +551,8 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
                       margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                       child: Column(
                         children: [
-                          const Text('نمبر تماس عضو فامیل 2',
-                              style: TextStyle(
+                          Text(translations[selectedLanguage]?['FPhone2'] ?? '',
+                              style: const TextStyle(
                                   color: Colors.grey, fontSize: 12.0)),
                           Text(gStaffFPhone2),
                         ],
@@ -540,8 +567,8 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
                       margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                       child: Column(
                         children: [
-                          const Text('آدرس',
-                              style: TextStyle(
+                          Text(translations[selectedLanguage]?['Address'] ?? '',
+                              style: const TextStyle(
                                   color: Colors.grey, fontSize: 12.0)),
                           SizedBox(
                             width: MediaQuery.of(context).size.width * 0.07,
@@ -554,10 +581,10 @@ class _StaffMoreDetailState extends State<_StaffMoreDetail> {
                       margin: const EdgeInsets.only(left: 20.0, bottom: 20.0),
                       child: Column(
                         children: [
-                          const Text(
-                            'نمبر تذکره',
-                            style:
-                                TextStyle(color: Colors.grey, fontSize: 12.0),
+                          Text(
+                            translations[selectedLanguage]?['Tazkira'] ?? '',
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 12.0),
                           ),
                           Text(gStaffTazkira),
                         ],
