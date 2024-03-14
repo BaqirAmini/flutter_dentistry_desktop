@@ -1953,6 +1953,23 @@ class _PatientDataTableState extends State<PatientDataTable> {
                   },
                   child:
                       Text(translations[selectedLanguage]?['GenPresc'] ?? ''),
+                )
+              else
+                OutlinedButton.icon(
+                  label:
+                      Text(translations[selectedLanguage]?['GenPresc'] ?? ''),
+                  icon: const Icon(Icons.workspace_premium_outlined,
+                      color: Colors.red),
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    side: const BorderSide(
+                      color: Colors.blue,
+                    ),
+                  ),
+                  onPressed: () => _onShowSnack(
+                      Colors.red, 'Please purchase the premium app', context),
                 ),
               // Set access role to only allow 'system admin' to make such changes
               if (StaffInfo.staffRole == 'مدیر سیستم' ||
