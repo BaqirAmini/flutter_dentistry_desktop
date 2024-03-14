@@ -263,6 +263,12 @@ final Map<String, Map<String, String>> translations = {
     'StaffEditErrMsg': 'Nothing has been edited.',
     'ConfirmStaffDelete': 'Are you sure you want to delete this staff?',
     'DeleteStaffMsg': 'The staff deleted successfully.',
+    'StaffBackground' : 'Background of ',
+    'HireDate' : 'Hire Date',
+    'FPhone1' : 'Family Phone 1',
+    'FPhone2' : 'Family Phone 2',
+    'OpenContract' : 'View Contract File',
+    'PrePayAmount' : 'Prepayment Amount',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'First Name',
@@ -668,6 +674,12 @@ final Map<String, Map<String, String>> translations = {
     'StaffEditErrMsg': 'شما هیچ تغییراتی نیاورده اید.',
     'ConfirmStaffDelete': 'آیا میخواهید این کارمند را حذف کنید؟',
     'DeleteStaffMsg': 'کارمند موفقانه حذف شد.',
+    'StaffBackground' : 'سوابق ',
+    'HireDate' : 'تاریخ استخدام',
+    'FPhone1' : 'نمبر تماس عضوی فامیل 1',
+    'FPhone2' : 'نمبر تماس عضوی فامیل 2',
+    'OpenContract' : 'باز کردن قرارداد خط',
+    'PrePayAmount' : 'مقدار پول ضمانت',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'اسم',
@@ -1078,6 +1090,12 @@ final Map<String, Map<String, String>> translations = {
     'StaffEditErrMsg': 'تاسو هیڅ بدلون نه دی کړی.',
     'ConfirmStaffDelete': 'ایا تاسو غواړئ دا کارمند حذف کړئ؟',
     'DeleteStaffMsg': 'کارمند په بریالیتوب سره ړنګ شو.',
+    'StaffBackground' : 'د ریکارډونه ',
+    'HireDate' : 'د کارکولو نېټه',
+    'FPhone1' : 'د کورنۍ غړیتوب 1',
+    'FPhone2' : 'د کورنۍ غړیتوب 2',
+    'OpenContract' : 'د تړون فایل وګورئ',
+    'PrePayAmount' : 'د تضمین پیسو مقدار',
     /*--------/. STAFF ------- */
     /*----- SHARED VALUES -----*/
     'FName': 'نوم',
