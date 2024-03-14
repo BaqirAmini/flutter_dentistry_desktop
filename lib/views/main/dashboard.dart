@@ -336,7 +336,7 @@ class _DashboardState extends State<Dashboard> {
                             filter:
                                 ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                             child: Container(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(6.0),
                               decoration: BoxDecoration(
                                   color: Colors.grey.shade200.withOpacity(0.1)),
                               child: Text(_timeString,
@@ -344,10 +344,10 @@ class _DashboardState extends State<Dashboard> {
                                       .textTheme
                                       .displaySmall!
                                       .copyWith(
-                                          fontSize: 25.0,
+                                          fontSize: 26.0,
                                           color: const Color.fromARGB(
                                               255, 221, 219, 228),
-                                          fontFamily: 'digital-7',
+                                          fontFamily: 'DS-Digital',
                                           fontWeight: FontWeight.bold)),
                             ),
                           ),
