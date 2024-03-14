@@ -345,8 +345,7 @@ class _DashboardState extends State<Dashboard> {
                                       .displaySmall!
                                       .copyWith(
                                           fontSize: 26.0,
-                                          color: const Color.fromARGB(
-                                              255, 221, 219, 228),
+                                          color:  Colors.yellow[200],
                                           fontFamily: 'DS-Digital',
                                           fontWeight: FontWeight.bold)),
                             ),
