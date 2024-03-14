@@ -338,15 +338,15 @@ class _DashboardState extends State<Dashboard> {
                             child: Container(
                               padding: const EdgeInsets.all(8.0),
                               decoration: BoxDecoration(
-                                  color:
-                                      Colors.grey.shade200.withOpacity(0.1)),
+                                  color: Colors.grey.shade200.withOpacity(0.1)),
                               child: Text(_timeString,
                                   style: Theme.of(context)
                                       .textTheme
                                       .displaySmall!
                                       .copyWith(
                                           fontSize: 25.0,
-                                          color: Colors.white,
+                                          color: const Color.fromARGB(
+                                              255, 221, 219, 228),
                                           fontFamily: 'digital-7',
                                           fontWeight: FontWeight.bold)),
                             ),
