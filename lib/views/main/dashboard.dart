@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter/material.dart';
@@ -328,17 +329,31 @@ class _DashboardState extends State<Dashboard> {
                   ),
                   actions: [
                     Center(
-                        child: Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: Text(_timeString,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .displaySmall!
-                                    .copyWith(
-                                        fontSize: 25.0,
-                                        color: Colors.white,
-                                        fontFamily: 'digital-7',
-                                        fontWeight: FontWeight.bold)))),
+                      child: Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: ClipRect(
+                          child: BackdropFilter(
+                            filter:
+                                ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                            child: Container(
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                  color:
+                                      Colors.grey.shade200.withOpacity(0.1)),
+                              child: Text(_timeString,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .displaySmall!
+                                      .copyWith(
+                                          fontSize: 25.0,
+                                          color: Colors.white,
+                                          fontFamily: 'digital-7',
+                                          fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                     const SizedBox(width: 15.0),
                   ],
                 ),
@@ -883,7 +898,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   String _formatDateTime(DateTime dateTime) {
-    return intl.DateFormat('MM-dd-yyyy hh:mm:ss a').format(dateTime);
+    return intl.DateFormat('hh:mm:ss a').format(dateTime);
   }
 }
 
