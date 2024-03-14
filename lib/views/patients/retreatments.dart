@@ -51,95 +51,91 @@ class _RetreatmentState extends State<Retreatment> {
     var languageProvider = Provider.of<LanguageProvider>(context);
     selectedLanguage = languageProvider.selectedLanguage;
     isEnglish = selectedLanguage == 'English';
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Directionality(
-        textDirection: TextDirection.ltr,
-        child: Scaffold(
-          /* floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const NewAppointment()),
-              ).then((_) {
-                setState(() {});
-              });
-              // This is assigned to identify retreatments.round i.e., if it is true round is stored '1' otherwise increamented by 1
-              GlobalUsage.newPatientCreated = false;
-            },
-            tooltip: 'افزودن جلسه جدید',
-            child: const Icon(
-              Icons.add,
-              color: Colors.white,
+    return Directionality(
+      textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+      child: Scaffold(
+        /* floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const NewAppointment()),
+          ).then((_) {
+            setState(() {});
+          });
+          // This is assigned to identify retreatments.round i.e., if it is true round is stored '1' otherwise increamented by 1
+          GlobalUsage.newPatientCreated = false;
+        },
+        tooltip: 'افزودن جلسه جدید',
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
+     */
+        appBar: AppBar(
+          title: Text(
+              '${PatientInfo.firstName} ${PatientInfo.lastName} Retreatments'),
+          leading: IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const BackButtonIcon()),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const Patient()),
+                  (route) => route.settings.name == 'Patient'),
+              icon: const Icon(Icons.people_outline),
+              tooltip: 'Patients',
+              padding: const EdgeInsets.all(3.0),
+              splashRadius: 30.0,
             ),
-          ),
- */
-          appBar: AppBar(
-            title: Text(
-                '${PatientInfo.firstName} ${PatientInfo.lastName} Retreatments'),
-            leading: IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const BackButtonIcon()),
-            actions: [
-              IconButton(
-                onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const Patient()),
-                    (route) => route.settings.name == 'Patient'),
-                icon: const Icon(Icons.people_outline),
-                tooltip: 'Patients',
-                padding: const EdgeInsets.all(3.0),
-                splashRadius: 30.0,
-              ),
-              const SizedBox(width: 15.0),
-              IconButton(
-                // This routing approach removes all middle routes from the stack which are between dashboard and this page.
-                onPressed: () => Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const Dashboard()),
-                    (route) => route.settings.name == 'Dashboard'),
-                icon: const Icon(Icons.home_outlined),
-                tooltip: 'Dashboard',
-                padding: const EdgeInsets.all(3.0),
-                splashRadius: 30.0,
-              ),
-              const SizedBox(width: 15.0)
+            const SizedBox(width: 15.0),
+            IconButton(
+              // This routing approach removes all middle routes from the stack which are between dashboard and this page.
+              onPressed: () => Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const Dashboard()),
+                  (route) => route.settings.name == 'Dashboard'),
+              icon: const Icon(Icons.home_outlined),
+              tooltip: 'Dashboard',
+              padding: const EdgeInsets.all(3.0),
+              splashRadius: 30.0,
+            ),
+            const SizedBox(width: 15.0)
 
-              /* Tooltip(
-              message: 'افزودن جلسه جدید',
-              child: InkWell(
-                onTap: () {},
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2.0),
-                  ),
-                  child: const Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                  ),
+            /* Tooltip(
+          message: 'افزودن جلسه جدید',
+          child: InkWell(
+            onTap: () {},
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2.0),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(5.0),
+                child: Icon(
+                  Icons.add,
+                  color: Colors.white,
                 ),
               ),
-            ), */
-            ],
+            ),
           ),
-          body: Center(
-            child: Container(
-              margin: const EdgeInsets.only(top: 15),
-              width: MediaQuery.of(context).size.width * 0.9,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: _AppointmentContent(),
-                  ),
-                ],
-              ),
+        ), */
+          ],
+        ),
+        body: Center(
+          child: Container(
+            margin: const EdgeInsets.only(top: 15),
+            width: MediaQuery.of(context).size.width * 0.9,
+            child: Column(
+              children: [
+                Expanded(
+                  child: _AppointmentContent(),
+                ),
+              ],
             ),
           ),
         ),
       ),
-      theme: ThemeData(useMaterial3: false),
     );
   }
 }
@@ -267,10 +263,14 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                             horizontal: 8.0, vertical: 5.0),
                         child: Center(
                           child: Tooltip(
-                            message: 'This service caused issues for ${PatientInfo.firstName}.',
+                            message:
+                                'This service caused issues for ${PatientInfo.firstName}.',
                             child: Text(
                               damageServiceName,
-                              style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Colors.white),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall!
+                                  .copyWith(color: Colors.white),
                             ),
                           ),
                         ),
@@ -302,8 +302,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                         color: Colors.green,
                                                         shape: BoxShape.circle,
                                                         border: Border.all(
-                                                            color:
-                                                                Colors.green,
+                                                            color: Colors.green,
                                                             width: 2.0),
                                                       ),
                                                       child: const Padding(
