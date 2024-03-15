@@ -123,7 +123,7 @@ class StaffDetail extends StatelessWidget {
               children: [
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.5,
-                  width: MediaQuery.of(context).size.width * 0.25,
+                  width: MediaQuery.of(context).size.width * 0.3,
                   child: const _StaffProfile(),
                 ),
                 _StaffMoreDetail(),
@@ -317,7 +317,7 @@ class _StaffProfileState extends State<_StaffProfile> {
                 },
               ),
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.12,
+                width: MediaQuery.of(context).size.width * 0.2,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -327,7 +327,7 @@ class _StaffProfileState extends State<_StaffProfile> {
                           horizontal:
                               MediaQuery.of(context).size.width * 0.017),
                       child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.1,
+                        width: MediaQuery.of(context).size.width * 0.2,
                         child: Text('$gStaffFName $gStaffLName',
                             style: Theme.of(context).textTheme.headlineSmall),
                       ),
