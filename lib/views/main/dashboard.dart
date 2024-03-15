@@ -346,7 +346,7 @@ class _DashboardState extends State<Dashboard> {
                                       .copyWith(
                                           fontSize: 26.0,
                                           color:  Colors.yellow[200],
-                                          fontFamily: 'DS-Digital',
+                                          fontFamily: 'digital-7',
                                           fontWeight: FontWeight.bold)),
                             ),
                           ),

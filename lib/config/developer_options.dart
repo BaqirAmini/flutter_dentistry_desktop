@@ -4,8 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:win32/win32.dart';
+import 'dart:ffi';
+import 'package:ffi/ffi.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 void main() => runApp(const DeveloperOptions());
+
+// Create instance of Flutter Secure Store
+final storage = FlutterSecureStorage();
 
 class DeveloperOptions extends StatefulWidget {
   const DeveloperOptions({Key? key}) : super(key: key);
@@ -64,7 +71,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
         actions: [
           IconButton(
             onPressed: () {
-              _machineCodeController.text = generateGuid();
+              _machineCodeController.text = getMachineGuid();
             },
             icon: const Icon(Icons.code),
           ),
@@ -352,7 +359,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                     color: Colors.blue,
                                   ),
                                 ),
-                                onPressed: () {
+                                onPressed: () async {
                                   if (_liscenseFormKey.currentState!
                                       .validate()) {
                                     final expireAt = DateTime.now()
@@ -360,6 +367,9 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                     _liscenseKey = generateLicenseKey(expireAt);
                                     _liscenseController.text =
                                         'The liscense key generated: $_liscenseKey';
+
+                                    print(
+                                        'In Secure Storage: ${await getLicenseKey()}');
                                   }
                                 },
                                 child: const Text('Generate Liscense'),
@@ -379,6 +389,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
     );
   }
 
+// This function saves switch state into a shared preference.
   void saveSwitchState(String key, bool value) async {
     // Create a shared preferences variable
     final prefs = await SharedPreferences.getInstance();
@@ -398,29 +409,55 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
     return value;
   }
 
-// Generate a 128-bit integer (16 bytes)
-  String generateGuid() {
-    // Create a new random number generator
-    var rng = Random();
-
-    // Generate a random 128-bit number
-    var randomBytes = List<int>.generate(16, (i) => rng.nextInt(256));
-
-    // Convert the random bytes to a hex string
-    var guid = sha1.convert(randomBytes).toString();
-
-    return guid;
-  }
-
-// This function create a liscense based on the random code
+// This function create a liscense based on the machine code
   String generateLicenseKey(DateTime expiryDate) {
     var formatter = intl.DateFormat('yyyy-MM-dd');
     var formattedExpiryDate = formatter.format(expiryDate);
-    var guid = generateGuid();
+    var guid = getMachineGuid();
     var dataToHash = guid + formattedExpiryDate;
     var bytes = utf8.encode(dataToHash); // data being hashed
     var digest = sha256.convert(bytes);
+    storeLicenseKey(digest.toString());
     return digest.toString();
+  }
+
+  String getMachineGuid() {
+    final hKey = calloc<HKEY>();
+    final lpcbData = calloc<DWORD>()..value = 256;
+    final lpData = calloc<Uint16>(lpcbData.value);
+
+    final strKeyPath = TEXT('SOFTWARE\\Microsoft\\Cryptography');
+    final strValueName = TEXT('MachineGuid');
+
+    var result =
+        RegOpenKeyEx(HKEY_LOCAL_MACHINE, strKeyPath, 0, KEY_READ, hKey);
+    if (result == ERROR_SUCCESS) {
+      result = RegQueryValueEx(
+          hKey.value, strValueName, nullptr, nullptr, lpData.cast(), lpcbData);
+      if (result == ERROR_SUCCESS) {
+        String machineGuid = lpData
+            .cast<Utf16>()
+            .toDartString(); // Use cast<Utf16>().toDartString() here
+        calloc.free(hKey);
+        calloc.free(lpcbData);
+        calloc.free(lpData);
+        return machineGuid;
+      }
+    }
+
+    calloc.free(hKey);
+    calloc.free(lpcbData);
+    calloc.free(lpData);
+
+    throw Exception('Failed to get MachineGuid');
+  }
+
+  Future<void> storeLicenseKey(String key) async {
+    await storage.write(key: 'licenseKey', value: key);
+  }
+
+  Future<String?> getLicenseKey() async {
+    return await storage.read(key: 'licenseKey');
   }
 }
 

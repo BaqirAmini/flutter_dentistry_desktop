@@ -68,6 +68,9 @@ dependencies:
   syncfusion_flutter_xlsio: ^21.2.10
   syncfusion_flutter_pdf: ^21.2.10
   crypto: ^3.0.3
+  win32: ^4.1.4
+  ffi: ^2.1.0
+  flutter_secure_storage: ^8.1.0
 
 
 dev_dependencies:

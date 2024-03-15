@@ -1618,7 +1618,7 @@ onEditTax(BuildContext context, Function onUpdate) {
               child: Form(
                 key: formKey,
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.35,
+                  width: MediaQuery.of(context).size.width * 0.4,
                   child: SingleChildScrollView(
                     reverse: false,
                     child: Column(
@@ -1853,6 +1853,7 @@ onEditTax(BuildContext context, Function onUpdate) {
                           ),
                         ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Expanded(
                               flex: 3,
@@ -1921,6 +1922,8 @@ onEditTax(BuildContext context, Function onUpdate) {
                             Expanded(
                               flex: 1,
                               child: CheckboxListTile(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 5.0, vertical: 0.0),
                                 value: checked,
                                 onChanged: taxTotalController.text.isEmpty
                                     ? null
