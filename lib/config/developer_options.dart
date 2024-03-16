@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'package:intl/intl.dart' as intl;
@@ -37,6 +37,8 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
   final TextEditingController _machineCodeController = TextEditingController();
   final TextEditingController _liscenseController = TextEditingController();
   final _liscenseFormKey = GlobalKey<FormState>();
+  int _validDurationGroupValue = 15;
+  bool _isLiscenseCopied = false;
 
   @override
   void initState() {
@@ -68,14 +70,6 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('System Features Managment'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              _machineCodeController.text = getMachineGuid();
-            },
-            icon: const Icon(Icons.code),
-          ),
-        ],
       ),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -261,7 +255,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                         ),
                         Container(
                           margin: const EdgeInsets.all(10.0),
-                          width: MediaQuery.of(context).size.width * 0.45,
+                          width: MediaQuery.of(context).size.width * 0.5,
                           child: Builder(builder: (context) {
                             return TextFormField(
                               textDirection: TextDirection.ltr,
@@ -277,6 +271,11 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                   RegExp(_regExUName),
                                 ),
                               ], */
+                              onChanged: (value) {
+                                setState(() {
+                                  _isLiscenseCopied = false;
+                                });
+                              },
                               decoration: const InputDecoration(
                                 contentPadding: EdgeInsets.all(15.0),
                                 border: OutlineInputBorder(),
@@ -303,8 +302,117 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                           }),
                         ),
                         Container(
+                          width: MediaQuery.of(context).size.width * 0.5,
                           margin: const EdgeInsets.all(10.0),
-                          width: MediaQuery.of(context).size.width * 0.45,
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 10.0),
+                              border: OutlineInputBorder(),
+                              labelText: 'Valid Duration',
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(50.0),
+                                ),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(50.0),
+                                ),
+                                borderSide: BorderSide(color: Colors.blue),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Theme(
+                                    data: Theme.of(context).copyWith(
+                                      listTileTheme: const ListTileThemeData(
+                                          horizontalTitleGap: 0.5),
+                                    ),
+                                    child: RadioListTile<int>(
+                                        title: const Text(
+                                          '15 Days',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                        value: 15,
+                                        groupValue: _validDurationGroupValue,
+                                        onChanged: (int? value) {
+                                          setState(() {
+                                            _validDurationGroupValue = value!;
+                                          });
+                                        }),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Theme(
+                                    data: Theme.of(context).copyWith(
+                                      listTileTheme: const ListTileThemeData(
+                                          horizontalTitleGap: 0.5),
+                                    ),
+                                    child: RadioListTile<int>(
+                                        title: const Text(
+                                          '1 Month',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                        value: 30,
+                                        groupValue: _validDurationGroupValue,
+                                        onChanged: (int? value) {
+                                          setState(() {
+                                            _validDurationGroupValue = value!;
+                                          });
+                                        }),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Theme(
+                                    data: Theme.of(context).copyWith(
+                                      listTileTheme: const ListTileThemeData(
+                                          horizontalTitleGap: 0.5),
+                                    ),
+                                    child: RadioListTile<int>(
+                                        title: const Text(
+                                          '6 Month',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                        value: 180,
+                                        groupValue: _validDurationGroupValue,
+                                        onChanged: (int? value) {
+                                          setState(() {
+                                            _validDurationGroupValue = value!;
+                                          });
+                                        }),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Theme(
+                                    data: Theme.of(context).copyWith(
+                                      listTileTheme: const ListTileThemeData(
+                                          horizontalTitleGap: 0.5),
+                                    ),
+                                    child: RadioListTile<int>(
+                                        title: const Text(
+                                          '1 Year',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                        value: 365,
+                                        groupValue: _validDurationGroupValue,
+                                        onChanged: (int? value) {
+                                          setState(() {
+                                            _validDurationGroupValue = value!;
+                                          });
+                                        }),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.all(10.0),
+                          width: MediaQuery.of(context).size.width * 0.5,
                           child: Builder(
                             builder: (context) {
                               return TextFormField(
@@ -315,10 +423,46 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                   FilteringTextInputFormatter.allow(
                                       RegExp(_regExUName)),
                                 ], */
-                                decoration: const InputDecoration(
+                                decoration: InputDecoration(
+                                  suffixIcon: !_isLiscenseCopied
+                                      ? IconButton(
+                                          tooltip: 'Copy',
+                                          splashRadius: 18.0,
+                                          onPressed: _liscenseController
+                                                  .text.isEmpty
+                                              ? null
+                                              : () async {
+                                                  Clipboard.setData(
+                                                    ClipboardData(
+                                                        text:
+                                                            _machineCodeController
+                                                                .text),
+                                                  );
+
+                                                  setState(() {
+                                                    _isLiscenseCopied = true;
+                                                  });
+
+                                                  /*   ClipboardData?
+                                                                  clipboardData =
+                                                                  await Clipboard
+                                                                      .getData(
+                                                                          Clipboard
+                                                                              .kTextPlain);
+                                                              String?
+                                                                  copiedText =
+                                                                  clipboardData
+                                                                      ?.text;
+                                                              print(
+                                                                  'The copy value: $copiedText'); */
+                                                },
+                                          icon: const Icon(Icons.copy,
+                                              size: 15.0),
+                                        )
+                                      : Icon(Icons.done_rounded),
                                   contentPadding: EdgeInsets.all(15.0),
                                   border: OutlineInputBorder(),
-                                  labelText: 'Liscense required',
+                                  labelText: 'Product Key',
                                   enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
@@ -362,14 +506,11 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                 onPressed: () async {
                                   if (_liscenseFormKey.currentState!
                                       .validate()) {
-                                    final expireAt = DateTime.now()
-                                        .add(const Duration(days: 365));
+                                    final expireAt = DateTime.now().add(
+                                        Duration(
+                                            days: _validDurationGroupValue));
                                     _liscenseKey = generateLicenseKey(expireAt);
-                                    _liscenseController.text =
-                                        'The liscense key generated: $_liscenseKey';
-
-                                    print(
-                                        'In Secure Storage: ${await getLicenseKey()}');
+                                    _liscenseController.text = _liscenseKey;
                                   }
                                 },
                                 child: const Text('Generate Liscense'),
@@ -413,7 +554,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
   String generateLicenseKey(DateTime expiryDate) {
     var formatter = intl.DateFormat('yyyy-MM-dd');
     var formattedExpiryDate = formatter.format(expiryDate);
-    var guid = getMachineGuid();
+    var guid = _machineCodeController.text;
     var dataToHash = guid + formattedExpiryDate;
     var bytes = utf8.encode(dataToHash); // data being hashed
     var digest = sha256.convert(bytes);
