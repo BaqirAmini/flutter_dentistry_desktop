@@ -484,7 +484,7 @@ class _LoginState extends State<Login> {
                         ),
                         Image(
                           image: const AssetImage(
-                              'assets/graphics/crown_logo.png'),
+                              'assets/graphics/crown_logo_blue.png'),
                           width: MediaQuery.of(context).size.width * 0.2,
                           height: MediaQuery.of(context).size.width * 0.2,
                         )

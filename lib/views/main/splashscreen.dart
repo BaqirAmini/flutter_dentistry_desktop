@@ -47,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // Navigate to the login page after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const LiscenseVerification()));
+          context, MaterialPageRoute(builder: (context) => const Login()));
     });
   }
 
@@ -61,7 +61,7 @@ class _SplashScreenState extends State<SplashScreen> {
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.1,
               height: MediaQuery.of(context).size.height * 0.1,
-              child: Image.asset('assets/graphics/crown_logo.png'),
+              child: Image.asset('assets/graphics/crown_logo_blue.png'),
             ), // Replace with your logo
             const SizedBox(height: 30),
             SizedBox(
