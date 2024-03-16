@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/config/developer_options.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/liscense_verification.dart';
 import 'package:flutter_dentistry/views/main/login.dart';
 import 'package:provider/provider.dart';
 
@@ -46,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
     // Navigate to the login page after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const Login()));
+          context, MaterialPageRoute(builder: (context) => const LiscenseVerification()));
     });
   }
 
