@@ -101,6 +101,7 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
                                         decoration: InputDecoration(
                                           suffixIcon: !_isCoppied
                                               ? IconButton(
+                                                tooltip: 'Copy',
                                                   splashRadius: 18.0,
                                                   onPressed:
                                                       _machineCodeController
