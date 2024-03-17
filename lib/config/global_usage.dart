@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:windows_notification/notification_message.dart';
 import 'package:windows_notification/windows_notification.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart' as intl;
 
 class GlobalUsage {
   // A toast message to be used anywhere required
@@ -90,4 +93,60 @@ class GlobalUsage {
         "You have an appointment with $firstName $lastName");
     winNotifyPlugin.showNotificationPluginTemplate(message);
   }
+
+// Create instance of Flutter Secure Store
+  final storage = const FlutterSecureStorage();
+
+  // Store the expiry date
+  Future<void> storeExpiryDate(DateTime expiryDate) async {
+    var formatter = intl.DateFormat('yyyy-MM-dd HH:mm');
+    ;
+    var formattedExpiryDate = formatter.format(expiryDate);
+    await storage.write(key: 'expiryDate', value: formattedExpiryDate);
+  }
+
+// Get the expiry date
+  Future<DateTime?> getExpiryDate() async {
+    var formatter = intl.DateFormat('yyyy-MM-dd HH:mm');
+    var formattedExpiryDate = await storage.read(key: 'expiryDate');
+    return formattedExpiryDate != null
+        ? formatter.parse(formattedExpiryDate)
+        : null;
+  }
+
+// Check if the license key has expired
+  Future<bool> hasLicenseKeyExpired() async {
+    var expiryDate = await getExpiryDate();
+    return expiryDate != null && DateTime.now().isAfter(expiryDate);
+  }
+
+/*-------------- For Developer -----------*/
+// Store the liscense key
+  Future<void> storeLicenseKey(String key) async {
+    await storage.write(key: 'licenseKey', value: key);
+  }
+
+// Get the liscense key
+  Future<String?> getLicenseKey() async {
+    return await storage.read(key: 'licenseKey');
+  }
+/*--------------/. For Developer -----------*/
+
+/*----------------- For Users ----------*/
+  String productKeyRelatedMsg = 'Please enter the product key you have purchased and click \'Verify\' in below to activate the system Or make a concact with the system owner.';
+// Store the liscense key for a specific user
+  Future<void> storeLicenseKey4User(String key) async {
+    await storage.write(key: 'UserlicenseKey', value: key);
+  }
+
+  // Get the liscense key for a specific user
+  Future<String?> getLicenseKey4User() async {
+    return await storage.read(key: 'UserlicenseKey');
+  }
+
+// Delete the liscense for a specific user
+  Future<void> deleteValue4User(String key) async {
+    await storage.delete(key: key);
+  }
+/*-----------------/. For Users ----------*/
 }

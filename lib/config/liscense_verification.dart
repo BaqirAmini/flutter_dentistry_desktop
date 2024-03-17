@@ -1,8 +1,10 @@
 import 'dart:ffi';
-
+import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:flutter_dentistry/views/main/login.dart';
 import 'package:win32/win32.dart';
 
 void main() => runApp(const LiscenseVerification());
@@ -39,6 +41,9 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
   final _liscenseVerifyFK = GlobalKey<FormState>();
   bool _isCoppied = false;
 
+  // Create an instance of this class
+  final GlobalUsage _globalUsage = GlobalUsage();
+
   @override
   void initState() {
     super.initState();
@@ -55,8 +60,9 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
           body: Center(
             child: Container(
               decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
                 shape: BoxShape.rectangle,
-                border: Border.all(color: Colors.grey, width: 2.0),
+                border: Border.all(color: Colors.grey, width: 1.5),
               ),
               width: MediaQuery.of(context).size.width * 0.7,
               height: MediaQuery.of(context).size.height * 0.7,
@@ -71,17 +77,30 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            Icon(Icons.vpn_key_outlined,
+                                size: MediaQuery.of(context).size.width * 0.05,
+                                color: Colors.blue),
+                            SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.01),
                             Text(
-                              'Liscense Verification',
+                              'Liscense Key Verification',
                               style: Theme.of(context)
                                   .textTheme
-                                  .displaySmall!
-                                  .copyWith(fontSize: 20),
+                                  .headlineLarge!
+                                  .copyWith(color: Colors.blue),
+                            ),
+                            const SizedBox(height: 10.0),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: Text(_globalUsage.productKeyRelatedMsg,
+                                  style:
+                                      Theme.of(context).textTheme.labelLarge),
                             ),
                             const SizedBox(height: 50.0),
                             Container(
                               margin: const EdgeInsets.all(10.0),
-                              width: MediaQuery.of(context).size.width * 0.45,
+                              width: MediaQuery.of(context).size.width * 0.41,
                               child: Builder(builder: (context) {
                                 return Row(
                                   mainAxisAlignment:
@@ -101,7 +120,7 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
                                         decoration: InputDecoration(
                                           suffixIcon: !_isCoppied
                                               ? IconButton(
-                                                tooltip: 'Copy',
+                                                  tooltip: 'Copy',
                                                   splashRadius: 18.0,
                                                   onPressed:
                                                       _machineCodeController
@@ -137,7 +156,7 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
                                                   icon: const Icon(Icons.copy,
                                                       size: 15.0),
                                                 )
-                                              : Icon(Icons.done_rounded),
+                                              : const Icon(Icons.done_rounded),
                                           enabledBorder:
                                               const OutlineInputBorder(
                                             borderSide:
@@ -160,7 +179,7 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
                             ),
                             Container(
                               margin: const EdgeInsets.all(10.0),
-                              width: MediaQuery.of(context).size.width * 0.45,
+                              width: MediaQuery.of(context).size.width * 0.41,
                               child: Builder(
                                 builder: (context) {
                                   return Row(
@@ -217,9 +236,39 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
                                 Builder(
                                   builder: (context) {
                                     return ElevatedButton.icon(
-                                        onPressed: () {
+                                        onPressed: () async {
                                           if (_liscenseVerifyFK.currentState!
-                                              .validate()) {}
+                                              .validate()) {
+                                            if (_liscenseController.text ==
+                                                await _globalUsage
+                                                    .getLicenseKey()) {
+                                              if (await _globalUsage
+                                                  .hasLicenseKeyExpired()) {
+                                                _onShowSnack(Colors.red,
+                                                    'Sorry, this product key has expired. Please purchase the new one.');
+                                                await _globalUsage
+                                                    .deleteValue4User(
+                                                        'UserlicenseKey');
+                                              } else {
+                                                await _globalUsage
+                                                    .storeLicenseKey4User(
+                                                        _liscenseController
+                                                            .text);
+                                                // ignore: use_build_context_synchronously
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const Login()));
+                                              }
+                                            } else {
+                                              _onShowSnack(Colors.red,
+                                                  'Sorry, this product key is not valid!');
+                                              await _globalUsage
+                                                  .deleteValue4User(
+                                                      'UserlicenseKey');
+                                            }
+                                          }
                                         },
                                         icon: const Icon(Icons.verified),
                                         label: const Text('Verify'));
@@ -228,7 +277,26 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
                                 Builder(
                                   builder: (context) {
                                     return TextButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (ctx) => AlertDialog(
+                                            title: const Text('Exit the System', style: TextStyle(color: Colors.blue)),
+                                            content: const Text('Are you sure you want to exit the system?'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(context),
+                                                child: const Text(
+                                                    'Cancel'),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () => exit(0),
+                                                child: const Text('Exit'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
                                       child: const Text('Cancel'),
                                     );
                                   },

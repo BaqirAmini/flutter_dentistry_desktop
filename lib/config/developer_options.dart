@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'package:intl/intl.dart' as intl;
@@ -12,7 +13,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 void main() => runApp(const DeveloperOptions());
 
 // Create instance of Flutter Secure Store
-final storage = FlutterSecureStorage();
+const storage = FlutterSecureStorage();
 
 class DeveloperOptions extends StatefulWidget {
   const DeveloperOptions({Key? key}) : super(key: key);
@@ -39,6 +40,9 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
   final _liscenseFormKey = GlobalKey<FormState>();
   int _validDurationGroupValue = 15;
   bool _isLiscenseCopied = false;
+
+  // Create instance to access its methods
+  GlobalUsage _globalUsage = GlobalUsage();
 
   @override
   void initState() {
@@ -435,50 +439,37 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                                   Clipboard.setData(
                                                     ClipboardData(
                                                         text:
-                                                            _machineCodeController
+                                                            _liscenseController
                                                                 .text),
                                                   );
 
                                                   setState(() {
                                                     _isLiscenseCopied = true;
                                                   });
-
-                                                  /*   ClipboardData?
-                                                                  clipboardData =
-                                                                  await Clipboard
-                                                                      .getData(
-                                                                          Clipboard
-                                                                              .kTextPlain);
-                                                              String?
-                                                                  copiedText =
-                                                                  clipboardData
-                                                                      ?.text;
-                                                              print(
-                                                                  'The copy value: $copiedText'); */
                                                 },
                                           icon: const Icon(Icons.copy,
                                               size: 15.0),
                                         )
-                                      : Icon(Icons.done_rounded),
-                                  contentPadding: EdgeInsets.all(15.0),
-                                  border: OutlineInputBorder(),
+                                      : const Icon(Icons.done_rounded),
+                                  contentPadding: const EdgeInsets.all(15.0),
+                                  border: const OutlineInputBorder(),
                                   labelText: 'Product Key',
-                                  enabledBorder: OutlineInputBorder(
+                                  enabledBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
+                                  focusedBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.blue)),
-                                  errorBorder: OutlineInputBorder(
+                                  errorBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: OutlineInputBorder(
+                                  focusedErrorBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide: BorderSide(
@@ -506,11 +497,15 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                 onPressed: () async {
                                   if (_liscenseFormKey.currentState!
                                       .validate()) {
-                                    final expireAt = DateTime.now().add(
-                                        Duration(
-                                            days: _validDurationGroupValue));
+                                    final expireAt = DateTime.now()
+                                        .add(const Duration(minutes: 5));
+                                    // Generate liscense key and assign it to a variable
                                     _liscenseKey = generateLicenseKey(expireAt);
+                                    // Assign the generated liscense to its field
                                     _liscenseController.text = _liscenseKey;
+                                    // Store the expiration date
+                                    await _globalUsage
+                                        .storeExpiryDate(expireAt);
                                   }
                                 },
                                 child: const Text('Generate Liscense'),
@@ -558,7 +553,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
     var dataToHash = guid + formattedExpiryDate;
     var bytes = utf8.encode(dataToHash); // data being hashed
     var digest = sha256.convert(bytes);
-    storeLicenseKey(digest.toString());
+    _globalUsage.storeLicenseKey(digest.toString());
     return digest.toString();
   }
 
@@ -591,14 +586,6 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
     calloc.free(lpData);
 
     throw Exception('Failed to get MachineGuid');
-  }
-
-  Future<void> storeLicenseKey(String key) async {
-    await storage.write(key: 'licenseKey', value: key);
-  }
-
-  Future<String?> getLicenseKey() async {
-    return await storage.read(key: 'licenseKey');
   }
 }
 

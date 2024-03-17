@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/config/developer_options.dart';
+import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/liscense_verification.dart';
 import 'package:flutter_dentistry/views/main/login.dart';
@@ -41,13 +42,24 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  // Create an instance of this class
+  final GlobalUsage _globalUsage = GlobalUsage();
+
   @override
   void initState() {
     super.initState();
     // Navigate to the login page after 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => const Login()));
+    Future.delayed(const Duration(seconds: 3), () async {
+      await _globalUsage.hasLicenseKeyExpired() ||
+              await _globalUsage.getLicenseKey4User() == null
+          // ignore: use_build_context_synchronously
+          ? Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const LiscenseVerification()))
+          // ignore: use_build_context_synchronously
+          : Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => const Login()));
     });
   }
 
