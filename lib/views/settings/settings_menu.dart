@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_dentistry/config/developer_options.dart';
 import 'dart:io';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
@@ -51,6 +52,9 @@ class SettingsMenu extends StatefulWidget {
 }
 
 class _SettingsMenuState extends State<SettingsMenu> {
+  // Create an instance of this class
+  final Features features = Features();
+
   // Declare this method for refreshing UI of staff info
   void _onUpdate() {
     setState(() {});
@@ -125,26 +129,56 @@ class _SettingsMenuState extends State<SettingsMenu> {
                               fontSize: 14),
                         ),
                       ),
-                      ListTile(
-                        leading: const Icon(Icons.backup_outlined),
-                        title: Text(
-                            translations[selectedLanguage]?['Backup'] ?? ''),
-                        onTap: () {
-                          setState(() {
-                            _selectedIndex = 3;
-                          });
-                        },
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.restore_outlined),
-                        title: Text(
-                            translations[selectedLanguage]?['Restore'] ?? ''),
-                        onTap: () {
-                          setState(() {
-                            _selectedIndex = 4;
-                          });
-                        },
-                      ),
+                      if (features.createBackup)
+                        ListTile(
+                          leading: const Icon(Icons.backup_outlined),
+                          title: Text(
+                              translations[selectedLanguage]?['Backup'] ?? ''),
+                          onTap: () {
+                            setState(() {
+                              _selectedIndex = 3;
+                            });
+                          },
+                        )
+                      else
+                        ListTile(
+                          leading: const Icon(Icons.backup_outlined),
+                          trailing: const Icon(Icons.workspace_premium_outlined,
+                              color: Colors.red),
+                          title: Text(
+                              translations[selectedLanguage]?['Backup'] ?? ''),
+                          onTap: () => _onShowSnack(
+                              Colors.red,
+                              translations[selectedLanguage]
+                                      ?['PremAppPurchase'] ??
+                                  ''),
+                        ),
+                      if (features.createBackup)
+                        ListTile(
+                          leading: const Icon(Icons.restore_outlined),
+                          trailing:
+                              const Icon(Icons.workspace_premium_outlined),
+                          title: Text(
+                              translations[selectedLanguage]?['Restore'] ?? ''),
+                          onTap: () {
+                            setState(() {
+                              _selectedIndex = 4;
+                            });
+                          },
+                        )
+                      else
+                        ListTile(
+                          leading: const Icon(Icons.backup_outlined),
+                          trailing: const Icon(Icons.workspace_premium_outlined,
+                              color: Colors.red),
+                          title: Text(
+                              translations[selectedLanguage]?['Backup'] ?? ''),
+                          onTap: () => _onShowSnack(
+                              Colors.red,
+                              translations[selectedLanguage]
+                                      ?['PremAppPurchase'] ??
+                                  ''),
+                        ),
                       const Divider(),
                       ListTile(
                         title: Text(
@@ -982,11 +1016,8 @@ onBackUpData() {
                       await conn.close();
                       // Close file
                       await sink.close();
-                      _onShowSnack(
-                          Colors.green,
-                          '${translations[selectedLanguage]
-                                  ?['BackupCreatMsg'] ??
-                              ''}$path');
+                      _onShowSnack(Colors.green,
+                          '${translations[selectedLanguage]?['BackupCreatMsg'] ?? ''}$path');
                       setState(() {
                         isBackupInProg = false;
                       });
@@ -1378,10 +1409,11 @@ onRestoreData() {
                                       ?['RestoreSuccessMsg'] ??
                                   '');
                         } else {
-                          _onShowSnack(Colors.red,
+                          _onShowSnack(
+                              Colors.red,
                               translations[selectedLanguage]
-                                    ?['RestoreNotNeeded'] ??
-                                '');
+                                      ?['RestoreNotNeeded'] ??
+                                  '');
                         }
                         setState(() {
                           isRestoreInProg = false;
@@ -1415,9 +1447,7 @@ onRestoreData() {
                         )
                       : const Icon(Icons.restore_outlined),
                   label: isRestoreInProg
-                      ? Text(translations[selectedLanguage]
-                              ?['WaitMsg'] ??
-                          '')
+                      ? Text(translations[selectedLanguage]?['WaitMsg'] ?? '')
                       : Text(translations[selectedLanguage]?['RestoreBackup'] ??
                           ''),
                 ),
