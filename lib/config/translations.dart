@@ -304,6 +304,9 @@ final Map<String, Map<String, String>> translations = {
     'Theme': 'Themes',
     'Languages': 'Languages',
     'ChangeProfilePhoto': 'Change Profile Photo',
+    'ValidDuration': 'Your Product Key is Valid for: ',
+    'Days': 'Days ',
+    'PremAppPurchase' : 'Please purchase the premium app.',
     /*----/. SETTINGS -----*/
     /*---------- USER PROFILE -----------*/
     'MyProfileHeading': 'Edit My Personal Info',
@@ -715,6 +718,9 @@ final Map<String, Map<String, String>> translations = {
     'Theme': 'نمایه ها',
     'Languages': 'زبان',
     'ChangeProfilePhoto': 'تغییر عکس پروفایل',
+    'ValidDuration': 'کلید محصول (کلید لایسنس) شما مدار اعتبار است مدت: ',
+    'Days': 'روز ',
+    'PremAppPurchase' : 'لطفاً نسخه ممتاز این اپلیکیشن را خریداری کنید.',
     /*----/. SETTINGS -----*/
     /*---------- USER PROFILE -----------*/
     'MyProfileHeading': 'تغییر معلومات شخصی من',
@@ -1131,6 +1137,9 @@ final Map<String, Map<String, String>> translations = {
     'Theme': 'موضوعات',
     'Languages': 'ژبه',
     'ChangeProfilePhoto': 'د پروفایل انځور بدل کړئ',
+     'ValidDuration': 'ستاسو د محصول کیلي (د جواز کلیدي) د دې لپاره اعتبار لري: ',
+    'Days': 'ورځې ',
+    'PremAppPurchase' : 'مهرباني وکړئ د دې اپلیکیشن پریمیم نسخه واخلئ.',
     /*----/. SETTINGS -----*/
     /*---------- USER PROFILE -----------*/
     'MyProfileHeading': 'زما شخصي معلومات سم کړئ',
