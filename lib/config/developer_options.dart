@@ -497,8 +497,9 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                 onPressed: () async {
                                   if (_liscenseFormKey.currentState!
                                       .validate()) {
-                                    final expireAt = DateTime.now()
-                                        .add(const Duration(minutes: 5));
+                                    final expireAt = DateTime.now().add(
+                                        Duration(
+                                            days: _validDurationGroupValue));
                                     // Generate liscense key and assign it to a variable
                                     _liscenseKey = generateLicenseKey(expireAt);
                                     // Assign the generated liscense to its field
