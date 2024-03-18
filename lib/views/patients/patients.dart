@@ -1969,7 +1969,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
                     ),
                   ),
                   onPressed: () => _onShowSnack(
-                      Colors.red, 'Please purchase the premium app', context),
+                      Colors.red, translations[selectedLanguage]?['PremAppPurchase'] ?? '', context),
                 ),
               // Set access role to only allow 'system admin' to make such changes
               if (StaffInfo.staffRole == 'مدیر سیستم' ||
