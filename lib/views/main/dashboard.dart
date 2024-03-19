@@ -345,7 +345,7 @@ class _DashboardState extends State<Dashboard> {
                                       .displaySmall!
                                       .copyWith(
                                           fontSize: 26.0,
-                                          color:  Colors.yellow[200],
+                                          color: Colors.yellow[200],
                                           fontFamily: 'digital-7',
                                           fontWeight: FontWeight.bold)),
                             ),
@@ -765,14 +765,6 @@ class _DashboardState extends State<Dashboard> {
                                                     overflowMode:
                                                         LegendItemOverflowMode
                                                             .wrap),
-                                                tooltipBehavior:
-                                                    TooltipBehavior(
-                                                  color: const Color.fromARGB(
-                                                      255, 106, 105, 105),
-                                                  enable: true,
-                                                  format:
-                                                      'point.y ${(translations[languageProvider.selectedLanguage]?['Afn'] ?? '').toString()} : point.x',
-                                                ),
                                                 annotations: [
                                                   CircularChartAnnotation(
                                                     widget: Column(
@@ -832,9 +824,13 @@ class _DashboardState extends State<Dashboard> {
                                                       String>(
                                                     explode: true,
                                                     explodeOffset: '10%',
-                                                    enableTooltip: true,
                                                     dataSource: snapshot.data,
                                                     innerRadius: '70%',
+                                                    explodeGesture: ActivationMode.singleTap,
+                                                    dataLabelMapper:
+                                                        (_PieDataIncome data,
+                                                                _) =>
+                                                            '${data.y} ${translations[languageProvider.selectedLanguage]?["Afn"] ?? ''}',
                                                     pointColorMapper:
                                                         (_PieDataIncome data,
                                                                 _) =>
@@ -848,10 +844,22 @@ class _DashboardState extends State<Dashboard> {
                                                                 _) =>
                                                             data.y,
                                                     dataLabelSettings:
-                                                        const DataLabelSettings(
-                                                      isVisible: false,
+                                                        DataLabelSettings(
+                                                      isVisible: true,
+                                                      labelPosition:
+                                                          ChartDataLabelPosition
+                                                              .outside,
+                                                      connectorLineSettings:
+                                                          const ConnectorLineSettings(
+                                                              type:
+                                                                  ConnectorType
+                                                                      .curve),
                                                       textStyle: TextStyle(
-                                                          fontSize: 8.0),
+                                                          fontSize: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.006),
                                                     ),
                                                     selectionBehavior:
                                                         SelectionBehavior(
