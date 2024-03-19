@@ -100,7 +100,7 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
                             const SizedBox(height: 50.0),
                             Container(
                               margin: const EdgeInsets.all(10.0),
-                              width: MediaQuery.of(context).size.width * 0.41,
+                              width: MediaQuery.of(context).size.width * 0.43,
                               child: Builder(builder: (context) {
                                 return Row(
                                   mainAxisAlignment:
@@ -179,7 +179,7 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
                             ),
                             Container(
                               margin: const EdgeInsets.all(10.0),
-                              width: MediaQuery.of(context).size.width * 0.41,
+                              width: MediaQuery.of(context).size.width * 0.43,
                               child: Builder(
                                 builder: (context) {
                                   return Row(
