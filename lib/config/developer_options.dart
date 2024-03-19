@@ -1,10 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:crypto/crypto.dart';
-import 'package:intl/intl.dart' as intl;
 import 'package:win32/win32.dart';
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
@@ -501,12 +498,12 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                         Duration(
                                             days: _validDurationGroupValue));
                                     // Generate liscense key and assign it to a variable
-                                    _liscenseKey = generateLicenseKey(expireAt);
+                                    _liscenseKey =
+                                        _globalUsage.generateLicenseKey(
+                                            expireAt,
+                                            _machineCodeController.text);
                                     // Assign the generated liscense to its field
                                     _liscenseController.text = _liscenseKey;
-                                    // Store the expiration date
-                                    await _globalUsage
-                                        .storeExpiryDate(expireAt);
                                   }
                                 },
                                 child: const Text('Generate Liscense'),
@@ -544,18 +541,6 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
     final prefs = await SharedPreferences.getInstance();
     bool value = prefs.getBool(key) ?? false;
     return value;
-  }
-
-// This function create a liscense based on the machine code
-  String generateLicenseKey(DateTime expiryDate) {
-    var formatter = intl.DateFormat('yyyy-MM-dd');
-    var formattedExpiryDate = formatter.format(expiryDate);
-    var guid = _machineCodeController.text;
-    var dataToHash = guid + formattedExpiryDate;
-    var bytes = utf8.encode(dataToHash); // data being hashed
-    var digest = sha256.convert(bytes);
-    _globalUsage.storeLicenseKey(digest.toString());
-    return digest.toString();
   }
 
   String getMachineGuid() {

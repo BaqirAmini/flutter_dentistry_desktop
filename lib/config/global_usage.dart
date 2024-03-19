@@ -3,7 +3,6 @@ import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:windows_notification/notification_message.dart';
 import 'package:windows_notification/windows_notification.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart' as intl;
 
 class GlobalUsage {
@@ -100,7 +99,6 @@ class GlobalUsage {
   // Store the expiry date
   Future<void> storeExpiryDate(DateTime expiryDate) async {
     var formatter = intl.DateFormat('yyyy-MM-dd HH:mm');
-    ;
     var formattedExpiryDate = formatter.format(expiryDate);
     await storage.write(key: 'expiryDate', value: formattedExpiryDate);
   }
@@ -121,19 +119,28 @@ class GlobalUsage {
   }
 
 /*-------------- For Developer -----------*/
-// Store the liscense key
-  Future<void> storeLicenseKey(String key) async {
-    await storage.write(key: 'licenseKey', value: key);
-  }
 
-// Get the liscense key
-  Future<String?> getLicenseKey() async {
-    return await storage.read(key: 'licenseKey');
+  String generateLicenseKey(DateTime expiryDate, String guid) {
+    var formatter = intl.DateFormat('yyyy-MM-dd HH:mm');
+    var formattedExpiryDate = formatter.format(expiryDate);
+    var dataToEncrypt = guid + formattedExpiryDate;
+
+    // Define a shift value for the Caesar cipher
+    var shift = 3;
+
+    // Encrypt the data using the Caesar cipher
+    var encryptedData = dataToEncrypt.runes.map((int rune) {
+      var newRune = rune + shift;
+      return String.fromCharCode(newRune);
+    }).join('');
+
+    return encryptedData;
   }
 /*--------------/. For Developer -----------*/
 
 /*----------------- For Users ----------*/
-  String productKeyRelatedMsg = 'Please enter the product key you have purchased and click \'Verify\' in below to activate the system Or make a concact with the system owner.';
+  String productKeyRelatedMsg =
+      'Please enter the product key you have purchased and click \'Verify\' in below to activate the system Or make a concact with the system owner.';
 // Store the liscense key for a specific user
   Future<void> storeLicenseKey4User(String key) async {
     await storage.write(key: 'UserlicenseKey', value: key);
@@ -148,5 +155,20 @@ class GlobalUsage {
   Future<void> deleteValue4User(String key) async {
     await storage.delete(key: key);
   }
+
+  // NEW
+  String decryptLicenseKey(String encryptedData) {
+    // Define the same shift value used for encryption
+    var shift = 3;
+
+    // Decrypt the data by shifting each character back
+    var decryptedData = encryptedData.runes.map((int rune) {
+      var newRune = rune - shift;
+      return String.fromCharCode(newRune);
+    }).join('');
+
+    return decryptedData;
+  }
+
 /*-----------------/. For Users ----------*/
 }

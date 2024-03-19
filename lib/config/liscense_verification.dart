@@ -239,34 +239,64 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
                                         onPressed: () async {
                                           if (_liscenseVerifyFK.currentState!
                                               .validate()) {
-                                            if (_liscenseController.text ==
-                                                await _globalUsage
-                                                    .getLicenseKey()) {
-                                              if (await _globalUsage
-                                                  .hasLicenseKeyExpired()) {
+                                            try {
+                                              String decryptedData =
+                                                  _globalUsage
+                                                      .decryptLicenseKey(
+                                                          _liscenseController
+                                                              .text);
+                                              String expiryDateString =
+                                                  decryptedData.substring(
+                                                      _machineCodeController
+                                                          .text.length);
+                                              DateTime expiryDate =
+                                                  DateTime.parse(
+                                                      expiryDateString);
+
+                                              // Re-encrypt to match it with the decrypted expiry date
+                                              String reEncrypted = _globalUsage
+                                                  .generateLicenseKey(
+                                                      expiryDate,
+                                                      _machineCodeController
+                                                          .text);
+                                              await _globalUsage
+                                                  .storeExpiryDate(expiryDate);
+                                              print(
+                                                  'When it expires: $expiryDate');
+                                              if (reEncrypted ==
+                                                  _liscenseController.text) {
+                                                if (await _globalUsage
+                                                    .hasLicenseKeyExpired()) {
+                                                  _onShowSnack(Colors.red,
+                                                      'Sorry, this product key has expired. Please purchase the new one.');
+                                                  await _globalUsage
+                                                      .deleteValue4User(
+                                                          'UserlicenseKey');
+                                                } else {
+                                                  await _globalUsage
+                                                      .storeExpiryDate(
+                                                          expiryDate);
+                                                  await _globalUsage
+                                                      .storeLicenseKey4User(
+                                                          _liscenseController
+                                                              .text);
+                                                  // ignore: use_build_context_synchronously
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const Login()));
+                                                }
+                                              } else {
                                                 _onShowSnack(Colors.red,
-                                                    'Sorry, this product key has expired. Please purchase the new one.');
+                                                    'Sorry, this product key is not valid!');
                                                 await _globalUsage
                                                     .deleteValue4User(
                                                         'UserlicenseKey');
-                                              } else {
-                                                await _globalUsage
-                                                    .storeLicenseKey4User(
-                                                        _liscenseController
-                                                            .text);
-                                                // ignore: use_build_context_synchronously
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const Login()));
                                               }
-                                            } else {
+                                            } catch (e) {
                                               _onShowSnack(Colors.red,
                                                   'Sorry, this product key is not valid!');
-                                              await _globalUsage
-                                                  .deleteValue4User(
-                                                      'UserlicenseKey');
                                             }
                                           }
                                         },
@@ -281,13 +311,16 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
                                         showDialog(
                                           context: context,
                                           builder: (ctx) => AlertDialog(
-                                            title: const Text('Exit the System', style: TextStyle(color: Colors.blue)),
-                                            content: const Text('Are you sure you want to exit the system?'),
+                                            title: const Text('Exit the System',
+                                                style: TextStyle(
+                                                    color: Colors.blue)),
+                                            content: const Text(
+                                                'Are you sure you want to exit the system?'),
                                             actions: [
                                               TextButton(
-                                                onPressed: () => Navigator.pop(context),
-                                                child: const Text(
-                                                    'Cancel'),
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                                child: const Text('Cancel'),
                                               ),
                                               ElevatedButton(
                                                 onPressed: () => exit(0),
