@@ -108,13 +108,8 @@ class _DashboardState extends State<Dashboard> {
     }
     _getPieData();
     _getLastSixMonthPatient();
-
     // Alert notifications
     _alertNotification();
-    // Call to display date and time
-    _timeString = _formatDateTime(DateTime.now());
-    Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
-    super.initState();
   }
 
   PageController page = PageController();
@@ -135,21 +130,7 @@ class _DashboardState extends State<Dashboard> {
       _isPatientDataInitialized = true;
     });
   }
-
-/*   List<_PatientsData> data = [
-    _PatientsData('Jan', 10),
-    _PatientsData('Feb', 20),
-    _PatientsData('Mar', 20),
-    _PatientsData('Apr', 50),
-    _PatientsData('May', 40),
-    _PatientsData('Jun', 35)
-  ]; */
-
-  Widget onAddCustomTooltip(String msg) {
-    return Text(msg);
-  }
-
-  late List<_PieDataIncome> pieData;
+  
 // Fetch the expenses of last three months into pie char
   Future<List<_PieDataIncome>> _getPieData() async {
     try {
@@ -339,15 +320,7 @@ class _DashboardState extends State<Dashboard> {
                               padding: const EdgeInsets.all(6.0),
                               decoration: BoxDecoration(
                                   color: Colors.grey.shade200.withOpacity(0.1)),
-                              child: Text(_timeString,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .displaySmall!
-                                      .copyWith(
-                                          fontSize: 26.0,
-                                          color: Colors.yellow[200],
-                                          fontFamily: 'digital-7',
-                                          fontWeight: FontWeight.bold)),
+                              child: _DigitalClock(),
                             ),
                           ),
                         ),
@@ -765,6 +738,20 @@ class _DashboardState extends State<Dashboard> {
                                                     overflowMode:
                                                         LegendItemOverflowMode
                                                             .wrap),
+                                                tooltipBehavior:
+                                                    TooltipBehavior(
+                                                  color: const Color.fromARGB(
+                                                      255, 106, 105, 105),
+                                                      tooltipPosition: TooltipPosition.auto,
+                                                  textStyle: const TextStyle(
+                                                      fontSize: 12.0),
+                                                  enable: true,
+                                                  format:
+                                                      'point.y ${translations[languageProvider
+                                                                  .selectedLanguage]
+                                                              ?['Afn'] ??
+                                                          ''}',
+                                                ),
                                                 annotations: [
                                                   CircularChartAnnotation(
                                                     widget: Column(
@@ -826,7 +813,9 @@ class _DashboardState extends State<Dashboard> {
                                                     explodeOffset: '10%',
                                                     dataSource: snapshot.data,
                                                     innerRadius: '70%',
-                                                    explodeGesture: ActivationMode.singleTap,
+                                                    explodeGesture:
+                                                        ActivationMode
+                                                            .singleTap,
                                                     dataLabelMapper:
                                                         (_PieDataIncome data,
                                                                 _) =>
@@ -848,18 +837,20 @@ class _DashboardState extends State<Dashboard> {
                                                       isVisible: true,
                                                       labelPosition:
                                                           ChartDataLabelPosition
-                                                              .outside,
+                                                              .inside,
                                                       connectorLineSettings:
                                                           const ConnectorLineSettings(
                                                               type:
                                                                   ConnectorType
-                                                                      .curve),
+                                                                      .line),
                                                       textStyle: TextStyle(
                                                           fontSize: MediaQuery.of(
                                                                       context)
                                                                   .size
                                                                   .width *
-                                                              0.006),
+                                                              0.006,
+                                                          fontWeight:
+                                                              FontWeight.bold),
                                                     ),
                                                     selectionBehavior:
                                                         SelectionBehavior(
@@ -893,8 +884,18 @@ class _DashboardState extends State<Dashboard> {
           );
         });
   }
+}
 
-// Display timing in the dasboard appbar
+// This class only belongs to digit clock to be separated from other widgets like charts, cards, ... to not affect state management of them.
+class _DigitalClock extends StatefulWidget {
+  const _DigitalClock({Key? key}) : super(key: key);
+
+  @override
+  State<_DigitalClock> createState() => __DigitalClockState();
+}
+
+class __DigitalClockState extends State<_DigitalClock> {
+  // Display timing in the dasboard appbar
   late String _timeString;
   void _getTime() {
     final DateTime now = DateTime.now();
@@ -904,8 +905,29 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+// Format datetime to display hours, minutes and seconds
   String _formatDateTime(DateTime dateTime) {
     return intl.DateFormat('hh:mm:ss a').format(dateTime);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Call to display date and time
+    _timeString = _formatDateTime(DateTime.now());
+    Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTime());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      _timeString,
+      style: Theme.of(context).textTheme.displaySmall!.copyWith(
+          fontSize: 26.0,
+          color: Colors.yellow[200],
+          fontFamily: 'digital-7',
+          fontWeight: FontWeight.bold),
+    );
   }
 }
 
