@@ -20,12 +20,6 @@ class DeveloperOptions extends StatefulWidget {
 }
 
 class _DeveloperOptionsState extends State<DeveloperOptions> {
-  // Keys for shared preferences
-  final _genPresc = 'genPresc';
-  final _upcomingAppt = 'upcomingAppt';
-  final _manageXray = 'manageXray';
-  final _createBackup = 'createBackup';
-  final _restoreBackup = 'restoreBackup';
   String _liscenseKey = '';
 
   // Instantiate 'Features' class
@@ -39,33 +33,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
   bool _isLiscenseCopied = false;
 
   // Create instance to access its methods
-  GlobalUsage _globalUsage = GlobalUsage();
-
-  @override
-  void initState() {
-    super.initState();
-    loadSwitchState(_genPresc, (bool value) {
-      setState(() {
-        features.genPrescription = value;
-      });
-    });
-    loadSwitchState(_upcomingAppt, (bool value) {
-      setState(() {
-        features.genPrescription = value;
-      });
-    });
-    loadSwitchState(_manageXray, (bool value) {
-      setState(() {
-        features.genPrescription = value;
-      });
-    });
-    loadSwitchState(_createBackup, (bool value) {
-      setState(() {
-        features.genPrescription = value;
-      });
-    });
-  }
-
+  final GlobalUsage _globalUsage = GlobalUsage();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,166 +43,6 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
       body: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.3,
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Premium Features',
-                    style: Theme.of(context)
-                        .textTheme
-                        .displaySmall!
-                        .copyWith(fontSize: 20),
-                  ),
-                  Expanded(
-                    child: ListView(
-                      children: [
-                        ListTile(
-                          title: const Text('Generate Prescription'),
-                          trailing: FutureBuilder(
-                            future: getSwitchState(_genPresc),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              } else {
-                                if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  return Switch(
-                                    activeColor: Colors.green,
-                                    value: snapshot.data!,
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        features.genPrescription = value;
-                                        saveSwitchState(_genPresc, value);
-                                      });
-                                    },
-                                  );
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                        ListTile(
-                          title: const Text('Upcoming Appointments'),
-                          trailing: FutureBuilder(
-                            future: getSwitchState(_upcomingAppt),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              } else {
-                                if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  return Switch(
-                                    activeColor: Colors.green,
-                                    value: snapshot.data!,
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        features.upcomingAppointment = value;
-                                        saveSwitchState(_upcomingAppt, value);
-                                      });
-                                    },
-                                  );
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                        ListTile(
-                          title: const Text('X-Ray Management'),
-                          trailing: FutureBuilder(
-                            future: getSwitchState(_manageXray),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              } else {
-                                if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  return Switch(
-                                    activeColor: Colors.green,
-                                    value: snapshot.data!,
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        features.XRayManage = value;
-                                        saveSwitchState(_manageXray, value);
-                                      });
-                                    },
-                                  );
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                        ListTile(
-                          title: const Text('Create Backup'),
-                          trailing: FutureBuilder(
-                            future: getSwitchState(_createBackup),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              } else {
-                                if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  return Switch(
-                                    activeColor: Colors.green,
-                                    value: snapshot.data!,
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        features.createBackup = value;
-                                        saveSwitchState(_createBackup, value);
-                                      });
-                                    },
-                                  );
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                        ListTile(
-                          title: const Text('Restore Backup'),
-                          trailing: FutureBuilder(
-                            future: getSwitchState(_restoreBackup),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const CircularProgressIndicator();
-                              } else {
-                                if (snapshot.hasError) {
-                                  return Text('Error: ${snapshot.error}');
-                                } else {
-                                  return Switch(
-                                    activeColor: Colors.green,
-                                    value: snapshot.data!,
-                                    onChanged: (bool value) {
-                                      setState(() {
-                                        features.restoreBackup = value;
-                                        saveSwitchState(_restoreBackup, value);
-                                      });
-                                    },
-                                  );
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
           SizedBox(
             width: MediaQuery.of(context).size.width * 0.5,
             child: Column(
@@ -577,26 +385,26 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
 
 // This class contain all features flags - PRO & STANDARD features
 class Features {
-  static final Features _singleton = Features._internal();
+  static bool genPrescription = false;
+  static bool upcomingAppointment = false;
+  static bool XRayManage = false;
+  static bool createBackup = false;
+  static bool restoreBackup = false;
 
-  factory Features() {
-    return _singleton;
-  }
-
-  Features._internal();
-
-  bool genPrescription = false;
-  bool upcomingAppointment = false;
-  bool XRayManage = false;
-  bool createBackup = false;
-  bool restoreBackup = false;
-
-  Future<void> loadFeatures() async {
-    final prefs = await SharedPreferences.getInstance();
-    genPrescription = prefs.getBool('genPresc') ?? false;
-    upcomingAppointment = prefs.getBool('upcomingAppt') ?? false;
-    XRayManage = prefs.getBool('manageXray') ?? false;
-    createBackup = prefs.getBool('createBackup') ?? false;
-    restoreBackup = prefs.getBool('restoreBackup') ?? false;
+// This function enables / disables the premium features based on the version type.
+  static void setVersion(String version) {
+    if (version == 'Premium') {
+      genPrescription = true;
+      upcomingAppointment = true;
+      XRayManage = true;
+      createBackup = true;
+      restoreBackup = true;
+    } else if (version == 'Standard') {
+      genPrescription = false;
+      upcomingAppointment = false;
+      XRayManage = false;
+      createBackup = false;
+      restoreBackup = false;
+    }
   }
 }

@@ -6,10 +6,9 @@ import 'package:flutter_dentistry/config/liscense_verification.dart';
 import 'package:flutter_dentistry/views/main/login.dart';
 import 'package:provider/provider.dart';
 
-void main() async {
-  // These two lines are used to call singleton 'loadFeatures()' function to enable / disable premuim features.
-  WidgetsFlutterBinding.ensureInitialized();
-  await Features().loadFeatures();
+void main() {
+  Features.setVersion('Premium'); // For premium version
+  // Features.setVersion('Standard'); // For standard version
   runApp(const CrownApp());
 }
 
@@ -50,8 +49,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     // Navigate to the login page after 3 seconds
     Future.delayed(const Duration(seconds: 3), () async {
-  
-       await _globalUsage.hasLicenseKeyExpired() ||
+      await _globalUsage.hasLicenseKeyExpired() ||
               await _globalUsage.getLicenseKey4User() == null
           // ignore: use_build_context_synchronously
           ? Navigator.pushReplacement(

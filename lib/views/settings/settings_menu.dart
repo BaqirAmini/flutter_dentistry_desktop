@@ -52,9 +52,6 @@ class SettingsMenu extends StatefulWidget {
 }
 
 class _SettingsMenuState extends State<SettingsMenu> {
-  // Create an instance of this class
-  final Features features = Features();
-
   // Declare this method for refreshing UI of staff info
   void _onUpdate() {
     setState(() {});
@@ -129,7 +126,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
                               fontSize: 14),
                         ),
                       ),
-                      if (features.createBackup)
+                      if (Features.createBackup)
                         ListTile(
                           leading: const Icon(Icons.backup_outlined),
                           title: Text(
@@ -153,11 +150,9 @@ class _SettingsMenuState extends State<SettingsMenu> {
                                       ?['PremAppPurchase'] ??
                                   ''),
                         ),
-                      if (features.createBackup)
+                      if (Features.restoreBackup)
                         ListTile(
                           leading: const Icon(Icons.restore_outlined),
-                          trailing:
-                              const Icon(Icons.workspace_premium_outlined),
                           title: Text(
                               translations[selectedLanguage]?['Restore'] ?? ''),
                           onTap: () {
@@ -215,7 +210,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
             ),
             Flexible(
               flex: 3,
-              child: onShowSettingsItem(_selectedIndex, onUpdatePhoto),
+              child: onShowSettingsItem(context, _selectedIndex, onUpdatePhoto),
             ),
           ],
         ),
@@ -295,9 +290,10 @@ class _SettingsMenuState extends State<SettingsMenu> {
 }
 
 // Switch between settings menu items
-Widget onShowSettingsItem(int index, [void Function()? onUpdatePhoto]) {
+Widget onShowSettingsItem(BuildContext context, int index,
+    [void Function()? onUpdatePhoto]) {
   if (index == 1) {
-    return onShowProfile(onUpdatePhoto);
+    return onShowProfile(context, onUpdatePhoto);
   } else if (index == 2) {
     return onChangePwd();
   } else if (index == 3) {
@@ -588,7 +584,7 @@ onChangePwd() {
   );
 }
 
-onShowProfile([void Function()? onUpdatePhoto]) {
+onShowProfile(BuildContext context, [void Function()? onUpdatePhoto]) {
   return Card(
     child: Center(
       child: Column(
@@ -675,7 +671,7 @@ onShowProfile([void Function()? onUpdatePhoto]) {
           Flexible(
             flex: 3,
             child: SizedBox(
-              width: 500.0,
+              width: MediaQuery.of(context).size.width * 0.4,
               child: Stack(
                 children: [
                   Column(
@@ -705,7 +701,7 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 240.0,
+                            width: MediaQuery.of(context).size.width * 0.195,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
                             child: Column(
@@ -725,7 +721,7 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                             ),
                           ),
                           Container(
-                            width: 240.0,
+                            width: MediaQuery.of(context).size.width * 0.195,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
                             child: Column(
@@ -772,7 +768,7 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Container(
-                            width: 240.0,
+                            width: MediaQuery.of(context).size.width * 0.195,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
                             child: Column(
@@ -791,7 +787,7 @@ onShowProfile([void Function()? onUpdatePhoto]) {
                             ),
                           ),
                           Container(
-                            width: 240.0,
+                            width: MediaQuery.of(context).size.width * 0.195,
                             padding: const EdgeInsets.all(10.0),
                             color: const Color.fromARGB(255, 240, 239, 239),
                             child: Column(

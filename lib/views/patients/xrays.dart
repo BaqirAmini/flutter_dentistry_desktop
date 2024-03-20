@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:another_flushbar/flushbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +15,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dentistry/config/developer_options.dart';
 
 void main() => runApp(const XRayUploadScreen());
 
@@ -170,24 +172,75 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                     style: Theme.of(context).textTheme.labelMedium,
                   ),
                   const SizedBox(height: 15.0),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.065,
-                    width: MediaQuery.of(context).size.width * 0.065,
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+                  if (Features.XRayManage)
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.065,
+                      width: MediaQuery.of(context).size.width * 0.065,
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            side: const BorderSide(color: Colors.blue)),
+                        onPressed: () {
+                          int tabIndex = DefaultTabController.of(context).index;
+                          _onUploadXRayImage(tabIndex, () {
+                            setState(() {});
+                          });
+                        },
+                        child: const Icon(Icons.add_a_photo_outlined),
+                      ),
+                    )
+                  else
+                    Stack(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.065,
+                          width: MediaQuery.of(context).size.width * 0.065,
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                side: const BorderSide(color: Colors.blue)),
+                            onPressed: () {
+                              Flushbar(
+                                backgroundColor: Colors.redAccent,
+                                flushbarStyle: FlushbarStyle.GROUNDED,
+                                flushbarPosition: FlushbarPosition.BOTTOM,
+                                messageText: Directionality(
+                                  textDirection: isEnglish
+                                      ? TextDirection.ltr
+                                      : TextDirection.rtl,
+                                  child: Text(
+                                    translations[selectedLanguage]
+                                            ?['PremAppPurchase'] ??
+                                        '',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                duration: const Duration(seconds: 3),
+                              ).show(context);
+                            },
+                            child: const Icon(Icons.add_a_photo_outlined),
                           ),
-                          side: const BorderSide(color: Colors.blue)),
-                      onPressed: () {
-                        int tabIndex = DefaultTabController.of(context).index;
-                        _onUploadXRayImage(tabIndex, () {
-                          setState(() {});
-                        });
-                      },
-                      child: const Icon(Icons.add_a_photo_outlined),
+                        ),
+                        isEnglish
+                            ? const Positioned(
+                                top: 5.0,
+                                left: 5.0,
+                                child: Icon(Icons.workspace_premium_outlined,
+                                    color: Colors.red),
+                              )
+                            : const Positioned(
+                                top: 5.0,
+                                right: 5.0,
+                                child: Icon(Icons.workspace_premium_outlined,
+                                    color: Colors.red),
+                              ),
+                      ],
                     ),
-                  ),
                 ],
               ),
             );
@@ -454,7 +507,8 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                   Container(
                                     width: MediaQuery.of(context).size.width *
                                         0.338,
-                                    margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 20.0),
                                     child: TextFormField(
                                       controller: dateContoller,
                                       validator: (value) {

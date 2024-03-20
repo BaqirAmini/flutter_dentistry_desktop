@@ -1888,7 +1888,6 @@ class _PatientDataTableState extends State<PatientDataTable> {
 
 // Create instance of this class to its members
   final GlobalUsage _gu = GlobalUsage();
-  Features features = Features();
 
   @override
   Widget build(BuildContext context) {
@@ -1938,7 +1937,7 @@ class _PatientDataTableState extends State<PatientDataTable> {
                   },
                 ),
               ),
-              if (features.genPrescription)
+              if (Features.genPrescription)
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
