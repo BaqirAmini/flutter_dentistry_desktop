@@ -130,7 +130,7 @@ class _DashboardState extends State<Dashboard> {
       _isPatientDataInitialized = true;
     });
   }
-  
+
 // Fetch the expenses of last three months into pie char
   Future<List<_PieDataIncome>> _getPieData() async {
     try {
@@ -742,15 +742,13 @@ class _DashboardState extends State<Dashboard> {
                                                     TooltipBehavior(
                                                   color: const Color.fromARGB(
                                                       255, 106, 105, 105),
-                                                      tooltipPosition: TooltipPosition.auto,
+                                                  tooltipPosition:
+                                                      TooltipPosition.auto,
                                                   textStyle: const TextStyle(
                                                       fontSize: 12.0),
                                                   enable: true,
                                                   format:
-                                                      'point.y ${translations[languageProvider
-                                                                  .selectedLanguage]
-                                                              ?['Afn'] ??
-                                                          ''}',
+                                                      'point.y ${translations[languageProvider.selectedLanguage]?['Afn'] ?? ''}',
                                                 ),
                                                 annotations: [
                                                   CircularChartAnnotation(
@@ -763,45 +761,81 @@ class _DashboardState extends State<Dashboard> {
                                                           padding:
                                                               const EdgeInsets
                                                                   .all(3.0),
-                                                          child: Text(
-                                                              translations[languageProvider
-                                                                          .selectedLanguage]
-                                                                      ?[
-                                                                      "Profit"] ??
-                                                                  '',
-                                                              style: Theme.of(
-                                                                      context)
-                                                                  .textTheme
-                                                                  .labelSmall!
-                                                                  .copyWith(
-                                                                      fontWeight:
-                                                                          FontWeight
+                                                          child: netIncome >= 0
+                                                              ? Text(
+                                                                  translations[languageProvider
+                                                                              .selectedLanguage]
+                                                                          ?[
+                                                                          "Profit"] ??
+                                                                      '',
+                                                                  style: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .labelSmall!
+                                                                      .copyWith(
+                                                                          fontWeight: FontWeight
                                                                               .bold,
-                                                                      fontSize: MediaQuery.of(context)
-                                                                              .size
-                                                                              .width *
-                                                                          0.009)),
+                                                                          fontSize:
+                                                                              MediaQuery.of(context).size.width * 0.009),
+                                                                )
+                                                              : Text(
+                                                                   translations[languageProvider
+                                                                              .selectedLanguage]
+                                                                          ?[
+                                                                          "Loss"] ??
+                                                                      '',
+                                                                  style: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .labelSmall!
+                                                                      .copyWith(
+                                                                          color: Colors
+                                                                              .red,
+                                                                          fontWeight: FontWeight
+                                                                              .bold,
+                                                                          fontSize:
+                                                                              MediaQuery.of(context).size.width * 0.009),
+                                                                ),
                                                         ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(3.0),
-                                                          child: Text(
-                                                            '${netIncome.toString()} ${translations[languageProvider.selectedLanguage]?["Afn"] ?? ''}',
-                                                            style: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .labelSmall!
-                                                                .copyWith(
-                                                                    fontSize: MediaQuery.of(context)
-                                                                            .size
-                                                                            .width *
-                                                                        0.009,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
-                                                          ),
-                                                        ),
+                                                        netIncome >= 0
+                                                            ? Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .all(
+                                                                        3.0),
+                                                                child: Text(
+                                                                  '${netIncome.toString()} ${translations[languageProvider.selectedLanguage]?["Afn"] ?? ''}',
+                                                                  style: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .labelSmall!
+                                                                      .copyWith(
+                                                                          fontSize: MediaQuery.of(context).size.width *
+                                                                              0.009,
+                                                                          fontWeight:
+                                                                              FontWeight.bold),
+                                                                ),
+                                                              )
+                                                            : Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .all(
+                                                                        3.0),
+                                                                child: Text(
+                                                                  '${netIncome.toString()} ${translations[languageProvider.selectedLanguage]?["Afn"] ?? ''}',
+                                                                  style: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .labelSmall!
+                                                                      .copyWith(
+                                                                          color: Colors
+                                                                              .red,
+                                                                          fontSize: MediaQuery.of(context).size.width *
+                                                                              0.009,
+                                                                          fontWeight:
+                                                                              FontWeight.bold),
+                                                                ),
+                                                              ),
                                                       ],
                                                     ),
                                                   ),
@@ -848,7 +882,7 @@ class _DashboardState extends State<Dashboard> {
                                                                       context)
                                                                   .size
                                                                   .width *
-                                                              0.006,
+                                                              0.0045,
                                                           fontWeight:
                                                               FontWeight.bold),
                                                     ),
