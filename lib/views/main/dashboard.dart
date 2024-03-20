@@ -13,11 +13,9 @@ import 'package:flutter_dentistry/views/main/sidebar.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 import 'package:intl/intl.dart' as intl;
 
-void main() {
-  return runApp(
-    const Dashboard(),
-  );
-}
+void main() => runApp(
+      const Dashboard(),
+    );
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -110,6 +108,10 @@ class _DashboardState extends State<Dashboard> {
     _getLastSixMonthPatient();
     // Alert notifications
     _alertNotification();
+
+    _getRemainValidDays().then((_) {
+      setState(() {});
+    });
   }
 
   PageController page = PageController();
@@ -250,6 +252,18 @@ class _DashboardState extends State<Dashboard> {
     }
   }
 
+  final GlobalUsage _globalUsage = GlobalUsage();
+  int _validDays = 0;
+  Future<void> _getRemainValidDays() async {
+    // Get the current date and time
+    DateTime now = DateTime.now();
+    DateTime? expiryDate = await _globalUsage.getExpiryDate();
+    if (expiryDate != null) {
+      int diffInHours = expiryDate.difference(now).inHours;
+      _validDays = (diffInHours / 24).floor();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     /*  final userData =
@@ -309,6 +323,29 @@ class _DashboardState extends State<Dashboard> {
                     },
                   ),
                   actions: [
+                    Visibility(
+                      visible: _validDays < 4 ? true : false,
+                      child: Container(
+                        margin: const EdgeInsets.only(left: 200),
+                        child: Center(
+                          child: Card(
+                            elevation: 5,
+                            child: Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: Text(
+                                'Your Product Key Will Expire in: $_validDays Days',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                     Center(
                       child: Directionality(
                         textDirection: TextDirection.ltr,
@@ -320,7 +357,7 @@ class _DashboardState extends State<Dashboard> {
                               padding: const EdgeInsets.all(6.0),
                               decoration: BoxDecoration(
                                   color: Colors.grey.shade200.withOpacity(0.1)),
-                              child: _DigitalClock(),
+                              child: const _DigitalClock(),
                             ),
                           ),
                         ),
@@ -779,7 +816,7 @@ class _DashboardState extends State<Dashboard> {
                                                                               MediaQuery.of(context).size.width * 0.009),
                                                                 )
                                                               : Text(
-                                                                   translations[languageProvider
+                                                                  translations[languageProvider
                                                                               .selectedLanguage]
                                                                           ?[
                                                                           "Loss"] ??
