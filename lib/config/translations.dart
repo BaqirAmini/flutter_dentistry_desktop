@@ -35,6 +35,7 @@ final Map<String, Map<String, String>> translations = {
     'Settings': 'Settings',
     'Logout': 'Log out',
     'UpcomingAppt': 'Upcoming Appointments',
+    'ContactUs': 'Contact Us',
     /*-----/.SIDEBAR  -----*/
     /*----- UNITS -----*/
     'People': 'person',
@@ -457,6 +458,7 @@ final Map<String, Map<String, String>> translations = {
     'Settings': 'تنظیمات',
     'Logout': 'خروج',
     'UpcomingAppt': 'جلسات آینده',
+    'ContactUs': 'ارتباط با ما',
     /*-----/. SIDEBAR -----*/
     /*----- UNITS -----*/
     'People': 'نفر',
@@ -874,6 +876,7 @@ final Map<String, Map<String, String>> translations = {
     'Settings': 'ترتیبات',
     'Logout': 'وتل',
     'UpcomingAppt': 'راتلونکې ګمارنې',
+    'ContactUs': 'موږ سره اړیکه ونیسئ',
     /*-----/. SIDEBAR -----*/
     /*----- UNITS -----*/
     'People': 'کسان',
