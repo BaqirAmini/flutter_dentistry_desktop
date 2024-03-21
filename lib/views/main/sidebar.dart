@@ -73,64 +73,67 @@ class _SidebarState extends State<Sidebar> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('assets/graphics/emransoft_logo.png',
-                width: MediaQuery.of(context).size.width * 0.09,
-                height: MediaQuery.of(context).size.height * 0.09),
+                width: MediaQuery.of(context).size.width * 0.1,
+                height: MediaQuery.of(context).size.height * 0.1),
             Text(
-              'The Brand For You!',
+              'High Performance, Low Price!',
               style: Theme.of(context)
                   .textTheme
                   .headlineSmall!
-                  .copyWith(fontSize: 18.0),
+                  .copyWith(fontSize: MediaQuery.of(context).size.width * 0.01),
             )
           ],
         ),
         content: SizedBox(
-          height: MediaQuery.of(context).size.height * 0.2,
+          height: MediaQuery.of(context).size.height * 0.3,
           width: MediaQuery.of(context).size.width * 0.3,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.13,
-                child: Text(
-                  'Do you need help? Please contact us:',
-                  style: Theme.of(context).textTheme.bodyLarge,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  child: Text(
+                    'Do you need help? Please contact us:',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10.0),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.13,
-                child: Row(
-                  children: [
-                    Icon(Icons.phone_android_rounded, color: Colors.grey[600]),
-                    const SizedBox(width: 8.0),
-                    const Text('(+93)79 21 95 121')
-                  ],
+                const SizedBox(height: 10.0),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  child: Row(
+                    children: [
+                      Icon(Icons.phone_android_rounded,
+                          color: Colors.grey[600]),
+                      const SizedBox(width: 8.0),
+                      const Text('(+93)79 21 95 121')
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10.0),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.13,
-                child: Row(
-                  children: [
-                    Icon(FontAwesomeIcons.whatsapp, color: Colors.grey[600]),
-                    const SizedBox(width: 8.0),
-                    const Text('(+93)79 21 95 121')
-                  ],
+                const SizedBox(height: 10.0),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  child: Row(
+                    children: [
+                      Icon(FontAwesomeIcons.whatsapp, color: Colors.grey[600]),
+                      const SizedBox(width: 8.0),
+                      const Text('(+93)79 21 95 121')
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10.0),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.13,
-                child: Row(
-                  children: [
-                    Icon(FontAwesomeIcons.facebookF, color: Colors.grey[600]),
-                    const SizedBox(width: 8.0),
-                    const Text('facebook.com/emransoft4you')
-                  ],
+                const SizedBox(height: 10.0),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  child: Row(
+                    children: [
+                      Icon(FontAwesomeIcons.facebookF, color: Colors.grey[600]),
+                      const SizedBox(width: 8.0),
+                      const Text('facebook.com/emransoft4you')
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         actions: [
