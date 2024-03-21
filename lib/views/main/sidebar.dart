@@ -10,6 +10,7 @@ import 'package:flutter_dentistry/views/sf_calendar/appointment_sfcalendar.dart'
 import 'package:flutter_dentistry/views/staff/staff.dart';
 import 'package:flutter_dentistry/views/finance/taxes/taxes.dart';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'login.dart';
 import 'package:flutter_dentistry/views/patients/patients.dart';
@@ -57,6 +58,85 @@ class _SidebarState extends State<Sidebar> {
             },
             child: Text(
                 translations[selectedLanguage]?['ConfirmBtn'] ?? ''.toString()),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // This is for 'Contact Us'
+  void onContactUs(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/graphics/emransoft_logo.png',
+                width: MediaQuery.of(context).size.width * 0.09,
+                height: MediaQuery.of(context).size.height * 0.09),
+            Text(
+              'The Brand For You!',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineSmall!
+                  .copyWith(fontSize: 18.0),
+            )
+          ],
+        ),
+        content: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.2,
+          width: MediaQuery.of(context).size.width * 0.3,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.13,
+                child: Text(
+                  'Do you need help? Please contact us:',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ),
+              const SizedBox(height: 10.0),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.13,
+                child: Row(
+                  children: [
+                    Icon(Icons.phone_android_rounded, color: Colors.grey[600]),
+                    const SizedBox(width: 8.0),
+                    const Text('(+93)79 21 95 121')
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10.0),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.13,
+                child: Row(
+                  children: [
+                    Icon(FontAwesomeIcons.whatsapp, color: Colors.grey[600]),
+                    const SizedBox(width: 8.0),
+                    const Text('(+93)79 21 95 121')
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10.0),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.13,
+                child: Row(
+                  children: [
+                    Icon(FontAwesomeIcons.facebookF, color: Colors.grey[600]),
+                    const SizedBox(width: 8.0),
+                    const Text('facebook.com/emransoft4you')
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context, rootNavigator: true).pop(),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -327,6 +407,12 @@ class _SidebarState extends State<Sidebar> {
                 (translations[selectedLanguage]?['Logout'] ?? '').toString(),
               ),
               onTap: () => onLogOut(context)),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.phone_in_talk_outlined),
+            title: Text(translations[selectedLanguage]?['ContactUs'] ?? ''),
+            onTap: () => onContactUs(context),
+          ),
         ],
       ),
     );
