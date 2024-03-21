@@ -747,40 +747,42 @@ class _HistoryContentState extends State<_HistoryContent> {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasData) {
                   if (snapshot.data!.isEmpty) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                            'No health histories found for this patient.'),
-                        const SizedBox(height: 15.0),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.050,
-                          width: MediaQuery.of(context).size.width * 0.060,
-                          child: Tooltip(
-                            message: 'Add health histories',
-                            child: OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  side: const BorderSide(color: Colors.blue)),
-                              onPressed: () {
-                                PatientInfo.showElevatedBtn = true;
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const NewHealthHistory(),
-                                  ),
-                                ).then((_) {
-                                  setState(() {});
-                                });
-                              },
-                              child: const Icon(Icons.add_outlined),
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                              'No health histories found for this patient.'),
+                          const SizedBox(height: 15.0),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.050,
+                            width: MediaQuery.of(context).size.width * 0.060,
+                            child: Tooltip(
+                              message: 'Add health histories',
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    side: const BorderSide(color: Colors.blue)),
+                                onPressed: () {
+                                  PatientInfo.showElevatedBtn = true;
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const NewHealthHistory(),
+                                    ),
+                                  ).then((_) {
+                                    setState(() {});
+                                  });
+                                },
+                                child: const Icon(Icons.add_outlined),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     );
                   } else {
                     final histories = snapshot.data;
