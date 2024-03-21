@@ -581,7 +581,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                               Container(
                                 margin: const EdgeInsets.only(
                                     bottom: 10.0, right: 15, left: 15),
-                                width: 100.0,
+                                width: MediaQuery.of(context).size.width * 0.13,
                                 child: CheckboxListTile(
                                   value: _feeNotRequired,
                                   onChanged: (bool? value) {
