@@ -243,7 +243,7 @@ class _AppointmentContentState extends State<_AppointmentContent> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           if (snapshot.data!.isEmpty) {
-            return const Center(child: Text('No retreatments found.'));
+            return  Center(child: Text(translations[selectedLanguage]?['NoReqFound'] ?? ''));
           } else {
             var data = snapshot.data!;
             var groupedDSName = groupBy(data, (obj) => obj['damageSName']);

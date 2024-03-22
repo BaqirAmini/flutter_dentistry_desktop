@@ -225,7 +225,7 @@ class _MyDataTableState extends State<MyDataTable> {
   Future<void> _fetchData() async {
     final conn = await onConnToDb();
     final queryResult = await conn.query(
-        'SELECT photo, firstname, lastname, position, salary, phone, tazkira_ID, address, staff_ID, DATE_FORMAT(hire_date, "%M %d, %Y"), prepayment, family_phone1, family_phone2, contract_file, file_type FROM staff');
+        'SELECT photo, firstname, lastname, position, salary, phone, tazkira_ID, address, staff_ID, DATE_FORMAT(hire_date, "%M %d, %Y"), prepayment, family_phone1, family_phone2, contract_file, file_type FROM staff ORDER BY staff_ID desc');
     conn.close();
 
     _data = queryResult.map((row) {

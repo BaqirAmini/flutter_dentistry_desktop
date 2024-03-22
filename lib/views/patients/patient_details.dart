@@ -6,7 +6,6 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
@@ -18,7 +17,6 @@ import 'package:flutter_dentistry/views/patients/retreatments.dart';
 import 'package:flutter_dentistry/views/patients/xrays.dart';
 import 'package:flutter_dentistry/views/settings/settings_menu.dart';
 import 'package:flutter_dentistry/views/sf_calendar/patient_specific_sfcalendar.dart';
-import 'package:flutter_dentistry/views/staff/staff.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:galileo_mysql/galileo_mysql.dart';
@@ -74,12 +72,14 @@ class _PatientDetailState extends State<PatientDetail> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const CalendarApp()),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        const CalendarAppForSpecificPatient()),
               ).then((_) {
                 setState(() {});
               });
             },
-            tooltip: 'تعیین زمان جلسه مابعد',
+            tooltip: translations[selectedLanguage]?['SchedNextAppt'] ?? '',
             child: const Icon(
               Icons.edit_calendar_outlined,
               color: Colors.white,

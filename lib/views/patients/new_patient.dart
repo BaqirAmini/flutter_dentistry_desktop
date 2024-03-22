@@ -100,7 +100,10 @@ class _NewPatientState extends State<NewPatient> {
                     child: Text(
                       translations[selectedLanguage]?['Asterisk'] ?? '',
                       textAlign: TextAlign.right,
-                      style: Theme.of(context).textTheme.labelMedium!.copyWith(color: Colors.red),
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelMedium!
+                          .copyWith(color: Colors.red),
                     ),
                   ),
                   Column(
@@ -288,9 +291,12 @@ class _NewPatientState extends State<NewPatient> {
                                                 Icons.arrow_drop_down),
                                             value: ageDropDown,
                                             items: <DropdownMenuItem<int>>[
-                                              const DropdownMenuItem(
+                                              DropdownMenuItem(
                                                 value: 0,
-                                                child: Text('No age selected'),
+                                                child: Text(translations[
+                                                            selectedLanguage]
+                                                        ?['SelectAge'] ??
+                                                    ''),
                                               ),
                                               ...getAges().map((int ageItems) {
                                                 return DropdownMenuItem(

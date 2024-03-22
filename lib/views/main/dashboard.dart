@@ -971,9 +971,11 @@ class __DigitalClockState extends State<_DigitalClock> {
   void _getTime() {
     final DateTime now = DateTime.now();
     final String formattedDateTime = _formatDateTime(now);
-    setState(() {
-      _timeString = formattedDateTime;
-    });
+    if (mounted) {
+      setState(() {
+        _timeString = formattedDateTime;
+      });
+    }
   }
 
 // Format datetime to display hours, minutes and seconds

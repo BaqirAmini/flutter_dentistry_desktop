@@ -2,13 +2,18 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
-import 'package:flutter_dentistry/views/services/service_related_fields.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:windows_notification/notification_message.dart';
-import 'package:windows_notification/windows_notification.dart';
 import 'package:intl/intl.dart' as intl2;
+
+// ignore: prefer_typing_uninitialized_variables
+var selectedLanguage;
+// ignore: prefer_typing_uninitialized_variables
+var isEnglish;
 
 // This is shows snackbar when called
 void _onShowSnack(Color backColor, String msg, BuildContext context) {
@@ -28,48 +33,30 @@ void _onShowSnack(Color backColor, String msg, BuildContext context) {
   ).show(context);
 }
 
-class CalendarApp extends StatelessWidget {
-  const CalendarApp({Key? key}) : super(key: key);
+class CalendarAppForSpecificPatient extends StatelessWidget {
+  const CalendarAppForSpecificPatient({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
+    return Directionality(
+      textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+      child: Scaffold(
         appBar: AppBar(
           title: Text(
-              'Schedule appointment for ${PatientInfo.firstName} ${PatientInfo.lastName}'),
+              '${translations[selectedLanguage]?['SchedApptFor'] ?? ''} ${PatientInfo.firstName} ${PatientInfo.lastName}'),
           leading: IconButton(
             splashRadius: 25.0,
             onPressed: () => Navigator.pop(context),
             icon: const BackButtonIcon(),
           ),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  _alertUpcomingAppointment();
-                },
-                icon: const Icon(Icons.notification_add))
-          ],
         ),
         body: const CalendarPage(),
       ),
-      theme: ThemeData(useMaterial3: false),
     );
-  }
-
-// This function is to give notifiction for users
-  Future<void> _alertUpcomingAppointment() async {
-    final winNotifyPlugin = WindowsNotification(
-        // Work PC
-        /*  applicationId:
-            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinics MIS\flutter_dentistry.exe"); */
-        // Personal PC
-        applicationId:
-            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinic System\flutter_dentistry.exe");
-    NotificationMessage message = NotificationMessage.fromPluginTemplate(
-        "appointment", "Upcoming Appointment", "You have an appointment with ${PatientInfo.firstName} ${PatientInfo.lastName}");
-    winNotifyPlugin.showNotificationPluginTemplate(message);
   }
 }
 
@@ -190,7 +177,7 @@ class _CalendarPageState extends State<CalendarPage> {
     DateTime selectedDateTime = DateTime.now();
     TextEditingController apptdatetimeController = TextEditingController();
     TextEditingController commentController = TextEditingController();
-    String notifFrequency = '15 Minutes';
+    String notifFrequency = '30 Minutes';
     apptdatetimeController.text = selectedDate.toString();
     int? patientId = PatientInfo.patID;
 
@@ -200,10 +187,10 @@ class _CalendarPageState extends State<CalendarPage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Schedule an appointment'),
+              title: Text(translations[selectedLanguage]?['SchdAppt'] ?? ''),
               content: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.4,
-                width: MediaQuery.of(context).size.width * 0.3,
+                height: MediaQuery.of(context).size.height * 0.6,
+                width: MediaQuery.of(context).size.width * 0.35,
                 child: SingleChildScrollView(
                   child: Form(
                     key: _calFormKey,
@@ -214,24 +201,27 @@ class _CalendarPageState extends State<CalendarPage> {
                           margin: const EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 10.0),
                           child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'انتخاب داکتر',
-                              labelStyle: TextStyle(color: Colors.blueAccent),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['SelectDentist'] ??
+                                  '',
+                              labelStyle:
+                                  const TextStyle(color: Colors.blueAccent),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide:
                                       BorderSide(color: Colors.blueAccent)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(15.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(15.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(15.0)),
                                   borderSide: BorderSide(
@@ -269,14 +259,16 @@ class _CalendarPageState extends State<CalendarPage> {
                           margin: const EdgeInsets.symmetric(
                               horizontal: 10.0, vertical: 10.0),
                           child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'خدمات مورد نیاز',
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['َDentalService'] ??
+                                  '',
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
@@ -314,28 +306,32 @@ class _CalendarPageState extends State<CalendarPage> {
                             controller: apptdatetimeController,
                             validator: (value) {
                               if (value!.isEmpty) {
-                                return 'Date and time should be set.';
+                                return translations[selectedLanguage]
+                                        ?['ApptDTRequired'] ??
+                                    '';
                               }
                               return null;
                             },
                             readOnly: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تاریخ و زمان جلسه',
-                              suffixIcon: Icon(Icons.access_time),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['ApptDateTime'] ??
+                                  '',
+                              suffixIcon: const Icon(Icons.access_time),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(
@@ -379,7 +375,9 @@ class _CalendarPageState extends State<CalendarPage> {
                             validator: (value) {
                               if (value!.isNotEmpty) {
                                 if (value.length < 5 || value.length > 40) {
-                                  return 'Details should at least 5 and at most 40 characters.';
+                                  return translations[selectedLanguage]
+                                          ?['OtherDDLLength'] ??
+                                      '';
                                 }
                                 return null;
                               }
@@ -389,23 +387,26 @@ class _CalendarPageState extends State<CalendarPage> {
                               FilteringTextInputFormatter.allow(
                                   RegExp(GlobalUsage.allowedEPChar))
                             ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'توضیحات',
-                              suffixIcon: Icon(Icons.description_outlined),
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: translations[selectedLanguage]
+                                      ?['RetDetails'] ??
+                                  '',
+                              suffixIcon:
+                                  const Icon(Icons.description_outlined),
+                              enabledBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50.0)),
                                 borderSide:
@@ -446,11 +447,12 @@ class _CalendarPageState extends State<CalendarPage> {
                                   icon: const Icon(Icons.arrow_drop_down),
                                   value: notifFrequency,
                                   items: <String>[
-                                    '5 Minutes',
-                                    '15 Minutes',
                                     '30 Minutes',
                                     '1 Hour',
-                                    '2 Hours'
+                                    '2 Hours',
+                                    '6 Hours',
+                                    '12 Hours',
+                                    '1 Day',
                                   ].map<DropdownMenuItem<String>>(
                                       (String value) {
                                     return DropdownMenuItem<String>(
@@ -475,7 +477,8 @@ class _CalendarPageState extends State<CalendarPage> {
               ),
               actions: <Widget>[
                 ElevatedButton(
-                  child: const Text('Save'),
+                  child:
+                      Text(translations[selectedLanguage]?['SaveUABtn'] ?? ''),
                   onPressed: () async {
                     if (_calFormKey.currentState!.validate()) {
                       try {
@@ -498,7 +501,11 @@ class _CalendarPageState extends State<CalendarPage> {
                           Navigator.of(context).pop();
                           // ignore: use_build_context_synchronously
                           _onShowSnack(
-                              Colors.green, 'Appointment scheduled!', context);
+                              Colors.green,
+                              translations[selectedLanguage]
+                                      ?['SchedSuccessMsg'] ??
+                                  '',
+                              context);
                           refresh();
                         }
                         await conn.close();
@@ -627,7 +634,7 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
           actions: <Widget>[
             ElevatedButton(
-              child: const Text('OK'),
+              child: Text(translations[selectedLanguage]?['Okay'] ?? ''),
               onPressed: () => Navigator.pop(context),
             ),
           ],
@@ -662,321 +669,349 @@ class _CalendarPageState extends State<CalendarPage> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Schedule an appointment'),
-              content: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
-                width: MediaQuery.of(context).size.width * 0.3,
-                child: SingleChildScrollView(
-                  child: Form(
-                    key: _calFormKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'انتخاب داکتر',
-                              labelStyle: TextStyle(color: Colors.blueAccent),
-                              enabledBorder: OutlineInputBorder(
+            return Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: AlertDialog(
+                title: Text(translations[selectedLanguage]?['EditAppt'] ?? ''),
+                content: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  width: MediaQuery.of(context).size.width * 0.35,
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: _calFormKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['SelectDentist'] ??
+                                    '',
+                                labelStyle:
+                                    const TextStyle(color: Colors.blueAccent),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide:
+                                        BorderSide(color: Colors.blueAccent)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: Container(
+                                  height: 26.0,
+                                  padding: EdgeInsets.zero,
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: selectedStaffId.toString(),
+                                    style: const TextStyle(color: Colors.black),
+                                    items: staffList.map((staff) {
+                                      return DropdownMenuItem<String>(
+                                        value: staff['staff_ID'],
+                                        alignment: Alignment.centerRight,
+                                        child: Text(staff['firstname'] +
+                                            ' ' +
+                                            staff['lastname']),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        selectedStaffId = int.parse(newValue!);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['َDentalService'] ??
+                                    '',
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: SizedBox(
+                                  height: 26.0,
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: selectedServiceId.toString(),
+                                    items: services.map((service) {
+                                      return DropdownMenuItem<String>(
+                                        value: service['ser_ID'],
+                                        alignment: Alignment.centerRight,
+                                        child: Text(service['ser_name']),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        // Assign the selected service id into the static one.
+                                        selectedServiceId =
+                                            int.parse(newValue!);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: TextFormField(
+                              controller: editApptTimeController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return translations[selectedLanguage]
+                                          ?['ApptDTRequired'] ??
+                                      '';
+                                }
+                                return null;
+                              },
+                              readOnly: true,
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['ApptDateTime'] ??
+                                    '',
+                                suffixIcon: const Icon(Icons.access_time),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                              onTap: () async {
+                                final DateTime? pickedDate =
+                                    await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.parse(selectedDate),
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime(2100),
+                                );
+                                if (pickedDate != null) {
+                                  // ignore: use_build_context_synchronously
+                                  final TimeOfDay? pickedTime =
+                                      // ignore: use_build_context_synchronously
+                                      await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.now(),
+                                  );
+                                  if (pickedTime != null) {
+                                    selectedDateTime = DateTime(
+                                      pickedDate.year,
+                                      pickedDate.month,
+                                      pickedDate.day,
+                                      pickedTime.hour,
+                                      pickedTime.minute,
+                                    );
+                                    editApptTimeController.text =
+                                        selectedDateTime.toString();
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: TextFormField(
+                              controller: editCommentController,
+                              validator: (value) {
+                                if (value!.isNotEmpty) {
+                                  if (value.length < 5 || value.length > 40) {
+                                    return translations[selectedLanguage]
+                                            ?['OtherDDLLength'] ??
+                                        '';
+                                  }
+                                  return null;
+                                }
+                                return null;
+                              },
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(GlobalUsage.allowedEPChar))
+                              ],
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['RetDetails'] ??
+                                    '',
+                                suffixIcon:
+                                    const Icon(Icons.description_outlined),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
                                   borderSide:
-                                      BorderSide(color: Colors.blueAccent)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: Container(
-                                height: 26.0,
-                                padding: EdgeInsets.zero,
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: selectedStaffId.toString(),
-                                  style: const TextStyle(color: Colors.black),
-                                  items: staffList.map((staff) {
-                                    return DropdownMenuItem<String>(
-                                      value: staff['staff_ID'],
-                                      alignment: Alignment.centerRight,
-                                      child: Text(staff['firstname'] +
-                                          ' ' +
-                                          staff['lastname']),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      selectedStaffId = int.parse(newValue!);
-                                    });
-                                  },
+                                      BorderSide(color: Colors.red, width: 1.5),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'خدمات مورد نیاز',
-                              enabledBorder: OutlineInputBorder(
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                suffixIcon:
+                                    Icon(Icons.notifications_active_outlined),
+                                border: OutlineInputBorder(),
+                                enabledBorder: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                focusedBorder: OutlineInputBorder(
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: SizedBox(
-                                height: 26.0,
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: selectedServiceId.toString(),
-                                  items: services.map((service) {
-                                    return DropdownMenuItem<String>(
-                                      value: service['ser_ID'],
-                                      alignment: Alignment.centerRight,
-                                      child: Text(service['ser_name']),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      // Assign the selected service id into the static one.
-                                      selectedServiceId = int.parse(newValue!);
-                                    });
-                                  },
+                                  borderSide: BorderSide(color: Colors.blue),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red),
+                                ),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: SizedBox(
+                                  height: 26.0,
+                                  child: DropdownButton(
+                                    // isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: notifFreq,
+                                    items: <String>[
+                                      '5 Minutes',
+                                      '15 Minutes',
+                                      '30 Minutes',
+                                      '1 Hour',
+                                      '2 Hours'
+                                    ].map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        notifFreq = newValue!;
+                                      });
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: TextFormField(
-                            controller: editApptTimeController,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Date and time should be set.';
-                              }
-                              return null;
-                            },
-                            readOnly: true,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'تاریخ و زمان جلسه',
-                              suffixIcon: Icon(Icons.access_time),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
-                            ),
-                            onTap: () async {
-                              final DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.parse(selectedDate),
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2100),
-                              );
-                              if (pickedDate != null) {
-                                // ignore: use_build_context_synchronously
-                                final TimeOfDay? pickedTime =
-                                    // ignore: use_build_context_synchronously
-                                    await showTimePicker(
-                                  context: context,
-                                  initialTime: TimeOfDay.now(),
-                                );
-                                if (pickedTime != null) {
-                                  selectedDateTime = DateTime(
-                                    pickedDate.year,
-                                    pickedDate.month,
-                                    pickedDate.day,
-                                    pickedTime.hour,
-                                    pickedTime.minute,
-                                  );
-                                  editApptTimeController.text =
-                                      selectedDateTime.toString();
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: TextFormField(
-                            controller: editCommentController,
-                            validator: (value) {
-                              if (value!.isNotEmpty) {
-                                if (value.length < 5 || value.length > 40) {
-                                  return 'Details should at least 5 and at most 40 characters.';
-                                }
-                                return null;
-                              }
-                              return null;
-                            },
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(GlobalUsage.allowedEPChar))
-                            ],
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'توضیحات',
-                              suffixIcon: Icon(Icons.description_outlined),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide:
-                                    BorderSide(color: Colors.red, width: 1.5),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              suffixIcon:
-                                  Icon(Icons.notifications_active_outlined),
-                              border: OutlineInputBorder(),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.red),
-                              ),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: SizedBox(
-                                height: 26.0,
-                                child: DropdownButton(
-                                  // isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: notifFreq,
-                                  items: <String>[
-                                    '5 Minutes',
-                                    '15 Minutes',
-                                    '30 Minutes',
-                                    '1 Hour',
-                                    '2 Hours'
-                                  ].map<DropdownMenuItem<String>>(
-                                      (String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      notifFreq = newValue!;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              actions: <Widget>[
-                ElevatedButton(
-                  child: const Text('Save'),
-                  onPressed: () async {
-                    if (_calFormKey.currentState!.validate()) {
-                      try {
-                        final conn = await onConnToDb();
-                        final results = await conn.query(
-                            'UPDATE appointments SET service_ID = ?, staff_ID = ?, meet_date = ?, notification = ?, details = ? WHERE apt_ID = ?',
-                            [
-                              selectedServiceId,
-                              selectedStaffId,
-                              editApptTimeController.text.toString(),
-                              notifFreq,
-                              editCommentController.text.isEmpty
-                                  ? null
-                                  : editCommentController.text,
-                              apptId
-                            ]);
-                        if (results.affectedRows! > 0) {
-                          // ignore: use_build_context_synchronously
-                          Navigator.of(context).pop();
-                          // ignore: use_build_context_synchronously
-                          _onShowSnack(Colors.green,
-                              'The scheduled appointment updated.', context);
-                          refresh();
-                        } else {
-                          // ignore: use_build_context_synchronously
-                          Navigator.of(context).pop();
-                          // ignore: use_build_context_synchronously
-                          _onShowSnack(
-                              Colors.red, 'No changes applied.', context);
-                        }
+                actions: <Widget>[
+                  ElevatedButton(
+                    child: Text(
+                        translations[selectedLanguage]?['SaveUABtn'] ?? ''),
+                    onPressed: () async {
+                      if (_calFormKey.currentState!.validate()) {
+                        try {
+                          final conn = await onConnToDb();
+                          final results = await conn.query(
+                              'UPDATE appointments SET service_ID = ?, staff_ID = ?, meet_date = ?, notification = ?, details = ? WHERE apt_ID = ?',
+                              [
+                                selectedServiceId,
+                                selectedStaffId,
+                                editApptTimeController.text.toString(),
+                                notifFreq,
+                                editCommentController.text.isEmpty
+                                    ? null
+                                    : editCommentController.text,
+                                apptId
+                              ]);
+                          if (results.affectedRows! > 0) {
+                            // ignore: use_build_context_synchronously
+                            Navigator.of(context).pop();
+                            // ignore: use_build_context_synchronously
+                            _onShowSnack(
+                                Colors.green,
+                                translations[selectedLanguage]
+                                        ?['StaffEditMsg'] ??
+                                    '',
+                                context);
+                            refresh();
+                          } else {
+                            // ignore: use_build_context_synchronously
+                            Navigator.of(context).pop();
+                            // ignore: use_build_context_synchronously
+                            _onShowSnack(
+                                Colors.red,
+                                translations[selectedLanguage]
+                                        ?['StaffEditErrMsg'] ??
+                                    '',
+                                context);
+                          }
 
-                        await conn.close();
-                      } catch (e) {
-                        print('Appointment scheduling failed: $e');
+                          await conn.close();
+                        } catch (e) {
+                          print('Appointment scheduling failed: $e');
+                        }
                       }
-                    }
-                  },
-                ),
-              ],
+                    },
+                  ),
+                ],
+              ),
             );
           },
         );
@@ -994,17 +1029,18 @@ class _CalendarPageState extends State<CalendarPage> {
           return AlertDialog(
             title: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text('Delete a scheduled appointment'),
+              child:
+                  Text(translations[selectedLanguage]?['DeleteAHeading'] ?? ''),
             ),
             content: Directionality(
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-              child: const Text(
-                  'Are you sure you want to delete this scheduled appointment'),
+              child:
+                  Text(translations[selectedLanguage]?['ConfirmDelAppt'] ?? ''),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancel'),
+                child: Text(translations[selectedLanguage]?['CancelBtn'] ?? ''),
               ),
               TextButton(
                 onPressed: () async {
@@ -1015,12 +1051,16 @@ class _CalendarPageState extends State<CalendarPage> {
                     // ignore: use_build_context_synchronously
                     Navigator.of(context).pop();
                     // ignore: use_build_context_synchronously
-                    _onShowSnack(Colors.green, 'جلسه موفقانه حذف شد.', context);
+                    _onShowSnack(
+                        Colors.green,
+                        translations[selectedLanguage]?['DeleteSuccessMsg'] ??
+                            '',
+                        context);
                     refresh();
                   }
                   await conn.close();
                 },
-                child: const Text('Delete'),
+                child: Text(translations[selectedLanguage]?['Delete'] ?? ''),
               ),
             ],
           );
@@ -1083,7 +1123,7 @@ class _CalendarPageState extends State<CalendarPage> {
         from: appointment.visitTime,
         to: appointment.visitTime.add(const Duration(hours: 1)),
         eventName:
-            'Appointment with Dentist ${appointment.dentistFName} ${appointment.dentistLName}',
+            'Appointment with ${appointment.dentistFName} ${appointment.dentistLName}',
         description: appointment.comments,
         patientAppointment: appointment,
         background: bgColor,

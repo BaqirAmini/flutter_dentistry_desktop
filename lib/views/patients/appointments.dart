@@ -961,7 +961,9 @@ class _AppointmentContentState extends State<_AppointmentContent> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           if (snapshot.data!.isEmpty) {
-            return const Center(child: Text('No appointments found.'));
+            return Center(
+                child:
+                    Text(translations[selectedLanguage]?['NoApptFound'] ?? ''));
           } else {
             var data = snapshot.data!;
 
@@ -1091,12 +1093,14 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                     'Error with service requirements: ${snapshot.error}');
                                               } else {
                                                 if (snapshot.data!.isEmpty) {
-                                                  return const Center(
+                                                  return Center(
                                                       child: Padding(
                                                     padding:
                                                         EdgeInsets.all(8.0),
-                                                    child: Text(
-                                                        'No requirements found.'),
+                                                    child: Text(translations[
+                                                                selectedLanguage]
+                                                            ?['NoRecFound'] ??
+                                                        ''),
                                                   ));
                                                 } else {
                                                   var reqData = snapshot.data;

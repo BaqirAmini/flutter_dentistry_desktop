@@ -739,7 +739,10 @@ class _FeeContentState extends State<FeeContent> {
         } else {
           if (snapshot.data!.isEmpty) {
             displayTotalFeeRow = false;
-            return const Center(child: Text('No Fee and Installments found.'));
+            return Center(
+                child: Text(translations[selectedLanguage]
+                        ?['NoFeeInstallFound'] ??
+                    ''));
           } else {
             final apptFee = snapshot.data;
             final Map<String, List<ApptFeeDataModel>> groupedApptFees = {};
