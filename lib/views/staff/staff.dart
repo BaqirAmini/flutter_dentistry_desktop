@@ -847,6 +847,7 @@ onDeleteStaff(BuildContext context, int staffId, String firstName,
                   onDelete();
                 }
                 await conn.close();
+                // ignore: use_build_context_synchronously
                 Navigator.of(context, rootNavigator: true).pop();
               },
               child: Text(translations[selectedLanguage]?['Delete'] ?? ''),

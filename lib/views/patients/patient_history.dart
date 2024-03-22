@@ -751,14 +751,17 @@ class _HistoryContentState extends State<_HistoryContent> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                              'No health histories found for this patient.'),
+                          Text(translations[selectedLanguage]
+                                  ?['NoHH4ThisPatient'] ??
+                              ''),
                           const SizedBox(height: 15.0),
                           SizedBox(
                             height: MediaQuery.of(context).size.height * 0.050,
                             width: MediaQuery.of(context).size.width * 0.060,
                             child: Tooltip(
-                              message: 'Add health histories',
+                              message: translations[selectedLanguage]
+                                      ?['NewHistory'] ??
+                                  '',
                               child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
                                     shape: RoundedRectangleBorder(
@@ -766,7 +769,6 @@ class _HistoryContentState extends State<_HistoryContent> {
                                     ),
                                     side: const BorderSide(color: Colors.blue)),
                                 onPressed: () {
-                                  PatientInfo.showElevatedBtn = true;
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -1047,7 +1049,7 @@ class _HistoryContentState extends State<_HistoryContent> {
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('No patient history found.',
+                      Text('Error: ${snapshot.error}',
                           style: Theme.of(context).textTheme.labelLarge),
                     ],
                   );
@@ -1105,6 +1107,7 @@ class _HoverCardState extends State<HoverCard> {
   }
 }
 
+// This function fetches health histories from the database.
 Future<List<HistoryDataModel>> _getHistory() async {
   final conn = await onConnToDb();
   final results = await conn.query('''
