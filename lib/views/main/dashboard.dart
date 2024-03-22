@@ -957,7 +957,7 @@ class _DashboardState extends State<Dashboard> {
   }
 }
 
-// This class only belongs to digit clock to be separated from other widgets like charts, cards, ... to not affect state management of them.
+// This class only belongs to digital clock to be separated from other widgets like charts, cards, ... to not affect state management of them.
 class _DigitalClock extends StatefulWidget {
   const _DigitalClock({Key? key}) : super(key: key);
 
