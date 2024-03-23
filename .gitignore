@@ -22,3 +22,6 @@ android/
 .flutter-plugins-dependencies
 flutter_dentistry.iml
 
+# Ignore private folder
+lib/config/private
+

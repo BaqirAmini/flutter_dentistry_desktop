@@ -232,6 +232,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                   FilteringTextInputFormatter.allow(
                                       RegExp(_regExUName)),
                                 ], */
+
                                 decoration: InputDecoration(
                                   suffixIcon: !_isLiscenseCopied
                                       ? IconButton(
@@ -312,6 +313,9 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                             _machineCodeController.text);
                                     // Assign the generated liscense to its field
                                     _liscenseController.text = _liscenseKey;
+                                    setState(() {
+                                      _isLiscenseCopied = false;
+                                    });
                                   }
                                 },
                                 child: const Text('Generate Liscense'),
