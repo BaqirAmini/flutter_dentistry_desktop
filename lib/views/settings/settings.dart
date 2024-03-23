@@ -60,15 +60,18 @@ class _SettingsState extends State<Settings> {
               appBar: AppBar(
                 title: Text(translations[selectedLanguage]?['Settings'] ?? ''),
                 actions: [
-                  Center(
+                  if (_validDays <= 365 && _validDays > 0)
+                    Center(
                       child: Text(
-                    '${translations[selectedLanguage]?['ValidDuration'] ?? ''} $_validDays ${translations[selectedLanguage]?['Days'] ?? ''}',
-                    style: Theme.of(context)
-                        .primaryTextTheme
-                        .labelLarge!
-                        .copyWith(
-                            color: const Color.fromARGB(255, 223, 230, 135)),
-                  )),
+                        '${translations[selectedLanguage]?['ValidDuration'] ?? ''} $_validDays ${translations[selectedLanguage]?['Days'] ?? ''}',
+                        style: Theme.of(context)
+                            .primaryTextTheme
+                            .labelLarge!
+                            .copyWith(
+                                color:
+                                    const Color.fromARGB(255, 223, 230, 135)),
+                      ),
+                    ),
                   const SizedBox(width: 30)
                 ],
               ),
