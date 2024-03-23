@@ -29,7 +29,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
   final TextEditingController _machineCodeController = TextEditingController();
   final TextEditingController _liscenseController = TextEditingController();
   final _liscenseFormKey = GlobalKey<FormState>();
-  int _validDurationGroupValue = 15;
+  int _validDurationGroupValue = 14;
   bool _isLiscenseCopied = false;
 
   // Create instance to access its methods
@@ -42,7 +42,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
       ),
       body: Center(
         child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.5,
+          width: MediaQuery.of(context).size.width * 0.6,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -63,7 +63,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                       ),
                       Container(
                         margin: const EdgeInsets.all(10.0),
-                        width: MediaQuery.of(context).size.width * 0.5,
+                        width: MediaQuery.of(context).size.width * 0.6,
                         child: Builder(builder: (context) {
                           return TextFormField(
                             textDirection: TextDirection.ltr,
@@ -102,7 +102,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                         }),
                       ),
                       Container(
-                        width: MediaQuery.of(context).size.width * 0.5,
+                        width: MediaQuery.of(context).size.width * 0.6,
                         margin: const EdgeInsets.all(10.0),
                         child: InputDecorator(
                           decoration: const InputDecoration(
@@ -130,10 +130,10 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                   ),
                                   child: RadioListTile<int>(
                                       title: const Text(
-                                        '15 Days',
+                                        '14 Days',
                                         style: TextStyle(fontSize: 12),
                                       ),
-                                      value: 15,
+                                      value: 14,
                                       groupValue: _validDurationGroupValue,
                                       onChanged: (int? value) {
                                         setState(() {
@@ -205,13 +205,34 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                       }),
                                 ),
                               ),
+                              Expanded(
+                                flex: 1,
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 1.0),
+                                  ),
+                                  child: RadioListTile<int>(
+                                      title: const Text(
+                                        'Forever',
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      value: -1,
+                                      groupValue: _validDurationGroupValue,
+                                      onChanged: (int? value) {
+                                        setState(() {
+                                          _validDurationGroupValue = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
                             ],
                           ),
                         ),
                       ),
                       Container(
                         margin: const EdgeInsets.all(10.0),
-                        width: MediaQuery.of(context).size.width * 0.5,
+                        width: MediaQuery.of(context).size.width * 0.6,
                         child: Builder(
                           builder: (context) {
                             return TextFormField(
@@ -265,7 +286,7 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                       ),
                       Container(
                         margin: const EdgeInsets.all(10.0),
-                        width: MediaQuery.of(context).size.width * 0.4,
+                        width: MediaQuery.of(context).size.width * 0.5,
                         height: 40.0,
                         child: Builder(
                           builder: (context) {
@@ -279,12 +300,17 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                 ),
                               ),
                               onPressed: () async {
+                                DateTime expireAt;
                                 if (_liscenseFormKey.currentState!.validate()) {
                                   try {
-                                    final expireAt = DateTime.now()
-                                        .add(const Duration(minutes: 5));
-                                    /*  final expireAt = DateTime.now().add(
-                                      Duration(days: _validDurationGroupValue)); */
+                                    /*   final expireAt = DateTime.now()
+                                        .add(const Duration(minutes: 5)); */
+                                    if (_validDurationGroupValue == -1) {
+                                      expireAt = DateTime(9999);
+                                    } else {
+                                      expireAt = DateTime.now().add(Duration(
+                                          days: _validDurationGroupValue));
+                                    }
                                     // Generate liscense key and assign it to a variable
                                     _liscenseKey =
                                         _globalUsage.generateProductKey(
