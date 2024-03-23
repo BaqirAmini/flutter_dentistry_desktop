@@ -38,277 +38,256 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('System Features Managment'),
+        title: const Text('Product Key Management'),
       ),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.5,
-            child: Column(
-              children: [
-                Form(
-                  key: _liscenseFormKey,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Liscense Generation',
-                          style: Theme.of(context)
-                              .textTheme
-                              .displaySmall!
-                              .copyWith(fontSize: 20),
+      body: Center(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.5,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Form(
+                key: _liscenseFormKey,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Generate Product Key',
+                        style: Theme.of(context)
+                            .textTheme
+                            .displaySmall!
+                            .copyWith(fontSize: 20),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.all(10.0),
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        child: Builder(builder: (context) {
+                          return TextFormField(
+                            textDirection: TextDirection.ltr,
+                            controller: _machineCodeController,
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Machine code required';
+                              }
+                              return null;
+                            },
+                            /*  inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                RegExp(_regExUName),
+                              ),
+                            ], */
+                            onChanged: (value) {
+                              setState(() {
+                                _isLiscenseCopied = false;
+                              });
+                            },
+                            decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.all(23.0),
+                              border: OutlineInputBorder(),
+                              labelText: 'Machine GUID',
+                              enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey)),
+                              focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.blue)),
+                              errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.red)),
+                              focusedErrorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Colors.red, width: 1.5)),
+                            ),
+                          );
+                        }),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        margin: const EdgeInsets.all(10.0),
+                        child: InputDecorator(
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 15.0),
+                            border: OutlineInputBorder(),
+                            labelText: 'Valid Duration',
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 1.0),
+                                  ),
+                                  child: RadioListTile<int>(
+                                      title: const Text(
+                                        '15 Days',
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      value: 15,
+                                      groupValue: _validDurationGroupValue,
+                                      onChanged: (int? value) {
+                                        setState(() {
+                                          _validDurationGroupValue = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 1.0),
+                                  ),
+                                  child: RadioListTile<int>(
+                                      title: const Text(
+                                        '1 Month',
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      value: 30,
+                                      groupValue: _validDurationGroupValue,
+                                      onChanged: (int? value) {
+                                        setState(() {
+                                          _validDurationGroupValue = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 1.0),
+                                  ),
+                                  child: RadioListTile<int>(
+                                      title: const Text(
+                                        '6 Month',
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      value: 180,
+                                      groupValue: _validDurationGroupValue,
+                                      onChanged: (int? value) {
+                                        setState(() {
+                                          _validDurationGroupValue = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 1,
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(
+                                    listTileTheme: const ListTileThemeData(
+                                        horizontalTitleGap: 1.0),
+                                  ),
+                                  child: RadioListTile<int>(
+                                      title: const Text(
+                                        '1 Year',
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      value: 365,
+                                      groupValue: _validDurationGroupValue,
+                                      onChanged: (int? value) {
+                                        setState(() {
+                                          _validDurationGroupValue = value!;
+                                        });
+                                      }),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        Container(
-                          margin: const EdgeInsets.all(10.0),
-                          width: MediaQuery.of(context).size.width * 0.5,
-                          child: Builder(builder: (context) {
+                      ),
+                      Container(
+                        margin: const EdgeInsets.all(10.0),
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        child: Builder(
+                          builder: (context) {
                             return TextFormField(
+                              readOnly: true,
                               textDirection: TextDirection.ltr,
-                              controller: _machineCodeController,
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Machine code required';
-                                }
-                                return null;
-                              },
+                              controller: _liscenseController,
                               /*  inputFormatters: [
                                 FilteringTextInputFormatter.allow(
-                                  RegExp(_regExUName),
-                                ),
+                                    RegExp(_regExUName)),
                               ], */
-                              onChanged: (value) {
-                                setState(() {
-                                  _isLiscenseCopied = false;
-                                });
-                              },
-                              decoration: const InputDecoration(
-                                contentPadding: EdgeInsets.all(15.0),
-                                border: OutlineInputBorder(),
-                                labelText: 'Machine Code',
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
+
+                              decoration: InputDecoration(
+                                suffixIcon: !_isLiscenseCopied
+                                    ? IconButton(
+                                        tooltip: 'Copy',
+                                        splashRadius: 18.0,
+                                        onPressed: _liscenseController
+                                                .text.isEmpty
+                                            ? null
+                                            : () async {
+                                                Clipboard.setData(
+                                                  ClipboardData(
+                                                      text: _liscenseController
+                                                          .text),
+                                                );
+
+                                                setState(() {
+                                                  _isLiscenseCopied = true;
+                                                });
+                                              },
+                                        icon:
+                                            const Icon(Icons.copy, size: 15.0),
+                                      )
+                                    : const Icon(Icons.done_rounded),
+                                contentPadding: const EdgeInsets.all(23.0),
+                                border: const OutlineInputBorder(),
+                                labelText: 'Product Key',
+                                enabledBorder: const OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.grey)),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
+                                focusedBorder: const OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.blue)),
-                                errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
+                                errorBorder: const OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.red)),
-                                focusedErrorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(50.0)),
+                                focusedErrorBorder: const OutlineInputBorder(
                                     borderSide: BorderSide(
                                         color: Colors.red, width: 1.5)),
                               ),
                             );
-                          }),
+                          },
                         ),
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.5,
-                          margin: const EdgeInsets.all(10.0),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 10.0),
-                              border: OutlineInputBorder(),
-                              labelText: 'Valid Duration',
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(50.0),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.all(10.0),
+                        width: MediaQuery.of(context).size.width * 0.4,
+                        height: 40.0,
+                        child: Builder(
+                          builder: (context) {
+                            return OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
                                 ),
-                                borderSide: BorderSide(color: Colors.grey),
+                                side: const BorderSide(
+                                  color: Colors.blue,
+                                ),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(50.0),
-                                ),
-                                borderSide: BorderSide(color: Colors.blue),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: Theme(
-                                    data: Theme.of(context).copyWith(
-                                      listTileTheme: const ListTileThemeData(
-                                          horizontalTitleGap: 0.5),
-                                    ),
-                                    child: RadioListTile<int>(
-                                        title: const Text(
-                                          '15 Days',
-                                          style: TextStyle(fontSize: 14),
-                                        ),
-                                        value: 15,
-                                        groupValue: _validDurationGroupValue,
-                                        onChanged: (int? value) {
-                                          setState(() {
-                                            _validDurationGroupValue = value!;
-                                          });
-                                        }),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Theme(
-                                    data: Theme.of(context).copyWith(
-                                      listTileTheme: const ListTileThemeData(
-                                          horizontalTitleGap: 0.5),
-                                    ),
-                                    child: RadioListTile<int>(
-                                        title: const Text(
-                                          '1 Month',
-                                          style: TextStyle(fontSize: 14),
-                                        ),
-                                        value: 30,
-                                        groupValue: _validDurationGroupValue,
-                                        onChanged: (int? value) {
-                                          setState(() {
-                                            _validDurationGroupValue = value!;
-                                          });
-                                        }),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Theme(
-                                    data: Theme.of(context).copyWith(
-                                      listTileTheme: const ListTileThemeData(
-                                          horizontalTitleGap: 0.5),
-                                    ),
-                                    child: RadioListTile<int>(
-                                        title: const Text(
-                                          '6 Month',
-                                          style: TextStyle(fontSize: 14),
-                                        ),
-                                        value: 180,
-                                        groupValue: _validDurationGroupValue,
-                                        onChanged: (int? value) {
-                                          setState(() {
-                                            _validDurationGroupValue = value!;
-                                          });
-                                        }),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Theme(
-                                    data: Theme.of(context).copyWith(
-                                      listTileTheme: const ListTileThemeData(
-                                          horizontalTitleGap: 0.5),
-                                    ),
-                                    child: RadioListTile<int>(
-                                        title: const Text(
-                                          '1 Year',
-                                          style: TextStyle(fontSize: 14),
-                                        ),
-                                        value: 365,
-                                        groupValue: _validDurationGroupValue,
-                                        onChanged: (int? value) {
-                                          setState(() {
-                                            _validDurationGroupValue = value!;
-                                          });
-                                        }),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(10.0),
-                          width: MediaQuery.of(context).size.width * 0.5,
-                          child: Builder(
-                            builder: (context) {
-                              return TextFormField(
-                                readOnly: true,
-                                textDirection: TextDirection.ltr,
-                                controller: _liscenseController,
-                                /*  inputFormatters: [
-                                  FilteringTextInputFormatter.allow(
-                                      RegExp(_regExUName)),
-                                ], */
-
-                                decoration: InputDecoration(
-                                  suffixIcon: !_isLiscenseCopied
-                                      ? IconButton(
-                                          tooltip: 'Copy',
-                                          splashRadius: 18.0,
-                                          onPressed: _liscenseController
-                                                  .text.isEmpty
-                                              ? null
-                                              : () async {
-                                                  Clipboard.setData(
-                                                    ClipboardData(
-                                                        text:
-                                                            _liscenseController
-                                                                .text),
-                                                  );
-
-                                                  setState(() {
-                                                    _isLiscenseCopied = true;
-                                                  });
-                                                },
-                                          icon: const Icon(Icons.copy,
-                                              size: 15.0),
-                                        )
-                                      : const Icon(Icons.done_rounded),
-                                  contentPadding: const EdgeInsets.all(15.0),
-                                  border: const OutlineInputBorder(),
-                                  labelText: 'Product Key',
-                                  enabledBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.grey)),
-                                  focusedBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.blue)),
-                                  errorBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide:
-                                          BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(50.0)),
-                                      borderSide: BorderSide(
-                                          color: Colors.red, width: 1.5)),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.all(10.0),
-                          width: MediaQuery.of(context).size.width * 0.4,
-                          height: 35.0,
-                          child: Builder(
-                            builder: (context) {
-                              return OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                  side: const BorderSide(
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                                onPressed: () async {
-                                  if (_liscenseFormKey.currentState!
-                                      .validate()) {
-                                    final expireAt = DateTime.now().add(
-                                        Duration(
-                                            days: _validDurationGroupValue));
+                              onPressed: () async {
+                                if (_liscenseFormKey.currentState!.validate()) {
+                                  try {
+                                    final expireAt = DateTime.now()
+                                        .add(const Duration(minutes: 5));
+                                    /*  final expireAt = DateTime.now().add(
+                                      Duration(days: _validDurationGroupValue)); */
                                     // Generate liscense key and assign it to a variable
                                     _liscenseKey =
-                                        _globalUsage.generateLicenseKey(
+                                        _globalUsage.generateProductKey(
                                             expireAt,
                                             _machineCodeController.text);
                                     // Assign the generated liscense to its field
@@ -316,21 +295,24 @@ class _DeveloperOptionsState extends State<DeveloperOptions> {
                                     setState(() {
                                       _isLiscenseCopied = false;
                                     });
+                                  } catch (e) {
+                                    print('Generating liscense key faield: $e');
                                   }
-                                },
-                                child: const Text('Generate Liscense'),
-                              );
-                            },
-                          ),
+                                }
+                              },
+                              label: const Text('Generate'),
+                              icon: const Icon(Icons.vpn_key_outlined),
+                            );
+                          },
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          )
-        ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

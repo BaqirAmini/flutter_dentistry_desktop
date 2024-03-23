@@ -4,6 +4,7 @@ import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:flutter_dentistry/config/private/private.dart';
 import 'package:flutter_dentistry/views/main/login.dart';
 import 'package:win32/win32.dart';
 
@@ -240,30 +241,38 @@ class _LiscenseVerificationState extends State<LiscenseVerification> {
                                           if (_liscenseVerifyFK.currentState!
                                               .validate()) {
                                             try {
-                                              String decryptedData =
+                                              // Decrypt the liscense key
+                                              String decryptedValue =
                                                   _globalUsage
-                                                      .decryptLicenseKey(
+                                                      .decryptProductKey(
                                                           _liscenseController
-                                                              .text);
+                                                              .text,
+                                                          secretKey);
+
+                                              // Expiry date is string
                                               String expiryDateString =
-                                                  decryptedData.substring(
+                                                  decryptedValue.substring(
                                                       _machineCodeController
                                                           .text.length);
+                                              // Convert this string to datetime
                                               DateTime expiryDate =
                                                   DateTime.parse(
                                                       expiryDateString);
 
-                                              // Re-encrypt to match it with the decrypted expiry date
-                                              String reEncrypted = _globalUsage
-                                                  .generateLicenseKey(
-                                                      expiryDate,
-                                                      _machineCodeController
-                                                          .text);
+                                              // Now re-encrypt the machine code with the fetched datetime (expiry datetime) to use for verification in below.
+                                              String reEncryptedValue =
+                                                  _globalUsage
+                                                      .generateProductKey(
+                                                          expiryDate,
+                                                          _machineCodeController
+                                                              .text);
                                               await _globalUsage
                                                   .storeExpiryDate(expiryDate);
+
                                               print(
-                                                  'When it expires: $expiryDate');
-                                              if (reEncrypted ==
+                                                  'Expiry Date: ${await _globalUsage.getExpiryDate()}');
+
+                                              if (reEncryptedValue ==
                                                   _liscenseController.text) {
                                                 if (await _globalUsage
                                                     .hasLicenseKeyExpired()) {

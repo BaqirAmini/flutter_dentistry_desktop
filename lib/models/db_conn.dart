@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'package:galileo_mysql/galileo_mysql.dart';
+import 'package:flutter_dentistry/config/private/private.dart';
 
 Future<MySqlConnection> onConnToDb() async {
   try {
     final conn = await MySqlConnection.connect(ConnectionSettings(
         host: 'localhost',
         port: 3306,
-        user: 'root',
-        password: 'root',
+        user: username,
+        password: pwd,
         db: 'dentistry_db'));
     return conn;
   } on SocketException catch (e) {

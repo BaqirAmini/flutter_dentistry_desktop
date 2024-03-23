@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:windows_notification/notification_message.dart';
 import 'package:windows_notification/windows_notification.dart';
 import 'package:intl/intl.dart' as intl;
+import 'package:flutter_dentistry/config/private/private.dart';
 
 class GlobalUsage {
   // A toast message to be used anywhere required
@@ -119,28 +120,26 @@ class GlobalUsage {
   }
 
 /*-------------- For Developer -----------*/
-
-  String generateLicenseKey(DateTime expiryDate, String guid) {
+  // XOR cipher
+  String generateProductKey(DateTime expiryDate, String guid) {
     var formatter = intl.DateFormat('yyyy-MM-dd HH:mm');
     var formattedExpiryDate = formatter.format(expiryDate);
     var dataToEncrypt = guid + formattedExpiryDate;
-
-    // Define a shift value for the Caesar cipher
-    var shift = 3;
-
-    // Encrypt the data using the Caesar cipher
-    var encryptedData = dataToEncrypt.runes.map((int rune) {
-      var newRune = rune + shift;
-      return String.fromCharCode(newRune);
-    }).join('');
-
+    // Encrtypt value with XOR cipher
+    var key = secretKey;
+    var encryptedData = '';
+    for (var i = 0; i < dataToEncrypt.length; i++) {
+      var xorResult =
+          dataToEncrypt.codeUnitAt(i) ^ key.codeUnitAt(i % key.length);
+      encryptedData += xorResult.toRadixString(16).padLeft(2, '0');
+    }
     return encryptedData;
   }
 /*--------------/. For Developer -----------*/
 
 /*----------------- For Users ----------*/
   String productKeyRelatedMsg =
-      'Please enter the product key you have purchased and click \'Verify\' in below to activate the system Or make a concact with the system owner.';
+      'Please enter the product key you have purchased and click \'Verify\' in below to activate the system or make a contact with the system owner.';
 // Store the liscense key for a specific user
   Future<void> storeLicenseKey4User(String key) async {
     await storage.write(key: 'UserlicenseKey', value: key);
@@ -156,17 +155,15 @@ class GlobalUsage {
     await storage.delete(key: key);
   }
 
-  // NEW
-  String decryptLicenseKey(String encryptedData) {
-    // Define the same shift value used for encryption
-    var shift = 3;
-
-    // Decrypt the data by shifting each character back
-    var decryptedData = encryptedData.runes.map((int rune) {
-      var newRune = rune - shift;
-      return String.fromCharCode(newRune);
-    }).join('');
-
+  // Decrtype XOR Cypher
+  String decryptProductKey(String encryptedData, String key) {
+    var decryptedData = '';
+    for (var i = 0; i < encryptedData.length; i += 2) {
+      var hexValue = encryptedData.substring(i, i + 2);
+      var xorResult = int.parse(hexValue, radix: 16);
+      decryptedData += String.fromCharCode(
+          xorResult ^ key.codeUnitAt(((i ~/ 2) % key.length)));
+    }
     return decryptedData;
   }
 
