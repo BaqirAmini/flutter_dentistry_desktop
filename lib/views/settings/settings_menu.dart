@@ -1275,168 +1275,182 @@ onRestoreData() {
                   ),
                   onPressed: () async {
                     try {
-                      setState(() {
-                        isRestoreInProg = true;
-                      });
+                      try {
+                        setState(() {
+                          isRestoreInProg = true;
+                        });
 
-                      // Show file picker
-                      filePickerResult = await FilePicker.platform.pickFiles(
-                        type: FileType.custom,
-                        allowedExtensions: ['csv'],
-                      );
-
-                      if (filePickerResult != null) {
-                        // Get Selected file
-                        PlatformFile file = filePickerResult!.files.first;
-                        // Connect to the database
-                        final conn = await onConnToDb();
-                        // List of tables
-                        var tables = [
-                          'clinics',
-                          'staff',
-                          'staff_auth',
-                          'patients',
-                          'services',
-                          'service_requirements',
-                          'retreatments',
-                          'appointments',
-                          'patient_services',
-                          'patient_xrays',
-                          'fee_payments',
-                          'conditions',
-                          'condition_details',
-                          'expenses',
-                          'expense_detail',
-                          'taxes',
-                          'tax_payments'
-                        ];
-
-                        // Primary keys of tables
-                        var primaryKeys = {
-                          'clinics': 'cli_ID',
-                          'staff': 'staff_ID',
-                          'staff_auth': 'auth_ID',
-                          'patients': 'pat_ID',
-                          'services': 'ser_ID',
-                          'service_requirements': 'req_ID',
-                          'retreatments': 'retreat_ID',
-                          'appointments': 'apt_ID',
-                          'patient_services': [
-                            'apt_ID',
-                            'pat_ID',
-                            'ser_ID',
-                            'req_ID',
-                          ],
-                          'patient_xrays': 'xray_ID',
-                          'fee_payments': 'payment_ID',
-                          'conditions': 'cond_ID',
-                          'condition_details': 'cond_detail_ID',
-                          'expenses': 'exp_ID',
-                          'expense_detail': 'exp_detail_ID',
-                          'taxes': 'tax_ID',
-                          'tax_payments': 'tax_pay_ID'
+                        var blobFields = {
+                          'staff': [10, 11],
+                          'patients': [12],
+                          // Add more tables as needed
                         };
+                        // Show file picker
+                        filePickerResult = await FilePicker.platform.pickFiles(
+                          type: FileType.custom,
+                          allowedExtensions: ['csv'],
+                        );
 
-                        // Open selected file
-                        var lines = File(file.path!).readAsLinesSync();
-                        // Initialize a variable to keep track of the total number of inserted records
-                        int insertedRecords = 0;
-                        // ignore: prefer_typing_uninitialized_variables
-                        var currentTable;
-                        for (var line in lines) {
-                          if (tables.contains(line)) {
-                            // Line is a table
-                            currentTable = line;
-                          } else if (line
-                              .startsWith('${primaryKeys[currentTable]},')) {
-                            // Line is column names, ignore
-                            continue;
-                          } else {
-                            // Line is data, insert into table
-                            var values = line.split(',');
-                            if (currentTable == 'patient_services') {
-                              var keys = primaryKeys[currentTable];
-                              if (keys != null && keys is List<String>) {
-                                var allKeys = List<String>.from(keys)
-                                  ..add(
-                                      'value'); // Create a new list that includes 'value'
-                                var keyNames = allKeys.join(', ');
-                                var insertSql =
-                                    "INSERT IGNORE INTO $currentTable ($keyNames) VALUES (?, ?, ?, ?, ?)";
-                                // Take only the first four values for the keys
-                                List<dynamic> valuesForInsert =
-                                    values.take(4).toList();
+                        if (filePickerResult != null) {
+                          // Get Selected file
+                          PlatformFile file = filePickerResult!.files.first;
+                          // Connect to the database
+                          final conn = await onConnToDb();
+                          // List of tables
+                          var tables = [
+                            'clinics',
+                            'staff',
+                            'staff_auth',
+                            'patients',
+                            'services',
+                            'service_requirements',
+                            'retreatments',
+                            'appointments',
+                            'patient_services',
+                            'patient_xrays',
+                            'fee_payments',
+                            'conditions',
+                            'condition_details',
+                            'expenses',
+                            'expense_detail',
+                            'taxes',
+                            'tax_payments'
+                          ];
 
-                                // The rest of the line is the 'value'
-                                var value = values.skip(4).join(',');
-                                valuesForInsert.add(value);
-                                // Check if the value is a string and remove the single quotes
-                                for (int i = 0;
-                                    i < valuesForInsert.length;
-                                    i++) {
-                                  if (valuesForInsert[i].startsWith("'") &&
-                                      valuesForInsert[i].endsWith("'")) {
-                                    // Value is a string, remove the single quotes
-                                    var base64String = valuesForInsert[i]
-                                        .substring(
-                                            1, valuesForInsert[i].length - 1);
-                                    // Decode the base64 string back to a BLOB
-                                    try {
-                                      var blobData = base64Decode(base64String);
-                                      valuesForInsert[i] = blobData;
-                                    } catch (e) {
-                                      print('Error decoding base64 string: $e');
+                          // Primary keys of tables
+                          var primaryKeys = {
+                            'clinics': 'cli_ID',
+                            'staff': 'staff_ID',
+                            'staff_auth': 'auth_ID',
+                            'patients': 'pat_ID',
+                            'service_requirements': 'req_ID',
+                            'services': 'ser_ID',
+                            'retreatments': 'retreat_ID',
+                            'appointments': 'apt_ID',
+                            'patient_services': [
+                              'apt_ID',
+                              'pat_ID',
+                              'ser_ID',
+                              'req_ID',
+                            ],
+                            'patient_xrays': 'xray_ID',
+                            'fee_payments': 'payment_ID',
+                            'conditions': 'cond_ID',
+                            'condition_details': 'cond_detail_ID',
+                            'expenses': 'exp_ID',
+                            'expense_detail': 'exp_detail_ID',
+                            'taxes': 'tax_ID',
+                            'tax_payments': 'tax_pay_ID'
+                          };
+
+                          // Open selected file
+                          var lines = File(file.path!).readAsLinesSync();
+                          // Initialize a variable to keep track of the total number of inserted records
+                          int insertedRecords = 0;
+                          // ignore: prefer_typing_uninitialized_variables
+                          var currentTable;
+                          for (var line in lines) {
+                            if (tables.contains(line)) {
+                              // Line is a table
+                              currentTable = line;
+                            } else if (line
+                                .startsWith('${primaryKeys[currentTable]},')) {
+                              // Line is column names, ignore
+                              continue;
+                            } else {
+                              // Line is data, insert into table
+                              var values = line.split(',');
+                              if (currentTable == 'patient_services') {
+                                var keys = primaryKeys[currentTable];
+                                if (keys != null && keys is List<String>) {
+                                  var allKeys = List<String>.from(keys)
+                                    ..add(
+                                        'value'); // Create a new list that includes 'value'
+                                  var keyNames = allKeys.join(', ');
+                                  var insertSql =
+                                      "INSERT IGNORE INTO $currentTable ($keyNames) VALUES (?, ?, ?, ?, ?)";
+                                  // Take only the first four values for the keys
+                                  List<dynamic> valuesForInsert =
+                                      values.take(4).toList();
+
+                                  // The rest of the line is the 'value'
+                                  var value = values.skip(4).join(',');
+                                  valuesForInsert.add(value);
+                                  // Check if the value is a string and remove the single quotes
+                                  for (int i = 0;
+                                      i < valuesForInsert.length;
+                                      i++) {
+                                    if (valuesForInsert[i].startsWith("'") &&
+                                        valuesForInsert[i].endsWith("'")) {
+                                      // Value is a string, remove the single quotes
+                                      var base64String = valuesForInsert[i]
+                                          .substring(
+                                              1, valuesForInsert[i].length - 1);
+                                      // Check if the current table has BLOB fields and the field is a BLOB field
+                                      if (blobFields
+                                              .containsKey(currentTable) &&
+                                          blobFields[currentTable]!
+                                              .contains(i)) {
+                                        // Value is a base64 string, keep it as is, do not decode it back to a BLOB
+                                        valuesForInsert[i] = base64String;
+                                      } else {
+                                        // Value is not a base64 string, remove the single quotes
+                                        valuesForInsert[i] = base64String;
+                                      }
                                     }
                                   }
+
+                                  var restoreDone = await conn.query(insertSql,
+                                      valuesForInsert); // Change this line
+                                  insertedRecords += restoreDone.affectedRows!;
                                 }
-                                var restoreDone = await conn.query(insertSql,
-                                    valuesForInsert); // Change this line
+                              } else {
+                                var valueString = values
+                                    .map((value) => value.toString())
+                                    .join(', ');
+                                var insertSql =
+                                    "INSERT IGNORE INTO $currentTable VALUES ($valueString)";
+                                var restoreDone = await conn.query(insertSql);
                                 insertedRecords += restoreDone.affectedRows!;
                               }
-                            } else {
-                              var valueString = values
-                                  .map((value) => value.toString())
-                                  .join(', ');
-                              var insertSql =
-                                  "INSERT IGNORE INTO $currentTable VALUES ($valueString)";
-                              var restoreDone = await conn.query(insertSql);
-                              insertedRecords += restoreDone.affectedRows!;
                             }
                           }
-                        }
 
-                        // Show success or error message after all data has been inserted
-                        if (insertedRecords > 0) {
-                          _onShowSnack(
-                              Colors.green,
-                              translations[selectedLanguage]
-                                      ?['RestoreSuccessMsg'] ??
-                                  '');
+                          // Show success or error message after all data has been inserted
+                          if (insertedRecords > 0) {
+                            _onShowSnack(
+                                Colors.green,
+                                translations[selectedLanguage]
+                                        ?['RestoreSuccessMsg'] ??
+                                    '');
+                          } else {
+                            _onShowSnack(
+                                Colors.red,
+                                translations[selectedLanguage]
+                                        ?['RestoreNotNeeded'] ??
+                                    '');
+                          }
+                          setState(() {
+                            isRestoreInProg = false;
+                          });
+
+                          // Close connection
+                          await conn.close();
                         } else {
                           _onShowSnack(
                               Colors.red,
                               translations[selectedLanguage]
-                                      ?['RestoreNotNeeded'] ??
+                                      ?['BackupNotSelected'] ??
                                   '');
+                          setState(() {
+                            isRestoreInProg = false;
+                          });
                         }
-                        setState(() {
-                          isRestoreInProg = false;
-                        });
-
-                        // Close connection
-                        await conn.close();
-                      } else {
-                        _onShowSnack(
-                            Colors.red,
-                            translations[selectedLanguage]
-                                    ?['BackupNotSelected'] ??
-                                '');
-                        setState(() {
-                          isRestoreInProg = false;
-                        });
+                      } catch (e) {
+                        print('Restoring tables failed. $e');
                       }
                     } catch (e) {
-                      print('Restoring tables failed. $e');
+                      print('Error occured with restore: $e');
                     }
                   },
                   icon: isRestoreInProg
