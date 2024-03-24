@@ -113,6 +113,11 @@ class GlobalUsage {
         : null;
   }
 
+  // Delete the expiry date
+  Future<void> deleteExpiryDate() async {
+    await storage.delete(key: 'expiryDate');
+  }
+
 // Check if the license key has expired
   Future<bool> hasLicenseKeyExpired() async {
     var expiryDate = await getExpiryDate();
