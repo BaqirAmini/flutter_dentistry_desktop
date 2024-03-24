@@ -50,7 +50,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Navigate to the login page after 3 seconds
     Future.delayed(const Duration(seconds: 3), () async {
-      // _globalUsage.deleteValue4User('UserlicenseKey');
+   /*    _globalUsage.deleteValue4User('UserlicenseKey');
+      _globalUsage.deleteExpiryDate(); */
       await _globalUsage.hasLicenseKeyExpired() ||
               await _globalUsage.getLicenseKey4User() == null
           // ignore: use_build_context_synchronously
