@@ -1336,12 +1336,11 @@ onRestoreData() {
                           'taxes': 'tax_ID',
                           'tax_payments': 'tax_pay_ID'
                         };
+
                         // Open selected file
                         var lines = File(file.path!).readAsLinesSync();
                         // Initialize a variable to keep track of the total number of inserted records
                         int insertedRecords = 0;
-                        // ignore: prefer_typing_uninitialized_variables
-
                         // ignore: prefer_typing_uninitialized_variables
                         var currentTable;
                         for (var line in lines) {
@@ -1375,11 +1374,19 @@ onRestoreData() {
                                 for (int i = 0;
                                     i < valuesForInsert.length;
                                     i++) {
-                                  if (valuesForInsert[i] == "''") {
-                                    valuesForInsert[i] = ''; // Change this line
-                                  } else {
-                                    valuesForInsert[i] =
-                                        valuesForInsert[i].replaceAll("'", "");
+                                  if (valuesForInsert[i].startsWith("'") &&
+                                      valuesForInsert[i].endsWith("'")) {
+                                    // Value is a string, remove the single quotes
+                                    var base64String = valuesForInsert[i]
+                                        .substring(
+                                            1, valuesForInsert[i].length - 1);
+                                    // Decode the base64 string back to a BLOB
+                                    try {
+                                      var blobData = base64Decode(base64String);
+                                      valuesForInsert[i] = blobData;
+                                    } catch (e) {
+                                      print('Error decoding base64 string: $e');
+                                    }
                                   }
                                 }
                                 var restoreDone = await conn.query(insertSql,
@@ -1397,6 +1404,7 @@ onRestoreData() {
                             }
                           }
                         }
+
                         // Show success or error message after all data has been inserted
                         if (insertedRecords > 0) {
                           _onShowSnack(
