@@ -1,10 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_dentistry/config/developer_options.dart';
+import 'package:flutter_dentistry/config/private/private.dart';
 import 'dart:io';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
@@ -941,79 +943,43 @@ onBackUpData() {
                       setState(() {
                         isBackupInProg = true;
                       });
-                      final conn = await onConnToDb();
-                      // List of tables
-                      var tables = [
-                        'clinics',
-                        'staff',
-                        'staff_auth',
-                        'patients',
-                        'service_requirements',
-                        'services',
-                        'retreatments',
-                        'appointments',
-                        'patient_services',
-                        'patient_xrays',
-                        'fee_payments',
-                        'conditions',
-                        'condition_details',
-                        'expenses',
-                        'expense_detail',
-                        'taxes',
-                        'tax_payments'
-                      ];
 
                       // Get local storage directory
                       var directory = await getApplicationDocumentsDirectory();
                       var path = directory.path;
+                      // Database required variable
+                      const String dbName = 'dentistry_db';
+                      const String userName = username;
+                      const String password = pwd;
 
-                      // Format current date and time as a string
+                      final ProcessResult result = await Process.run(
+                          'mysqldump',
+                          [
+                            '--default-character-set=utf8mb4', // Ensure correct character set
+                            '--hex-blob', // Dump BLOB data in hexadecimal format
+                            '-u',
+                            userName,
+                            '-p$password',
+                            dbName,
+                          ],
+                          stdoutEncoding: utf8,
+                          stderrEncoding: utf8); // Ensure correct encoding
+
+                      // User date & time for naming backup file
                       var now = DateTime.now();
-                      var formatter = INTL.DateFormat('yyyy-MM-dd_HH-mm-ssa');
+                      var formatter = INTL.DateFormat('yyyy-MM-dd HH-mm-ss a');
                       var formattedDate = formatter.format(now);
+                      String backupPath = '$path/backup at $formattedDate.sql';
 
-                      // Write data to file
-                      var file = File('$path/backup_$formattedDate.csv');
-                      var sink = file.openWrite(encoding: utf8);
-                      for (var table in tables) {
-                        // Query to export data from any table
-                        var results = await conn.query('SELECT * FROM $table');
-                        // Write table name to CSV file
-                        sink.writeln(table);
-                        // Write column names to CSV file
-                        sink.writeln(results.fields
-                            .map((field) => field.name)
-                            .join(','));
-
-                        // Write data to CSV file
-                        for (var row in results) {
-                          var newRow = row.map((value) {
-                            if (value is int ||
-                                value is double ||
-                                value == null) {
-                              return value;
-                            } else if (value is Blob) {
-                              // Convert BLOB data to base64-encoded string
-                              var base64String = base64Encode(value.toBytes());
-                              return "'$base64String'";
-                            } else {
-                              return "'$value'";
-                            }
-                          }).join(',');
-                          sink.writeln(newRow);
-                          // sink.writeln(const ListToCsvConverter().convert(row));
-                        }
+                      if (result.exitCode == 0) {
+                        final File backupFile = File(backupPath);
+                        await backupFile.writeAsString(result.stdout as String);
+                        _onShowSnack(Colors.green,
+                            '${translations[selectedLanguage]?['BackupCreatMsg'] ?? ''}$path');
+                      } else {
+                        print('Backup not created: ${result.stderr}');
                       }
 
-                      print('The PATH is: $path');
-                      // }
-
-                      // Close connection
-                      await conn.close();
-                      // Close file
-                      await sink.close();
-                      _onShowSnack(Colors.green,
-                          '${translations[selectedLanguage]?['BackupCreatMsg'] ?? ''}$path');
                       setState(() {
                         isBackupInProg = false;
                       });
@@ -1279,164 +1245,83 @@ onRestoreData() {
                         isRestoreInProg = true;
                       });
 
+                      const String dbName = 'dentistry_db';
+                      const String userName = username;
+                      const String password = pwd;
+
                       // Show file picker
                       filePickerResult = await FilePicker.platform.pickFiles(
                         type: FileType.custom,
-                        allowedExtensions: ['csv'],
+                        allowedExtensions: ['sql'],
                       );
 
                       if (filePickerResult != null) {
-                        // Get Selected file
-                        PlatformFile file = filePickerResult!.files.first;
-                        // Connect to the database
-                        final conn = await onConnToDb();
-                        // List of tables
-                        var tables = [
-                          'clinics',
-                          'staff',
-                          'staff_auth',
-                          'patients',
-                          'services',
-                          'service_requirements',
-                          'retreatments',
-                          'appointments',
-                          'patient_services',
-                          'patient_xrays',
-                          'fee_payments',
-                          'conditions',
-                          'condition_details',
-                          'expenses',
-                          'expense_detail',
-                          'taxes',
-                          'tax_payments'
-                        ];
+                        String backupPath =
+                            filePickerResult!.files.single.path!;
 
-                        // Primary keys of tables
-                        var primaryKeys = {
-                          'clinics': 'cli_ID',
-                          'staff': 'staff_ID',
-                          'staff_auth': 'auth_ID',
-                          'patients': 'pat_ID',
-                          'services': 'ser_ID',
-                          'service_requirements': 'req_ID',
-                          'retreatments': 'retreat_ID',
-                          'appointments': 'apt_ID',
-                          'patient_services': [
-                            'apt_ID',
-                            'pat_ID',
-                            'ser_ID',
-                            'req_ID',
-                          ],
-                          'patient_xrays': 'xray_ID',
-                          'fee_payments': 'payment_ID',
-                          'conditions': 'cond_ID',
-                          'condition_details': 'cond_detail_ID',
-                          'expenses': 'exp_ID',
-                          'expense_detail': 'exp_detail_ID',
-                          'taxes': 'tax_ID',
-                          'tax_payments': 'tax_pay_ID'
-                        };
+                        // Read the backup file
+                        String contents = await File(backupPath).readAsString();
+                        // Generate a hash of the backup file contents
+                        var backupHash = md5.convert(utf8.encode(contents));
 
-                        // Open selected file
-                        var lines = File(file.path!).readAsLinesSync();
-                        // Initialize a variable to keep track of the total number of inserted records
-                        int insertedRecords = 0;
-                        // ignore: prefer_typing_uninitialized_variables
-                        var currentTable;
-                        for (var line in lines) {
-                          if (tables.contains(line)) {
-                            // Line is a table
-                            currentTable = line;
-                          } else if (line
-                              .startsWith('${primaryKeys[currentTable]},')) {
-                            // Line is column names, ignore
-                            continue;
-                          } else {
-                            // Line is data, insert into table
-                            var values = line.split(',');
-                            if (currentTable == 'patient_services') {
-                              var keys = primaryKeys[currentTable];
-                              if (keys != null && keys is List<String>) {
-                                var allKeys = List<String>.from(keys)
-                                  ..add(
-                                      'value'); // Create a new list that includes 'value'
-                                var keyNames = allKeys.join(', ');
-                                var insertSql =
-                                    "INSERT IGNORE INTO $currentTable ($keyNames) VALUES (?, ?, ?, ?, ?)";
-                                // Take only the first four values for the keys
-                                List<dynamic> valuesForInsert =
-                                    values.take(4).toList();
+                        // Generate a dump of the current database state
+                        final ProcessResult currentDump =
+                            await Process.run('mysqldump', [
+                          '-u',
+                          userName,
+                          '-p$password',
+                          dbName,
+                        ]);
+                        // Generate a hash of the current database state
+                        var currentHash =
+                            md5.convert(utf8.encode(currentDump.stdout));
 
-                                // The rest of the line is the 'value'
-                                var value = values.skip(4).join(',');
-                                valuesForInsert.add(value);
-                                // Check if the value is a string and remove the single quotes
-                                for (int i = 0;
-                                    i < valuesForInsert.length;
-                                    i++) {
-                                  if (valuesForInsert[i].startsWith("'") &&
-                                      valuesForInsert[i].endsWith("'")) {
-                                    // Value is a string, remove the single quotes
-                                    var base64String = valuesForInsert[i]
-                                        .substring(
-                                            1, valuesForInsert[i].length - 1);
-                                    // Decode the base64 string back to a BLOB
-                                    try {
-                                      var blobData = base64Decode(base64String);
-                                      valuesForInsert[i] = blobData;
-                                    } catch (e) {
-                                      print('Error decoding base64 string: $e');
-                                    }
-                                  }
-                                }
-                                var restoreDone = await conn.query(insertSql,
-                                    valuesForInsert); // Change this line
-                                insertedRecords += restoreDone.affectedRows!;
-                              }
-                            } else {
-                              var valueString = values
-                                  .map((value) => value.toString())
-                                  .join(', ');
-                              var insertSql =
-                                  "INSERT IGNORE INTO $currentTable VALUES ($valueString)";
-                              var restoreDone = await conn.query(insertSql);
-                              insertedRecords += restoreDone.affectedRows!;
-                            }
-                          }
-                        }
-
-                        // Show success or error message after all data has been inserted
-                        if (insertedRecords > 0) {
-                          _onShowSnack(
-                              Colors.green,
-                              translations[selectedLanguage]
-                                      ?['RestoreSuccessMsg'] ??
-                                  '');
-                        } else {
+                        if (backupHash == currentHash) {
                           _onShowSnack(
                               Colors.red,
                               translations[selectedLanguage]
                                       ?['RestoreNotNeeded'] ??
                                   '');
-                        }
-                        setState(() {
-                          isRestoreInProg = false;
-                        });
+                        } else {
+                          // Start the mysql process
+                          Process process = await Process.start(
+                              'mysql',
+                              [
+                                '-u',
+                                userName,
+                                '-p$password',
+                                dbName,
+                              ],
+                              runInShell: true);
 
-                        // Close connection
-                        await conn.close();
-                      } else {
-                        _onShowSnack(
-                            Colors.red,
-                            translations[selectedLanguage]
-                                    ?['BackupNotSelected'] ??
-                                '');
-                        setState(() {
-                          isRestoreInProg = false;
-                        });
+                          // Write the contents of the backup file to the stdin of the mysql process
+                          process.stdin.write(contents);
+                          await process.stdin
+                              .close(); // Wait until all data has been written to stdin
+
+                          // Wait for the mysql process to finish
+                          int exitCode = await process.exitCode;
+
+                          if (exitCode == 0) {
+                            _onShowSnack(
+                                Colors.green,
+                                translations[selectedLanguage]
+                                        ?['RestoreSuccessMsg'] ??
+                                    '');
+                          } else {
+                            print('Error occurred during restore');
+                            print(await process.stderr
+                                .transform(utf8.decoder)
+                                .join());
+                          }
+                        }
                       }
+
+                      setState(() {
+                        isRestoreInProg = false;
+                      });
                     } catch (e) {
-                      print('Restoring tables failed. $e');
+                      print('Restoration failed: $e');
                     }
                   },
                   icon: isRestoreInProg
