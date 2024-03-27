@@ -70,6 +70,7 @@ dependencies:
   win32: ^4.1.4
   ffi: ^2.1.0
   flutter_secure_storage: ^8.1.0
+  crypto: ^3.0.3
 
 
 dev_dependencies:
