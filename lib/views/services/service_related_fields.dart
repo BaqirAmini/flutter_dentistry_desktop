@@ -136,7 +136,7 @@ class _ServiceFormState extends State<ServiceForm> {
                   ServiceInfo.dentureGroupValue == 'Partial'))
           ? EdgeInsets.zero
           : EdgeInsets.symmetric(
-              vertical: MediaQuery.of(context).size.width * 0.1),
+              vertical: MediaQuery.of(context).size.width * 0.04),
       child: Form(
         key: widget.formKey,
         child: Column(
@@ -1296,9 +1296,9 @@ class _ServiceFormState extends State<ServiceForm> {
               child: Container(
                 margin: const EdgeInsets.only(top: 20),
                 width: (ServiceInfo.patAge <= 13)
-                    ? MediaQuery.of(context).size.width * 0.3
-                    : MediaQuery.of(context).size.width * 0.5,
-                height: MediaQuery.of(context).size.height * 0.5,
+                    ? MediaQuery.of(context).size.width * 0.35
+                    : MediaQuery.of(context).size.width * 0.55,
+                height: MediaQuery.of(context).size.height * 0.45,
                 child: (ServiceInfo.patAge <= 13)
                     ? const ChildQuadrantGrid()
                     : const AdultQuadrantGrid(),

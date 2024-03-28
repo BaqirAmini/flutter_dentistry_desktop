@@ -80,7 +80,7 @@ class _FeeFormState extends State<FeeForm> {
       textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
       child: Container(
         margin: EdgeInsets.symmetric(
-          vertical: MediaQuery.of(context).size.width * 0.1,
+          vertical: MediaQuery.of(context).size.width * 0.04,
         ),
         width: MediaQuery.of(context).size.width * 0.5,
         child: Form(

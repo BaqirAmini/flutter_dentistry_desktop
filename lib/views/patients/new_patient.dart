@@ -89,7 +89,7 @@ class _NewPatientState extends State<NewPatient> {
               Text(translations[selectedLanguage]?['َPatientPersInfo'] ?? ''),
           content: Container(
             margin: EdgeInsets.symmetric(
-                vertical: MediaQuery.of(context).size.width * 0.1),
+                vertical: MediaQuery.of(context).size.width * 0.03),
             child: Form(
               key: _formKey1,
               child: Column(
