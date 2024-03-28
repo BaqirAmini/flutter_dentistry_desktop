@@ -87,7 +87,9 @@ class _NewPatientState extends State<NewPatient> {
           isActive: _currentStep >= 0,
           title:
               Text(translations[selectedLanguage]?['َPatientPersInfo'] ?? ''),
-          content: Center(
+          content: Container(
+            margin: EdgeInsets.symmetric(
+                vertical: MediaQuery.of(context).size.width * 0.1),
             child: Form(
               key: _formKey1,
               child: Column(
