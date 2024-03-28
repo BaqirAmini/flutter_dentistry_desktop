@@ -1,11 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-<<<<<<< HEAD
-=======
 import 'package:archive/archive.dart';
 import 'package:crypto/crypto.dart';
->>>>>>> 092937458a5d7540ab701788c2820a71bd154656
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
@@ -1277,6 +1274,143 @@ Widget onChangeLang() {
           );
         }
       }
+    },
+  );
+}
+
+// This function is to restore the backedup file
+onRestoreData() {
+  bool isRestoreInProg = false;
+  return StatefulBuilder(
+    builder: (context, setState) {
+      return Card(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                translations[selectedLanguage]?['RestoreMsg'] ?? '',
+                style: const TextStyle(fontSize: 12.0),
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              SizedBox(
+                height: 35.0,
+                width: 400.0,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40.0),
+                    ),
+                    side: const BorderSide(color: Colors.blue),
+                  ),
+                  onPressed: () async {
+                    try {
+                      setState(() {
+                        isRestoreInProg = true;
+                      });
+
+                      const String dbName = 'dentistry_db';
+                      const String userName = username;
+                      const String password = pwd;
+
+                      // Show file picker
+                      filePickerResult = await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: ['sql'],
+                      );
+
+                      if (filePickerResult != null) {
+                        String backupPath =
+                            filePickerResult!.files.single.path!;
+
+                        // Read the backup file
+                        String contents = await File(backupPath).readAsString();
+                        // Generate a hash of the backup file contents
+                        var backupHash = md5.convert(utf8.encode(contents));
+
+                        // Generate a dump of the current database state
+                        final ProcessResult currentDump =
+                            await Process.run('mysqldump', [
+                          '-u',
+                          userName,
+                          '-p$password',
+                          dbName,
+                        ]);
+                        // Generate a hash of the current database state
+                        var currentHash =
+                            md5.convert(utf8.encode(currentDump.stdout));
+
+                        if (backupHash == currentHash) {
+                          _onShowSnack(
+                              Colors.red,
+                              translations[selectedLanguage]
+                                      ?['RestoreNotNeeded'] ??
+                                  '');
+                        } else {
+                          // Start the mysql process
+                          Process process = await Process.start(
+                              'mysql',
+                              [
+                                '-u',
+                                userName,
+                                '-p$password',
+                                dbName,
+                              ],
+                              runInShell: true);
+
+                          // Write the contents of the backup file to the stdin of the mysql process
+                          process.stdin.write(contents);
+                          await process.stdin
+                              .close(); // Wait until all data has been written to stdin
+
+                          // Wait for the mysql process to finish
+                          int exitCode = await process.exitCode;
+
+                          if (exitCode == 0) {
+                            _onShowSnack(
+                                Colors.green,
+                                translations[selectedLanguage]
+                                        ?['RestoreSuccessMsg'] ??
+                                    '');
+                          } else {
+                            print('Error occurred during restore');
+                            print(await process.stderr
+                                .transform(utf8.decoder)
+                                .join());
+                          }
+                        }
+                      }
+
+                      setState(() {
+                        isRestoreInProg = false;
+                      });
+                    } catch (e) {
+                      print('Restoration failed: $e');
+                    }
+                  },
+                  icon: isRestoreInProg
+                      ? const Center(
+                          child: SizedBox(
+                            height: 18.0,
+                            width: 18.0,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3.0,
+                            ),
+                          ),
+                        )
+                      : const Icon(Icons.restore_outlined),
+                  label: isRestoreInProg
+                      ? Text(translations[selectedLanguage]?['WaitMsg'] ?? '')
+                      : Text(translations[selectedLanguage]?['RestoreBackup'] ??
+                          ''),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     },
   );
 }
