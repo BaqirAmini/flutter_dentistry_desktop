@@ -265,6 +265,7 @@ class _FeeFormState extends State<FeeForm> {
               Visibility(
                 visible: _isVisibleForPayment,
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
                       '*',
