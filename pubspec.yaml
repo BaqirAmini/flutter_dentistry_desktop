@@ -71,6 +71,7 @@ dependencies:
   ffi: ^2.1.0
   flutter_secure_storage: ^8.1.0
   crypto: ^3.0.3
+  archive: ^3.4.10
 
 
 dev_dependencies:
