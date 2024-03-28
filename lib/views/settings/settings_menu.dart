@@ -1,6 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+<<<<<<< HEAD
+=======
+import 'package:archive/archive.dart';
+import 'package:crypto/crypto.dart';
+>>>>>>> 092937458a5d7540ab701788c2820a71bd154656
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
@@ -9,13 +14,13 @@ import 'package:flutter_dentistry/config/private/private.dart';
 import 'dart:io';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
-import 'package:galileo_mysql/galileo_mysql.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart' as INTL;
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart' as p;
 
 FilePickerResult? filePickerResult;
 File? pickedFile;
@@ -885,6 +890,198 @@ onShowProfile(BuildContext context, [void Function()? onUpdatePhoto]) {
       ),
     ),
   );
+}
+
+// This function is to create a backup of the system
+onBackUpData() {
+  bool isBackupInProg = false;
+  return StatefulBuilder(
+    builder: (context, setState) {
+      return Card(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ListTile(
+                title: Card(
+                  color: const Color.fromARGB(255, 240, 239, 239),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      translations[selectedLanguage]?['BackupCautMsg'] ?? '',
+                      style: const TextStyle(fontSize: 14.0, color: Colors.red),
+                    ),
+                  ),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 270.0),
+              ),
+              ListTile(
+                title: Text(
+                  '1 - ${translations[selectedLanguage]?['Storage1'] ?? ''}',
+                  style: const TextStyle(fontSize: 12.0),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 280.0),
+              ),
+              ListTile(
+                title: Text(
+                  '2 - ${translations[selectedLanguage]?['Storage2'] ?? ''}',
+                  style: const TextStyle(fontSize: 12.0),
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 280.0),
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              SizedBox(
+                height: 35.0,
+                width: 400.0,
+                child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40.0),
+                    ),
+                    side: const BorderSide(color: Colors.blue),
+                  ),
+                  onPressed: _onCreateXRayBackup,
+                  /*  onPressed: () async {
+                    try {
+                      setState(() {
+                        isBackupInProg = true;
+                      });
+
+                      // Get local storage directory
+                      var directory = await getApplicationDocumentsDirectory();
+                      var path = directory.path;
+                      // Database required variable
+                      const String dbName = 'dentistry_db';
+                      const String userName = username;
+                      const String password = pwd;
+
+                      final ProcessResult result = await Process.run(
+                          'mysqldump',
+                          [
+                            '--default-character-set=utf8mb4', // Ensure correct character set
+                            '--hex-blob', // Dump BLOB data in hexadecimal format
+                            '-u',
+                            userName,
+                            '-p$password',
+                            dbName,
+                          ],
+                          stdoutEncoding: utf8,
+                          stderrEncoding: utf8); // Ensure correct encoding
+
+                      // User date & time for naming backup file
+                      var now = DateTime.now();
+                      var formatter = INTL.DateFormat('yyyy-MM-dd HH-mm-ss a');
+                      var formattedDate = formatter.format(now);
+                      String backupPath = '$path/backup at $formattedDate.sql';
+
+                      if (result.exitCode == 0) {
+                        final File backupFile = File(backupPath);
+                        await backupFile.writeAsString(result.stdout as String);
+                        _onShowSnack(Colors.green,
+                            '${translations[selectedLanguage]?['BackupCreatMsg'] ?? ''}$path');
+                      } else {
+                        print('Backup not created: ${result.stderr}');
+                      }
+
+                      setState(() {
+                        isBackupInProg = false;
+                      });
+                    } catch (e) {
+                      print('Backing up the tables failed. $e');
+                    }
+                  }, */
+                  icon: isBackupInProg
+                      ? const Center(
+                          child: SizedBox(
+                            height: 18.0,
+                            width: 18.0,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3.0,
+                            ),
+                          ),
+                        )
+                      : const Icon(Icons.backup_outlined),
+                  label: isBackupInProg
+                      ? Text(translations[selectedLanguage]?['WaitMsg'] ?? '')
+                      : Text(translations[selectedLanguage]?['CreateBackup'] ??
+                          ''),
+                ),
+              ),
+              const SizedBox(
+                height: 15.0,
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+Future<void> _onCreateXRayBackup() async {
+  try {
+    // Get local storage directory
+    var directory = await getApplicationDocumentsDirectory();
+    var path = directory.path;
+    // Directory to be backed up
+    Directory dir = Directory('$path\\CROWN');
+    // Check if the directory exists
+    if (!dir.existsSync()) {
+      _onShowSnack(Colors.red, 'X-Ray directory not found.');
+      return;
+    }
+
+    // Check if the directory contains any files
+    List<FileSystemEntity> files = dir.listSync(recursive: true);
+    if (files.isEmpty) {
+      _onShowSnack(Colors.red, 'X-Ray directory is empty.');
+      return;
+    }
+
+    // If the directory exists and contains files, continue with the backup
+
+    // User date & time for naming backup file
+    var now = DateTime.now();
+    var formatter = INTL.DateFormat('yyyy-MM-dd HH-mm-ss a');
+    var formattedDate = formatter.format(now);
+
+    // Output zip file
+    String zipPath = 'D:\\Test\\x-rays - $formattedDate.zip';
+
+    // Create the Archive object
+    Archive archive = Archive();
+
+    // Add files to the archive
+    for (FileSystemEntity file in files) {
+      if (file is File) {
+        // Read the file
+        List<int> data = await file.readAsBytes();
+
+        // Add an archive file
+        archive.addFile(ArchiveFile(
+            p.relative(file.path, from: dir.path), data.length, data));
+      }
+    }
+
+    // Encode the archive as a zip file
+    List<int>? encoded = ZipEncoder().encode(archive);
+
+    // Write the zip file
+    File(zipPath)
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(encoded!);
+// Check if the zip file was created
+    if (zipPath.isNotEmpty) {
+      _onShowSnack(Colors.green, 'X-Ray files backup created.');
+    } else {
+      _onShowSnack(
+          Colors.green, 'Zip file of X-Ray not created. Backup failed.');
+    }
+  } catch (e) {
+    print('X-Ray backup failed: $e');
+  }
 }
 
 // Fetch the selected language from shared preference.

@@ -256,7 +256,7 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                     child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                            '${translations[selectedLanguage]?['XrayPath'] ?? ''}Users/account-name/Documents/DCMIS',
+                            '${translations[selectedLanguage]?['XrayPath'] ?? ''}Users/account-name/Documents/CROWN',
                             style: const TextStyle(
                                 color: Colors.green,
                                 fontSize: 12.0,
@@ -663,12 +663,12 @@ class __ImageThumbNailState extends State<_ImageThumbNail> {
                                   // Name of the uploaded xray image name
                                   final xrayImageName =
                                       p.basename(_selectedImage!.path);
-                                  // Patient directory path for instance, Users/name-specified-in-windows/Documents/DCMIS/Ali123
+                                  // Patient directory path for instance, Users/name-specified-in-windows/Documents/CROWN/Ali123
                                   final patientDirPath = p.join(
                                       userDir.path,
-                                      'DCMIS',
+                                      'CROWN',
                                       '${PatientInfo.firstName}${PatientInfo.patID}');
-                                  // Patient Directory for instance, DCMIS/Ali123
+                                  // Patient Directory for instance, CROWN/Ali123
                                   final patientsDir = Directory(patientDirPath);
                                   if (!patientsDir.existsSync()) {
                                     // If the directory is not existing, create it.
