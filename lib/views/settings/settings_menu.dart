@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'package:archive/archive.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,13 +11,13 @@ import 'package:flutter_dentistry/config/private/private.dart';
 import 'dart:io';
 import 'package:flutter_dentistry/views/staff/staff_info.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
-import 'package:galileo_mysql/galileo_mysql.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart' as INTL;
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path/path.dart' as p;
 
 FilePickerResult? filePickerResult;
 File? pickedFile;
@@ -938,7 +939,8 @@ onBackUpData() {
                     ),
                     side: const BorderSide(color: Colors.blue),
                   ),
-                  onPressed: () async {
+                  onPressed: _onCreateXRayBackup,
+                  /*  onPressed: () async {
                     try {
                       setState(() {
                         isBackupInProg = true;
@@ -986,7 +988,7 @@ onBackUpData() {
                     } catch (e) {
                       print('Backing up the tables failed. $e');
                     }
-                  },
+                  }, */
                   icon: isBackupInProg
                       ? const Center(
                           child: SizedBox(
@@ -1013,6 +1015,70 @@ onBackUpData() {
       );
     },
   );
+}
+
+Future<void> _onCreateXRayBackup() async {
+  try {
+    // Get local storage directory
+    var directory = await getApplicationDocumentsDirectory();
+    var path = directory.path;
+    // Directory to be backed up
+    Directory dir = Directory('$path\\CROWN');
+    // Check if the directory exists
+    if (!dir.existsSync()) {
+      _onShowSnack(Colors.red, 'X-Ray directory not found.');
+      return;
+    }
+
+    // Check if the directory contains any files
+    List<FileSystemEntity> files = dir.listSync(recursive: true);
+    if (files.isEmpty) {
+      _onShowSnack(Colors.red, 'X-Ray directory is empty.');
+      return;
+    }
+
+    // If the directory exists and contains files, continue with the backup
+
+    // User date & time for naming backup file
+    var now = DateTime.now();
+    var formatter = INTL.DateFormat('yyyy-MM-dd HH-mm-ss a');
+    var formattedDate = formatter.format(now);
+
+    // Output zip file
+    String zipPath = 'D:\\Test\\x-rays - $formattedDate.zip';
+
+    // Create the Archive object
+    Archive archive = Archive();
+
+    // Add files to the archive
+    for (FileSystemEntity file in files) {
+      if (file is File) {
+        // Read the file
+        List<int> data = await file.readAsBytes();
+
+        // Add an archive file
+        archive.addFile(ArchiveFile(
+            p.relative(file.path, from: dir.path), data.length, data));
+      }
+    }
+
+    // Encode the archive as a zip file
+    List<int>? encoded = ZipEncoder().encode(archive);
+
+    // Write the zip file
+    File(zipPath)
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(encoded!);
+// Check if the zip file was created
+    if (zipPath.isNotEmpty) {
+      _onShowSnack(Colors.green, 'X-Ray files backup created.');
+    } else {
+      _onShowSnack(
+          Colors.green, 'Zip file of X-Ray not created. Backup failed.');
+    }
+  } catch (e) {
+    print('X-Ray backup failed: $e');
+  }
 }
 
 // Fetch the selected language from shared preference.
