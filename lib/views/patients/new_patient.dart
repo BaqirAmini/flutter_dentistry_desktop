@@ -122,7 +122,8 @@ class _NewPatientState extends State<NewPatient> {
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Container(
-                                    width: 400.0,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
                                     margin: const EdgeInsets.only(
                                         left: 20.0,
                                         right: 10.0,
@@ -181,7 +182,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ],
                               ),
                               Container(
-                                width: 400.0,
+                                width: MediaQuery.of(context).size.width * 0.3,
                                 margin: const EdgeInsets.only(
                                     left: 20.0,
                                     right: 10.0,
@@ -245,7 +246,8 @@ class _NewPatientState extends State<NewPatient> {
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Container(
-                                    width: 400.0,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
                                     margin: const EdgeInsets.only(
                                         left: 20.0,
                                         right: 10.0,
@@ -331,7 +333,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ],
                               ),
                               Container(
-                                width: 400.0,
+                                width: MediaQuery.of(context).size.width * 0.3,
                                 margin: const EdgeInsets.only(
                                     left: 20.0,
                                     right: 10.0,
@@ -416,7 +418,7 @@ class _NewPatientState extends State<NewPatient> {
                           Column(
                             children: [
                               Container(
-                                width: 400.0,
+                                width: MediaQuery.of(context).size.width * 0.3,
                                 margin: const EdgeInsets.only(
                                     left: 20.0,
                                     right: 10.0,
@@ -463,7 +465,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ),
                               ),
                               Container(
-                                width: 400.0,
+                                width: MediaQuery.of(context).size.width * 0.3,
                                 margin: const EdgeInsets.only(
                                     left: 20.0,
                                     right: 10.0,
@@ -532,7 +534,8 @@ class _NewPatientState extends State<NewPatient> {
                                           color: Colors.red,
                                           fontWeight: FontWeight.bold)),
                                   Container(
-                                    width: 400.0,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
                                     margin: const EdgeInsets.only(
                                         left: 20.0,
                                         right: 10.0,
@@ -611,7 +614,7 @@ class _NewPatientState extends State<NewPatient> {
                                 ],
                               ),
                               Container(
-                                width: 400.0,
+                                width: MediaQuery.of(context).size.width * 0.3,
                                 margin: const EdgeInsets.only(
                                     left: 20.0,
                                     right: 10.0,
@@ -924,11 +927,7 @@ class _NewPatientState extends State<NewPatient> {
           state: _currentStep <= 3 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 3,
           title: Text(translations[selectedLanguage]?['َServiceFee'] ?? ''),
-          content: SizedBox(
-            child: Center(
-              child: FeeForm(formKey: _formKey3),
-            ),
-          ),
+          content: FeeForm(formKey: _formKey3),
         ),
       ];
 
@@ -1396,6 +1395,7 @@ class _NewPatientState extends State<NewPatient> {
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.5,
+                height: MediaQuery.of(context).size.height * 0.4,
                 child: Form(
                   key: _hisDetFormKey,
                   child: Column(

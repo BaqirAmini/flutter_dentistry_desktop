@@ -121,9 +121,24 @@ class _ServiceFormState extends State<ServiceForm> {
     ServiceInfo.meetingDate = _visitTimeController.text.toString();
     DateTime selectedDateTime = DateTime.now();
 
-    return Form(
-      key: widget.formKey,
-      child: Center(
+    return Container(
+      margin: (ServiceInfo.selectedServiceID == 1 ||
+              ServiceInfo.selectedServiceID == 2 ||
+              ServiceInfo.selectedServiceID == 11 ||
+              ServiceInfo.selectedServiceID == 15 ||
+              (ServiceInfo.selectedServiceID == 7 &&
+                  ServiceInfo.defaultMaxillo == 'Tooth Extraction') ||
+              (ServiceInfo.selectedServiceID == 7 &&
+                  ServiceInfo.defaultMaxillo == 'Abscess Treatment') ||
+              (ServiceInfo.selectedServiceID == 7 &&
+                  ServiceInfo.defaultMaxillo == 'Tooth Reimplantation') ||
+              (ServiceInfo.selectedServiceID == 9 &&
+                  ServiceInfo.dentureGroupValue == 'Partial'))
+          ? EdgeInsets.zero
+          : EdgeInsets.symmetric(
+              vertical: MediaQuery.of(context).size.width * 0.1),
+      child: Form(
+        key: widget.formKey,
         child: Column(
           children: [
             Text(
@@ -145,7 +160,7 @@ class _ServiceFormState extends State<ServiceForm> {
                               color: Colors.red, fontWeight: FontWeight.bold),
                         ),
                         Container(
-                          width: 400.0,
+                          width: MediaQuery.of(context).size.width * 0.3,
                           margin: const EdgeInsets.only(
                               left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                           child: TextFormField(
@@ -223,7 +238,7 @@ class _ServiceFormState extends State<ServiceForm> {
                       ],
                     ),
                     Container(
-                      width: 400.0,
+                      width: MediaQuery.of(context).size.width * 0.3,
                       margin: const EdgeInsets.only(
                           left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                       child: InputDecorator(
@@ -271,7 +286,7 @@ class _ServiceFormState extends State<ServiceForm> {
                       visible:
                           (ServiceInfo.selectedServiceID == 9) ? true : false,
                       child: Container(
-                        width: 400.0,
+                        width: MediaQuery.of(context).size.width * 0.3,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
@@ -370,7 +385,7 @@ class _ServiceFormState extends State<ServiceForm> {
                       visible:
                           (ServiceInfo.selectedServiceID == 11) ? true : false,
                       child: Container(
-                        width: 400.0,
+                        width: MediaQuery.of(context).size.width * 0.3,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
@@ -444,7 +459,7 @@ class _ServiceFormState extends State<ServiceForm> {
                       child: Container(
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
-                        width: 400.0,
+                        width: MediaQuery.of(context).size.width * 0.3,
                         child: InputDecorator(
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.symmetric(
@@ -520,7 +535,7 @@ class _ServiceFormState extends State<ServiceForm> {
                       visible:
                           ServiceInfo.selectedServiceID == 11 ? true : false,
                       child: Container(
-                        width: 400.0,
+                        width: MediaQuery.of(context).size.width * 0.3,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
@@ -591,7 +606,7 @@ class _ServiceFormState extends State<ServiceForm> {
                           ? true
                           : false,
                       child: Container(
-                        width: 400.0,
+                        width: MediaQuery.of(context).size.width * 0.3,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
@@ -664,7 +679,7 @@ class _ServiceFormState extends State<ServiceForm> {
                       visible:
                           (ServiceInfo.selectedServiceID == 2) ? true : false,
                       child: Container(
-                        width: 400.0,
+                        width: MediaQuery.of(context).size.width * 0.3,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
@@ -738,7 +753,7 @@ class _ServiceFormState extends State<ServiceForm> {
                       visible:
                           (ServiceInfo.selectedServiceID == 5) ? true : false,
                       child: Container(
-                        width: 400.0,
+                        width: MediaQuery.of(context).size.width * 0.3,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
@@ -811,7 +826,7 @@ class _ServiceFormState extends State<ServiceForm> {
                       visible:
                           (ServiceInfo.selectedServiceID == 7) ? true : false,
                       child: Container(
-                        width: 400.0,
+                        width: MediaQuery.of(context).size.width * 0.3,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
@@ -885,7 +900,7 @@ class _ServiceFormState extends State<ServiceForm> {
                           ? true
                           : false,
                       child: Container(
-                        width: 400.0,
+                        width: MediaQuery.of(context).size.width * 0.3,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
@@ -987,7 +1002,7 @@ class _ServiceFormState extends State<ServiceForm> {
                       visible:
                           (ServiceInfo.selectedServiceID == 4) ? true : false,
                       child: Container(
-                        width: 400.0,
+                        width: MediaQuery.of(context).size.width * 0.3,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
@@ -1083,7 +1098,7 @@ class _ServiceFormState extends State<ServiceForm> {
                       visible:
                           ServiceInfo.selectedServiceID == 3 ? true : false,
                       child: Container(
-                        width: 400.0,
+                        width: MediaQuery.of(context).size.width * 0.3,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: InputDecorator(
@@ -1150,7 +1165,7 @@ class _ServiceFormState extends State<ServiceForm> {
                       ),
                     ),
                     Container(
-                      width: 400.0,
+                      width: MediaQuery.of(context).size.width * 0.3,
                       margin: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 10),
                       child: InputDecorator(
@@ -1159,11 +1174,10 @@ class _ServiceFormState extends State<ServiceForm> {
                           labelText: translations[selectedLanguage]
                                   ?['SelectDentist'] ??
                               '',
-                          labelStyle: const TextStyle(color: Colors.blueAccent),
                           enabledBorder: const OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(50.0)),
-                              borderSide: BorderSide(color: Colors.blueAccent)),
+                              borderSide: BorderSide(color: Colors.grey),),
                           focusedBorder: const OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(15.0)),
@@ -1210,7 +1224,7 @@ class _ServiceFormState extends State<ServiceForm> {
                     Visibility(
                       visible: true,
                       child: Container(
-                        width: 400.0,
+                        width: MediaQuery.of(context).size.width * 0.3,
                         margin: const EdgeInsets.only(
                             left: 20.0, right: 20.0, top: 10.0, bottom: 10.0),
                         child: TextFormField(
@@ -1281,8 +1295,10 @@ class _ServiceFormState extends State<ServiceForm> {
                   : false,
               child: Container(
                 margin: const EdgeInsets.only(top: 20),
-                width: (ServiceInfo.patAge <= 13) ? 470 : 770,
-                height: 300,
+                width: (ServiceInfo.patAge <= 13)
+                    ? MediaQuery.of(context).size.width * 0.3
+                    : MediaQuery.of(context).size.width * 0.5,
+                height: MediaQuery.of(context).size.height * 0.5,
                 child: (ServiceInfo.patAge <= 13)
                     ? const ChildQuadrantGrid()
                     : const AdultQuadrantGrid(),

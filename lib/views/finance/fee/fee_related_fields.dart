@@ -78,14 +78,18 @@ class _FeeFormState extends State<FeeForm> {
 
     return Directionality(
       textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-      child: Form(
-        key: widget.formKey,
-        child: SizedBox(
-          width: 440.0,
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          vertical: MediaQuery.of(context).size.width * 0.1,
+        ),
+        width: MediaQuery.of(context).size.width * 0.5,
+        child: Form(
+          key: widget.formKey,
           child: Column(
             children: [
               Text(translations[selectedLanguage]?['FeeMessage'] ?? ''),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
                     '*',
@@ -93,7 +97,7 @@ class _FeeFormState extends State<FeeForm> {
                         color: Colors.red, fontWeight: FontWeight.bold),
                   ),
                   Container(
-                    width: 400,
+                    width: MediaQuery.of(context).size.width * 0.3,
                     margin: const EdgeInsets.only(
                         left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                     child: TextFormField(
@@ -114,8 +118,9 @@ class _FeeFormState extends State<FeeForm> {
                       onChanged: _setDiscount,
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
-                        labelText:
-                            translations[selectedLanguage]?['َServiceFee'] ?? '',
+                        labelText: translations[selectedLanguage]
+                                ?['َServiceFee'] ??
+                            '',
                         suffixIcon: const Icon(Icons.money_rounded),
                         enabledBorder: const OutlineInputBorder(
                             borderRadius:
@@ -140,7 +145,7 @@ class _FeeFormState extends State<FeeForm> {
                 ],
               ),
               Container(
-                width: 400,
+                width: MediaQuery.of(context).size.width * 0.3,
                 margin: const EdgeInsets.only(
                     left: 20.0, right: 15.0, top: 10.0, bottom: 10.0),
                 child: InputDecorator(
@@ -194,7 +199,7 @@ class _FeeFormState extends State<FeeForm> {
                 ),
               ),
               Container(
-                width: 400,
+                width: MediaQuery.of(context).size.width * 0.3,
                 margin: const EdgeInsets.only(
                     left: 20.0, right: 15.0, top: 10.0, bottom: 10.0),
                 child: InputDecorator(
@@ -267,7 +272,7 @@ class _FeeFormState extends State<FeeForm> {
                           color: Colors.red, fontWeight: FontWeight.bold),
                     ),
                     Container(
-                      width: 400,
+                      width: MediaQuery.of(context).size.width * 0.3,
                       margin: const EdgeInsets.only(
                           left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
                       child: TextFormField(
@@ -331,7 +336,7 @@ class _FeeFormState extends State<FeeForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 180.0,
+                    width: MediaQuery.of(context).size.width * 0.14,
                     margin: const EdgeInsets.all(5),
                     decoration: const BoxDecoration(
                         border: Border(
@@ -360,7 +365,7 @@ class _FeeFormState extends State<FeeForm> {
                   ),
                   Container(
                     margin: const EdgeInsets.all(5),
-                    width: 180.0,
+                    width: MediaQuery.of(context).size.width * 0.14,
                     decoration: const BoxDecoration(
                         border: Border(
                       top: BorderSide(width: 1, color: Colors.grey),
