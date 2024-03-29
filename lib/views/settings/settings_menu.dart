@@ -64,6 +64,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
   int _selectedIndex = 1;
   @override
   Widget build(BuildContext context) {
+    _fetchPath();
     // Assign the method declared above to static function for later use
     StaffInfo.onUpdateProfile = _onUpdate;
     // Fetch translations keys based on the selected language.
@@ -294,7 +295,7 @@ class _SettingsMenuState extends State<SettingsMenu> {
 }
 
 // Switch between settings menu items
-Widget onShowSettingsItem(BuildContext context, int index,
+onShowSettingsItem(BuildContext context, int index,
     [void Function()? onUpdatePhoto]) {
   if (index == 1) {
     return onShowProfile(context, onUpdatePhoto);
@@ -1353,6 +1354,13 @@ Widget onChangeLang() {
   );
 }
 
+String? xrayFilePath;
+Future<void> _fetchPath() async {
+  Directory? userDir = await getApplicationDocumentsDirectory();
+  var path = '${userDir.path}\\CROWN';
+  xrayFilePath = path;
+}
+
 // This function is to restore the backedup file
 onRestoreData() {
   bool isRestoreInProg = false;
@@ -1481,6 +1489,13 @@ onRestoreData() {
                       : Text(translations[selectedLanguage]?['RestoreBackup'] ??
                           ''),
                 ),
+              ),
+              const SizedBox(
+                height: 50.0,
+              ),
+              Text(
+                '${translations[selectedLanguage]?['XrayExtMsg'] ?? ''}$xrayFilePath',
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
           ),
