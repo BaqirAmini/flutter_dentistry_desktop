@@ -2107,29 +2107,45 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                       ElevatedButton(
                         onPressed: () async {
                           if (formKey2.currentState!.validate()) {
-                            int staffId = staff_id;
-                            String userName = userNameController.text;
-                            String pwd = pwdController.text;
-                            String role = roleDropDown;
-                            var conn = await onConnToDb();
+                            try {
+                              int staffId = staff_id;
+                              String userName = userNameController.text;
+                              String pwd = pwdController.text;
+                              String role = roleDropDown;
+                              var conn = await onConnToDb();
+                              var dupUserResult = await conn.query(
+                                  'SELECT * FROM staff_auth WHERE username = ?',
+                                  [userName]);
 
-                            var queryResult = await conn.query(
-                                'INSERT INTO staff_auth (staff_ID, username, password, role) VALUES (?, ?, PASSWORD(?), ?)',
-                                [staffId, userName, pwd, role]);
+                              if (dupUserResult.isNotEmpty) {
+                                Navigator.pop(context);
+                                _onShowSnack(
+                                    Colors.red,
+                                    translations[selectedLanguage]
+                                            ?['DupUNameMsg'] ??
+                                        '');
+                              } else {
+                                var queryResult = await conn.query(
+                                    'INSERT INTO staff_auth (staff_ID, username, password, role) VALUES (?, ?, PASSWORD(?), ?)',
+                                    [staffId, userName, pwd, role]);
 
-                            if (queryResult.affectedRows! > 0) {
-                              print('Insert success!');
-                              userNameController.clear();
-                              pwdController.clear();
-                              confirmController.clear();
-                              // ignore: use_build_context_synchronously
-                              Navigator.pop(context);
-                              // ignore: use_build_context_synchronously
-                              _onShowSnack(
-                                  Colors.green,
-                                  translations[selectedLanguage]
-                                          ?['UpdateUAMsg'] ??
-                                      '');
+                                if (queryResult.affectedRows! > 0) {
+                                  print('Insert success!');
+                                  userNameController.clear();
+                                  pwdController.clear();
+                                  confirmController.clear();
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.pop(context);
+                                  // ignore: use_build_context_synchronously
+                                  _onShowSnack(
+                                      Colors.green,
+                                      translations[selectedLanguage]
+                                              ?['UpdateUAMsg'] ??
+                                          '');
+                                }
+                              }
+                            } catch (e) {
+                              print('Creating user account failed: $e');
                             }
                           }
                         },
@@ -2409,22 +2425,35 @@ onUpdateUserAccount(
                             final pwd = pwdController.text;
                             final userRole = roleDropDown;
                             var conn = await onConnToDb();
-                            var queryResult = await conn.query(
-                                'UPDATE staff_auth SET username = ?, password = PASSWORD(?), role = ? WHERE staff_ID = ?',
-                                [userName, pwd, userRole, staff_id]);
+                            var dupUNameResult = await conn.query(
+                                'SELECT * FROM staff_auth WHERE username = ?',
+                                [userName]);
+                            if (dupUNameResult.isEmpty) {
+                              var queryResult = await conn.query(
+                                  'UPDATE staff_auth SET username = ?, password = PASSWORD(?), role = ? WHERE staff_ID = ?',
+                                  [userName, pwd, userRole, staff_id]);
 
-                            if (queryResult.affectedRows! > 0) {
-                              print('success!');
-                              userNameController.clear();
-                              pwdController.clear();
-                              confirmController.clear();
-                              // ignore: use_build_context_synchronously
+                              if (queryResult.affectedRows! > 0) {
+                                print('success!');
+                                userNameController.clear();
+                                pwdController.clear();
+                                confirmController.clear();
+                                // ignore: use_build_context_synchronously
+                                Navigator.pop(context);
+                                // ignore: use_build_context_synchronously
+                                _onShowSnack(
+                                    Colors.green,
+                                    translations[selectedLanguage]
+                                            ?['UpdateUAMsg'] ??
+                                        '');
+                              }
+                            } else {
                               Navigator.pop(context);
                               // ignore: use_build_context_synchronously
                               _onShowSnack(
-                                  Colors.green,
+                                  Colors.red,
                                   translations[selectedLanguage]
-                                          ?['UpdateUAMsg'] ??
+                                          ?['DupUNameMsg'] ??
                                       '');
                             }
                           }
