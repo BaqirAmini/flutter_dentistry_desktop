@@ -319,6 +319,11 @@ final Map<String, Map<String, String>> translations = {
     'ValidDuration': 'Your Product Key is Valid for: ',
     'Days': 'Days ',
     'PremAppPurchase': 'Please purchase the premium app.',
+    'CreateXBtn': 'Backup X-Ray Images',
+    'XDirNotFound': 'X-Ray Directory not Found.',
+    'XDirEmpty': 'X-Ray Directory is Empty.',
+    'XSuccessMsg': 'X-Ray Backup File Created Under: ',
+    'XFailMsg': 'X-Ray Backup Failed. Please try again.',
     /*----/. SETTINGS -----*/
     /*---------- USER PROFILE -----------*/
     'MyProfileHeading': 'Edit My Personal Info',
@@ -340,8 +345,8 @@ final Map<String, Map<String, String>> translations = {
         'Caution! To protect your data from getting lost, please move the backup file into secure storages like:',
     'Storage1': 'Cloud Storages such as Google Drive or Microsoft OneDrive.',
     'Storage2': 'External Storages such as a Hard Disk Drive.',
-    'CreateBackup': 'Create Backup File',
-    'BackupCreatMsg': 'The Backup file has been created under: ',
+    'CreateBackup': 'Backup Database',
+    'BackupCreatMsg': 'The Database Backup Created Under: ',
     'RestoreBackup': 'Restore Backup File',
     'RestoreSuccessMsg': 'Restoration was done.',
     'RestoreMsg':
@@ -745,6 +750,11 @@ final Map<String, Map<String, String>> translations = {
     'ValidDuration': 'کلید محصول (کلید لایسنس) شما مدار اعتبار است مدت: ',
     'Days': 'روز ',
     'PremAppPurchase': 'لطفاً نسخه ممتاز این اپلیکیشن را خریداری کنید.',
+      'CreateXBtn': 'پشتیبان گیری از تصاویر اکسری',
+    'XDirNotFound': 'فولدر اکسری یافت نشد.',
+    'XDirEmpty': 'فولدر اکسری خالی است.',
+    'XSuccessMsg': 'فایل پشتیبانی ایجاد گردید در: ',
+    'XFailMsg': 'پشتیبانی اکسری ناکام شد. لطفاً دوباره سعی کنید.',
     /*----/. SETTINGS -----*/
     /*---------- USER PROFILE -----------*/
     'MyProfileHeading': 'تغییر معلومات شخصی من',
@@ -767,8 +777,8 @@ final Map<String, Map<String, String>> translations = {
     'Storage1':
         'حافظه کلود (ابری ) مثل Google Drive و یا Microsoft OneDrive است.',
     'Storage2': 'حافظه بیرونی مثل هارددیسک است.',
-    'CreateBackup': 'ایجاد فایل پشتیبانی',
-    'BackupCreatMsg': 'فایل پشتیبانی ایجاد شد در: ',
+    'CreateBackup': 'پشتیبان گیری از دیتابیس',
+    'BackupCreatMsg': 'فایل پشتیبانی دیتابیس ایجاد شد در: ',
     'RestoreBackup': 'بازیابی فایل پشتیبان',
     'RestoreSuccessMsg': 'بازیابی انجام شد.',
     'RestoreMsg':
@@ -1177,6 +1187,11 @@ final Map<String, Map<String, String>> translations = {
         'ستاسو د محصول کیلي (د جواز کلیدي) د دې لپاره اعتبار لري: ',
     'Days': 'ورځې ',
     'PremAppPurchase': 'مهرباني وکړئ د دې اپلیکیشن پریمیم نسخه واخلئ.',
+      'CreateXBtn': 'بیک اپ اکسری عکسونه',
+    'XDirNotFound': 'د اکسری فولډر ونه موندل شو.',
+    'XDirEmpty': 'X-Ray Directory is Empty.',
+    'XSuccessMsg': 'د اکسری بیک اپ فایل په کې رامینځته شوی: ',
+    'XFailMsg': 'د اکسری بیک اپ ناکام شو. مهرباني وکړئ بیا هڅه وکړئ.',
     /*----/. SETTINGS -----*/
     /*---------- USER PROFILE -----------*/
     'MyProfileHeading': 'زما شخصي معلومات سم کړئ',
@@ -1195,11 +1210,11 @@ final Map<String, Map<String, String>> translations = {
     'ChangeBtn': 'پټنوم بدلول',
     'PwdSuccessMsg': 'د پټنوم بدلول بریالي وو.',
     'BackupCautMsg':
-        'احتیاط! د دې لپاره چې ستاسو د کلینیک ټول معلومات له منځه نه یوسي، مهرباني وکړئ د ملاتړ فایل په یو خوندي ځای کې په لاندې ډول وي خوندي کړئ:',
+        'احتیاط! د دې لپاره چې ستاسو د کلینیک ټول معلومات له منځه نه یوسي، مهرباني وکړئ د بیک اپ فایل په یو خوندي ځای کې په لاندې ډول وي خوندي کړئ:',
     'Storage1': 'د بادل حافظه لکه Google Drive یا Microsoft OneDrive.',
     'Storage2': 'بهرنۍ حافظه لکه هارډډیسک.',
-    'CreateBackup': 'د بیک اپ فایل جوړول',
-    'BackupCreatMsg': 'بیک اپ فایل جوړ شوی په: ',
+    'CreateBackup': 'بیک اپ ډیټابیس',
+    'BackupCreatMsg': 'د ډیټابیس فایل جوړ شوی په: ',
     'RestoreBackup': 'د بیک اپ فایل بیا رغونه',
     'RestoreSuccessMsg': 'بیا رغونه ترسره شوه.',
     'RestoreMsg':
