@@ -324,6 +324,7 @@ final Map<String, Map<String, String>> translations = {
     'XDirEmpty': 'X-Ray Directory is Empty.',
     'XSuccessMsg': 'X-Ray Backup File Created Under: ',
     'XFailMsg': 'X-Ray Backup Failed. Please try again.',
+    'XrayExtMsg': 'Note: To restore X-Ray files, just exract the ZIP file here: ',
     /*----/. SETTINGS -----*/
     /*---------- USER PROFILE -----------*/
     'MyProfileHeading': 'Edit My Personal Info',
@@ -347,7 +348,7 @@ final Map<String, Map<String, String>> translations = {
     'Storage2': 'External Storages such as a Hard Disk Drive.',
     'CreateBackup': 'Backup Database',
     'BackupCreatMsg': 'The Database Backup Created Under: ',
-    'RestoreBackup': 'Restore Backup File',
+    'RestoreBackup': 'Restore Database',
     'RestoreSuccessMsg': 'Restoration was done.',
     'RestoreMsg':
         'Attention! Before to restore, please make sure the Backup file is existing.',
@@ -755,6 +756,7 @@ final Map<String, Map<String, String>> translations = {
     'XDirEmpty': 'فولدر اکسری خالی است.',
     'XSuccessMsg': 'فایل پشتیبانی ایجاد گردید در: ',
     'XFailMsg': 'پشتیبانی اکسری ناکام شد. لطفاً دوباره سعی کنید.',
+    'XrayExtMsg': 'نوت: برای بازیابی فایلهای اکسری کافی است فایل ZIP آنرا در اینجا Extract نمایید: ',
     /*----/. SETTINGS -----*/
     /*---------- USER PROFILE -----------*/
     'MyProfileHeading': 'تغییر معلومات شخصی من',
@@ -779,7 +781,7 @@ final Map<String, Map<String, String>> translations = {
     'Storage2': 'حافظه بیرونی مثل هارددیسک است.',
     'CreateBackup': 'پشتیبان گیری از دیتابیس',
     'BackupCreatMsg': 'فایل پشتیبانی دیتابیس ایجاد شد در: ',
-    'RestoreBackup': 'بازیابی فایل پشتیبان',
+    'RestoreBackup': 'بازیابی دیتابیس',
     'RestoreSuccessMsg': 'بازیابی انجام شد.',
     'RestoreMsg':
         'توجه! قبل از انجام بازیابی، از موجودیت فایل پشتیبان اطمینان حاصل کنید.',
@@ -1192,6 +1194,7 @@ final Map<String, Map<String, String>> translations = {
     'XDirEmpty': 'X-Ray Directory is Empty.',
     'XSuccessMsg': 'د اکسری بیک اپ فایل په کې رامینځته شوی: ',
     'XFailMsg': 'د اکسری بیک اپ ناکام شو. مهرباني وکړئ بیا هڅه وکړئ.',
+    'XrayExtMsg': 'یادونه: د اکسری فایلونو بیرته ترلاسه کولو لپاره، یوازې دلته د ZIP فایلونه استخراج کړئ: ',
     /*----/. SETTINGS -----*/
     /*---------- USER PROFILE -----------*/
     'MyProfileHeading': 'زما شخصي معلومات سم کړئ',
@@ -1215,7 +1218,7 @@ final Map<String, Map<String, String>> translations = {
     'Storage2': 'بهرنۍ حافظه لکه هارډډیسک.',
     'CreateBackup': 'بیک اپ ډیټابیس',
     'BackupCreatMsg': 'د ډیټابیس فایل جوړ شوی په: ',
-    'RestoreBackup': 'د بیک اپ فایل بیا رغونه',
+    'RestoreBackup': 'د ډیټابیس بیا رغونه',
     'RestoreSuccessMsg': 'بیا رغونه ترسره شوه.',
     'RestoreMsg':
         'پاملرنه! ډاډ ترلاسه کړئ چې د بیا رغونې کولو دمخه د بیک اپ فایل شتون لري.',
