@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/developer_options.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
@@ -327,13 +328,20 @@ class _MyDataTableState extends State<MyDataTable> {
               if (StaffInfo.staffRole == 'مدیر سیستم' ||
                   StaffInfo.staffRole == 'Software Engineer')
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const NewStaff())).then((_) {
-                      _fetchData();
-                    });
+                  onPressed: () async {
+                    if (await Features.staffLimitReached()) {
+                      _onShowSnack(Colors.red,
+                          translations[selectedLanguage]?['RecordLimitMsg'] ?? '');
+                    } else {
+                      // ignore: use_build_context_synchronously
+                      Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const NewStaff()))
+                          .then((_) {
+                        _fetchData();
+                      });
+                    }
                   },
                   child: Text(
                       translations[selectedLanguage]?['AddNewStaff'] ?? ''),
@@ -2118,6 +2126,7 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                                   [userName]);
 
                               if (dupUserResult.isNotEmpty) {
+                                // ignore: use_build_context_synchronously
                                 Navigator.pop(context);
                                 _onShowSnack(
                                     Colors.red,
@@ -2125,23 +2134,30 @@ onCreateUserAccount(BuildContext context, int staff_id) {
                                             ?['DupUNameMsg'] ??
                                         '');
                               } else {
-                                var queryResult = await conn.query(
-                                    'INSERT INTO staff_auth (staff_ID, username, password, role) VALUES (?, ?, PASSWORD(?), ?)',
-                                    [staffId, userName, pwd, role]);
-
-                                if (queryResult.affectedRows! > 0) {
-                                  print('Insert success!');
-                                  userNameController.clear();
-                                  pwdController.clear();
-                                  confirmController.clear();
+                                if (await Features.userLimitReached()) {
                                   // ignore: use_build_context_synchronously
                                   Navigator.pop(context);
-                                  // ignore: use_build_context_synchronously
-                                  _onShowSnack(
-                                      Colors.green,
-                                      translations[selectedLanguage]
-                                              ?['UpdateUAMsg'] ??
-                                          '');
+                                  _onShowSnack(Colors.red,
+                                      translations[selectedLanguage]?['RecordLimitMsg'] ?? '');
+                                } else {
+                                  var queryResult = await conn.query(
+                                      'INSERT INTO staff_auth (staff_ID, username, password, role) VALUES (?, ?, PASSWORD(?), ?)',
+                                      [staffId, userName, pwd, role]);
+
+                                  if (queryResult.affectedRows! > 0) {
+                                    print('Insert success!');
+                                    userNameController.clear();
+                                    pwdController.clear();
+                                    confirmController.clear();
+                                    // ignore: use_build_context_synchronously
+                                    Navigator.pop(context);
+                                    // ignore: use_build_context_synchronously
+                                    _onShowSnack(
+                                        Colors.green,
+                                        translations[selectedLanguage]
+                                                ?['UpdateUAMsg'] ??
+                                            '');
+                                  }
                                 }
                               }
                             } catch (e) {

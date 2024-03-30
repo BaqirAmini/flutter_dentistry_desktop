@@ -99,256 +99,300 @@ onCreatePrescription(BuildContext context) {
                           child: Text(translations[selectedLanguage]
                                   ?['CancelBtn'] ??
                               '')),
-                      ElevatedButton(
-                        onPressed: () async {
-                          if (formKeyPresc.currentState!.validate()) {
-                            /* -------------------- Fetch staff firstname & lastname ---------------- */
-                            final conn = await onConnToDb();
-                            final results = await conn.query(
-                                'SELECT * FROM staff WHERE staff_ID = ?',
-                                [defaultSelectedStaff]);
-                            var row = results.first;
-                            String drFirstName = row['firstname'];
-                            String drLastName = row['lastname'] ?? '';
-                            String drPhone = row['phone'];
-                            /* --------------------/. Fetch staff firstname & lastname ---------------- */
+                      (Features.genPrescription)
+                          ? ElevatedButton(
+                              onPressed: () async {
+                                if (formKeyPresc.currentState!.validate()) {
+                                  /* -------------------- Fetch staff firstname & lastname ---------------- */
+                                  final conn = await onConnToDb();
+                                  final results = await conn.query(
+                                      'SELECT * FROM staff WHERE staff_ID = ?',
+                                      [defaultSelectedStaff]);
+                                  var row = results.first;
+                                  String drFirstName = row['firstname'];
+                                  String drLastName = row['lastname'] ?? '';
+                                  String drPhone = row['phone'];
+                                  /* --------------------/. Fetch staff firstname & lastname ---------------- */
 
-                            // Current date
-                            DateTime now = DateTime.now();
-                            String formattedDate =
-                                intl.DateFormat('yyyy/MM/dd').format(now);
+                                  // Current date
+                                  DateTime now = DateTime.now();
+                                  String formattedDate =
+                                      intl.DateFormat('yyyy/MM/dd').format(now);
 
-                            const imageProvider = AssetImage(
-                              'assets/graphics/logo1.png',
-                            );
-                            final dentalLogo =
-                                await flutterImageProvider(imageProvider);
-                            final pdf = pw.Document();
-                            final fontData = await rootBundle
-                                .load('assets/fonts/per_sans_font.ttf');
-                            final ttf = pw.Font.ttf(fontData);
+                                  const imageProvider = AssetImage(
+                                    'assets/graphics/logo1.png',
+                                  );
+                                  final dentalLogo =
+                                      await flutterImageProvider(imageProvider);
+                                  final pdf = pw.Document();
+                                  final fontData = await rootBundle
+                                      .load('assets/fonts/per_sans_font.ttf');
+                                  final ttf = pw.Font.ttf(fontData);
 
-                            pdf.addPage(pw.Page(
-                              pageFormat: PdfPageFormat.a4,
-                              build: (pw.Context context) {
-                                return pw.Column(children: [
-                                  pw.Header(
-                                    level: 0,
-                                    child: pw.Row(
-                                        mainAxisAlignment:
-                                            pw.MainAxisAlignment.center,
-                                        children: [
-                                          pw.Image(
-                                            dentalLogo,
-                                            width: 100.0,
-                                            height: 100.0,
-                                          ),
-                                          pw.Directionality(
-                                            textDirection: pw.TextDirection.rtl,
-                                            child: pw.Column(children: [
-                                              pw.Text(
-                                                'کلینیک تخصصی دندان درمان',
-                                                style: pw.TextStyle(
-                                                  fontSize: 20,
-                                                  font: ttf,
-                                                  fontWeight:
-                                                      pw.FontWeight.bold,
-                                                  color: const PdfColor(
-                                                      51 / 255,
-                                                      153 / 255,
-                                                      255 / 255),
+                                  pdf.addPage(pw.Page(
+                                    pageFormat: PdfPageFormat.a4,
+                                    build: (pw.Context context) {
+                                      return pw.Column(children: [
+                                        pw.Header(
+                                          level: 0,
+                                          child: pw.Row(
+                                              mainAxisAlignment:
+                                                  pw.MainAxisAlignment.center,
+                                              children: [
+                                                pw.Image(
+                                                  dentalLogo,
+                                                  width: 100.0,
+                                                  height: 100.0,
                                                 ),
-                                              ),
-                                              pw.Text(
-                                                'آدرس: دشت برچی، قلعه ناظر، مقابل پسته خانه',
-                                                style: pw.TextStyle(
-                                                  fontSize: 12,
-                                                  font: ttf,
-                                                  color: const PdfColor(
-                                                      51 / 255,
-                                                      153 / 255,
-                                                      255 / 255),
+                                                pw.Directionality(
+                                                  textDirection:
+                                                      pw.TextDirection.rtl,
+                                                  child: pw.Column(children: [
+                                                    pw.Text(
+                                                      'کلینیک تخصصی دندان درمان',
+                                                      style: pw.TextStyle(
+                                                        fontSize: 20,
+                                                        font: ttf,
+                                                        fontWeight:
+                                                            pw.FontWeight.bold,
+                                                        color: const PdfColor(
+                                                            51 / 255,
+                                                            153 / 255,
+                                                            255 / 255),
+                                                      ),
+                                                    ),
+                                                    pw.Text(
+                                                      'آدرس: دشت برچی، قلعه ناظر، مقابل پسته خانه',
+                                                      style: pw.TextStyle(
+                                                        fontSize: 12,
+                                                        font: ttf,
+                                                        color: const PdfColor(
+                                                            51 / 255,
+                                                            153 / 255,
+                                                            255 / 255),
+                                                      ),
+                                                    ),
+                                                    pw.Text(
+                                                      'داکتر $drFirstName $drLastName',
+                                                      style: pw.TextStyle(
+                                                        font: ttf,
+                                                        fontSize: 12,
+                                                        color: const PdfColor(
+                                                            51 / 255,
+                                                            153 / 255,
+                                                            255 / 255),
+                                                      ),
+                                                    ),
+                                                  ]),
                                                 ),
-                                              ),
-                                              pw.Text(
-                                                'داکتر $drFirstName $drLastName',
-                                                style: pw.TextStyle(
-                                                  font: ttf,
-                                                  fontSize: 12,
-                                                  color: const PdfColor(
-                                                      51 / 255,
-                                                      153 / 255,
-                                                      255 / 255),
+                                              ]),
+                                        ),
+                                        pw.Row(
+                                          mainAxisAlignment:
+                                              pw.MainAxisAlignment.spaceBetween,
+                                          children: <pw.Widget>[
+                                            pw.Directionality(
+                                                child: pw.Text(
+                                                  'Date: $formattedDate',
+                                                  style:
+                                                      pw.TextStyle(font: ttf),
                                                 ),
-                                              ),
-                                            ]),
-                                          ),
-                                        ]),
-                                  ),
-                                  pw.Row(
-                                    mainAxisAlignment:
-                                        pw.MainAxisAlignment.spaceBetween,
-                                    children: <pw.Widget>[
-                                      pw.Directionality(
-                                          child: pw.Text(
-                                            'Date: $formattedDate',
-                                            style: pw.TextStyle(font: ttf),
-                                          ),
-                                          textDirection: pw.TextDirection.rtl),
-                                      pw.Directionality(
-                                          child: pw.Align(
-                                            alignment: pw.Alignment.centerLeft,
-                                            child: pw.Text(
-                                              'Age: $selectedPAge',
-                                              style: pw.TextStyle(font: ttf),
-                                            ),
-                                          ),
-                                          textDirection: pw.TextDirection.rtl),
-                                      pw.Directionality(
-                                          child: pw.Align(
-                                            alignment: pw.Alignment.centerLeft,
-                                            child: pw.Text(
-                                              'Sex: $selectedPSex',
-                                              style: pw.TextStyle(font: ttf),
-                                            ),
-                                          ),
-                                          textDirection: pw.TextDirection.rtl),
-                                      pw.Directionality(
-                                          child: pw.Align(
-                                            alignment: pw.Alignment.centerRight,
-                                            child: pw.Text(
-                                              'Patient\'s Name: $selectedPFName $selectedPLName',
-                                              style: pw.TextStyle(font: ttf),
-                                            ),
-                                          ),
-                                          textDirection: pw.TextDirection.rtl),
-                                      /*  pw.Paragraph(
-                                          text: 'تاریخ: $formattedDate'), */
-                                    ],
-                                  ),
-                                  pw.Header(level: 1, text: 'Px'),
-                                  ...medicines
-                                      .map((medicine) => pw.Padding(
-                                            padding: const pw.EdgeInsets.only(
-                                                top: 10,
-                                                left:
-                                                    15.0), // Adjust the value as needed
-                                            child: pw.Align(
-                                              alignment:
-                                                  pw.Alignment.centerLeft,
-                                              child: pw.Table(
-                                                columnWidths: {
-                                                  0: const pw.FixedColumnWidth(
-                                                      100),
-                                                  1: const pw.FixedColumnWidth(
-                                                      150),
-                                                  2: const pw.FixedColumnWidth(
-                                                      80),
-                                                  3: const pw.FixedColumnWidth(
-                                                      80),
-                                                  4: const pw.FixedColumnWidth(
-                                                      80),
-                                                  5: const pw.FixedColumnWidth(
-                                                      180),
-                                                }, // Make each column the same width
-                                                children: [
-                                                  pw.TableRow(
-                                                    children: [
-                                                      pw.Text(
-                                                          (medicine['type'] ==
-                                                                  'Syrups')
-                                                              ? 'SYR'
-                                                              : (medicine['type'] ==
-                                                                      'Capsules')
-                                                                  ? 'CAP'
-                                                                  : (medicine['type'] ==
-                                                                          'Tablets')
-                                                                      ? 'TAB'
-                                                                      : (medicine['type'] ==
-                                                                              'Ointments')
-                                                                          ? 'UNG'
-                                                                          : (medicine['type'] == 'Solutions')
-                                                                              ? 'SOL'
-                                                                              : (medicine['type'] == 'Ampoules')
-                                                                                  ? 'AMP'
-                                                                                  : (medicine['type'] == 'Flourides')
-                                                                                      ? 'FL'
-                                                                                      : (medicine['type']),
-                                                          style: pw.TextStyle(font: ttf)),
-                                                      pw.Text(
-                                                          (medicine[
-                                                                  'nameController']
-                                                              .text),
-                                                          style: pw.TextStyle(
-                                                              font: ttf)),
-                                                      pw.Text(
-                                                          '${medicine['piece']}',
-                                                          style: pw.TextStyle(
-                                                              font: ttf)),
-                                                      pw.Text(
-                                                          '${medicine['dose']}',
-                                                          style: pw.TextStyle(
-                                                              font: ttf)),
-                                                      pw.Text(
-                                                          'N = ${medicine['qty']}',
-                                                          style: pw.TextStyle(
-                                                              font: ttf)),
-                                                      pw.Directionality(
-                                                        textDirection: pw
-                                                            .TextDirection.rtl,
-                                                        child: pw.Text(
-                                                          '${medicine['descController'].text ?? ''}',
-                                                          style: pw.TextStyle(
-                                                              font: ttf),
-                                                        ),
-                                                      ), // Use an empty string if the description is null
-                                                      pw.SizedBox(width: 2.0)
-                                                    ],
+                                                textDirection:
+                                                    pw.TextDirection.rtl),
+                                            pw.Directionality(
+                                                child: pw.Align(
+                                                  alignment:
+                                                      pw.Alignment.centerLeft,
+                                                  child: pw.Text(
+                                                    'Age: $selectedPAge',
+                                                    style:
+                                                        pw.TextStyle(font: ttf),
                                                   ),
-                                                ],
-                                              ),
-                                            ),
-                                          ))
-                                      .toList(),
-                                  pw.Spacer(),
-                                  pw.Text('Signature:'),
-                                  pw.SizedBox(height: 20.0),
-                                  pw.Divider(
-                                    height: 10,
-                                    thickness: 1.0,
-                                  ),
-                                  pw.Row(
-                                      mainAxisAlignment:
-                                          pw.MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        pw.Text('Phone: $drPhone'),
-                                        pw.Text(
-                                            'Email: darman.clinic@gmail.com'),
-                                      ]),
-                                ]);
-                              },
-                            ));
+                                                ),
+                                                textDirection:
+                                                    pw.TextDirection.rtl),
+                                            pw.Directionality(
+                                                child: pw.Align(
+                                                  alignment:
+                                                      pw.Alignment.centerLeft,
+                                                  child: pw.Text(
+                                                    'Sex: $selectedPSex',
+                                                    style:
+                                                        pw.TextStyle(font: ttf),
+                                                  ),
+                                                ),
+                                                textDirection:
+                                                    pw.TextDirection.rtl),
+                                            pw.Directionality(
+                                                child: pw.Align(
+                                                  alignment:
+                                                      pw.Alignment.centerRight,
+                                                  child: pw.Text(
+                                                    'Patient\'s Name: $selectedPFName $selectedPLName',
+                                                    style:
+                                                        pw.TextStyle(font: ttf),
+                                                  ),
+                                                ),
+                                                textDirection:
+                                                    pw.TextDirection.rtl),
+                                            /*  pw.Paragraph(
+                                          text: 'تاریخ: $formattedDate'), */
+                                          ],
+                                        ),
+                                        pw.Header(level: 1, text: 'Px'),
+                                        ...medicines
+                                            .map((medicine) => pw.Padding(
+                                                  padding: const pw
+                                                      .EdgeInsets.only(
+                                                      top: 10,
+                                                      left:
+                                                          15.0), // Adjust the value as needed
+                                                  child: pw.Align(
+                                                    alignment:
+                                                        pw.Alignment.centerLeft,
+                                                    child: pw.Table(
+                                                      columnWidths: {
+                                                        0: const pw
+                                                            .FixedColumnWidth(
+                                                            100),
+                                                        1: const pw
+                                                            .FixedColumnWidth(
+                                                            150),
+                                                        2: const pw
+                                                            .FixedColumnWidth(
+                                                            80),
+                                                        3: const pw
+                                                            .FixedColumnWidth(
+                                                            80),
+                                                        4: const pw
+                                                            .FixedColumnWidth(
+                                                            80),
+                                                        5: const pw
+                                                            .FixedColumnWidth(
+                                                            180),
+                                                      }, // Make each column the same width
+                                                      children: [
+                                                        pw.TableRow(
+                                                          children: [
+                                                            pw.Text(
+                                                                (medicine['type'] ==
+                                                                        'Syrups')
+                                                                    ? 'SYR'
+                                                                    : (medicine['type'] ==
+                                                                            'Capsules')
+                                                                        ? 'CAP'
+                                                                        : (medicine['type'] ==
+                                                                                'Tablets')
+                                                                            ? 'TAB'
+                                                                            : (medicine['type'] == 'Ointments')
+                                                                                ? 'UNG'
+                                                                                : (medicine['type'] == 'Solutions')
+                                                                                    ? 'SOL'
+                                                                                    : (medicine['type'] == 'Ampoules')
+                                                                                        ? 'AMP'
+                                                                                        : (medicine['type'] == 'Flourides')
+                                                                                            ? 'FL'
+                                                                                            : (medicine['type']),
+                                                                style: pw.TextStyle(font: ttf)),
+                                                            pw.Text(
+                                                                (medicine[
+                                                                        'nameController']
+                                                                    .text),
+                                                                style: pw
+                                                                    .TextStyle(
+                                                                        font:
+                                                                            ttf)),
+                                                            pw.Text(
+                                                                '${medicine['piece']}',
+                                                                style: pw
+                                                                    .TextStyle(
+                                                                        font:
+                                                                            ttf)),
+                                                            pw.Text(
+                                                                '${medicine['dose']}',
+                                                                style: pw
+                                                                    .TextStyle(
+                                                                        font:
+                                                                            ttf)),
+                                                            pw.Text(
+                                                                'N = ${medicine['qty']}',
+                                                                style: pw
+                                                                    .TextStyle(
+                                                                        font:
+                                                                            ttf)),
+                                                            pw.Directionality(
+                                                              textDirection: pw
+                                                                  .TextDirection
+                                                                  .rtl,
+                                                              child: pw.Text(
+                                                                '${medicine['descController'].text ?? ''}',
+                                                                style: pw
+                                                                    .TextStyle(
+                                                                        font:
+                                                                            ttf),
+                                                              ),
+                                                            ), // Use an empty string if the description is null
+                                                            pw.SizedBox(
+                                                                width: 2.0)
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ))
+                                            .toList(),
+                                        pw.Spacer(),
+                                        pw.Text('Signature:'),
+                                        pw.SizedBox(height: 20.0),
+                                        pw.Divider(
+                                          height: 10,
+                                          thickness: 1.0,
+                                        ),
+                                        pw.Row(
+                                            mainAxisAlignment: pw
+                                                .MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              pw.Text('Phone: $drPhone'),
+                                              pw.Text(
+                                                  'Email: darman.clinic@gmail.com'),
+                                            ]),
+                                      ]);
+                                    },
+                                  ));
 
-                            // Save the PDF
-                            final bytes = await pdf.save();
-                            final fileName = selectedPFName!.isNotEmpty
-                                ? '$selectedPFName.pdf'
-                                : 'prescription.pdf';
-                            await Printing.sharePdf(
-                                bytes: bytes, filename: fileName);
-                            // ignore: use_build_context_synchronously
-                            Navigator.pop(context);
-                            /*   // Print the PDF
+                                  // Save the PDF
+                                  final bytes = await pdf.save();
+                                  final fileName = selectedPFName!.isNotEmpty
+                                      ? '$selectedPFName.pdf'
+                                      : 'prescription.pdf';
+                                  await Printing.sharePdf(
+                                      bytes: bytes, filename: fileName);
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.pop(context);
+                                  /*   // Print the PDF
                             await Printing.layoutPdf(
                               onLayout: (PdfPageFormat format) async => bytes,
                             ); */
-                            await conn.close();
-                          }
-                        },
-                        child: Text(translations[selectedLanguage]
-                                ?['CreatePrescBtn'] ??
-                            ''),
-                      ),
+                                  await conn.close();
+                                }
+                              },
+                              child: Text(translations[selectedLanguage]
+                                      ?['CreatePrescBtn'] ??
+                                  ''),
+                            )
+                          : ElevatedButton.icon(
+                              icon: const Icon(Icons.workspace_premium_outlined,
+                                  color: Colors.red),
+                              onPressed: () => _onShowSnack(
+                                  Colors.red,
+                                  translations[selectedLanguage]
+                                          ?['PremAppPurchase'] ??
+                                      '',
+                                  context),
+                              label: Text(translations[selectedLanguage]
+                                      ?['CreatePrescBtn'] ??
+                                  ''),
+                            ),
                     ],
                   ))
             ],
@@ -1937,53 +1981,46 @@ class _PatientDataTableState extends State<PatientDataTable> {
                   },
                 ),
               ),
-              if (Features.genPrescription)
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    side: const BorderSide(
-                      color: Colors.blue,
-                    ),
+
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30.0),
                   ),
-                  onPressed: () async {
-                    onCreatePrescription(context);
-                  },
-                  child:
-                      Text(translations[selectedLanguage]?['GenPresc'] ?? ''),
-                )
-              else
-                OutlinedButton.icon(
-                  label:
-                      Text(translations[selectedLanguage]?['GenPresc'] ?? ''),
-                  icon: const Icon(Icons.workspace_premium_outlined,
-                      color: Colors.red),
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    side: const BorderSide(
-                      color: Colors.blue,
-                    ),
+                  side: const BorderSide(
+                    color: Colors.blue,
                   ),
-                  onPressed: () => _onShowSnack(
-                      Colors.red, translations[selectedLanguage]?['PremAppPurchase'] ?? '', context),
                 ),
+                onPressed: () async {
+                  onCreatePrescription(context);
+                },
+                child: Text(translations[selectedLanguage]?['GenPresc'] ?? ''),
+              ),
+
               // Set access role to only allow 'system admin' to make such changes
               if (StaffInfo.staffRole == 'مدیر سیستم' ||
                   StaffInfo.staffRole == 'Software Engineer')
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const NewPatient()))
-                        .then((_) {
-                      _fetchData();
-                    });
-                    // This is assigned to identify appointments.round i.e., if it is true round is stored '1' otherwise increamented by 1
-                    GlobalUsage.newPatientCreated = true;
+                  onPressed: () async {
+                    if (await Features.patientLimitReached()) {
+                      // ignore: use_build_context_synchronously
+                      _onShowSnack(
+                          Colors.red,
+                          translations[selectedLanguage]?['RecordLimitMsg'] ??
+                              '',
+                          context);
+                    } else {
+                      // ignore: use_build_context_synchronously
+                      Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const NewPatient()))
+                          .then((_) {
+                        _fetchData();
+                      });
+                      // This is assigned to identify appointments.round i.e., if it is true round is stored '1' otherwise increamented by 1
+                      GlobalUsage.newPatientCreated = true;
+                    }
                   },
                   child: Text(
                       translations[selectedLanguage]?['AddNewPatient'] ?? ''),

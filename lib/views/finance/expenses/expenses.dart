@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/developer_options.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/models/expense_data_model.dart';
-import 'package:flutter_dentistry/views/main/dashboard.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart' as intl;
 import 'package:provider/provider.dart';
@@ -64,10 +64,15 @@ class _ExpenseListState extends State<ExpenseList> {
                   message: translations[selectedLanguage]?['AddExpItem'] ?? '',
                   child: IconButton(
                     onPressed: () async {
-                      await fetchExpenseTypes();
-                      await fetchStaff();
-                      // ignore: use_build_context_synchronously
-                      await onCreateExpenseItem(context);
+                      if (await Features.expenseLimitReached()) {
+                        _onShowSnack(
+                            Colors.red, translations[selectedLanguage]?['RecordLimitMsg'] ?? '');
+                      } else {
+                        await fetchExpenseTypes();
+                        await fetchStaff();
+                        // ignore: use_build_context_synchronously
+                        await onCreateExpenseItem(context);
+                      }
                     },
                     icon: const Icon(Icons.monetization_on_outlined),
                   ),
@@ -80,9 +85,7 @@ class _ExpenseListState extends State<ExpenseList> {
                 return Tooltip(
                   message: translations[selectedLanguage]?['AddExpType'] ?? '',
                   child: IconButton(
-                    onPressed: () {
-                      onCreateExpenseType(context);
-                    },
+                    onPressed: () => onCreateExpenseType(context),
                     icon: const Icon(Icons.category_outlined),
                   ),
                 );

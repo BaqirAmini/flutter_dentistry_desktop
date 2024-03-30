@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:win32/win32.dart';
 import 'dart:ffi';
@@ -402,6 +403,78 @@ class Features {
   static bool XRayManage = false;
   static bool createBackup = false;
   static bool restoreBackup = false;
+  static int allowedUsersLimit = 0;
+  static int allowedPatientsLimit = -1;
+  static int allowedStaffLimit = -1;
+  static int allowedExpenseLimit = -1;
+
+// This function gets number of user acounts and checks if limit has reached.
+  static Future<bool> userLimitReached() async {
+    try {
+      final conn = await onConnToDb();
+      var result = await conn.query('SELECT COUNT(*) FROM staff_auth');
+      int numOfUsers = result.first[0];
+      if (numOfUsers >= allowedUsersLimit && allowedUsersLimit != 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Fetching number of users failed: $e');
+      return false;
+    }
+  }
+
+  // This function gets number of patients and checks if limit has reached.
+  static Future<bool> patientLimitReached() async {
+    try {
+      final conn = await onConnToDb();
+      var result = await conn.query('SELECT COUNT(*) FROM patients');
+      int numOfPatients = result.first[0];
+      if (numOfPatients >= allowedPatientsLimit && allowedPatientsLimit != -1) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Fetching number of patients failed: $e');
+      return false;
+    }
+  }
+
+  // This function gets number of staff and checks if limit has reached.
+  static Future<bool> staffLimitReached() async {
+    try {
+      final conn = await onConnToDb();
+      var result = await conn.query('SELECT COUNT(*) FROM staff');
+      int numOfStaff = result.first[0];
+      if (numOfStaff >= allowedStaffLimit && allowedStaffLimit != 0) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Fetching number of staff failed: $e');
+      return false;
+    }
+  }
+
+  // This function gets number of expenses and checks if limit has reached.
+  static Future<bool> expenseLimitReached() async {
+    try {
+      final conn = await onConnToDb();
+      var result = await conn.query('SELECT COUNT(*) FROM expense_detail');
+      int numOfExpenseDetail = result.first[0];
+      if (numOfExpenseDetail >= allowedExpenseLimit && allowedExpenseLimit != -1) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Fetching number of expense details failed: $e');
+      return false;
+    }
+  }
 
 // This function enables / disables the premium features based on the version type.
   static void setVersion(String version) {
@@ -411,12 +484,18 @@ class Features {
       XRayManage = true;
       createBackup = true;
       restoreBackup = true;
+      allowedUsersLimit = 3;
+      allowedStaffLimit = 50;
     } else if (version == 'Standard') {
       genPrescription = false;
       upcomingAppointment = false;
       XRayManage = false;
       createBackup = false;
       restoreBackup = false;
+      allowedUsersLimit = 2;
+      allowedPatientsLimit = 200;
+      allowedStaffLimit = 10;
+      allowedExpenseLimit = 200;
     }
   }
 }

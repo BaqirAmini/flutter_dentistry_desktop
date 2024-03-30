@@ -326,6 +326,7 @@ final Map<String, Map<String, String>> translations = {
     'XSuccessMsg': 'X-Ray Backup File Created Under: ',
     'XFailMsg': 'X-Ray Backup Failed. Please try again.',
     'XrayExtMsg': 'Note: To restore X-Ray files, just exract the ZIP file here: ',
+    'RecordLimitMsg' : 'Max Records Reached. Please contact Emransoft for more info.',
     /*----/. SETTINGS -----*/
     /*---------- USER PROFILE -----------*/
     'MyProfileHeading': 'Edit My Personal Info',
@@ -759,6 +760,7 @@ final Map<String, Map<String, String>> translations = {
     'XSuccessMsg': 'فایل پشتیبانی ایجاد گردید در: ',
     'XFailMsg': 'پشتیبانی اکسری ناکام شد. لطفاً دوباره سعی کنید.',
     'XrayExtMsg': 'نوت: برای بازیابی فایلهای اکسری کافی است فایل ZIP آنرا در اینجا Extract نمایید: ',
+    'RecordLimitMsg' : 'حد نهایی ریکاردها تکمیل گردیده است. لطفاً برای معلومات بیشتر با عمران سافت تماس بگیرید.',
     /*----/. SETTINGS -----*/
     /*---------- USER PROFILE -----------*/
     'MyProfileHeading': 'تغییر معلومات شخصی من',
@@ -1198,6 +1200,7 @@ final Map<String, Map<String, String>> translations = {
     'XSuccessMsg': 'د اکسری بیک اپ فایل په کې رامینځته شوی: ',
     'XFailMsg': 'د اکسری بیک اپ ناکام شو. مهرباني وکړئ بیا هڅه وکړئ.',
     'XrayExtMsg': 'یادونه: د اکسری فایلونو بیرته ترلاسه کولو لپاره، یوازې دلته د ZIP فایلونه استخراج کړئ: ',
+    'RecordLimitMsg' : 'د ریکارډونو وروستی حد بشپړ شوی. مهرباني وکړئ د نورو معلوماتو لپاره عمران سافت سره اړیکه ونیسئ.',
     /*----/. SETTINGS -----*/
     /*---------- USER PROFILE -----------*/
     'MyProfileHeading': 'زما شخصي معلومات سم کړئ',
