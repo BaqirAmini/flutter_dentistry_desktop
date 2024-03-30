@@ -1,6 +1,7 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/developer_options.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
@@ -186,336 +187,369 @@ class _CalendarPageState extends State<CalendarPage> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return AlertDialog(
-              title: Text(translations[selectedLanguage]?['SchdAppt'] ?? ''),
-              content: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
-                width: MediaQuery.of(context).size.width * 0.35,
-                child: SingleChildScrollView(
-                  child: Form(
-                    key: _calFormKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: InputDecorator(
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]
-                                      ?['SelectDentist'] ??
-                                  '',
-                              labelStyle:
-                                  const TextStyle(color: Colors.blueAccent),
-                              enabledBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide:
-                                      BorderSide(color: Colors.blueAccent)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: Container(
-                                height: 26.0,
-                                padding: EdgeInsets.zero,
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: staffId.toString(),
-                                  style: const TextStyle(color: Colors.black),
-                                  items: staffList.map((staff) {
-                                    return DropdownMenuItem<String>(
-                                      value: staff['staff_ID'],
-                                      alignment: Alignment.centerRight,
-                                      child: Text(staff['firstname'] +
-                                          ' ' +
-                                          staff['lastname']),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      staffId = int.parse(newValue!);
-                                    });
-                                  },
+            return Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: AlertDialog(
+                title: Text('${translations[selectedLanguage]?['SchdAppt'] ?? ''}${PatientInfo.firstName} ${PatientInfo.lastName}',
+                    style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Colors.blue, fontSize: 18.0)),
+                content: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  width: MediaQuery.of(context).size.width * 0.35,
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: _calFormKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['SelectDentist'] ??
+                                    '',
+                                labelStyle:
+                                    const TextStyle(color: Colors.blueAccent),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide:
+                                        BorderSide(color: Colors.blueAccent)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: Container(
+                                  height: 26.0,
+                                  padding: EdgeInsets.zero,
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: staffId.toString(),
+                                    style: const TextStyle(color: Colors.black),
+                                    items: staffList.map((staff) {
+                                      return DropdownMenuItem<String>(
+                                        value: staff['staff_ID'],
+                                        alignment: Alignment.centerRight,
+                                        child: Text(staff['firstname'] +
+                                            ' ' +
+                                            staff['lastname']),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        staffId = int.parse(newValue!);
+                                      });
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: InputDecorator(
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]
-                                      ?['َDentalService'] ??
-                                  '',
-                              enabledBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: SizedBox(
-                                height: 26.0,
-                                child: DropdownButton<String>(
-                                  isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: serviceId.toString(),
-                                  items: services.map((service) {
-                                    return DropdownMenuItem<String>(
-                                      value: service['ser_ID'],
-                                      alignment: Alignment.centerRight,
-                                      child: Text(service['ser_name']),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      // Assign the selected service id into the static one.
-                                      serviceId = int.parse(newValue!);
-                                      print('Selected service: $serviceId');
-                                    });
-                                  },
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['َDentalService'] ??
+                                    '',
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: SizedBox(
+                                  height: 26.0,
+                                  child: DropdownButton<String>(
+                                    isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: serviceId.toString(),
+                                    items: services.map((service) {
+                                      return DropdownMenuItem<String>(
+                                        value: service['ser_ID'],
+                                        alignment: Alignment.centerRight,
+                                        child: Text(service['ser_name']),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        // Assign the selected service id into the static one.
+                                        serviceId = int.parse(newValue!);
+                                        print('Selected service: $serviceId');
+                                      });
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: TextFormField(
-                            controller: apptdatetimeController,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return translations[selectedLanguage]
-                                        ?['ApptDTRequired'] ??
-                                    '';
-                              }
-                              return null;
-                            },
-                            readOnly: true,
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]
-                                      ?['ApptDateTime'] ??
-                                  '',
-                              suffixIcon: const Icon(Icons.access_time),
-                              enabledBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(
-                                      color: Colors.red, width: 1.5)),
-                            ),
-                            onTap: () async {
-                              final DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: selectedDate,
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2100),
-                              );
-                              if (pickedDate != null) {
-                                // ignore: use_build_context_synchronously
-                                final TimeOfDay? pickedTime =
-                                    // ignore: use_build_context_synchronously
-                                    await showTimePicker(
-                                  context: context,
-                                  initialTime: TimeOfDay.now(),
-                                );
-                                if (pickedTime != null) {
-                                  selectedDateTime = DateTime(
-                                    pickedDate.year,
-                                    pickedDate.month,
-                                    pickedDate.day,
-                                    pickedTime.hour,
-                                    pickedTime.minute,
-                                  );
-                                  apptdatetimeController.text =
-                                      selectedDateTime.toString();
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: TextFormField(
-                            controller: commentController,
-                            validator: (value) {
-                              if (value!.isNotEmpty) {
-                                if (value.length < 5 || value.length > 40) {
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: TextFormField(
+                              controller: apptdatetimeController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
                                   return translations[selectedLanguage]
-                                          ?['OtherDDLLength'] ??
+                                          ?['ApptDTRequired'] ??
                                       '';
                                 }
                                 return null;
-                              }
-                              return null;
-                            },
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(GlobalUsage.allowedEPChar))
-                            ],
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: translations[selectedLanguage]
-                                      ?['RetDetails'] ??
-                                  '',
-                              suffixIcon:
-                                  const Icon(Icons.description_outlined),
-                              enabledBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.grey)),
-                              focusedBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.blue)),
-                              errorBorder: const OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0)),
-                                  borderSide: BorderSide(color: Colors.red)),
-                              focusedErrorBorder: const OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide:
-                                    BorderSide(color: Colors.red, width: 1.5),
+                              },
+                              readOnly: true,
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['ApptDateTime'] ??
+                                    '',
+                                suffixIcon: const Icon(Icons.access_time),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(
+                                        color: Colors.red, width: 1.5)),
                               ),
+                              onTap: () async {
+                                final DateTime? pickedDate =
+                                    await showDatePicker(
+                                  context: context,
+                                  initialDate: selectedDate,
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime(2100),
+                                );
+                                if (pickedDate != null) {
+                                  // ignore: use_build_context_synchronously
+                                  final TimeOfDay? pickedTime =
+                                      // ignore: use_build_context_synchronously
+                                      await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.now(),
+                                  );
+                                  if (pickedTime != null) {
+                                    selectedDateTime = DateTime(
+                                      pickedDate.year,
+                                      pickedDate.month,
+                                      pickedDate.day,
+                                      pickedTime.hour,
+                                      pickedTime.minute,
+                                    );
+                                    apptdatetimeController.text =
+                                        selectedDateTime.toString();
+                                  }
+                                }
+                              },
                             ),
                           ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 10.0, vertical: 10.0),
-                          child: InputDecorator(
-                            decoration: const InputDecoration(
-                              suffixIcon:
-                                  Icon(Icons.notifications_active_outlined),
-                              border: OutlineInputBorder(),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.blue),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50.0)),
-                                borderSide: BorderSide(color: Colors.red),
-                              ),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: SizedBox(
-                                height: 26.0,
-                                child: DropdownButton(
-                                  // isExpanded: true,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  value: notifFrequency,
-                                  items: <String>[
-                                    '30 Minutes',
-                                    '1 Hour',
-                                    '2 Hours',
-                                    '6 Hours',
-                                    '12 Hours',
-                                    '1 Day',
-                                  ].map<DropdownMenuItem<String>>(
-                                      (String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      notifFrequency = newValue!;
-                                    });
-                                  },
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: TextFormField(
+                              controller: commentController,
+                              validator: (value) {
+                                if (value!.isNotEmpty) {
+                                  if (value.length < 5 || value.length > 40) {
+                                    return translations[selectedLanguage]
+                                            ?['OtherDDLLength'] ??
+                                        '';
+                                  }
+                                  return null;
+                                }
+                                return null;
+                              },
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(GlobalUsage.allowedEPChar))
+                              ],
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: translations[selectedLanguage]
+                                        ?['RetDetails'] ??
+                                    '',
+                                suffixIcon:
+                                    const Icon(Icons.description_outlined),
+                                enabledBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.grey)),
+                                focusedBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.blue)),
+                                errorBorder: const OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50.0)),
+                                    borderSide: BorderSide(color: Colors.red)),
+                                focusedErrorBorder: const OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide:
+                                      BorderSide(color: Colors.red, width: 1.5),
                                 ),
                               ),
                             ),
                           ),
-                        )
-                      ],
+                          Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 10.0, vertical: 10.0),
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                suffixIcon:
+                                    Icon(Icons.notifications_active_outlined),
+                                border: OutlineInputBorder(),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.blue),
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(50.0)),
+                                  borderSide: BorderSide(color: Colors.red),
+                                ),
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: SizedBox(
+                                  height: 26.0,
+                                  child: DropdownButton(
+                                    // isExpanded: true,
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    value: notifFrequency,
+                                    items: <String>[
+                                      '30 Minutes',
+                                      '1 Hour',
+                                      '2 Hours',
+                                      '6 Hours',
+                                      '12 Hours',
+                                      '1 Day',
+                                    ].map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        notifFrequency = newValue!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
+                actions: <Widget>[
+                  Row(
+                    mainAxisAlignment: isEnglish
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text(
+                            translations[selectedLanguage]?['CancelBtn'] ?? ''),
+                      ),
+                      (Features.upcomingAppointment)
+                          ? ElevatedButton(
+                              child: Text(translations[selectedLanguage]
+                                      ?['AddBtn'] ??
+                                  ''),
+                              onPressed: () async {
+                                if (_calFormKey.currentState!.validate()) {
+                                  try {
+                                    final conn = await onConnToDb();
+                                    final results = await conn.query(
+                                        'INSERT INTO appointments (pat_ID, service_ID, meet_date, staff_ID, status, notification, details) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                                        [
+                                          patientId,
+                                          serviceId,
+                                          apptdatetimeController.text
+                                              .toString(),
+                                          staffId,
+                                          'Pending',
+                                          notifFrequency,
+                                          commentController.text.isEmpty
+                                              ? null
+                                              : commentController.text
+                                        ]);
+                                    if (results.affectedRows! > 0) {
+                                      // ignore: use_build_context_synchronously
+                                      Navigator.of(context).pop();
+                                      // ignore: use_build_context_synchronously
+                                      _onShowSnack(
+                                          Colors.green,
+                                          translations[selectedLanguage]
+                                                  ?['SchedSuccessMsg'] ??
+                                              '',
+                                          context);
+                                      refresh();
+                                    }
+                                    await conn.close();
+                                  } catch (e) {
+                                    print('Appointment scheduling failed: $e');
+                                  }
+                                }
+                              },
+                            )
+                          : ElevatedButton.icon(
+                              icon: const Icon(Icons.workspace_premium_outlined,
+                                  color: Colors.red),
+                              onPressed: () => _onShowSnack(
+                                  Colors.red,
+                                  translations[selectedLanguage]
+                                          ?['PremAppPurchase'] ??
+                                      '',
+                                  context),
+                              label: Text(translations[selectedLanguage]
+                                      ?['AddBtn'] ??
+                                  ''),
+                            ),
+                    ],
+                  ),
+                ],
               ),
-              actions: <Widget>[
-                ElevatedButton(
-                  child:
-                      Text(translations[selectedLanguage]?['SaveUABtn'] ?? ''),
-                  onPressed: () async {
-                    if (_calFormKey.currentState!.validate()) {
-                      try {
-                        final conn = await onConnToDb();
-                        final results = await conn.query(
-                            'INSERT INTO appointments (pat_ID, service_ID, meet_date, staff_ID, status, notification, details) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                            [
-                              patientId,
-                              serviceId,
-                              apptdatetimeController.text.toString(),
-                              staffId,
-                              'Pending',
-                              notifFrequency,
-                              commentController.text.isEmpty
-                                  ? null
-                                  : commentController.text
-                            ]);
-                        if (results.affectedRows! > 0) {
-                          // ignore: use_build_context_synchronously
-                          Navigator.of(context).pop();
-                          // ignore: use_build_context_synchronously
-                          _onShowSnack(
-                              Colors.green,
-                              translations[selectedLanguage]
-                                      ?['SchedSuccessMsg'] ??
-                                  '',
-                              context);
-                          refresh();
-                        }
-                        await conn.close();
-                      } catch (e) {
-                        print('Appointment scheduling failed: $e');
-                      }
-                    }
-                  },
-                ),
-              ],
             );
           },
         );
