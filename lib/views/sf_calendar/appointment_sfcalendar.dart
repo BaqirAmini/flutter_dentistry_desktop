@@ -2,6 +2,7 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dentistry/config/developer_options.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter_dentistry/config/translations.dart';
@@ -276,8 +277,12 @@ class _CalendarPageState extends State<CalendarPage> {
                 textDirection:
                     isEnglish ? TextDirection.ltr : TextDirection.rtl,
                 child: AlertDialog(
-                  title:
-                      Text(translations[selectedLanguage]?['NewApptSched'] ?? '', style: Theme.of(context).textTheme.headlineSmall!.copyWith(color: Colors.blue)),
+                  title: Text(
+                      translations[selectedLanguage]?['NewApptSched'] ?? '',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineSmall!
+                          .copyWith(color: Colors.blue)),
                   content: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.6,
                     width: MediaQuery.of(context).size.width * 0.35,
@@ -327,7 +332,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                           var results = await conn.query(
                                               'SELECT pat_ID, firstname, lastname, phone FROM patients WHERE firstname LIKE ?',
                                               ['%$search%']);
-                                          
+
                                           // Convert the results into a list of Patient objects
                                           var suggestions = results
                                               .map((row) => PatientDataModel(
@@ -731,44 +736,63 @@ class _CalendarPageState extends State<CalendarPage> {
                     ),
                   ),
                   actions: <Widget>[
-                    ElevatedButton(
-                      child: const Text('Save'),
-                      onPressed: () async {
-                        if (_apptCalFormKey.currentState!.validate()) {
-                          try {
-                            final conn = await onConnToDb();
-                            final results = await conn.query(
-                                'INSERT INTO appointments (pat_ID, service_ID, meet_date, staff_ID, status, notification, details) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                                [
-                                  selectedPatientID,
-                                  serviceId,
-                                  apptdatetimeController.text.toString(),
-                                  staffId,
-                                  'Pending',
-                                  notifFrequency,
-                                  commentController.text.isEmpty
-                                      ? null
-                                      : commentController.text
-                                ]);
-                            if (results.affectedRows! > 0) {
-                              // ignore: use_build_context_synchronously
-                              Navigator.of(context).pop();
-                              // ignore: use_build_context_synchronously
-                              _onShowSnack(
-                                  Colors.green,
-                                  translations[selectedLanguage]
-                                          ?['SchedSuccessMsg'] ??
-                                      '',
-                                  context);
-                              refresh();
-                            }
-                            await conn.close();
-                          } catch (e) {
-                            print('Appointment scheduling failed: $e');
-                          }
-                        }
-                      },
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(
+                          translations[selectedLanguage]?['CancelBtn'] ?? ''),
                     ),
+                    (Features.upcomingAppointment)
+                        ? ElevatedButton(
+                            child: Text(translations[selectedLanguage]
+                                    ?['AddBtn'] ??
+                                ''),
+                            onPressed: () async {
+                              if (_apptCalFormKey.currentState!.validate()) {
+                                try {
+                                  final conn = await onConnToDb();
+                                  final results = await conn.query(
+                                      'INSERT INTO appointments (pat_ID, service_ID, meet_date, staff_ID, status, notification, details) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                                      [
+                                        selectedPatientID,
+                                        serviceId,
+                                        apptdatetimeController.text.toString(),
+                                        staffId,
+                                        'Pending',
+                                        notifFrequency,
+                                        commentController.text.isEmpty
+                                            ? null
+                                            : commentController.text
+                                      ]);
+                                  if (results.affectedRows! > 0) {
+                                    Navigator.of(context).pop();
+                                    _onShowSnack(
+                                        Colors.green,
+                                        translations[selectedLanguage]
+                                                ?['SchedSuccessMsg'] ??
+                                            '',
+                                        context);
+                                    refresh();
+                                  }
+                                  await conn.close();
+                                } catch (e) {
+                                  print('Appointment scheduling failed: $e');
+                                }
+                              }
+                            },
+                          )
+                        : ElevatedButton.icon(
+                            icon: const Icon(Icons.workspace_premium_outlined,
+                                color: Colors.red),
+                            onPressed: () => _onShowSnack(
+                                Colors.red,
+                                translations[selectedLanguage]
+                                        ?['PremAppPurchase'] ??
+                                    '',
+                                context),
+                            label: Text(translations[selectedLanguage]
+                                    ?['AddBtn'] ??
+                                ''),
+                          ),
                   ],
                 ));
           },
