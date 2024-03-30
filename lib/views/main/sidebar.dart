@@ -267,45 +267,19 @@ class _SidebarState extends State<Sidebar> {
               );
             },
           ),
-          if (Features.upcomingAppointment)
-            ListTile(
-              leading: const Icon(Icons.more_time_rounded),
-              title: Text(
-                  (translations[selectedLanguage]?['UpcomingAppt'] ?? '')
-                      .toString()),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CalendarApp(),
-                  ),
-                );
-              },
-            )
-          else
-            ListTile(
-              leading: const Icon(Icons.more_time_rounded),
-              trailing: const Icon(Icons.workspace_premium_outlined,
-                  color: Colors.red),
-              title: Text(
-                  (translations[selectedLanguage]?['UpcomingAppt'] ?? '')
-                      .toString()),
-              onTap: () => Flushbar(
-                backgroundColor: Colors.red,
-                flushbarStyle: FlushbarStyle.GROUNDED,
-                flushbarPosition: FlushbarPosition.BOTTOM,
-                messageText: Directionality(
-                  textDirection:
-                      isEnglish ? TextDirection.ltr : TextDirection.rtl,
-                  child: Text(
-                    translations[selectedLanguage]?['PremAppPurchase'] ?? '',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white),
-                  ),
+          ListTile(
+            leading: const Icon(Icons.more_time_rounded),
+            title: Text((translations[selectedLanguage]?['UpcomingAppt'] ?? '')
+                .toString()),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CalendarApp(),
                 ),
-                duration: const Duration(seconds: 3),
-              ).show(context),
-            ),
+              );
+            },
+          ),
           ListTile(
             leading: const Icon(Icons.payments_outlined),
             title: Text(
