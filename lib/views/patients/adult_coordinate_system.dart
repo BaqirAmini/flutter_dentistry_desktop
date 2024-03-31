@@ -80,7 +80,7 @@ class _AdultQuadrantGrid extends State<AdultQuadrantGrid> {
             // ignore: unnecessary_string_interpolations
             ? '${translations[selectedLanguage]?['SelectTeeth'] ?? ''}'
             // ignore: unnecessary_string_interpolations
-            : '${translations[selectedLanguage]?['AduleTeethSelection'] ?? ''}',
+            : '${translations[selectedLanguage]?['AdultTeethSelection'] ?? ''}',
         contentPadding: const EdgeInsets.all(20),
         floatingLabelAlignment: FloatingLabelAlignment.center,
         labelStyle: TextStyle(
