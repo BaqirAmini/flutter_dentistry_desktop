@@ -86,7 +86,7 @@ class GlobalUsage {
       int patId, String firstName, String? lastName, String notif) {
     final winNotifyPlugin = WindowsNotification(
         applicationId:
-            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Dental Clinic System\flutter_dentistry.exe");
+            r"{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\Crown\crown.exe");
     NotificationMessage message = NotificationMessage.fromPluginTemplate(
         "appointment ($patId)",
         "Upcoming Appointment in $notif",
