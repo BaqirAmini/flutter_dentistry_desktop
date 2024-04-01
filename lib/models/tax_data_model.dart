@@ -1196,7 +1196,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                       height: 200,
                       child: Center(
                           child: Text(translations[selectedLanguage]
-                                  ?['NoTaxesRecords'] ??
+                                  ?['NoTaxRecords'] ??
                               '')),
                     )
                   else
