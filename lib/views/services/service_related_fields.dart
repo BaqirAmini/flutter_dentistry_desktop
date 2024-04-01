@@ -133,7 +133,7 @@ class _ServiceFormState extends State<ServiceForm> {
               (ServiceInfo.selectedServiceID == 7 &&
                   ServiceInfo.defaultMaxillo == 'Tooth Reimplantation') ||
               (ServiceInfo.selectedServiceID == 9 &&
-                  ServiceInfo.dentureGroupValue == 'Partial'))
+                  ServiceInfo.dentureGroupValue == 'Partial Denture'))
           ? EdgeInsets.zero
           : EdgeInsets.symmetric(
               vertical: MediaQuery.of(context).size.width * 0.04),
@@ -320,11 +320,12 @@ class _ServiceFormState extends State<ServiceForm> {
                                         horizontalTitleGap: 0.5),
                                   ),
                                   child: RadioListTile(
+                                    contentPadding: EdgeInsets.zero,
                                       title: const Text(
                                         'Full',
                                         style: TextStyle(fontSize: 14),
                                       ),
-                                      value: 'Full',
+                                      value: 'Full Denture',
                                       groupValue: ServiceInfo.dentureGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
@@ -341,11 +342,12 @@ class _ServiceFormState extends State<ServiceForm> {
                                         horizontalTitleGap: 0.5),
                                   ),
                                   child: RadioListTile(
+                                    contentPadding: EdgeInsets.zero,
                                       title: const Text(
                                         'Partial',
                                         style: TextStyle(fontSize: 14),
                                       ),
-                                      value: 'Partial',
+                                      value: 'Partial Denture',
                                       groupValue: ServiceInfo.dentureGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
@@ -362,11 +364,12 @@ class _ServiceFormState extends State<ServiceForm> {
                                         horizontalTitleGap: 0.5),
                                   ),
                                   child: RadioListTile(
+                                    contentPadding: EdgeInsets.zero,
                                       title: const Text(
                                         'C.C Plate',
                                         style: TextStyle(fontSize: 14),
                                       ),
-                                      value: 'C.C Plate',
+                                      value: 'C.C Plate Denture',
                                       groupValue: ServiceInfo.dentureGroupValue,
                                       onChanged: (String? value) {
                                         setState(() {
@@ -601,8 +604,8 @@ class _ServiceFormState extends State<ServiceForm> {
                     Visibility(
                       // ignore: unrelated_type_equality_checks
                       visible: (ServiceInfo.selectedServiceID == 9 &&
-                              (ServiceInfo.dentureGroupValue == 'Full' ||
-                                  ServiceInfo.dentureGroupValue == 'C.C Plate'))
+                              (ServiceInfo.dentureGroupValue == 'Full Denture' ||
+                                  ServiceInfo.dentureGroupValue == 'C.C Plate Denture'))
                           ? true
                           : false,
                       child: Container(
@@ -1290,7 +1293,7 @@ class _ServiceFormState extends State<ServiceForm> {
                           ServiceInfo.defaultMaxillo ==
                               'Tooth Reimplantation') ||
                       (ServiceInfo.selectedServiceID == 9 &&
-                          ServiceInfo.dentureGroupValue == 'Partial'))
+                          ServiceInfo.dentureGroupValue == 'Partial Denture'))
                   ? true
                   : false,
               child: Container(
@@ -1331,7 +1334,7 @@ class ServiceInfo {
   static String fillingGroupValue = 'R.C.T';
   static String tmgGroupValue = 'راست';
   static String spGroupValue = 'Scaling';
-  static String dentureGroupValue = 'Full';
+  static String dentureGroupValue = 'Full Denture';
   // Text Fields
   static String? meetingDate;
   static String? serviceNote;

@@ -1897,7 +1897,7 @@ class _NewPatientState extends State<NewPatient> {
                               }
                             }
                           } else if (ServiceInfo.selectedServiceID == 9) {
-                            if (ServiceInfo.dentureGroupValue == 'Partial') {
+                            if (ServiceInfo.dentureGroupValue == 'Partial Denture') {
                               if (ageDropDown > 13) {
                                 if (Tooth.adultToothSelected) {
                                   setState(() {

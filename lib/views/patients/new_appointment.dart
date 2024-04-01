@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
+import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/finance/fee/fee_related_fields.dart';
 import 'package:flutter_dentistry/views/patients/patient_info.dart';
 import 'package:flutter_dentistry/views/patients/tooth_selection_info.dart';
 import 'package:flutter_dentistry/views/services/service_related_fields.dart';
-import 'package:flutter_dentistry/views/staff/staff_info.dart';
+import 'package:provider/provider.dart';
 
 // Declare this to assign round.
 int _round = 0;
+// Set global variables which are needed later.
+var selectedLanguage;
+var isEnglish;
 
 class NewAppointment extends StatefulWidget {
   const NewAppointment({Key? key}) : super(key: key);
@@ -28,7 +33,7 @@ class _NewAppointmentState extends State<NewAppointment> {
         Step(
           state: _currentStep <= 0 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 0,
-          title: const Text('خدمات مورد نیاز'),
+          title: Text(translations[selectedLanguage]?['َDentalService'] ?? ''),
           content: Center(
             child: ServiceForm(formKey: _serviceFormKey),
           ),
@@ -36,7 +41,7 @@ class _NewAppointmentState extends State<NewAppointment> {
         Step(
           state: _currentStep <= 1 ? StepState.editing : StepState.complete,
           isActive: _currentStep >= 1,
-          title: const Text('فیس'),
+          title: Text(translations[selectedLanguage]?['َServiceFee'] ?? ''),
           content: SizedBox(
             child: Center(
               child: FeeForm(formKey: _feeFormKey),
@@ -62,12 +67,16 @@ class _NewAppointmentState extends State<NewAppointment> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
+    // Fetch translations keys based on the selected language.
+    var languageProvider = Provider.of<LanguageProvider>(context);
+    selectedLanguage = languageProvider.selectedLanguage;
+    isEnglish = selectedLanguage == 'English';
+    return Directionality(
+      textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+      child: Scaffold(
         appBar: AppBar(
           leading: Tooltip(
-            message: 'رفتن به صفحه قبلی',
+            message: translations[selectedLanguage]?['GoBack'] ?? '',
             child: IconButton(
               icon: const BackButtonIcon(),
               onPressed: () {
@@ -77,7 +86,8 @@ class _NewAppointmentState extends State<NewAppointment> {
           ),
           title: Row(
             children: [
-              const Text('New Appointment'),
+              Text(
+                  '${translations[selectedLanguage]?['NewAppt'] ?? ''}${PatientInfo.firstName} ${PatientInfo.lastName}'),
               SizedBox(width: MediaQuery.of(context).size.width * 0.3),
               FutureBuilder<int>(
                 future: fetchRound(),
@@ -92,7 +102,8 @@ class _NewAppointmentState extends State<NewAppointment> {
                     return Text('Error: ${snapshot.error}');
                   } else {
                     _round = snapshot.data! + 1;
-                    return Text('Round $_round');
+                    return Text(
+                        '${translations[selectedLanguage]?['Round'] ?? ''} $_round');
                   }
                 },
               ),
@@ -201,7 +212,7 @@ class _NewAppointmentState extends State<NewAppointment> {
                       }
                     }
                   } else if (ServiceInfo.selectedServiceID == 9) {
-                    if (ServiceInfo.dentureGroupValue == 'Partial') {
+                    if (ServiceInfo.dentureGroupValue == 'Partial Denture') {
                       if (PatientInfo.age! > 13) {
                         if (Tooth.adultToothSelected) {
                           setState(() {
@@ -306,7 +317,6 @@ class _NewAppointmentState extends State<NewAppointment> {
           ),
         ),
       ),
-      theme: ThemeData(useMaterial3: false),
     );
   }
 }
@@ -500,7 +510,7 @@ class AppointmentFunction {
               [appointmentID, patientId, serviceId, 2, desc]);
         }
       } else if (ServiceInfo.selectedServiceID == 9) {
-        if (ServiceInfo.dentureGroupValue == 'Partial') {
+        if (ServiceInfo.dentureGroupValue == 'Partial Denture') {
           await conn.query(
               'INSERT INTO patient_services ( apt_ID, pat_ID, ser_ID, req_ID, value) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
               [
