@@ -1076,13 +1076,9 @@ onBackUpData() {
                       return;
                     }
 
-                    // User date & time for naming backup file
-                    var now = DateTime.now();
-                    var formatter = INTL.DateFormat('yyyy-MM-dd HH-mm-ss a');
-                    var formattedDate = formatter.format(now);
                     // Output directory where zip file created.
                     String zipPath =
-                        '$outputDirectory\\x-rays - $formattedDate.zip';
+                        '$outputDirectory\\CROWN.zip';
 
                     // Create the Archive object
                     Archive archive = Archive();
