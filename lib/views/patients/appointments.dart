@@ -1167,8 +1167,12 @@ class _AppointmentContentState extends State<_AppointmentContent> {
                                                                                 : req.reqName == 'Materials'
                                                                                     ? '${translations[selectedLanguage]?['Materials'] ?? 'Materials Used'}'
                                                                                     : req.reqName == 'Bleaching Steps'
-                                                                                        ? '${translations[selectedLanguage]?['Gum Selection'] ?? 'Gum Selected'}'
-                                                                                        : '${translations[selectedLanguage]?['AffectArea'] ?? 'Affected Area'}',
+                                                                                        ? '${translations[selectedLanguage]?['BleachingSteps'] ?? 'Bleaching Steps'}'
+                                                                                        : req.reqName == 'Gum Selection' && e['serviceID'] == 5
+                                                                                            ? '${translations[selectedLanguage]?['OrthoFor'] ?? 'Ortho For'}'
+                                                                                            : req.reqName == 'Gum Selection'
+                                                                                                ? '${translations[selectedLanguage]?['SelectGum'] ?? 'Gum Selected'}'
+                                                                                                : '${translations[selectedLanguage]?['AffectArea'] ?? 'Affected Area'}',
                                                                     style: const TextStyle(
                                                                         fontSize:
                                                                             12.0,

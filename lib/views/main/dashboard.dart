@@ -197,9 +197,6 @@ class _DashboardState extends State<Dashboard> {
           'SELECT * FROM appointments a INNER JOIN patients p ON a.pat_ID = p.pat_ID WHERE status = ? AND meet_date > NOW()',
           ['Pending']);
 
-      // Get the current time
-      final currentTime = DateTime.now();
-
       // Loop through the results
       for (final row in results) {
         // Get the notification frequency for this appointment
@@ -238,9 +235,10 @@ class _DashboardState extends State<Dashboard> {
         final patientLNameCopy = patientLName;
 
         // Schedule the notification
+        // Get the current time
+        final currentTime = DateTime.now();
         if (timeUntilNotification != null &&
-            (currentTime.isAfter(timeUntilNotification) ||
-                currentTime.isBefore(appointmentTime))) {
+            currentTime.isAfter(timeUntilNotification)) {
           // Create an instance of this class to access its method to alert for upcoming notification
           GlobalUsage gu = GlobalUsage();
           gu.alertUpcomingAppointment(patientIdCopy, patientFNameCopy,

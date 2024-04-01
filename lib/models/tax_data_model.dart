@@ -438,26 +438,29 @@ class TaxDataTableState extends State<TaxDataTable> {
                                       RegExp(regExpDecimal)),
                                   LengthLimitingTextInputFormatter(4)
                                 ],
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'فیصدی مالیات',
-                                  suffixIcon: Icon(Icons.percent_outlined),
-                                  enabledBorder: OutlineInputBorder(
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: translations[selectedLanguage]
+                                          ?['TaxRate'] ??
+                                      '',
+                                  suffixIcon:
+                                      const Icon(Icons.percent_outlined),
+                                  enabledBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
+                                  focusedBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.blue)),
-                                  errorBorder: OutlineInputBorder(
+                                  errorBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: OutlineInputBorder(
+                                  focusedErrorBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide: BorderSide(
@@ -476,7 +479,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                                 validator: (value) {
                                   if (value!.isEmpty) {
                                     return translations[selectedLanguage]
-                                            ?['TATRequired'] ??
+                                            ?['TAIncomeRequired'] ??
                                         '';
                                   }
                                 },
@@ -488,7 +491,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                                 decoration: InputDecoration(
                                   border: const OutlineInputBorder(),
                                   labelText:
-                                      '${translations[selectedLanguage]?['TATRequired'] ?? ''} ${selectedYear.toString()}',
+                                      '${translations[selectedLanguage]?['TotalAnnIncome'] ?? ''} ${selectedYear.toString()}',
                                   suffixIcon: const Icon(
                                       Icons.money_off_csred_outlined),
                                   enabledBorder: const OutlineInputBorder(

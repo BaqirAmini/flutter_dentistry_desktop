@@ -404,7 +404,7 @@ class AppointmentFunction {
               appointmentID,
               patientId,
               serviceId,
-              4,
+              7,
               ServiceInfo.defaultOrthoType
             ]);
       } else if (ServiceInfo.selectedServiceID == 7) {
