@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dentistry/config/developer_options.dart';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
+import 'package:flutter_dentistry/config/private/private.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_dentistry/views/main/dashboard.dart';
 import 'package:flutter_dentistry/views/patients/new_patient.dart';
@@ -149,7 +150,7 @@ onCreatePrescription(BuildContext context) {
                                                       pw.TextDirection.rtl,
                                                   child: pw.Column(children: [
                                                     pw.Text(
-                                                      'کلینیک تخصصی دندان درمان',
+                                                      clinicName,
                                                       style: pw.TextStyle(
                                                         fontSize: 20,
                                                         font: ttf,
@@ -162,7 +163,7 @@ onCreatePrescription(BuildContext context) {
                                                       ),
                                                     ),
                                                     pw.Text(
-                                                      'آدرس: دشت برچی، قلعه ناظر، مقابل پسته خانه',
+                                                      clinicAddress,
                                                       style: pw.TextStyle(
                                                         fontSize: 12,
                                                         font: ttf,
@@ -354,7 +355,7 @@ onCreatePrescription(BuildContext context) {
                                             children: [
                                               pw.Text('Phone: $drPhone'),
                                               pw.Text(
-                                                  'Email: darman.clinic@gmail.com'),
+                                                  'Email: ${clinicEmail.isNotEmpty ? clinicEmail : 'No Email'}'),
                                             ]),
                                       ]);
                                     },

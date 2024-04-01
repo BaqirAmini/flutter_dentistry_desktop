@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter_dentistry/config/global_usage.dart';
 import 'package:flutter_dentistry/config/language_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dentistry/config/private/private.dart';
 import 'package:flutter_dentistry/config/translations.dart';
 import 'package:flutter_dentistry/models/db_conn.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -291,7 +292,7 @@ class _DashboardState extends State<Dashboard> {
               child: Scaffold(
                 appBar: AppBar(
                   title: const Text(
-                    'کلینیک دندان درمان',
+                    clinicName,
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold),
                   ),
