@@ -95,7 +95,7 @@ class _DashboardState extends State<Dashboard> {
   bool _isPatientDataInitialized = false;
   // Declare to assign total income to use it in the doughnut chart
   double netIncome = 0;
-
+  Timer? _timer;
   @override
   void initState() {
     super.initState();
@@ -108,11 +108,18 @@ class _DashboardState extends State<Dashboard> {
     _getPieData();
     _getLastSixMonthPatient();
     // Alert notifications
-    _alertNotification();
+    _timer = Timer.periodic(
+        const Duration(minutes: 5), (Timer t) => _alertNotification());
 
     _getRemainValidDays().then((_) {
       setState(() {});
     });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   PageController page = PageController();
@@ -193,8 +200,9 @@ class _DashboardState extends State<Dashboard> {
   Future<void> _alertNotification() async {
     try {
       final conn = await onConnToDb();
+      // Here Afghanistan Timezone is addressed
       final results = await conn.query(
-          'SELECT * FROM appointments a INNER JOIN patients p ON a.pat_ID = p.pat_ID WHERE status = ? AND meet_date > NOW()',
+          'SELECT *, CONVERT_TZ(meet_date, @@session.time_zone, "+04:30") as local_meet_date FROM appointments a INNER JOIN patients p ON a.pat_ID = p.pat_ID WHERE status = ? AND meet_date > NOW()',
           ['Pending']);
 
       // Loop through the results
@@ -206,27 +214,24 @@ class _DashboardState extends State<Dashboard> {
         final patientLName = row['lastname'] ?? '';
 
         // Calculate the time until the notification should be shown
-        final appointmentTime = row['meet_date'];
-        DateTime? timeUntilNotification;
+        final appointmentTime = row['local_meet_date'];
+        // Convert to not contain 'Z' as UTC timezone contains by default
+        final formattedApptTime =
+            intl.DateFormat('yyyy-MM-dd HH:mm:ss').format(appointmentTime);
+        DateTime? alertTime;
 
         if (notificationFrequency == '30 Minutes') {
-          timeUntilNotification =
-              appointmentTime.subtract(const Duration(minutes: 30));
+          alertTime = appointmentTime.subtract(const Duration(minutes: 30));
         } else if (notificationFrequency == '1 Hour') {
-          timeUntilNotification =
-              appointmentTime.subtract(const Duration(hours: 1));
+          alertTime = appointmentTime.subtract(const Duration(hours: 1));
         } else if (notificationFrequency == '2 Hours') {
-          timeUntilNotification =
-              appointmentTime.subtract(const Duration(hours: 2));
+          alertTime = appointmentTime.subtract(const Duration(hours: 2));
         } else if (notificationFrequency == '6 Hours') {
-          timeUntilNotification =
-              appointmentTime.subtract(const Duration(hours: 6));
+          alertTime = appointmentTime.subtract(const Duration(hours: 6));
         } else if (notificationFrequency == '12 Hours') {
-          timeUntilNotification =
-              appointmentTime.subtract(const Duration(hours: 2));
+          alertTime = appointmentTime.subtract(const Duration(hours: 12));
         } else if (notificationFrequency == '1 Day') {
-          timeUntilNotification =
-              appointmentTime.subtract(const Duration(days: 1));
+          alertTime = appointmentTime.subtract(const Duration(days: 1));
         }
 
         // Make a copy of the variables
@@ -237,12 +242,27 @@ class _DashboardState extends State<Dashboard> {
         // Schedule the notification
         // Get the current time
         final currentTime = DateTime.now();
-        if (timeUntilNotification != null &&
-            currentTime.isAfter(timeUntilNotification)) {
+        // Convert current time to yyyy-mm-dd hh:mm (without seconds or microseconds)
+        final currentTimeRounded = DateTime(currentTime.year, currentTime.month,
+            currentTime.day, currentTime.hour, currentTime.minute);
+
+        // Convert to not contain 'Z' as UTC timezone contains by default
+        final formattedAlertTime =
+            intl.DateFormat('yyyy-MM-dd HH:mm:ss').format(alertTime!);
+
+        if (currentTimeRounded.isAfter(DateTime.parse(formattedAlertTime)) &&
+            currentTimeRounded
+                    .difference(DateTime.parse(formattedAlertTime))
+                    .inMinutes <=
+                15) {
           // Create an instance of this class to access its method to alert for upcoming notification
           GlobalUsage gu = GlobalUsage();
           gu.alertUpcomingAppointment(patientIdCopy, patientFNameCopy,
               patientLNameCopy, notificationFrequency);
+          print('Current Time: $currentTimeRounded');
+          print('Frequency: $notificationFrequency');
+          print('Notification time: $formattedAlertTime');
+          print('appointment time: $formattedApptTime');
         }
       }
       await conn.close();
