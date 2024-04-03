@@ -428,7 +428,7 @@ final Map<String, Map<String, String>> translations = {
     'PTALength': 'Paid Taxes Amount cannot be more than total annual taxes.',
     'TPDateRequired': 'Taxes paid date required.',
     'TYDuplicated':
-        'Sorry, taxes of the year is already existing in the system.',
+        'Taxes of the year was already added.',
     'TYSuccessMsg': 'Taxes added.',
     'TYErrMsg': 'Sorry, adding taxes failed.',
     'DelTaxHeading': 'Delete Tax',
@@ -863,7 +863,7 @@ final Map<String, Map<String, String>> translations = {
     'PaidTaxRequired': 'مقدار مالیات تحویلی الزامی میباشد.',
     'PTALength': 'مبلغ تحویلی مالیات نمی تواند از کل مالیات بیشتر باشد.',
     'TPDateRequired': 'تاریخ تحویلی مالیات الزامی میباشد.',
-    'TYDuplicated': 'متاسفم، مالیات سال در سیستم وجود دارد.',
+    'TYDuplicated': 'مالیات آن سال قبلاً در سیستم ثبت گردیده.',
     'TYSuccessMsg': 'مالیات در سیستم ثبت شد.',
     'TYErrMsg': 'متاسفم، ثبت مالیات ناکام شد.',
     'DelTaxHeading': 'حذف مالیات',
@@ -1303,7 +1303,7 @@ final Map<String, Map<String, String>> translations = {
     'PTALength':
         'د تادیه شوي مالیاتو اندازه نشي کولی د کلنۍ مالیاتو څخه ډیر وي.',
     'TPDateRequired': 'د مالیاتو تادیه نیټه اړینه ده.',
-    'TYDuplicated': 'بخښنه غواړم، د مالیې کال په سیسټم کې دی.',
+    'TYDuplicated': 'د هغه کال مالیه لا دمخه په سیسټم کې ثبت شوې ده.',
     'TYSuccessMsg': 'مالیه په سیسټم کې ثبت شوې.',
     'TYErrMsg': 'بخښنه غواړم، د مالیې ثبت کول ناکام شول.',
     'DelTaxHeading': 'د مالیات حذف کول',

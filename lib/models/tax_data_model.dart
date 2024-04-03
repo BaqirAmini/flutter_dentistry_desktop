@@ -491,7 +491,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                                 decoration: InputDecoration(
                                   border: const OutlineInputBorder(),
                                   labelText:
-                                      '${translations[selectedLanguage]?['TotalAnnIncome'] ?? ''} ${selectedYear.toString()}',
+                                      '${translations[selectedLanguage]?['TotalAnnIncome'] ?? ''} ${selectedYear.toString()} ه.ش',
                                   suffixIcon: const Icon(
                                       Icons.money_off_csred_outlined),
                                   enabledBorder: const OutlineInputBorder(
@@ -532,9 +532,8 @@ class TaxDataTableState extends State<TaxDataTable> {
                                 readOnly: true,
                                 decoration: InputDecoration(
                                   border: const OutlineInputBorder(),
-                                  labelText: translations[selectedLanguage]
-                                          ?['AnnTotTax'] ??
-                                      '',
+                                  labelText:
+                                      '${translations[selectedLanguage]?['AnnTotTax'] ?? ''} (${translations[selectedLanguage]?['Afn'] ?? ''})',
                                   suffixIcon: const Icon(Icons.money),
                                   enabledBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
@@ -598,9 +597,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                                       decoration: InputDecoration(
                                         border: const OutlineInputBorder(),
                                         labelText:
-                                            translations[selectedLanguage]
-                                                    ?['PaidTax'] ??
-                                                '',
+                                            '${translations[selectedLanguage]?['PaidTax'] ?? ''} (${translations[selectedLanguage]?['Afn'] ?? ''})',
                                         suffixIcon: const Icon(
                                             Icons.money_off_csred_outlined),
                                         enabledBorder: const OutlineInputBorder(
@@ -671,26 +668,29 @@ class TaxDataTableState extends State<TaxDataTable> {
                                       RegExp(regExpDecimal))
                                 ],
                                 readOnly: true,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'مالیات باقی',
-                                  suffixIcon: Icon(Icons.attach_money_outlined),
-                                  enabledBorder: OutlineInputBorder(
+                                decoration: InputDecoration(
+                                  border: const OutlineInputBorder(),
+                                  labelText: '${translations[selectedLanguage]
+                                          ?['TaxDue'] ??
+                                      ''} (${translations[selectedLanguage]?['Afn'] ?? ''})',
+                                  suffixIcon:
+                                      const Icon(Icons.attach_money_outlined),
+                                  enabledBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.grey)),
-                                  focusedBorder: OutlineInputBorder(
+                                  focusedBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.blue)),
-                                  errorBorder: OutlineInputBorder(
+                                  errorBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide:
                                           BorderSide(color: Colors.red)),
-                                  focusedErrorBorder: OutlineInputBorder(
+                                  focusedErrorBorder: const OutlineInputBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(50.0)),
                                       borderSide: BorderSide(
@@ -921,7 +921,7 @@ class TaxDataTableState extends State<TaxDataTable> {
                                   [taxYear]);
                               if (results1.isNotEmpty) {
                                 _onShowSnack(Colors.red,
-                                    '${translations[selectedLanguage]?['TATRequired'] ?? ''}: $taxYear');
+                                    translations[selectedLanguage]?['TYDuplicated'] ?? '');
                               } else {
                                 // Secondly add a record into taxes first
                                 var results2 = await conn.query(
@@ -2622,169 +2622,172 @@ onShowTaxDetails(BuildContext context) {
           ],
         ),
       ),
-      content: Directionality(
-        textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.4,
-          height: MediaQuery.of(context).size.height * 0.5,
-          child: Directionality(
-            textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10.0),
-                    color: const Color.fromARGB(255, 240, 239, 239),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+      content: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.4,
+        child: Directionality(
+          textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.4,
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: Directionality(
+              textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      color: const Color.fromARGB(255, 240, 239, 239),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            translations[selectedLanguage]?['TIN'] ?? '',
+                            style: const TextStyle(
+                              fontSize: 14.0,
+                              color: Color.fromARGB(255, 118, 116, 116),
+                            ),
+                          ),
+                          Text('${TaxInfo.TIN}'),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15.0,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          translations[selectedLanguage]?['TIN'] ?? '',
-                          style: const TextStyle(
-                            fontSize: 14.0,
-                            color: Color.fromARGB(255, 118, 116, 116),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.19,
+                          padding: const EdgeInsets.all(10.0),
+                          color: const Color.fromARGB(255, 240, 239, 239),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                translations[selectedLanguage]?['TaxOfYear'] ??
+                                    '',
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  color: Color.fromARGB(255, 118, 116, 116),
+                                ),
+                              ),
+                              Text('${TaxInfo.taxOfYear} ه.ش'),
+                            ],
                           ),
                         ),
-                        Text('${TaxInfo.TIN}'),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 15.0,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: 240.0,
-                        padding: const EdgeInsets.all(10.0),
-                        color: const Color.fromARGB(255, 240, 239, 239),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              translations[selectedLanguage]?['TaxOfYear'] ??
-                                  '',
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                color: Color.fromARGB(255, 118, 116, 116),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.19,
+                          padding: const EdgeInsets.all(10.0),
+                          color: const Color.fromARGB(255, 240, 239, 239),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                translations[selectedLanguage]?['TaxRate'] ?? '',
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  color: Color.fromARGB(255, 118, 116, 116),
+                                ),
                               ),
-                            ),
-                            Text('${TaxInfo.taxOfYear} ه.ش'),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: 240.0,
-                        padding: const EdgeInsets.all(10.0),
-                        color: const Color.fromARGB(255, 240, 239, 239),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              translations[selectedLanguage]?['TaxRate'] ?? '',
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                color: Color.fromARGB(255, 118, 116, 116),
-                              ),
-                            ),
-                            Text('${TaxInfo.taxRate} %'),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 15.0,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: 240.0,
-                        padding: const EdgeInsets.all(10.0),
-                        color: const Color.fromARGB(255, 240, 239, 239),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              translations[selectedLanguage]?['TaxPaidDate'] ??
-                                  '',
-                              style: const TextStyle(
-                                fontSize: 14.0,
-                                color: Color.fromARGB(255, 118, 116, 116),
-                              ),
-                            ),
-                            Text('${TaxInfo.paidDate}'),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: 240.0,
-                        padding: const EdgeInsets.all(10.0),
-                        color: const Color.fromARGB(255, 240, 239, 239),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              translations[selectedLanguage]?['AnnTotTax'] ??
-                                  '',
-                              style: const TextStyle(
-                                fontSize: 1.0,
-                                color: Color.fromARGB(255, 118, 116, 116),
-                              ),
-                            ),
-                            Text(
-                                '${TaxInfo.annTotTaxes.toString()} ${translations[selectedLanguage]?['Afn'] ?? ''}'),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 15.0,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(10.0),
-                    color: const Color.fromARGB(255, 240, 239, 239),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          translations[selectedLanguage]?['TaxDue'] ?? '',
-                          style: const TextStyle(
-                            fontSize: 14.0,
-                            color: Color.fromARGB(255, 118, 116, 116),
+                              Text('${TaxInfo.taxRate} %'),
+                            ],
                           ),
                         ),
-                        Text(
-                            '${TaxInfo.dueTaxes} ${translations[selectedLanguage]?['Afn'] ?? ''}'),
                       ],
                     ),
-                  ),
-                  const SizedBox(
-                    height: 15.0,
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(10.0),
-                    color: const Color.fromARGB(255, 240, 239, 239),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    const SizedBox(
+                      height: 15.0,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          translations[selectedLanguage]?['TaxPaidBy'] ?? '',
-                          style: const TextStyle(
-                            fontSize: 14.0,
-                            color: Color.fromARGB(255, 118, 116, 116),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.19,
+                          padding: const EdgeInsets.all(10.0),
+                          color: const Color.fromARGB(255, 240, 239, 239),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                translations[selectedLanguage]?['TaxPaidDate'] ??
+                                    '',
+                                style: const TextStyle(
+                                  fontSize: 14.0,
+                                  color: Color.fromARGB(255, 118, 116, 116),
+                                ),
+                              ),
+                              Text('${TaxInfo.paidDate}'),
+                            ],
                           ),
                         ),
-                        Text('${TaxInfo.firstName} ${TaxInfo.lastName}'),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.19,
+                          padding: const EdgeInsets.all(10.0),
+                          color: const Color.fromARGB(255, 240, 239, 239),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                translations[selectedLanguage]?['AnnTotTax'] ??
+                                    '',
+                                style: const TextStyle(
+                                  fontSize: 1.0,
+                                  color: Color.fromARGB(255, 118, 116, 116),
+                                ),
+                              ),
+                              Text(
+                                  '${TaxInfo.annTotTaxes.toString()} ${translations[selectedLanguage]?['Afn'] ?? ''}'),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      height: 15.0,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      color: const Color.fromARGB(255, 240, 239, 239),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            translations[selectedLanguage]?['TaxDue'] ?? '',
+                            style: const TextStyle(
+                              fontSize: 14.0,
+                              color: Color.fromARGB(255, 118, 116, 116),
+                            ),
+                          ),
+                          Text(
+                              '${TaxInfo.dueTaxes} ${translations[selectedLanguage]?['Afn'] ?? ''}'),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15.0,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      color: const Color.fromARGB(255, 240, 239, 239),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            translations[selectedLanguage]?['TaxPaidBy'] ?? '',
+                            style: const TextStyle(
+                              fontSize: 14.0,
+                              color: Color.fromARGB(255, 118, 116, 116),
+                            ),
+                          ),
+                          Text('${TaxInfo.firstName} ${TaxInfo.lastName}'),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
