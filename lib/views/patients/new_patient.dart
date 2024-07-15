@@ -1397,7 +1397,7 @@ class _NewPatientState extends State<NewPatient> {
               textDirection: isEnglish ? TextDirection.ltr : TextDirection.rtl,
               child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.5,
-                height: MediaQuery.of(context).size.height * 0.4,
+                height: MediaQuery.of(context).size.height * 0.55,
                 child: Form(
                   key: _hisDetFormKey,
                   child: Column(

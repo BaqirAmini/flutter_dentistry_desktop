@@ -255,7 +255,7 @@ onCreatePrescription(BuildContext context) {
                                                       columnWidths: {
                                                         0: const pw
                                                             .FixedColumnWidth(
-                                                            100),
+                                                            150),
                                                         1: const pw
                                                             .FixedColumnWidth(
                                                             150),
