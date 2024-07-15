@@ -29,6 +29,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  web: ^0.4.0
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -129,3 +130,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+
+dependency_overrides:
+  intl: ^0.18.0
+
